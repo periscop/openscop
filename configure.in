@@ -67,7 +67,7 @@ dnl Input file for autoconf to build a configuration shellscript.
 
 AC_PREREQ(2.13)
 dnl Fill here the @bug email adress.
-AC_INIT([scoplib], [0.2.0], [cedric.bastoul@inria.fr,pouchet@cse.ohio-state.edu])
+AC_INIT([openscop], [0.3.0], [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
 dnl A common file, which serve as a test.
 AC_CONFIG_SRCDIR([include/openscop/macros.h])
 dnl Put as most as possible configuration files to an auxialiry
@@ -80,7 +80,7 @@ AM_INIT_AUTOMAKE([1.9 tar-ustar no-define foreign dist-bzip2])
 
 dnl default version
 BITS="64"
-SCOPLIB_INT_T=SCOPLIB_INT_T_IS_LONGLONG
+OPENSCOP_INT_T=OPENSCOP_INT_T_IS_LONGLONG
 
 
 dnl /**************************************************************************
@@ -127,7 +127,7 @@ AC_ARG_WITH(gmp,
 	  gmp_package=$withval &&
           GMP_INC=$gmp_package/include &&
           GMP_LIB=$gmp_package/lib &&
-          SCOPLIB_INT_T=SCOPLIB_INT_T_IS_MP &&
+          OPENSCOP_INT_T=OPENSCOP_INT_T_IS_MP &&
           NEED_MP="yes"])
 
 AC_ARG_WITH(gmp-include,
@@ -135,7 +135,7 @@ AC_ARG_WITH(gmp-include,
 	[ echo "Package gmp-include : $withval" &&
 	  gmp_include_package=$withval &&
           GMP_INC=$gmp_include_package &&
-          SCOPLIB_INT_T=SCOPLIB_INT_T_IS_MP &&
+          OPENSCOP_INT_T=OPENSCOP_INT_T_IS_MP &&
 	  NEED_MP="yes"])
 
 AC_ARG_WITH(gmp-library,
@@ -143,31 +143,31 @@ AC_ARG_WITH(gmp-library,
 	[ echo "Package gmp-library : $withval" &&
 	  gmp_library_package=$withval &&
           GMP_LIB=$gmp_library_package &&
-          SCOPLIB_INT_T=SCOPLIB_INT_T_IS_MP &&
+          OPENSCOP_INT_T=OPENSCOP_INT_T_IS_MP &&
 	  NEED_MP="yes"])
 
 AC_ARG_ENABLE(int-version,
 	[  --enable-int-version    'int' (32 bits) version is built],
 	[ echo "Package int : $enableval" &&
 	  BITS="32" &&
-          SCOPLIB_INT_T=SCOPLIB_INT_T_IS_LONG])
+          OPENSCOP_INT_T=OPENSCOP_INT_T_IS_LONG])
 
 AC_ARG_ENABLE(llint-version,
 	[  --enable-llint-version  'long long int' (64 bits) version is built],
 	[ echo "Package long long int : $enableval" &&
 	  BITS="64" &&
-          SCOPLIB_INT_T=SCOPLIB_INT_T_IS_LONGLONG])
+          OPENSCOP_INT_T=OPENSCOP_INT_T_IS_LONGLONG])
 
 AC_ARG_ENABLE(mp-version,
 	[  --enable-mp-version     'MP' (multiple precision) version is built],
 	[ echo "Package mp : $enableval" &&
 	  BITS="MP" &&
-          SCOPLIB_INT_T=SCOPLIB_INT_T_IS_MP &&
+          OPENSCOP_INT_T=OPENSCOP_INT_T_IS_MP &&
           CPPFLAGS="$CPPFLAGS -DLINEAR_VALUE_IS_MP"
           NEED_MP="yes"])
 
 dnl FIXME: should be removed...
-CPPFLAGS="$CPPFLAGS -D$SCOPLIB_INT_T"
+CPPFLAGS="$CPPFLAGS -D$OPENSCOP_INT_T"
 
 dnl /**************************************************************************
 dnl  *                            Where is GMP?                               *
@@ -235,7 +235,7 @@ dnl  **************************************************************************/
 
 dnl Substitutions to do.
 AC_SUBST(BITS)
-AC_SUBST(SCOPLIB_INT_T)
+AC_SUBST(OPENSCOP_INT_T)
 AC_SUBST(ac_aux_dir)
 
 dnl Configure Makefiles.

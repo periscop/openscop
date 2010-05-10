@@ -61,8 +61,8 @@
  *****************************************************************************/
 
 
-#ifndef SCOPLIB_RELATION_H
-# define SCOPLIB_RELATION_H
+#ifndef OPENSCOP_RELATION_H
+# define OPENSCOP_RELATION_H
 
 # include <stdio.h>
 # include <openscop/macros.h>
@@ -76,7 +76,7 @@ extern "C"
 
 
 /**
- * The scoplib_relation_t structure stores a union of relations. It is a
+ * The openscop_relation_t structure stores a union of relations. It is a
  * NULL-terminated linked list of relations. Each relation is described
  * using a matrix where each row represents a linear constraint. The entries
  * of each row are organised in the following order:
@@ -95,7 +95,7 @@ extern "C"
  * - The first output dimension of any access relations corresponds to
  *   the name of the array.
  */
-struct scoplib_relation
+struct openscop_relation
 {
   unsigned nb_rows;               /**< The number of rows */
   unsigned nb_columns;	          /**< The number of columns */
@@ -104,30 +104,30 @@ struct scoplib_relation
   unsigned nb_local_dims;         /**< The number of local (existentially
                                        quantified) dimensions */
   unsigned nb_parameters;         /**< The number of parameters */
-  scoplib_int_t ** m;             /**< An array of pointers to the beginning
+  openscop_int_t ** m;             /**< An array of pointers to the beginning
 			               of each row of the relation matrix */
-  scoplib_int_t * store;          /**< The relation matrix is stored here,
+  openscop_int_t * store;          /**< The relation matrix is stored here,
                                        contiguously in memory */
-  struct scoplib_relation * next; /**< Pointer to the next relation in the
+  struct openscop_relation * next; /**< Pointer to the next relation in the
                                        union of relations (NULL if none) */
 };
-typedef struct scoplib_relation   scoplib_relation_t;
-typedef struct scoplib_relation * scoplib_relation_p;
+typedef struct openscop_relation   openscop_relation_t;
+typedef struct openscop_relation * openscop_relation_p;
 
 
 /*+****************************************************************************
  *                          Structure display function                        *
  ******************************************************************************/
-void          scoplib_matrix_print_structure(FILE *, scoplib_matrix_p, int);
-void          scoplib_matrix_print(FILE *, scoplib_matrix_p);
-void          scoplib_matrix_print_dot_scop(FILE *, scoplib_matrix_p, int,
+void          openscop_matrix_print_structure(FILE *, openscop_matrix_p, int);
+void          openscop_matrix_print(FILE *, openscop_matrix_p);
+void          openscop_matrix_print_dot_scop(FILE *, openscop_matrix_p, int,
 					    int, char **, int, char **,
 					    int, char **);
 
-void          scoplib_matrix_list_print_structure(FILE *,
-						  scoplib_matrix_list_p, int);
-void          scoplib_matrix_list_print(FILE *, scoplib_matrix_list_p);
-void          scoplib_matrix_list_print_dot_scop(FILE *, scoplib_matrix_list_p,
+void          openscop_matrix_list_print_structure(FILE *,
+						  openscop_matrix_list_p, int);
+void          openscop_matrix_list_print(FILE *, openscop_matrix_list_p);
+void          openscop_matrix_list_print_dot_scop(FILE *, openscop_matrix_list_p,
 						 int, int, char **, int,
 						 char **, int, char **);
 
@@ -135,38 +135,38 @@ void          scoplib_matrix_list_print_dot_scop(FILE *, scoplib_matrix_list_p,
 /******************************************************************************
  *                               Reading function                             *
  ******************************************************************************/
-scoplib_matrix_p	scoplib_matrix_read(FILE *);
-scoplib_matrix_list_p	scoplib_matrix_list_read(FILE *);
-scoplib_matrix_p	scoplib_matrix_read_arrays(FILE *, char ***, int *);
+openscop_matrix_p	openscop_matrix_read(FILE *);
+openscop_matrix_list_p	openscop_matrix_list_read(FILE *);
+openscop_matrix_p	openscop_matrix_read_arrays(FILE *, char ***, int *);
 
 
 /*+****************************************************************************
  *                    Memory allocation/deallocation function                 *
  ******************************************************************************/
-scoplib_matrix_p	scoplib_matrix_malloc(unsigned, unsigned);
-void			scoplib_matrix_free_inside(scoplib_matrix_p);
-void			scoplib_matrix_free(scoplib_matrix_p);
+openscop_matrix_p	openscop_matrix_malloc(unsigned, unsigned);
+void			openscop_matrix_free_inside(openscop_matrix_p);
+void			openscop_matrix_free(openscop_matrix_p);
 
-scoplib_matrix_list_p	scoplib_matrix_list_malloc();
-void			scoplib_matrix_list_free(scoplib_matrix_list_p);
+openscop_matrix_list_p	openscop_matrix_list_malloc();
+void			openscop_matrix_list_free(openscop_matrix_list_p);
 
 
 /*+****************************************************************************
  *                            Processing functions                            *
  ******************************************************************************/
-scoplib_matrix_p scoplib_matrix_ncopy(scoplib_matrix_p, int);
-scoplib_matrix_p scoplib_matrix_copy(scoplib_matrix_p);
-void	scoplib_matrix_replace_vector(scoplib_matrix_p, scoplib_vector_p, int);
-void    scoplib_matrix_insert_vector(scoplib_matrix_p, scoplib_vector_p, int);
-void	scoplib_matrix_add_vector(scoplib_matrix_p, scoplib_vector_p, int);
-void	scoplib_matrix_sub_vector(scoplib_matrix_p, scoplib_vector_p, int);
-scoplib_matrix_p scoplib_matrix_from_vector(scoplib_vector_p);
-void    scoplib_matrix_replace_matrix(scoplib_matrix_p, scoplib_matrix_p, int);
-void    scoplib_matrix_insert_matrix(scoplib_matrix_p, scoplib_matrix_p, int);
-scoplib_matrix_p scoplib_matrix_concat(scoplib_matrix_p, scoplib_matrix_p);
-int	scoplib_matrix_equal(scoplib_matrix_p, scoplib_matrix_p);    
+openscop_matrix_p openscop_matrix_ncopy(openscop_matrix_p, int);
+openscop_matrix_p openscop_matrix_copy(openscop_matrix_p);
+void	openscop_matrix_replace_vector(openscop_matrix_p, openscop_vector_p, int);
+void    openscop_matrix_insert_vector(openscop_matrix_p, openscop_vector_p, int);
+void	openscop_matrix_add_vector(openscop_matrix_p, openscop_vector_p, int);
+void	openscop_matrix_sub_vector(openscop_matrix_p, openscop_vector_p, int);
+openscop_matrix_p openscop_matrix_from_vector(openscop_vector_p);
+void    openscop_matrix_replace_matrix(openscop_matrix_p, openscop_matrix_p, int);
+void    openscop_matrix_insert_matrix(openscop_matrix_p, openscop_matrix_p, int);
+openscop_matrix_p openscop_matrix_concat(openscop_matrix_p, openscop_matrix_p);
+int	openscop_matrix_equal(openscop_matrix_p, openscop_matrix_p);    
     
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define SCOPLIB_RELATION_H */
+#endif /* define OPENSCOP_RELATION_H */

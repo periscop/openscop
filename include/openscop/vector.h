@@ -61,8 +61,8 @@
  *****************************************************************************/
 
 
-#ifndef SCOPLIB_VECTOR_H
-# define SCOPLIB_VECTOR_H
+#ifndef OPENSCOP_VECTOR_H
+# define OPENSCOP_VECTOR_H
 
 # include <stdio.h>
 # include <openscop/macros.h>
@@ -75,45 +75,45 @@ extern "C"
 
 
 /**
- * The scoplib_vector_t structure stores a vector information in the PolyLib
+ * The openscop_vector_t structure stores a vector information in the PolyLib
  * format (the first entry has a specific meaning). When a vector
  * describes a linear constraint, a 0 means it is an equality == 0, a 1 means
  * an inequality >= 0. When the vector describes an array access, a number
  * different than 0 is the array identifier.
  */
-struct scoplib_vector
+struct openscop_vector
 {
   unsigned Size;  /**< The number of vector entries */
-  scoplib_int_t * p; /**< An array of values */
+  openscop_int_t * p; /**< An array of values */
 };
-typedef struct scoplib_vector   scoplib_vector_t;
-typedef struct scoplib_vector * scoplib_vector_p;
+typedef struct openscop_vector   openscop_vector_t;
+typedef struct openscop_vector * openscop_vector_p;
 
 
 /*+****************************************************************************
  *                          Structure display function                        *
  ******************************************************************************/
-void          scoplib_vector_print_structure(FILE *, scoplib_vector_p, int);
-void          scoplib_vector_print(FILE *, scoplib_vector_p);
+void          openscop_vector_print_structure(FILE *, openscop_vector_p, int);
+void          openscop_vector_print(FILE *, openscop_vector_p);
 
 
 /*+****************************************************************************
  *                    Memory allocation/deallocation function                 *
  ******************************************************************************/
-scoplib_vector_p scoplib_vector_malloc(unsigned);
-void		 scoplib_vector_free(scoplib_vector_p);
+openscop_vector_p openscop_vector_malloc(unsigned);
+void		 openscop_vector_free(openscop_vector_p);
 
 
 /*+****************************************************************************
  *                            Processing functions                            *
  ******************************************************************************/
-scoplib_vector_p scoplib_vector_add_scalar(scoplib_vector_p, int);
-scoplib_vector_p scoplib_vector_add(scoplib_vector_p, scoplib_vector_p);
-scoplib_vector_p scoplib_vector_sub(scoplib_vector_p, scoplib_vector_p);
-void		 scoplib_vector_tag_inequality(scoplib_vector_p);
-void		 scoplib_vector_tag_equality(scoplib_vector_p);
+openscop_vector_p openscop_vector_add_scalar(openscop_vector_p, int);
+openscop_vector_p openscop_vector_add(openscop_vector_p, openscop_vector_p);
+openscop_vector_p openscop_vector_sub(openscop_vector_p, openscop_vector_p);
+void		 openscop_vector_tag_inequality(openscop_vector_p);
+void		 openscop_vector_tag_equality(openscop_vector_p);
 
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define SCOPLIB_VECTOR_H */
+#endif /* define OPENSCOP_VECTOR_H */

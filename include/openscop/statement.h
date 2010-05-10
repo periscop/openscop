@@ -61,8 +61,8 @@
  *****************************************************************************/
 
 
-#ifndef SCOPLIB_STATEMENT_H
-# define SCOPLIB_STATEMENT_H
+#ifndef OPENSCOP_STATEMENT_H
+# define OPENSCOP_STATEMENT_H
 
 # include <stdio.h>
 # include <openscop/macros.h>
@@ -75,15 +75,15 @@ extern "C"
 
 
 /**
- * The scoplib_statement_t structure stores the useful informations of a given
+ * The openscop_statement_t structure stores the useful informations of a given
  * statement to process it within a polyhedral framework.
  */
-struct scoplib_statement
+struct openscop_statement
 {
-  scoplib_matrix_list_p domain;   /**< Iteration domain of the statement */
-  scoplib_matrix_p schedule;      /**< Scheduling function for the statement */
-  scoplib_matrix_p read;          /**< Array read access informations */
-  scoplib_matrix_p write;         /**< Array write access informations */
+  openscop_matrix_list_p domain;   /**< Iteration domain of the statement */
+  openscop_matrix_p schedule;      /**< Scheduling function for the statement */
+  openscop_matrix_p read;          /**< Array read access informations */
+  openscop_matrix_p write;         /**< Array write access informations */
   int nb_iterators;               /**< Original depth of the statement */
   char ** iterators;              /**< Array of (nb_iterators) iterator names */
   char * body;                    /**< Original statement body */
@@ -99,44 +99,44 @@ struct scoplib_statement
 				   irregular if of a statement  */
 
 
-  struct scoplib_statement * next;/**< Next statement in the linked list */
+  struct openscop_statement * next;/**< Next statement in the linked list */
 };
-typedef struct scoplib_statement   scoplib_statement_t;
-typedef struct scoplib_statement * scoplib_statement_p;
+typedef struct openscop_statement   openscop_statement_t;
+typedef struct openscop_statement * openscop_statement_p;
 
 
 /*+****************************************************************************
  *                          Structure display function                        *
  ******************************************************************************/
-void             scoplib_statement_print_structure(FILE *, scoplib_statement_p,
+void             openscop_statement_print_structure(FILE *, openscop_statement_p,
 						   int);
-void             scoplib_statement_print(FILE *, scoplib_statement_p);
-void             scoplib_statement_print_dot_scop(FILE *, scoplib_statement_p,
+void             openscop_statement_print(FILE *, openscop_statement_p);
+void             openscop_statement_print_dot_scop(FILE *, openscop_statement_p,
 						  int, char **, int, char **);
 
 
 /******************************************************************************
  *                               Reading function                             *
  ******************************************************************************/
-scoplib_statement_p scoplib_statement_read (FILE*, int, char***, int*);
+openscop_statement_p openscop_statement_read (FILE*, int, char***, int*);
 
 
 /*+****************************************************************************
  *                    Memory allocation/deallocation function                 *
  ******************************************************************************/
-scoplib_statement_p scoplib_statement_malloc();
-void                scoplib_statement_free(scoplib_statement_p);
+openscop_statement_p openscop_statement_malloc();
+void                openscop_statement_free(openscop_statement_p);
 
 
 /*+****************************************************************************
  *                            Processing functions                            *
  ******************************************************************************/
-void             scoplib_statement_add(scoplib_statement_p *, scoplib_statement_p);
-void             scoplib_statement_compact(scoplib_statement_p, int);
-int              scoplib_statement_number(scoplib_statement_p);
+void             openscop_statement_add(openscop_statement_p *, openscop_statement_p);
+void             openscop_statement_compact(openscop_statement_p, int);
+int              openscop_statement_number(openscop_statement_p);
 
 
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define SCOPLIB_STATEMENT_H */
+#endif /* define OPENSCOP_STATEMENT_H */

@@ -73,8 +73,8 @@
 
 
 /**
- * scoplib_vector_print_structure function:
- * Displays a scoplib_vector_t structure (*vector) into a file (file, possibly
+ * openscop_vector_print_structure function:
+ * Displays a openscop_vector_t structure (*vector) into a file (file, possibly
  * stdout) in a way that trends to be understandable without falling in a deep
  * depression or, for the lucky ones, getting a headache... It includes an
  * indentation level (level) in order to work with others print_structure
@@ -86,7 +86,7 @@
  * - 01/05/2008: first version.
  */
 void
-scoplib_vector_print_structure(FILE * file, scoplib_vector_p vector, int level)
+openscop_vector_print_structure(FILE * file, openscop_vector_p vector, int level)
 {
   int j;
 
@@ -95,7 +95,7 @@ scoplib_vector_print_structure(FILE * file, scoplib_vector_p vector, int level)
     /* Go to the right level. */
     for (j = 0; j < level; j++)
       fprintf(file,"|\t");
-    fprintf(file,"+-- scoplib_vector_t\n");
+    fprintf(file,"+-- openscop_vector_t\n");
 
     for (j = 0; j <= level; j++)
       fprintf(file,"|\t");
@@ -109,7 +109,7 @@ scoplib_vector_print_structure(FILE * file, scoplib_vector_p vector, int level)
 
     for (j = 0; j < vector->Size; j++)
     {
-      SCOPVAL_print(file,SCOPLIB_FMT,vector->p[j]);
+      SCOPINT_print(file,OPENSCOP_FMT,vector->p[j]);
       fprintf(file," ");
     }
 
@@ -131,8 +131,8 @@ scoplib_vector_print_structure(FILE * file, scoplib_vector_p vector, int level)
 
 
 /**
- * scoplib_vector_print function:
- * This function prints the content of a scoplib_vector_t structure
+ * openscop_vector_print function:
+ * This function prints the content of a openscop_vector_t structure
  * (*vector) into a file (file, possibly stdout).
  * \param file   File where informations are printed.
  * \param vector The vector whose information have to be printed.
@@ -140,9 +140,9 @@ scoplib_vector_print_structure(FILE * file, scoplib_vector_p vector, int level)
  * - 01/05/2008: first version.
  */
 void
-scoplib_vector_print(FILE * file, scoplib_vector_p vector)
+openscop_vector_print(FILE * file, openscop_vector_p vector)
 {
-  scoplib_vector_print_structure(file,vector,0);
+  openscop_vector_print_structure(file,vector,0);
 }
 
 
@@ -152,22 +152,22 @@ scoplib_vector_print(FILE * file, scoplib_vector_p vector)
 
 
 /**
- * scoplib_vector_malloc function:
- * This function allocates the memory space for a scoplib_vector_t structure and
+ * openscop_vector_malloc function:
+ * This function allocates the memory space for a openscop_vector_t structure and
  * sets its fields with default values. Then it returns a pointer to the
  * allocated space.
  * \param Size The number of entries of the vector to allocate.
  **
  * - 01/05/2008: first version.
  */
-scoplib_vector_p
-scoplib_vector_malloc(unsigned Size)
+openscop_vector_p
+openscop_vector_malloc(unsigned Size)
 {
-  scoplib_vector_p vector;
-  scoplib_int_t * p;
+  openscop_vector_p vector;
+  openscop_int_t * p;
   int i ;
 
-  vector = (scoplib_vector_p)malloc(sizeof(scoplib_vector_t));
+  vector = (openscop_vector_p)malloc(sizeof(openscop_vector_t));
   if (vector == NULL)
   {
     fprintf(stderr, "[Scoplib] Memory Overflow.\n");
@@ -178,7 +178,7 @@ scoplib_vector_malloc(unsigned Size)
     vector->p = NULL;
   else
   {
-    p = (scoplib_int_t *)malloc(Size * sizeof(scoplib_int_t));
+    p = (openscop_int_t *)malloc(Size * sizeof(openscop_int_t));
     if (p == NULL)
     {
       fprintf(stderr, "[Scoplib] Memory Overflow.\n");
@@ -186,30 +186,30 @@ scoplib_vector_malloc(unsigned Size)
     }
     vector->p = p;
     for (i = 0; i < Size; i++)
-      SCOPVAL_init_set_si(vector->p[i],0);
+      SCOPINT_init_set_si(vector->p[i],0);
   }
   return vector;
 }
 
 
 /**
- * scoplib_vector_free function:
- * This function frees the allocated memory for a scoplib_vector_t structure.
+ * openscop_vector_free function:
+ * This function frees the allocated memory for a openscop_vector_t structure.
  * \param vector The pointer to the vector we want to free.
  **
  * - 01/05/2008: first version.
  */
 void
-scoplib_vector_free(scoplib_vector_p vector)
+openscop_vector_free(openscop_vector_p vector)
 {
   int i;
-  scoplib_int_t * p;
+  openscop_int_t * p;
 
   if (vector != NULL)
   {
     p = vector->p;
     for (i = 0; i < vector->Size; i++)
-      SCOPVAL_clear(*p++);
+      SCOPINT_clear(*p++);
 
     free(vector->p);
     free(vector);
@@ -222,7 +222,7 @@ scoplib_vector_free(scoplib_vector_p vector)
  ******************************************************************************/
 
 /**
- * scoplib_vector_add_scalar function:
+ * openscop_vector_add_scalar function:
  * This function adds a scalar to the vector representation of an affine
  * expression (this means we add the scalar only to the very last entry of the
  * vector). It returns a new vector resulting from this addition.
@@ -231,11 +231,11 @@ scoplib_vector_free(scoplib_vector_p vector)
  **
  * - 01/05/2008: first version.
  */
-scoplib_vector_p
-scoplib_vector_add_scalar(scoplib_vector_p vector, int scalar)
+openscop_vector_p
+openscop_vector_add_scalar(openscop_vector_p vector, int scalar)
 {
   int i;
-  scoplib_vector_p result;
+  openscop_vector_p result;
 
   if ((vector == NULL) || (vector->Size < 2))
   {
@@ -243,10 +243,10 @@ scoplib_vector_add_scalar(scoplib_vector_p vector, int scalar)
     exit(1);
   }
 
-  result = scoplib_vector_malloc(vector->Size);
+  result = openscop_vector_malloc(vector->Size);
   for (i = 0; i < vector->Size; i++)
-    SCOPVAL_assign(result->p[i],vector->p[i]);
-  SCOPVAL_add_int(result->p[vector->Size - 1],
+    SCOPINT_assign(result->p[i],vector->p[i]);
+  SCOPINT_add_int(result->p[vector->Size - 1],
 		  vector->p[vector->Size - 1],scalar);
 
   return result;
@@ -254,7 +254,7 @@ scoplib_vector_add_scalar(scoplib_vector_p vector, int scalar)
 
 
 /**
- * scoplib_vector_add function:
+ * openscop_vector_add function:
  * This function achieves the addition of two vectors and returns the
  * result as a new vector (the addition means the ith entry of the new vector
  * is equal to the ith entry of vector v1 plus the ith entry of vector v2).
@@ -263,11 +263,11 @@ scoplib_vector_add_scalar(scoplib_vector_p vector, int scalar)
  **
  * - 01/05/2008: first version.
  */
-scoplib_vector_p
-scoplib_vector_add(scoplib_vector_p v1, scoplib_vector_p v2)
+openscop_vector_p
+openscop_vector_add(openscop_vector_p v1, openscop_vector_p v2)
 {
   int i;
-  scoplib_vector_p v3;
+  openscop_vector_p v3;
 
   if ((v1 == NULL) || (v2 == NULL) || (v1->Size != v2->Size))
   {
@@ -275,16 +275,16 @@ scoplib_vector_add(scoplib_vector_p v1, scoplib_vector_p v2)
     exit(1);
   }
 
-  v3 = scoplib_vector_malloc(v1->Size);
+  v3 = openscop_vector_malloc(v1->Size);
   for (i = 0; i < v1->Size; i++)
-    SCOPVAL_addto(v3->p[i],v1->p[i],v2->p[i]);
+    SCOPINT_addto(v3->p[i],v1->p[i],v2->p[i]);
 
   return v3;
 }
 
 
 /**
- * scoplib_vector_sub function:
+ * openscop_vector_sub function:
  * This function achieves the subtraction of two vectors and returns the
  * result as a new vector (the addition means the ith entry of the new vector
  * is equal to the ith entry of vector v1 minus the ith entry of vector v2).
@@ -293,11 +293,11 @@ scoplib_vector_add(scoplib_vector_p v1, scoplib_vector_p v2)
  **
  * - 01/05/2008: first version.
  */
-scoplib_vector_p
-scoplib_vector_sub(scoplib_vector_p v1, scoplib_vector_p v2)
+openscop_vector_p
+openscop_vector_sub(openscop_vector_p v1, openscop_vector_p v2)
 {
   int i;
-  scoplib_vector_p v3;
+  openscop_vector_p v3;
 
   if ((v1 == NULL) || (v2 == NULL) || (v1->Size != v2->Size))
   {
@@ -305,16 +305,16 @@ scoplib_vector_sub(scoplib_vector_p v1, scoplib_vector_p v2)
     exit(1);
   }
 
-  v3 = scoplib_vector_malloc(v1->Size);
+  v3 = openscop_vector_malloc(v1->Size);
   for (i = 0; i < v1->Size; i++)
-    SCOPVAL_subtract(v3->p[i],v1->p[i],v2->p[i]);
+    SCOPINT_subtract(v3->p[i],v1->p[i],v2->p[i]);
 
   return v3;
 }
 
 
 /**
- * scoplib_vector_tag_inequality function:
+ * openscop_vector_tag_inequality function:
  * This function tags a vector representation of a contraint as being an
  * inequality >=0. This means in the PolyLib format, to set to 1 the very first
  * entry of the vector. It modifies directly the vector provided as an argument.
@@ -323,19 +323,19 @@ scoplib_vector_sub(scoplib_vector_p v1, scoplib_vector_p v2)
  * - 01/05/2008: first version.
  */
 void
-scoplib_vector_tag_inequality(scoplib_vector_p vector)
+openscop_vector_tag_inequality(openscop_vector_p vector)
 {
   if ((vector == NULL) || (vector->Size < 1))
   {
     fprintf(stderr,"[Scoplib] Error: vector cannot be tagged\n");
     exit(1);
   }
-  SCOPVAL_set_si(vector->p[0],1);
+  SCOPINT_set_si(vector->p[0],1);
 }
 
 
 /**
- * scoplib_vector_tag_equality function:
+ * openscop_vector_tag_equality function:
  * This function tags a vector representation of a contraint as being an
  * equality ==0. This means in the PolyLib format, to set to 0 the very first
  * entry of the vector. It modifies directly the vector provided as an argument.
@@ -344,12 +344,12 @@ scoplib_vector_tag_inequality(scoplib_vector_p vector)
  * - 01/05/2008: first version.
  */
 void
-scoplib_vector_tag_equality(scoplib_vector_p vector)
+openscop_vector_tag_equality(openscop_vector_p vector)
 {
   if ((vector == NULL) || (vector->Size < 1))
   {
     fprintf(stderr,"[Scoplib] Error: vector cannot be tagged\n");
     exit(1);
   }
-  SCOPVAL_set_si(vector->p[0],0);
+  SCOPINT_set_si(vector->p[0],0);
 }

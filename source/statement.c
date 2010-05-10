@@ -74,8 +74,8 @@
 
 
 /**
- * scoplib_statement_print_structure function:
- * Displays a scoplib_statement_t structure (*statement) into a file (file,
+ * openscop_statement_print_structure function:
+ * Displays a openscop_statement_t structure (*statement) into a file (file,
  * possibly stdout) in a way that trends to be understandable without falling
  * in a deep depression or, for the lucky ones, getting a headache... It
  * includes an indentation level (level) in order to work with others
@@ -87,7 +87,7 @@
  * - 30/04/2008: first version.
  */
 void
-scoplib_statement_print_structure(FILE * file, scoplib_statement_p statement,
+openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
 				  int level)
 {
   int i, j, first = 1, number = 1;
@@ -97,7 +97,7 @@ scoplib_statement_print_structure(FILE * file, scoplib_statement_p statement,
     fprintf(file,"|\t");
 
   if (statement != NULL)
-    fprintf(file,"+-- scoplib_statement_t (S%d)\n",number);
+    fprintf(file,"+-- openscop_statement_t (S%d)\n",number);
   else
     fprintf(file,"+-- NULL statement\n");
 
@@ -107,7 +107,7 @@ scoplib_statement_print_structure(FILE * file, scoplib_statement_p statement,
       /* Go to the right level. */
       for (j = 0; j < level; j++)
         fprintf(file,"|\t");
-      fprintf(file,"|   scoplib_statement_t (S%d)\n",number);
+      fprintf(file,"|   openscop_statement_t (S%d)\n",number);
     }
     else
       first = 0;
@@ -118,16 +118,16 @@ scoplib_statement_print_structure(FILE * file, scoplib_statement_p statement,
     fprintf(file,"\n");
 
     /* Print the domain of the statement. */
-    scoplib_matrix_list_print_structure(file,statement->domain,level+1);
+    openscop_matrix_list_print_structure(file,statement->domain,level+1);
 
     /* Print the schedule of the statement. */
-    scoplib_matrix_print_structure(file,statement->schedule,level+1);
+    openscop_matrix_print_structure(file,statement->schedule,level+1);
 
     /* Print the array read access informations of the statement. */
-    scoplib_matrix_print_structure(file,statement->read,level+1);
+    openscop_matrix_print_structure(file,statement->read,level+1);
 
     /* Print the array write access informations of the statement. */
-    scoplib_matrix_print_structure(file,statement->write,level+1);
+    openscop_matrix_print_structure(file,statement->write,level+1);
 
     /* Print the original iterator names. */
     for (i=0; i<=level; i++)
@@ -183,8 +183,8 @@ scoplib_statement_print_structure(FILE * file, scoplib_statement_p statement,
 
 
 /**
- * scoplib_statement_print function:
- * This function prints the content of a scoplib_statement_t structure
+ * openscop_statement_print function:
+ * This function prints the content of a openscop_statement_t structure
  * (*statement) into  a file (file, possibly stdout).
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
@@ -192,15 +192,15 @@ scoplib_statement_print_structure(FILE * file, scoplib_statement_p statement,
  * - 30/04/2008: first version.
  */
 void
-scoplib_statement_print(FILE * file, scoplib_statement_p statement)
+openscop_statement_print(FILE * file, openscop_statement_p statement)
 {
-  scoplib_statement_print_structure(file, statement, 0);
+  openscop_statement_print_structure(file, statement, 0);
 }
 
 
 /**
- * scoplib_statement_print_dot_scop function:
- * This function prints the content of a scoplib_statement_t structure
+ * openscop_statement_print_dot_scop function:
+ * This function prints the content of a openscop_statement_t structure
  * (*statement) into a file (file, possibly stdout) for the .scop format.
  * \param file          File where informations are printed.
  * \param statement     The statement whose information have to be printed.
@@ -212,7 +212,7 @@ scoplib_statement_print(FILE * file, scoplib_statement_p statement)
  * - 02/05/2008: first version.
  */
 void
-scoplib_statement_print_dot_scop(FILE * file, scoplib_statement_p statement,
+openscop_statement_print_dot_scop(FILE * file, openscop_statement_p statement,
 				 int nb_parameters, char ** parameters,
 				 int nb_arrays, char ** arrays)
 {
@@ -226,8 +226,8 @@ scoplib_statement_print_dot_scop(FILE * file, scoplib_statement_p statement,
     fprintf(file,"# ---------------------------------------------- ");
     fprintf(file,"%2d.1 Domain\n",number);
     fprintf(file,"# Iteration domain\n");
-    scoplib_matrix_list_print_dot_scop(file, statement->domain,
-				       SCOPLIB_TYPE_DOMAIN,
+    openscop_matrix_list_print_dot_scop(file, statement->domain,
+				       OPENSCOP_TYPE_DOMAIN,
 				       statement->nb_iterators,
 				       statement->iterators,
 				       nb_parameters,parameters,
@@ -239,8 +239,8 @@ scoplib_statement_print_dot_scop(FILE * file, scoplib_statement_p statement,
     fprintf(file,"# Scattering function is provided\n");
     fprintf(file,"1\n");
     fprintf(file,"# Scattering function\n");
-    scoplib_matrix_print_dot_scop(file,statement->schedule,
-				  SCOPLIB_TYPE_SCATTERING,
+    openscop_matrix_print_dot_scop(file,statement->schedule,
+				  OPENSCOP_TYPE_SCATTERING,
 				  statement->nb_iterators,statement->iterators,
 				  nb_parameters,parameters,
 				  nb_arrays,arrays);
@@ -251,12 +251,12 @@ scoplib_statement_print_dot_scop(FILE * file, scoplib_statement_p statement,
     fprintf(file,"# Access informations are provided\n");
     fprintf(file,"1\n");
     fprintf(file,"# Read access informations\n");
-    scoplib_matrix_print_dot_scop(file,statement->read,SCOPLIB_TYPE_ACCESS,
+    openscop_matrix_print_dot_scop(file,statement->read,OPENSCOP_TYPE_ACCESS,
 				  statement->nb_iterators,statement->iterators,
 				  nb_parameters,parameters,
 				  nb_arrays,arrays);
     fprintf(file,"# Write access informations\n");
-    scoplib_matrix_print_dot_scop(file,statement->write,SCOPLIB_TYPE_ACCESS,
+    openscop_matrix_print_dot_scop(file,statement->write,OPENSCOP_TYPE_ACCESS,
 				  statement->nb_iterators,statement->iterators,
 				  nb_parameters,parameters,
 				  nb_arrays,arrays);
@@ -297,17 +297,17 @@ scoplib_statement_print_dot_scop(FILE * file, scoplib_statement_p statement,
  */
 static
 char**
-scoplib_statement_read_strings(FILE* file, int nb_strings)
+openscop_statement_read_strings(FILE* file, int nb_strings)
 {
-  char str[SCOPLIB_MAX_STRING];
-  char tmp[SCOPLIB_MAX_STRING];
+  char str[OPENSCOP_MAX_STRING];
+  char tmp[OPENSCOP_MAX_STRING];
   char* s;
   char** res = NULL;
   int i;
   int count;
 
   /* Skip blank/commented lines. */
-  while (fgets(str, SCOPLIB_MAX_STRING, file) == 0 || str[0] == '#' ||
+  while (fgets(str, OPENSCOP_MAX_STRING, file) == 0 || str[0] == '#' ||
 	 isspace(str[0]))
     ;
   s = str;
@@ -337,13 +337,13 @@ scoplib_statement_read_strings(FILE* file, int nb_strings)
  */
 static
 int
-scoplib_statement_read_int(FILE* file)
+openscop_statement_read_int(FILE* file)
 {
-  char s[SCOPLIB_MAX_STRING];
+  char s[OPENSCOP_MAX_STRING];
   int res;
 
   /* Skip blank/commented lines. */
-  while (fgets(s, SCOPLIB_MAX_STRING, file) == 0 || s[0] == '#' ||
+  while (fgets(s, OPENSCOP_MAX_STRING, file) == 0 || s[0] == '#' ||
 	 isspace(s[0]))
     ;
   sscanf(s, "%d", &res);
@@ -351,11 +351,11 @@ scoplib_statement_read_int(FILE* file)
   return res;
 }
 
-char**	    scoplib_scop_generate_names(char*, int);
+char**	    openscop_scop_generate_names(char*, int);
 
 /**
- * scoplib_statement_read function:
- * This function reads a scoplib_statement_t structure from an input stream
+ * openscop_statement_read function:
+ * This function reads a openscop_statement_t structure from an input stream
  * (possibly stdin).
  * \param file		The input stream
  * \param nb_parameters	The number of global parameters for the program
@@ -363,43 +363,43 @@ char**	    scoplib_scop_generate_names(char*, int);
  *			input program
  * \param nb_arr	The size of the array parameter
  */
-scoplib_statement_p
-scoplib_statement_read (FILE* file, int nb_parameters, char*** arrays,
+openscop_statement_p
+openscop_statement_read (FILE* file, int nb_parameters, char*** arrays,
 			int* nb_arr)
 {
-  scoplib_statement_p stmt = scoplib_statement_malloc();
+  openscop_statement_p stmt = openscop_statement_malloc();
   char** tmp;
 
   if (file)
     {
       /* Read the domain matrices. */
-      stmt->domain = scoplib_matrix_list_read(file);
+      stmt->domain = openscop_matrix_list_read(file);
 
       /* Read the scattering, if any. */
-      if (scoplib_statement_read_int(file) > 0)
-	stmt->schedule = scoplib_matrix_read(file);
+      if (openscop_statement_read_int(file) > 0)
+	stmt->schedule = openscop_matrix_read(file);
 
       /* Read the access functions, if any. */
-      if (scoplib_statement_read_int(file) > 0)
+      if (openscop_statement_read_int(file) > 0)
 	{
-	  stmt->read = scoplib_matrix_read_arrays(file, arrays, nb_arr);
-	  stmt->write = scoplib_matrix_read_arrays(file, arrays, nb_arr);
+	  stmt->read = openscop_matrix_read_arrays(file, arrays, nb_arr);
+	  stmt->write = openscop_matrix_read_arrays(file, arrays, nb_arr);
 	}
 
       stmt->nb_iterators = stmt->domain->elt->NbColumns - 2 - nb_parameters;
       /* Read the body information, if any. */
-      if (scoplib_statement_read_int(file) > 0)
+      if (openscop_statement_read_int(file) > 0)
 	{
 	  if (stmt->nb_iterators > 0)
-	    stmt->iterators = scoplib_statement_read_strings(file,
+	    stmt->iterators = openscop_statement_read_strings(file,
 							  stmt->nb_iterators);
-	  tmp = scoplib_statement_read_strings(file, 1);
+	  tmp = openscop_statement_read_strings(file, 1);
 	  stmt->body = tmp[0];
 	  free(tmp);
 	}
       else
 	{
-	  stmt->iterators = scoplib_scop_generate_names("i",
+	  stmt->iterators = openscop_scop_generate_names("i",
 							stmt->nb_iterators);
 	  stmt->body = strdup("[undefined]");
 	}
@@ -415,19 +415,19 @@ scoplib_statement_read (FILE* file, int nb_parameters, char*** arrays,
 
 
 /**
- * scoplib_statement_malloc function:
- * This function allocates the memory space for a scoplib_statement_t structure
+ * openscop_statement_malloc function:
+ * This function allocates the memory space for a openscop_statement_t structure
  * and sets its fields with default values. Then it returns a pointer to the
  * allocated space.
  **
  * - 30/04/2008: first version.
  */
-scoplib_statement_p
-scoplib_statement_malloc()
+openscop_statement_p
+openscop_statement_malloc()
 {
-  scoplib_statement_p statement;
+  openscop_statement_p statement;
 
-  statement = (scoplib_statement_p)malloc(sizeof(scoplib_statement_t));
+  statement = (openscop_statement_p)malloc(sizeof(openscop_statement_t));
   if (statement == NULL)
   {
     fprintf(stderr, "[Scoplib] Memory Overflow.\n");
@@ -455,25 +455,25 @@ scoplib_statement_malloc()
 
 
 /**
- * scoplib_statement_free function:
- * This function frees the allocated memory for a scoplib_statement_t structure.
+ * openscop_statement_free function:
+ * This function frees the allocated memory for a openscop_statement_t structure.
  * \param statement The pointer to the statement we want to free.
  **
  * - 30/04/2008: first version.
  */
 void
-scoplib_statement_free(scoplib_statement_p statement)
+openscop_statement_free(openscop_statement_p statement)
 {
   int i;
-  scoplib_statement_p next;
+  openscop_statement_p next;
 
   while (statement != NULL)
   {
     next = statement->next;
-    scoplib_matrix_list_free(statement->domain);
-    scoplib_matrix_free(statement->schedule);
-    scoplib_matrix_free(statement->read);
-    scoplib_matrix_free(statement->write);
+    openscop_matrix_list_free(statement->domain);
+    openscop_matrix_free(statement->schedule);
+    openscop_matrix_free(statement->read);
+    openscop_matrix_free(statement->write);
     if (statement->iterators != NULL)
     {
       for (i = 0; i < statement->nb_iterators; i++)
@@ -501,7 +501,7 @@ scoplib_statement_free(scoplib_statement_p statement)
 
 
 /**
- * scoplib_statement_add function:
+ * openscop_statement_add function:
  * This function adds a statement "statement" at the end of the statement
  * list pointed by "location".
  * \param location  Address of the first element of the statement list.
@@ -510,8 +510,8 @@ scoplib_statement_free(scoplib_statement_p statement)
  * - 30/04/2008: first version.
  */
 void
-scoplib_statement_add(scoplib_statement_p * location,
-		      scoplib_statement_p statement)
+openscop_statement_add(openscop_statement_p * location,
+		      openscop_statement_p statement)
 {
   while (*location != NULL)
     location = &((*location)->next);
@@ -522,7 +522,7 @@ scoplib_statement_add(scoplib_statement_p * location,
 
 
 /**
- * scoplib_statement_number function:
+ * openscop_statement_number function:
  * This function returns the number of statements in the statement list
  * provided as parameter.
  * \param statement The first element of the statement list.
@@ -530,7 +530,7 @@ scoplib_statement_add(scoplib_statement_p * location,
  * - 03/05/2008: first version.
  */
 int
-scoplib_statement_number(scoplib_statement_p statement)
+openscop_statement_number(openscop_statement_p statement)
 {
   int number = 0;
 

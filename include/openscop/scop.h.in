@@ -66,15 +66,15 @@
  ******************************************************************************/
 
 
-#ifndef SCOPLIB_SCOP_H
-# define SCOPLIB_SCOP_H
+#ifndef OPENSCOP_SCOP_H
+# define OPENSCOP_SCOP_H
 
 # include <unistd.h>
 
-# define SCOPLIB_RELEASE "@PACKAGE_VERSION@"
-# define SCOPLIB_VERSION "@BITS@"
-# ifndef @SCOPLIB_INT_T@
-#  define @SCOPLIB_INT_T@
+# define OPENSCOP_RELEASE "@PACKAGE_VERSION@"
+# define OPENSCOP_VERSION "@BITS@"
+# ifndef @OPENSCOP_INT_T@
+#  define @OPENSCOP_INT_T@
 # endif
 
 # include <openscop/macros.h>
@@ -93,47 +93,47 @@ extern "C"
  * The scop_t structure stores the useful informations of a static
  * control part of a program to process it within a polyhedral framework.
  */
-struct scoplib_scop
+struct openscop_scop
 {
-  scoplib_matrix_p context;     /**< Constraints on the SCoP parameters */
+  openscop_matrix_p context;     /**< Constraints on the SCoP parameters */
   int nb_parameters;		/**< Number of parameters for the SCoP */
   char ** parameters;           /**< Array of (nb_parameters) parameter names */
   int nb_arrays;                /**< Number of arrays accessed in the SCoP */
   char ** arrays;               /**< Array of (nb_arrays) array names */
-  scoplib_statement_p statement;/**< Statement list of the SCoP */
+  openscop_statement_p statement;/**< Statement list of the SCoP */
   char* optiontags;	        /**< The content (as a 0 terminated
 				   string) of the optional tags. */
   void* usr;		        /**< A user-defined field, not touched
 				   by scop. */
 };
-typedef struct scoplib_scop   scoplib_scop_t;
-typedef struct scoplib_scop * scoplib_scop_p;
+typedef struct openscop_scop   openscop_scop_t;
+typedef struct openscop_scop * openscop_scop_p;
 
 
 /*+****************************************************************************
  *                          Structure display function                        *
  ******************************************************************************/
-void    scoplib_scop_print_structure(FILE *, scoplib_scop_p, int);
-void    scoplib_scop_print(FILE *, scoplib_scop_p);
-void    scoplib_scop_print_dot_scop(FILE *, scoplib_scop_p);
-void	scoplib_scop_print_dot_scop_options(FILE * file, scoplib_scop_p scop,
+void    openscop_scop_print_structure(FILE *, openscop_scop_p, int);
+void    openscop_scop_print(FILE *, openscop_scop_p);
+void    openscop_scop_print_dot_scop(FILE *, openscop_scop_p);
+void	openscop_scop_print_dot_scop_options(FILE * file, openscop_scop_p scop,
 					    int options);
 
 
 /******************************************************************************
  *                               Reading function                             *
  ******************************************************************************/
-scoplib_scop_p	scoplib_scop_read(FILE *);
-char*		scoplib_scop_tag_content(scoplib_scop_p, char*, char*);
-char*		scoplib_scop_tag_content_from_string(char*, char*, char*);
+openscop_scop_p	openscop_scop_read(FILE *);
+char*		openscop_scop_tag_content(openscop_scop_p, char*, char*);
+char*		openscop_scop_tag_content_from_string(char*, char*, char*);
 
 
 /*+****************************************************************************
  *                    Memory allocation/deallocation function                 *
  ******************************************************************************/
-scoplib_scop_p	scoplib_scop_malloc();
-void		scoplib_scop_free(scoplib_scop_p);
-scoplib_scop_p	scoplib_scop_dup(scoplib_scop_p);
+openscop_scop_p	openscop_scop_malloc();
+void		openscop_scop_free(openscop_scop_p);
+openscop_scop_p	openscop_scop_dup(openscop_scop_p);
 
 
 
@@ -141,4 +141,4 @@ scoplib_scop_p	scoplib_scop_dup(scoplib_scop_p);
   }
 # endif
 
-#endif /* define SCOPLIB_SCOP_H */
+#endif /* define OPENSCOP_SCOP_H */
