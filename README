@@ -1,10 +1,12 @@
-* * * * * * * * *
-* ScopLib 0.2.0 *
-* * * * * * * * *
+* * * * * * * * * * * * * *
+* OpenScop Library  0.3.0 *
+* * * * * * * * * * * * * *
 
 
 Install
 -------
+
+$> ./autogen.sh
 
 $> ./configure
 
@@ -16,8 +18,7 @@ $> make install
 Support
 -------
 
-
 Please contact both:
- Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>, maintainer
- Cedric Bastoul <cedric.bastoul@inria.fr>, author
+ Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>, author and maintainer
+ Cedric Bastoul <cedric.bastoul@u-psud.fr>, author
 

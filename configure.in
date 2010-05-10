@@ -1,40 +1,66 @@
 dnl
-dnl   /**------- <| --------------------------------------------------------**
-dnl    **         A                  Clan/Scop                              **
-dnl    **---     /.\   -----------------------------------------------------**
-dnl    **   <|  [""M#               configure.in                            **
-dnl    **-   A   | #   -----------------------------------------------------**
-dnl    **   /.\ [""M#         First version: 30/04/2008                     **
-dnl    **- [""M# | #  U"U#U  -----------------------------------------------**
-dnl         | #  | #  \ .:/
-dnl         | #  | #___| #
-dnl ******  | "--'     .-"  ***************************************************
-dnl *     |"-"-"-"-"-#-#-##   Clan : the Chunky Loop Analyser (experimental)  *
-dnl ****  |     # ## ######  **************************************************
-dnl *      \       .::::'/                                                    *
-dnl *       \      ::::'/     Copyright (C) 2008 Cedric Bastoul               *
-dnl *     :8a|    # # ##                                                      *
-dnl *     ::88a      ###      This is free software; you can redistribute it  *
-dnl *    ::::888a  8a ##::.   and/or modify it under the terms of the GNU     *
-dnl *  ::::::::888a88a[]:::   Lesser General Public License as published by   *
-dnl *::8:::::::::SUNDOGa8a::. the Free Software Foundation, either version 2.1*
-dnl *::::::::8::::888:Y8888::                of the License, or (at your      *
-dnl *::::':::88::::888::Y88a::::::::::::...  option) any later version.       *
-dnl *::'::..    .   .....   ..   ...  .                                       *
-dnl * This software is distributed in the hope that it will be useful, but    *
-dnl * WITHOUT ANY WARRANTY; without even the implied warranty of              *
-dnl * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU       *
-dnl * General Public License  for more details.	                              *
-dnl *                                                                         *
-dnl * You should have received a copy of the GNU Lesser General Public        *
-dnl * License along with software; if not, write to the Free Software         *
-dnl * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307    *
-dnl * USA                                                                     *
-dnl *                                                                         *
-dnl * Clan, the Chunky Loop Analyser                                          *
-dnl * Written by Cedric Bastoul, Cedric.Bastoul@inria.fr                      *
-dnl *                                                                         *
-dnl ***************************************************************************/
+dnl  /*+------------------------------------------------------------------**
+dnl   **                       OpenScop Library                           **
+dnl   **------------------------------------------------------------------**
+dnl   **                         configure.in                             **
+dnl   **------------------------------------------------------------------**
+dnl   **                   First version: 30/04/2008                      **
+dnl   **------------------------------------------------------------------**
+dnl
+dnl
+dnl **************************************************************************
+dnl * OpenScop: Structures and formats for polyhedral tools to talk together *
+dnl **************************************************************************
+dnl *   ,___,,_,__,,__,,__,,__,,_,__,,_,__,,__,,___,_,__,,_,__,              *
+dnl *   /   / /  //  //  //  // /   / /  //  //   / /  // /  /|,_,           *
+dnl *  /   / /  //  //  //  // /   / /  //  //   / /  // /  / / /\           *
+dnl * |~~~|~|~~~|~~~|~~~|~~~|~|~~~|~|~~~|~~~|~~~|~|~~~|~|~~~|/_/  \          *
+dnl * | G |C| P | = | L | P |=| = |C| = | = | = |=| = |=| C |\  \ /\         *
+dnl * | R |l| o | = | e | l |=| = |a| = | = | = |=| = |=| L | \# \ /\        *
+dnl * | A |a| l | = | t | u |=| = |n| = | = | = |=| = |=| o | |\# \  \       *
+dnl * | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \      *
+dnl * | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \     *
+dnl * | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \    *
+dnl * | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \   *
+dnl * | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \  *
+dnl * | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \ *
+dnl * | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ / *
+dnl * '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'  *
+dnl *                                                                        *
+dnl * Copyright (C) 2008 University Paris-Sud and INRIA                      *
+dnl *                                                                        *
+dnl * (3-clause BSD license)                                                 *
+dnl * Redistribution and use in source  and binary forms, with or without    *
+dnl * modification, are permitted provided that the following conditions     *
+dnl * are met:                                                               *
+dnl *                                                                        *
+dnl * 1. Redistributions of source code must retain the above copyright      *
+dnl *    notice, this list of conditions and the following disclaimer.       *
+dnl * 2. Redistributions in binary form must reproduce the above copyright   *
+dnl *    notice, this list of conditions and the following disclaimer in the *
+dnl *    documentation and/or other materials provided with the distribution.*
+dnl * 3. The name of the author may not be used to endorse or promote        *
+dnl *    products derived from this software without specific prior written  *
+dnl *    permission.                                                         *
+dnl *                                                                        *
+dnl * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR   *
+dnl * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED         *
+dnl * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE *
+dnl * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,     *
+dnl * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES     *
+dnl * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR     *
+dnl * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)     *
+dnl * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,    *
+dnl * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING  *
+dnl * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE     *
+dnl * POSSIBILITY OF SUCH DAMAGE.                                            *
+dnl *                                                                        *
+dnl * OpenScop Library, a library to manipulate OpenScop formats and data    *
+dnl * structures. Written by:                                                *
+dnl * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                      *
+dnl * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                       *
+dnl *                                                                        *
+dnl **************************************************************************/
 dnl
 dnl Input file for autoconf to build a configuration shellscript.
 
@@ -43,7 +69,7 @@ AC_PREREQ(2.13)
 dnl Fill here the @bug email adress.
 AC_INIT([scoplib], [0.2.0], [cedric.bastoul@inria.fr,pouchet@cse.ohio-state.edu])
 dnl A common file, which serve as a test.
-AC_CONFIG_SRCDIR([include/scoplib/macros.h])
+AC_CONFIG_SRCDIR([include/openscop/macros.h])
 dnl Put as most as possible configuration files to an auxialiry
 dnl directory.
 AC_CONFIG_AUX_DIR([autoconf])
@@ -218,7 +244,7 @@ AC_CONFIG_FILES([
 	doc/Makefile
 	doc/Doxyfile
 	include/Makefile
-	include/scoplib/scop.h
+	include/openscop/scop.h
 	source/Makefile
 	],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > source/stamp-h.in])
@@ -227,8 +253,8 @@ AC_OUTPUT
 
 
 echo "             /*-----------------------------------------------*"
-echo "              *        Clan/Scop configuration is OK          *"
+echo "              *      OpenScop Library configuration is OK     *"
 echo "              *-----------------------------------------------*/"
-echo "It appears that your system is OK to start Clan/Scop compilation. You "
-echo "need now to type \"make\". Lastly type \"make install\" to install Clan "
-echo "on your system (log as root if necessary)."
+echo "It appears that your system is OK to start the OpenScop Library compilation."
+echo "You need now to type \"make\". Then type \"make install\" to install it on your"
+echo "system (log as root if necessary)."

@@ -1,11 +1,12 @@
-* * * * * * 
-* Scoplib * 
-* * * * * *
+* * * * * * * * * * * * * *
+* OpenScop Library  0.3.0 * 
+* * * * * * * * * * * * * *
 
-Version 0.1.0
+Version 0.3.0
 
 Current maintainer: 
-* Louis-Noel Pouchet <louis-noel.pouchet@inria.fr>
+* Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
 
-Author of Scoplib: 
-* Cedric Bastoul <cedric.bastoul@inria.fr>
+Authors of Scoplib: 
+* Cedric Bastoul <cedric.bastoul@u-psud.fr>
+* Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>

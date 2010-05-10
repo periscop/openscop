@@ -1,29 +1,38 @@
 
-   /*+-------------------------------------------------------------------**
-    **                             Scoplib                               **
-    **-------------------------------------------------------------------**
-    **                           relation.h                              **
-    **-------------------------------------------------------------------**
-    **                    First version: 30/04/2008                      **
-    **-------------------------------------------------------------------**
+    /*+-----------------------------------------------------------------**
+     **                       OpenScop Library                          **
+     **-----------------------------------------------------------------**
+     **                           matrix.h                              **
+     **-----------------------------------------------------------------**
+     **                   First version: 30/04/2008                     **
+     **-----------------------------------------------------------------**
 
-    
+ 
  *****************************************************************************
- * Scoplib: Structures and file format for polyhedral tools to talk together *
+ * OpenScop: Structures and formats for polyhedral tools to talk together    *
  *****************************************************************************
- *     ,_,__,,__,,__,,__,,_,__,                                              *
- *    / /  //  //  //  // /  /|,_,         Copyright (C) 2008 University     *
- *   / /  //  //  //  // /  / / /\         Paris-Sud and INRIA               *
- *  |~|~~~|~~~|~~~|~~~|~|~~~|/_/  \                                          *
- *  |C| P | = | L | P |C| C |\  \ /\       (Modified BSD license)            *
- *  |l| o | = | e | l |a| L | \# \ /\                                        *
- *  |a| c | = | t | u |n| o | |\# \  \     Redistribution and use in source  *
- *  |n| c | = | s | t |d| o | | \# \  \    and binary forms, with or without *
- *  | |   |   | e | o |l| G | |  \  \  \   modification, are permitted       *
- *  | |   |   | e |   | |   | |   \  \  \  provided that the following       *
- *  |*| * | * | * | * |*| * | /    \* \  \ conditions are met:               *
- *  |S| C | O | P | L |I| B |/      \  \ /                                   *
- *  '-'---'---'---'---'-'---'        '--'                                    *
+ *    ,___,,_,__,,__,,__,,__,,_,__,,_,__,,__,,___,_,__,,_,__,                *
+ *    /   / /  //  //  //  // /   / /  //  //   / /  // /  /|,_,             *
+ *   /   / /  //  //  //  // /   / /  //  //   / /  // /  / / /\             *
+ *  |~~~|~|~~~|~~~|~~~|~~~|~|~~~|~|~~~|~~~|~~~|~|~~~|~|~~~|/_/  \            *
+ *  | G |C| P | = | L | P |=| = |C| = | = | = |=| = |=| C |\  \ /\           *
+ *  | R |l| o | = | e | l |=| = |a| = | = | = |=| = |=| L | \# \ /\          *
+ *  | A |a| l | = | t | u |=| = |n| = | = | = |=| = |=| o | |\# \  \         *
+ *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
+ *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
+ *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
+ *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
+ *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
+ *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
+ *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
+ *                                                                           *
+ * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ *                                                                           *
+ * (3-clause BSD license)                                                    *
+ * Redistribution and use in source  and binary forms, with or without       *
+ * modification, are permitted provided that the following conditions        *
+ * are met:                                                                  *
  *                                                                           *
  * 1. Redistributions of source code must retain the above copyright notice, *
  *    this list of conditions and the following disclaimer.                  *
@@ -44,15 +53,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF  *
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.         *
  *                                                                           *
+ * OpenScop Library, a library to manipulate OpenScop formats and data       *
+ * structures. Written by:                                                   *
+ * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                         *
+ * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                          *
+ *                                                                           *
  *****************************************************************************/
 
 
-#ifndef SCOPLIB_RELATION_H
-# define SCOPLIB_RELATION_H
+#ifndef SCOPLIB_MATRIX_H
+# define SCOPLIB_MATRIX_H
 
 # include <stdio.h>
-# include <scoplib/macros.h>
-# include <scoplib/vector.h>
+# include <openscop/macros.h>
+# include <openscop/vector.h>
 
 
 # if defined(__cplusplus)
@@ -62,43 +76,44 @@ extern "C"
 
 
 /**
- * The scoplib_relation_t structure stores a union of relations. It is a
- * NULL-terminated linked list of relations. Each relation is described
- * using a matrix where each row represents a linear constraint. The entries
- * of each row are organised in the following order:
- * - An equality/inequality tag: 0 means the row corresponds to an
- *   equality constraint == 0, 1 means it is an inequality >= 0.
- * - The coefficients of the output dimensions.
- * - The coefficients of the input dimensions (0 for a set).
- * - The coefficients of the local (existentially quantified) dimensions.
- * - The coefficients of the parameters.
- * - The coefficient of the constant.
- * Thus we have the following invariant: nb_columns =
- * 1 + nb_output_dims + nb_input_dims + nb_local_dims + nb_parameters + 1.
- * Moreover we use the following conventions:
- * - Sets (e.g., iteration domains) are the images of relations with a
- *   zero-dimensional domain, hence the number of input dimensions is 0.
- * - The first output dimension of any access relations corresponds to
- *   the name of the array.
+ * The scoplib_matrix_t structure stores a matrix information in the PolyLib
+ * format (the first entry of each row has a specific meaning). When a row
+ * describes a linear constraint, a 0 means it is an equality == 0, a 1 means
+ * an inequality >= 0. When a row describes an array access, a number different
+ * than 0 is the array identifier (the remainder of the row describes the
+ * access function of the first dimension of this array), otherwise it means
+ * the row describes access functions for next array dimensions.
  */
-struct scoplib_relation
+struct scoplib_matrix
 {
-  unsigned nb_rows;               /**< The number of rows */
-  unsigned nb_columns;	          /**< The number of columns */
-  unsigned nb_output_dims;        /**< The number of output dimensions */
-  unsigned nb_input_dims;         /**< The number of input dimensions */
-  unsigned nb_local_dims;         /**< The number of local (existentially
-                                       quantified) dimensions */
-  unsigned nb_parameters;         /**< The number of parameters */
-  scoplib_int_t ** m;             /**< An array of pointers to the beginning
-			               of each row of the relation matrix */
-  scoplib_int_t * store;          /**< The relation matrix is stored here,
-                                       contiguously in memory */
-  struct scoplib_relation * next; /**< Pointer to the next relation in the
-                                       union of relations (NULL if none) */
+  unsigned NbRows;       /**< The number of rows */
+  unsigned NbColumns;	 /**< The number of columns */
+  scoplib_int_t ** p;    /**< An array of pointers to the beginning
+			    of each row */
+  scoplib_int_t * p_Init;/**< The matrix is stored here, contiguously
+			    in memory */
+  int p_Init_size;       /**< Needed to free the memory allocated by
+			    mpz_init. */
 };
-typedef struct scoplib_relation   scoplib_relation_t;
-typedef struct scoplib_relation * scoplib_relation_p;
+typedef struct scoplib_matrix   scoplib_matrix_t;
+typedef struct scoplib_matrix * scoplib_matrix_p;
+
+
+/**
+ * The scoplib_matrix_list_t structure describes a (chained) list of
+ * matrices. It is used to store the list of matrices for the
+ * iteration domain of a statement (possibly being a union of
+ * convex domains).
+ *
+ */
+struct scoplib_matrix_list
+{
+  scoplib_matrix_p elt;             /**< An element of the list. */
+  struct scoplib_matrix_list* next; /**< Pointer to the next element
+				       of the list.*/
+};
+typedef struct scoplib_matrix_list	scoplib_matrix_list_t;
+typedef struct scoplib_matrix_list *	scoplib_matrix_list_p;
 
 
 /*+****************************************************************************
@@ -155,4 +170,4 @@ int	scoplib_matrix_equal(scoplib_matrix_p, scoplib_matrix_p);
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define SCOPLIB_RELATION_H */
+#endif /* define SCOPLIB_MATRIX_H */

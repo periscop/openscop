@@ -1,0 +1,144 @@
+
+    /*+-----------------------------------------------------------------**
+     **                       OpenScop Library                          **
+     **-----------------------------------------------------------------**
+     **                            scop.h                               **
+     **-----------------------------------------------------------------**
+     **                   First version: 30/04/2008                     **
+     **-----------------------------------------------------------------**
+
+ 
+ *****************************************************************************
+ * OpenScop: Structures and formats for polyhedral tools to talk together    *
+ *****************************************************************************
+ *    ,___,,_,__,,__,,__,,__,,_,__,,_,__,,__,,___,_,__,,_,__,                *
+ *    /   / /  //  //  //  // /   / /  //  //   / /  // /  /|,_,             *
+ *   /   / /  //  //  //  // /   / /  //  //   / /  // /  / / /\             *
+ *  |~~~|~|~~~|~~~|~~~|~~~|~|~~~|~|~~~|~~~|~~~|~|~~~|~|~~~|/_/  \            *
+ *  | G |C| P | = | L | P |=| = |C| = | = | = |=| = |=| C |\  \ /\           *
+ *  | R |l| o | = | e | l |=| = |a| = | = | = |=| = |=| L | \# \ /\          *
+ *  | A |a| l | = | t | u |=| = |n| = | = | = |=| = |=| o | |\# \  \         *
+ *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
+ *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
+ *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
+ *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
+ *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
+ *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
+ *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
+ *                                                                           *
+ * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ *                                                                           *
+ * (3-clause BSD license)                                                    *
+ * Redistribution and use in source  and binary forms, with or without       *
+ * modification, are permitted provided that the following conditions        *
+ * are met:                                                                  *
+ *                                                                           *
+ * 1. Redistributions of source code must retain the above copyright notice, *
+ *    this list of conditions and the following disclaimer.                  *
+ * 2. Redistributions in binary form must reproduce the above copyright      *
+ *    notice, this list of conditions and the following disclaimer in the    *
+ *    documentation and/or other materials provided with the distribution.   *
+ * 3. The name of the author may not be used to endorse or promote products  *
+ *    derived from this software without specific prior written permission.  *
+ *                                                                           *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR      *
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES *
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.   *
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,          *
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT  *
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, *
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     *
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF  *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.         *
+ *                                                                           *
+ * OpenScop Library, a library to manipulate OpenScop formats and data       *
+ * structures. Written by:                                                   *
+ * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                         *
+ * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                          *
+ *                                                                           *
+ *****************************************************************************/
+
+
+/*+****************************************************************************
+ *  THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM scop.h.in BY configure    *
+ ******************************************************************************/
+
+
+#ifndef SCOPLIB_SCOP_H
+# define SCOPLIB_SCOP_H
+
+# include <unistd.h>
+
+# define SCOPLIB_RELEASE "@PACKAGE_VERSION@"
+# define SCOPLIB_VERSION "@BITS@"
+# ifndef @SCOPLIB_INT_T@
+#  define @SCOPLIB_INT_T@
+# endif
+
+# include <openscop/macros.h>
+# include <openscop/matrix.h>
+# include <openscop/statement.h>
+# include <openscop/vector.h>
+
+
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
+
+
+/**
+ * The scop_t structure stores the useful informations of a static
+ * control part of a program to process it within a polyhedral framework.
+ */
+struct scoplib_scop
+{
+  scoplib_matrix_p context;     /**< Constraints on the SCoP parameters */
+  int nb_parameters;		/**< Number of parameters for the SCoP */
+  char ** parameters;           /**< Array of (nb_parameters) parameter names */
+  int nb_arrays;                /**< Number of arrays accessed in the SCoP */
+  char ** arrays;               /**< Array of (nb_arrays) array names */
+  scoplib_statement_p statement;/**< Statement list of the SCoP */
+  char* optiontags;	        /**< The content (as a 0 terminated
+				   string) of the optional tags. */
+  void* usr;		        /**< A user-defined field, not touched
+				   by scop. */
+};
+typedef struct scoplib_scop   scoplib_scop_t;
+typedef struct scoplib_scop * scoplib_scop_p;
+
+
+/*+****************************************************************************
+ *                          Structure display function                        *
+ ******************************************************************************/
+void    scoplib_scop_print_structure(FILE *, scoplib_scop_p, int);
+void    scoplib_scop_print(FILE *, scoplib_scop_p);
+void    scoplib_scop_print_dot_scop(FILE *, scoplib_scop_p);
+void	scoplib_scop_print_dot_scop_options(FILE * file, scoplib_scop_p scop,
+					    int options);
+
+
+/******************************************************************************
+ *                               Reading function                             *
+ ******************************************************************************/
+scoplib_scop_p	scoplib_scop_read(FILE *);
+char*		scoplib_scop_tag_content(scoplib_scop_p, char*, char*);
+char*		scoplib_scop_tag_content_from_string(char*, char*, char*);
+
+
+/*+****************************************************************************
+ *                    Memory allocation/deallocation function                 *
+ ******************************************************************************/
+scoplib_scop_p	scoplib_scop_malloc();
+void		scoplib_scop_free(scoplib_scop_p);
+scoplib_scop_p	scoplib_scop_dup(scoplib_scop_p);
+
+
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define SCOPLIB_SCOP_H */
