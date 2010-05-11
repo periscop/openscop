@@ -80,6 +80,7 @@ extern "C"
  */
 struct openscop_statement
 {
+  int version;                /**< Version of the data structure */
   openscop_matrix_p domain;   /**< Iteration domain of the statement */
   openscop_matrix_p schedule; /**< Scheduling function for the statement */
   openscop_matrix_p read;     /**< Array read access informations */
@@ -87,6 +88,8 @@ struct openscop_statement
   int nb_iterators;           /**< Original depth of the statement */
   char ** iterators;          /**< Array of (nb_iterators) iterator names */
   char * body;                /**< Original statement body */
+  void * usr;                 /**< A user-defined field, not touched
+				   by the OpenScop Library. */
   struct openscop_statement * next; /**< Next statement in the linked list */
 };
 typedef struct openscop_statement   openscop_statement_t;

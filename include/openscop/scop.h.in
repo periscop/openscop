@@ -95,12 +95,14 @@ extern "C"
  */
 struct openscop_scop
 {
-  int version;                    /**< Specifies the version of the SCoP
-				       data structure. */
+  int version;                    /**< Version of the data structure */
   openscop_matrix_p context;      /**< Constraints on the SCoP parameters */
   int nb_parameters;              /**< Number of parameters for the SCoP */
-  char ** parameters;             /**< Array of (nb_parameters) parameter names */
+  int nb_scattdims;               /**< Number (max) of scattering dimensions */
   int nb_arrays;                  /**< Number of arrays accessed in the SCoP */
+  char ** parameters;             /**< Array of (nb_parameters) param names */
+  char ** scattdims;              /**< Array of (nb_scattdims) scattering 
+                                       dimension names */
   char ** arrays;                 /**< Array of (nb_arrays) array names */
   openscop_statement_p statement; /**< Statement list of the SCoP */
   char * optiontags;              /**< The content (as a 0 terminated
