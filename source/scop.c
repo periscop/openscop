@@ -21,13 +21,13 @@
  *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
  *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
  *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
  *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
  *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -811,8 +811,7 @@ openscop_scop_dup(openscop_scop_p scop)
   for (stm = scop->statement; stm; stm = stm->next)
     {
       openscop_statement_p newstm = openscop_statement_malloc();
-      newstm->domain = openscop_matrix_list_malloc();
-      newstm->domain->elt = openscop_matrix_copy(stm->domain->elt);
+      newstm->domain = openscop_matrix_copy(stm->domain);
       newstm->schedule = openscop_matrix_copy(stm->schedule);
       newstm->read = openscop_matrix_copy(stm->read);
       newstm->write = openscop_matrix_copy(stm->write);

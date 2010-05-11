@@ -21,13 +21,13 @@ dnl * | A |a| l | = | t | u |=| = |n| = | = | = |=| = |=| o | |\# \  \       *
 dnl * | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \      *
 dnl * | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \     *
 dnl * | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \    *
-dnl * | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \   *
+dnl * | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \   *
 dnl * | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \  *
 dnl * | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \ *
 dnl * | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ / *
 dnl * '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'  *
 dnl *                                                                        *
-dnl * Copyright (C) 2008 University Paris-Sud and INRIA                      *
+dnl * Copyright (C) 2008 University Paris-Sud 11 and INRIA                   *
 dnl *                                                                        *
 dnl * (3-clause BSD license)                                                 *
 dnl * Redistribution and use in source  and binary forms, with or without    *

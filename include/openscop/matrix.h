@@ -21,13 +21,13 @@
  *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
  *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
  *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
  *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
  *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -86,86 +86,57 @@ extern "C"
  */
 struct openscop_matrix
 {
-  unsigned NbRows;       /**< The number of rows */
-  unsigned NbColumns;	 /**< The number of columns */
-  openscop_int_t ** p;    /**< An array of pointers to the beginning
-			    of each row */
-  openscop_int_t * p_Init;/**< The matrix is stored here, contiguously
-			    in memory */
-  int p_Init_size;       /**< Needed to free the memory allocated by
-			    mpz_init. */
+  unsigned NbRows;         /**< The number of rows */
+  unsigned NbColumns;	   /**< The number of columns */
+  openscop_int_t ** p;     /**< An array of pointers to the beginning
+			        of each row */
+  openscop_int_t * p_Init; /**< The matrix is stored here, contiguously
+			        in memory */
+  int p_Init_size;         /**< Needed to free the memory allocated by
+			        mpz_init. */
 };
 typedef struct openscop_matrix   openscop_matrix_t;
 typedef struct openscop_matrix * openscop_matrix_p;
 
 
-/**
- * The openscop_matrix_list_t structure describes a (chained) list of
- * matrices. It is used to store the list of matrices for the
- * iteration domain of a statement (possibly being a union of
- * convex domains).
- *
- */
-struct openscop_matrix_list
-{
-  openscop_matrix_p elt;             /**< An element of the list. */
-  struct openscop_matrix_list* next; /**< Pointer to the next element
-				       of the list.*/
-};
-typedef struct openscop_matrix_list	openscop_matrix_list_t;
-typedef struct openscop_matrix_list *	openscop_matrix_list_p;
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void openscop_matrix_print_structure(FILE *, openscop_matrix_p, int);
+void openscop_matrix_print(FILE *, openscop_matrix_p);
+void openscop_matrix_print_dot_scop(FILE *, openscop_matrix_p, int,
+				    int, char **, int, char **, int, char **);
 
 
-/*+****************************************************************************
- *                          Structure display function                        *
- ******************************************************************************/
-void          openscop_matrix_print_structure(FILE *, openscop_matrix_p, int);
-void          openscop_matrix_print(FILE *, openscop_matrix_p);
-void          openscop_matrix_print_dot_scop(FILE *, openscop_matrix_p, int,
-					    int, char **, int, char **,
-					    int, char **);
-
-void          openscop_matrix_list_print_structure(FILE *,
-						  openscop_matrix_list_p, int);
-void          openscop_matrix_list_print(FILE *, openscop_matrix_list_p);
-void          openscop_matrix_list_print_dot_scop(FILE *, openscop_matrix_list_p,
-						 int, int, char **, int,
-						 char **, int, char **);
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+openscop_matrix_p openscop_matrix_read(FILE *);
+openscop_matrix_p openscop_matrix_read_arrays(FILE *, char ***, int *);
 
 
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
-openscop_matrix_p	openscop_matrix_read(FILE *);
-openscop_matrix_list_p	openscop_matrix_list_read(FILE *);
-openscop_matrix_p	openscop_matrix_read_arrays(FILE *, char ***, int *);
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+openscop_matrix_p openscop_matrix_malloc(unsigned, unsigned);
+void              openscop_matrix_free_inside(openscop_matrix_p);
+void              openscop_matrix_free(openscop_matrix_p);
 
 
-/*+****************************************************************************
- *                    Memory allocation/deallocation function                 *
- ******************************************************************************/
-openscop_matrix_p	openscop_matrix_malloc(unsigned, unsigned);
-void			openscop_matrix_free_inside(openscop_matrix_p);
-void			openscop_matrix_free(openscop_matrix_p);
-
-openscop_matrix_list_p	openscop_matrix_list_malloc();
-void			openscop_matrix_list_free(openscop_matrix_list_p);
-
-
-/*+****************************************************************************
- *                            Processing functions                            *
- ******************************************************************************/
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
 openscop_matrix_p openscop_matrix_ncopy(openscop_matrix_p, int);
 openscop_matrix_p openscop_matrix_copy(openscop_matrix_p);
-void	openscop_matrix_replace_vector(openscop_matrix_p, openscop_vector_p, int);
-void    openscop_matrix_insert_vector(openscop_matrix_p, openscop_vector_p, int);
-void	openscop_matrix_add_vector(openscop_matrix_p, openscop_vector_p, int);
-void	openscop_matrix_sub_vector(openscop_matrix_p, openscop_vector_p, int);
-openscop_matrix_p openscop_matrix_from_vector(openscop_vector_p);
-void    openscop_matrix_replace_matrix(openscop_matrix_p, openscop_matrix_p, int);
-void    openscop_matrix_insert_matrix(openscop_matrix_p, openscop_matrix_p, int);
 openscop_matrix_p openscop_matrix_concat(openscop_matrix_p, openscop_matrix_p);
-int	openscop_matrix_equal(openscop_matrix_p, openscop_matrix_p);    
+openscop_matrix_p openscop_matrix_from_vector(openscop_vector_p);
+void openscop_matrix_replace_vector(openscop_matrix_p, openscop_vector_p, int);
+void openscop_matrix_insert_vector(openscop_matrix_p, openscop_vector_p, int);
+void openscop_matrix_add_vector(openscop_matrix_p, openscop_vector_p, int);
+void openscop_matrix_sub_vector(openscop_matrix_p, openscop_vector_p, int);
+void openscop_matrix_replace_matrix(openscop_matrix_p, openscop_matrix_p, int);
+void openscop_matrix_insert_matrix(openscop_matrix_p, openscop_matrix_p, int);
+int  openscop_matrix_equal(openscop_matrix_p, openscop_matrix_p);    
     
 # if defined(__cplusplus)
   }

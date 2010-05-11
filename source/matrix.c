@@ -21,13 +21,13 @@
  *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
  *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
  *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
  *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
  *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -68,9 +68,9 @@
 # include <openscop/matrix.h>
 
 
-/*+****************************************************************************
- *                          Structure display function                        *
- ******************************************************************************/
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
 
 
 /**
@@ -83,11 +83,10 @@
  * \param file   File where informations are printed.
  * \param matrix The matrix whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
- **
- * - 30/04/2008: first version (from CLooG 0.14.0).
  */
 void
-openscop_matrix_print_structure(FILE * file, openscop_matrix_p matrix, int level)
+openscop_matrix_print_structure(FILE * file, openscop_matrix_p matrix,
+                                int level)
 {
   int i, j;
 
@@ -136,8 +135,6 @@ openscop_matrix_print_structure(FILE * file, openscop_matrix_p matrix, int level
  * (*matrix) into a file (file, possibly stdout).
  * \param file   File where informations are printed.
  * \param matrix The matrix whose information have to be printed.
- **
- * - 30/04/2008: first version (from CLooG 0.14.0).
  */
 void
 openscop_matrix_print(FILE * file, openscop_matrix_p matrix)
@@ -156,8 +153,6 @@ openscop_matrix_print(FILE * file, openscop_matrix_p matrix)
  *              of an expresion, 0 otherwise (this function may update it).
  * \param cst   A boolean set to 1 if the value is a constant, 0 otherwise.
  * \param name  String containing the name of the iterator or of the parameter.
- **
- * - 03/05/2008: first version (from CLooG 0.14.0, glorious pprint_val).
  */
 static
 char *
@@ -240,8 +235,6 @@ openscop_matrix_expression_element(openscop_int_t val, int * first, int cst,
  * \param iterators     An array containing iterator names for the statement.
  * \param nb_parameters The number of parameters in the SCoP.
  * \param parameters    An array containing all parameters names.
- **
- * - 03/05/2008: first version (from CLooG 0.14.0, glorious pprint_val).
  */
 static
 char *
@@ -288,15 +281,13 @@ openscop_matrix_expression(openscop_matrix_p matrix, int row,
  * (*matrix) into a file (file, possibly stdout) for the .scop format.
  * \param file          File where informations are printed.
  * \param matrix        The matrix whose information have to be printed.
- * \param type          A bit of semantic about this matrix (domain, access...).
+ * \param type          Semantic about this matrix (domain, access...).
  * \param nb_iterators  The number of iterators for the considered statement.
  * \param iterators     An array containing iterator names for the statement.
  * \param nb_parameters The number of parameters in the SCoP.
  * \param parameters    An array containing all parameters names.
  * \param nb_arrays     The number of arrays accessed in the SCoP.
  * \param arrays        An array containing all accessed array names.
- **
- * - 02/05/2008: first version.
  */
 void
 openscop_matrix_print_dot_scop(FILE * file, openscop_matrix_p matrix, int type,
@@ -371,139 +362,15 @@ openscop_matrix_print_dot_scop(FILE * file, openscop_matrix_p matrix, int type,
 }
 
 
-/**
- * openscop_matrix_list_print_structure function:
- * Displays a openscop_matrix_list_t structure (a list of matrices) into a
- * file (file, possibly stdout). See openscop_matrix_print_structure for
- * more details.
- * \param file   File where informations are printed.
- * \param l	 The list of matrices whose information have to be printed.
- * \param level  Number of spaces before printing, for each line.
- */
-void
-openscop_matrix_list_print_structure(FILE * file, openscop_matrix_list_p l,
-				    int level)
-{
-  int j, first = 1;
-
-  /* Go to the right level. */
-  for (j = 0; j < level; j++)
-    fprintf(file,"|\t");
-
-  if (l != NULL)
-    fprintf(file,"+-- openscop_matrix_list_t\n");
-  else
-    fprintf(file,"+-- NULL matrix list\n");
-
-  while (l != NULL)
-  {
-    if (!first)
-    {
-      /* Go to the right level. */
-      for (j = 0; j < level; j++)
-        fprintf(file,"|\t");
-      fprintf(file,"|   openscop_matrix_list_t\n");
-    }
-    else
-      first = 0;
-
-    /* A blank line. */
-    for (j = 0; j <= level+1; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"\n");
-
-    /* Print a matrix. */
-    openscop_matrix_print_structure(file,l->elt,level+1);
-
-    l = l->next;
-
-    /* Next line. */
-    if (l != NULL)
-    {
-      for (j = 0; j <= level; j++)
-        fprintf(file,"|\t");
-      fprintf(file,"V\n");
-    }
-  }
-
-  /* The last line. */
-  for (j = 0; j <= level; j++)
-    fprintf(file,"|\t");
-  fprintf(file,"\n");
-}
-
-
-/**
- * openscop_matrix_list_print function:
- * This function prints the content of a openscop_matrix_list_t into
- * a file (file, possibly stdout).
- * \param file   File where informations are printed.
- * \param list The matrix whose information have to be printed.
- **
- * - 30/04/2008: first version (from CLooG 0.14.0).
- */
-void
-openscop_matrix_list_print(FILE * file, openscop_matrix_list_p list)
-{
-  openscop_matrix_list_print_structure(file, list, 0);
-}
-
-
-/**
- * openscop_matrix_list_print_dot_scop function:
- * This function prints the content of a openscop_matrix_list_t structure into
- * a file (file, possibly stdout) for the .scop format.
- * \param file          File where informations are printed.
- * \param list          The matrix list whose information have to be printed.
- * \param type          A bit of semantic about this matrix (domain, access...).
- * \param nb_iterators  The number of iterators for the considered statement.
- * \param iterators     An array containing iterator names for the statement.
- * \param nb_parameters The number of parameters in the SCoP.
- * \param parameters    An array containing all parameters names.
- * \param nb_arrays     The number of arrays accessed in the SCoP.
- * \param arrays        An array containing all accessed array names.
- */
-void
-openscop_matrix_list_print_dot_scop(FILE * file, openscop_matrix_list_p list,
-				   int type,
-				   int nb_iterators,  char ** iterators,
-				   int nb_parameters, char ** parameters,
-				   int nb_arrays,     char ** arrays)
-{
-  int i;
-  openscop_matrix_list_p head = list;
-
-  /* Count the number of elements in the list. */
-  for (i = 0; list; list = list->next, i++)
-    ;
-  /* Print it. */
-  fprintf(file,"%d\n", i);
-  /* Print each element of the matrix list. */
-  while (head)
-  {
-    openscop_matrix_print_dot_scop(file, head->elt, type,
-				  nb_iterators, iterators,
-				  nb_parameters, parameters,
-				  nb_arrays, arrays);
-    head = head->next;
-  }
-}
-
-
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
 
 
 /**
  * openscop_matrix_read function:
  * Adaptation from the PolyLib. This function reads a matrix into a file (foo,
  * posibly stdin) and returns a pointer this matrix.
- * October 18th 2001: first version.
- * - April 17th 2005: this function moved from domain.c to here.
- * - June  21rd 2005: Adaptation for GMP (based on S. Verdoolaege's version of
- *                    CLooG 0.12.1).
- * - July 9th 2008: Grabbed from CLooG and adapted for Scoplib.
  */
 openscop_matrix_p
 openscop_matrix_read(FILE* foo)
@@ -562,42 +429,6 @@ openscop_matrix_read(FILE* foo)
     }
 
   return matrix;
-}
-
-
-/**
- * openscop_matrix_list_read function:
- * This function reads a list of matrices into a file (foo,
- * posibly stdin) and returns a pointer this matrix list.
- * \param file   File where informations are stored.
- */
-openscop_matrix_list_p
-openscop_matrix_list_read(FILE* file)
-{
-  char s[OPENSCOP_MAX_STRING];
-  int i;
-  openscop_matrix_list_p list;
-  openscop_matrix_list_p res;
-  int nb_mat;
-
-  /* Skip blank/commented lines. */
-  while (fgets(s, OPENSCOP_MAX_STRING, file) == 0 || s[0] == '#' ||
-	 isspace(s[0]))
-    ;
-  /* Read the number of matrices to read. */
-  sscanf(s, "%d", &nb_mat);
-
-  /* Allocate the header of the list. */
-  res = list = openscop_matrix_list_malloc();
-  for (i = 0; i < nb_mat; ++i)
-    {
-      list->elt = openscop_matrix_read(file);
-      if (i < nb_mat - 1)
-	list->next = openscop_matrix_list_malloc();
-      list = list->next;
-    }
-
-  return res;
 }
 
 
@@ -702,8 +533,6 @@ openscop_matrix_read_arrays(FILE* foo, char*** arrays, int* nb_arr)
  * allocated space.
  * \param NbRows    The number of row of the matrix to allocate.
  * \param NbColumns The number of columns of the matrix to allocate.
- **
- * - 30/04/2008: first version (from PipLib 1.4.0).
  */
 openscop_matrix_p
 openscop_matrix_malloc(unsigned NbRows, unsigned NbColumns)
@@ -759,8 +588,6 @@ openscop_matrix_malloc(unsigned NbRows, unsigned NbColumns)
  * This function frees the allocated memory for the inside of a
  * openscop_matrix_t structure, i.e. only p and p_Init.
  * \param matrix The pointer to the matrix we want to free.
- **
- * - 02/05/2008: first version.
  */
 void
 openscop_matrix_free_inside(openscop_matrix_p matrix)
@@ -787,9 +614,6 @@ openscop_matrix_free_inside(openscop_matrix_p matrix)
  * openscop_matrix_free function:
  * This function frees the allocated memory for a openscop_matrix_t structure.
  * \param matrix The pointer to the matrix we want to free.
- **
- * - 30/04/2008: first version.
- * - 02/05/2008: now uses openscop_matrix_free_inside.
  */
 void
 openscop_matrix_free(openscop_matrix_p matrix)
@@ -799,57 +623,6 @@ openscop_matrix_free(openscop_matrix_p matrix)
 
   openscop_matrix_free_inside(matrix);
   free(matrix);
-}
-
-
-/**
- * openscop_matrix_list_malloc function:
- * This function allocates the memory space for a openscop_matrix_list_t
- * structure and sets its fields with default values. Then it returns
- * a pointer to the allocated space.
- */
-openscop_matrix_list_p
-openscop_matrix_list_malloc()
-{
-  openscop_matrix_list_p res =
-    (openscop_matrix_list_p) malloc(sizeof(openscop_matrix_list_t));
-
-  if (res == NULL)
-    {
-      fprintf(stderr, "[Scoplib] Memory Overflow.\n");
-      exit(1);
-    }
-
-  res->elt = NULL;
-  res->next = NULL;
-
-  return res;
-}
-
-
-
-/**
- * openscop_matrix_list_free function:
- * This function frees the allocated memory for a openscop_matrix_list_t
- * structure, and all the matrices stored in the list.
- * \param list The pointer to the matrix list we want to free.
- */
-void
-openscop_matrix_list_free(openscop_matrix_list_p list)
-{
-  openscop_matrix_list_p tmp;
-
-  if (list == NULL)
-    return;
-
-  while (list)
-    {
-      if (list->elt)
-	openscop_matrix_free(list->elt);
-      tmp = list->next;
-      free(list);
-      list = tmp;
-    }
 }
 
 
@@ -865,8 +638,6 @@ openscop_matrix_list_free(openscop_matrix_list_p list)
  * first rows of the matrix.
  * \param matrix The pointer to the matrix we want to copy.
  * \param n      The number of row of the matrix we want to copy.
- **
- * - 02/05/2008: first version.
  */
 openscop_matrix_p
 openscop_matrix_ncopy(openscop_matrix_p matrix, int n)
@@ -895,12 +666,9 @@ openscop_matrix_ncopy(openscop_matrix_p matrix, int n)
 
 /**
  * openscop_matrix_copy function:
- * this functions builds and returns a "hard copy" (not a pointer copy) of a
+ * this function builds and returns a "hard copy" (not a pointer copy) of a
  * openscop_matrix_t data structure.
  * \param matrix The pointer to the matrix we want to copy.
- **
- * - 30/04/2008: first version (from CLooG 0.14.0).
- * - 02/05/2008: no uses openscop_matrix_ncopy.
  */
 openscop_matrix_p
 openscop_matrix_copy(openscop_matrix_p matrix)
@@ -919,12 +687,10 @@ openscop_matrix_copy(openscop_matrix_p matrix)
  * \param matrix The matrix we want to change a row.
  * \param vector The vector that will replace a row of the matrix.
  * \param row    The row of the matrix to be replaced.
- **
- * - 02/05/2008: first version.
  */
 void
-openscop_matrix_replace_vector(openscop_matrix_p matrix, openscop_vector_p vector,
-			      int row)
+openscop_matrix_replace_vector(openscop_matrix_p matrix,
+                               openscop_vector_p vector, int row)
 {
   int i;
 
@@ -948,8 +714,6 @@ openscop_matrix_replace_vector(openscop_matrix_p matrix, openscop_vector_p vecto
  * \param matrix The matrix we want to change a row.
  * \param vector The vector that will replace a row of the matrix.
  * \param row    The row of the matrix to be replaced.
- **
- * - 08/28/2008: first version.
  */
 void
 openscop_matrix_add_vector(openscop_matrix_p matrix, openscop_vector_p vector,
@@ -979,8 +743,6 @@ openscop_matrix_add_vector(openscop_matrix_p matrix, openscop_vector_p vector,
  * \param matrix The matrix we want to change a row.
  * \param vector The vector that will replace a row of the matrix.
  * \param row    The row of the matrix to be replaced.
- **
- * - 08/28/2008: first version.
  */
 void
 openscop_matrix_sub_vector(openscop_matrix_p matrix, openscop_vector_p vector,
@@ -1012,8 +774,6 @@ openscop_matrix_sub_vector(openscop_matrix_p matrix, openscop_vector_p vector,
  * \param matrix The matrix we want to extend.
  * \param vector The vector that will be added matrix.
  * \param row The row where to insert the vector.
- **
- * - 02/05/2008: first version.
  */
 void
 openscop_matrix_insert_vector(openscop_matrix_p matrix, openscop_vector_p vector,
@@ -1062,8 +822,6 @@ openscop_matrix_insert_vector(openscop_matrix_p matrix, openscop_vector_p vector
  * this function converts a vector "vector" to a matrix with a single row
  * and returns a pointer to that matrix.
  * \param vector The vector to convert to a matrix.
- **
- * - 02/05/2008: first version.
  */
 openscop_matrix_p
 openscop_matrix_from_vector(openscop_vector_p vector)
@@ -1087,8 +845,6 @@ openscop_matrix_from_vector(openscop_vector_p vector)
  * \param m1  The matrix we want to change some row1.
  * \param m2  The matrix containing the new rows.
  * \param row The first row of the matrix m1 to be replaced.
- **
- * - 02/05/2008: first version.
  */
 void
 openscop_matrix_replace_matrix(openscop_matrix_p m1, openscop_matrix_p m2, int row)
@@ -1118,8 +874,6 @@ openscop_matrix_replace_matrix(openscop_matrix_p m1, openscop_matrix_p m2, int r
  * \param m1  The matrix we want to extend.
  * \param m2  The matrix to be inserted.
  * \param row The row where to insert the matrix
- **
- * - 02/05/2008: first version.
  */
 void
 openscop_matrix_insert_matrix(openscop_matrix_p m1, openscop_matrix_p m2, int row)
@@ -1169,8 +923,6 @@ openscop_matrix_insert_matrix(openscop_matrix_p m1, openscop_matrix_p m2, int ro
  * two other matrices sent as parameters.
  * \param m1  The first matrix.
  * \param m2  The second matrix.
- **
- * - 02/05/2008: first version.
  */
 openscop_matrix_p
 openscop_matrix_concat(openscop_matrix_p m1, openscop_matrix_p m2)

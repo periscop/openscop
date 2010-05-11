@@ -21,13 +21,13 @@
  *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
  *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
  *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
  *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
  *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -68,9 +68,9 @@
 # include <openscop/statement.h>
 
 
-/*+****************************************************************************
- *                         Structure display functions                        *
- ******************************************************************************/
+/*+***************************************************************************
+ *                         Structure display functions                       *
+ *****************************************************************************/
 
 
 /**
@@ -83,8 +83,6 @@
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
  * \param level     Number of spaces before printing, for each line.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
@@ -118,7 +116,7 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
     fprintf(file,"\n");
 
     /* Print the domain of the statement. */
-    openscop_matrix_list_print_structure(file,statement->domain,level+1);
+    openscop_matrix_print_structure(file,statement->domain,level+1);
 
     /* Print the schedule of the statement. */
     openscop_matrix_print_structure(file,statement->schedule,level+1);
@@ -155,9 +153,6 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
     else
       fprintf(file,"+-- No original body\n");
 
-    /* Print the control and exit predicates associated to the statement. */
-    /** @FIXME: do it! */
-
     /* A blank line. */
     for (i = 0; i <= level+1; i++)
       fprintf(file,"|\t");
@@ -188,8 +183,6 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
  * (*statement) into  a file (file, possibly stdout).
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_statement_print(FILE * file, openscop_statement_p statement)
@@ -208,8 +201,6 @@ openscop_statement_print(FILE * file, openscop_statement_p statement)
  * \param parameters    An array containing all parameters names.
  * \param nb_arrays     The number of arrays accessed in the SCoP.
  * \param arrays        An array containing all accessed array names.
- **
- * - 02/05/2008: first version.
  */
 void
 openscop_statement_print_dot_scop(FILE * file, openscop_statement_p statement,
@@ -226,12 +217,12 @@ openscop_statement_print_dot_scop(FILE * file, openscop_statement_p statement,
     fprintf(file,"# ---------------------------------------------- ");
     fprintf(file,"%2d.1 Domain\n",number);
     fprintf(file,"# Iteration domain\n");
-    openscop_matrix_list_print_dot_scop(file, statement->domain,
-				       OPENSCOP_TYPE_DOMAIN,
-				       statement->nb_iterators,
-				       statement->iterators,
-				       nb_parameters,parameters,
-				       nb_arrays,arrays);
+    openscop_matrix_print_dot_scop(file, statement->domain,
+				   OPENSCOP_TYPE_DOMAIN,
+				   statement->nb_iterators,
+				   statement->iterators,
+				   nb_parameters,parameters,
+				   nb_arrays,arrays);
     fprintf(file,"\n");
 
     fprintf(file,"# ---------------------------------------------- ");
@@ -286,9 +277,9 @@ openscop_statement_print_dot_scop(FILE * file, openscop_statement_p statement,
 
 
 
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
 
 /**
  * Internal function. Read 'nb_strings' strings on the input 'file'.
@@ -364,7 +355,7 @@ char**	    openscop_scop_generate_names(char*, int);
  * \param nb_arr	The size of the array parameter
  */
 openscop_statement_p
-openscop_statement_read (FILE* file, int nb_parameters, char*** arrays,
+openscop_statement_read(FILE* file, int nb_parameters, char*** arrays,
 			int* nb_arr)
 {
   openscop_statement_p stmt = openscop_statement_malloc();
@@ -373,7 +364,7 @@ openscop_statement_read (FILE* file, int nb_parameters, char*** arrays,
   if (file)
     {
       /* Read the domain matrices. */
-      stmt->domain = openscop_matrix_list_read(file);
+      stmt->domain = openscop_matrix_read(file);
 
       /* Read the scattering, if any. */
       if (openscop_statement_read_int(file) > 0)
@@ -386,7 +377,7 @@ openscop_statement_read (FILE* file, int nb_parameters, char*** arrays,
 	  stmt->write = openscop_matrix_read_arrays(file, arrays, nb_arr);
 	}
 
-      stmt->nb_iterators = stmt->domain->elt->NbColumns - 2 - nb_parameters;
+      stmt->nb_iterators = stmt->domain->NbColumns - 2 - nb_parameters;
       /* Read the body information, if any. */
       if (openscop_statement_read_int(file) > 0)
 	{
@@ -409,18 +400,16 @@ openscop_statement_read (FILE* file, int nb_parameters, char*** arrays,
 }
 
 
-/*+****************************************************************************
- *                   Memory allocation/deallocation functions                 *
- ******************************************************************************/
+/*+**************************************************************************
+ *                   Memory allocation/deallocation functions               *
+ ****************************************************************************/
 
 
 /**
  * openscop_statement_malloc function:
- * This function allocates the memory space for a openscop_statement_t structure
- * and sets its fields with default values. Then it returns a pointer to the
- * allocated space.
- **
- * - 30/04/2008: first version.
+ * This function allocates the memory space for a openscop_statement_t
+ * structure and sets its fields with default values. Then it returns a pointer
+ * to the allocated space.
  */
 openscop_statement_p
 openscop_statement_malloc()
@@ -443,23 +432,15 @@ openscop_statement_malloc()
   statement->body      = NULL;
   statement->next      = NULL;
 
-
-  /* Non-static code support specifics. */
-  statement->exit_predicates		= NULL;
-  statement->nb_exit_predicates		= 0;
-  statement->control_predicates		= NULL;
-  statement->nb_control_predicates	= 0;
-
   return statement;
 }
 
 
 /**
  * openscop_statement_free function:
- * This function frees the allocated memory for a openscop_statement_t structure.
+ * This function frees the allocated memory for a openscop_statement_t
+ * structure.
  * \param statement The pointer to the statement we want to free.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_statement_free(openscop_statement_p statement)
@@ -470,7 +451,7 @@ openscop_statement_free(openscop_statement_p statement)
   while (statement != NULL)
   {
     next = statement->next;
-    openscop_matrix_list_free(statement->domain);
+    openscop_matrix_free(statement->domain);
     openscop_matrix_free(statement->schedule);
     openscop_matrix_free(statement->read);
     openscop_matrix_free(statement->write);
@@ -483,21 +464,15 @@ openscop_statement_free(openscop_statement_p statement)
     if (statement->body != NULL)
       free(statement->body);
 
-    /* Non-static code support specifics. */
-    if (statement->exit_predicates != NULL)
-      free(statement->exit_predicates);
-    if (statement->control_predicates != NULL)
-      free(statement->control_predicates);
-
     free(statement);
     statement = next;
   }
 }
 
 
-/*+****************************************************************************
- *                            Processing functions                            *
- ******************************************************************************/
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
 
 
 /**
@@ -506,8 +481,6 @@ openscop_statement_free(openscop_statement_p statement)
  * list pointed by "location".
  * \param location  Address of the first element of the statement list.
  * \param statement The statement to add to the list.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_statement_add(openscop_statement_p * location,
@@ -526,8 +499,6 @@ openscop_statement_add(openscop_statement_p * location,
  * This function returns the number of statements in the statement list
  * provided as parameter.
  * \param statement The first element of the statement list.
- **
- * - 03/05/2008: first version.
  */
 int
 openscop_statement_number(openscop_statement_p statement)

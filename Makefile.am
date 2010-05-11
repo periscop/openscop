@@ -21,13 +21,13 @@
 # * | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \       *
 # * | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \      *
 # * | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \     *
-# * | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \    *
+# * | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \    *
 # * | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \   *
 # * | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \  *
 # * | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /  *
 # * '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'   *
 # *                                                                         *
-# * Copyright (C) 2008 University Paris-Sud and INRIA                       *
+# * Copyright (C) 2008 University Paris-Sud 11 and INRIA                    *
 # *                                                                         *
 # * (3-clause BSD license)                                                  *
 # * Redistribution and use in source  and binary forms, with or without     *

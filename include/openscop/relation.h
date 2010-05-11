@@ -21,13 +21,13 @@
  *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
  *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
  *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
  *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
  *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -97,74 +97,73 @@ extern "C"
  */
 struct openscop_relation
 {
-  unsigned nb_rows;               /**< The number of rows */
-  unsigned nb_columns;	          /**< The number of columns */
-  unsigned nb_output_dims;        /**< The number of output dimensions */
-  unsigned nb_input_dims;         /**< The number of input dimensions */
-  unsigned nb_local_dims;         /**< The number of local (existentially
-                                       quantified) dimensions */
-  unsigned nb_parameters;         /**< The number of parameters */
+  unsigned nb_rows;                /**< The number of rows */
+  unsigned nb_columns;	           /**< The number of columns */
+  unsigned nb_output_dims;         /**< The number of output dimensions */
+  unsigned nb_input_dims;          /**< The number of input dimensions */
+  unsigned nb_local_dims;          /**< The number of local (existentially
+                                        quantified) dimensions */
+  unsigned nb_parameters;          /**< The number of parameters */
   openscop_int_t ** m;             /**< An array of pointers to the beginning
-			               of each row of the relation matrix */
+			                of each row of the relation matrix */
   openscop_int_t * store;          /**< The relation matrix is stored here,
-                                       contiguously in memory */
+                                        contiguously in memory */
   struct openscop_relation * next; /**< Pointer to the next relation in the
-                                       union of relations (NULL if none) */
+                                        union of relations (NULL if none) */
 };
 typedef struct openscop_relation   openscop_relation_t;
 typedef struct openscop_relation * openscop_relation_p;
 
 
-/*+****************************************************************************
- *                          Structure display function                        *
- ******************************************************************************/
-void          openscop_matrix_print_structure(FILE *, openscop_matrix_p, int);
-void          openscop_matrix_print(FILE *, openscop_matrix_p);
-void          openscop_matrix_print_dot_scop(FILE *, openscop_matrix_p, int,
-					    int, char **, int, char **,
-					    int, char **);
-
-void          openscop_matrix_list_print_structure(FILE *,
-						  openscop_matrix_list_p, int);
-void          openscop_matrix_list_print(FILE *, openscop_matrix_list_p);
-void          openscop_matrix_list_print_dot_scop(FILE *, openscop_matrix_list_p,
-						 int, int, char **, int,
-						 char **, int, char **);
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void                openscop_relation_print_structure(FILE *,
+                                        openscop_relation_p, int);
+void                openscop_relation_print(FILE *, openscop_relation_p);
+void                openscop_relation_print_dot_scop(FILE *,
+                                        openscop_relation_p, int,
+				        int, char **, int, char **,
+				        int, char **);
 
 
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
-openscop_matrix_p	openscop_matrix_read(FILE *);
-openscop_matrix_list_p	openscop_matrix_list_read(FILE *);
-openscop_matrix_p	openscop_matrix_read_arrays(FILE *, char ***, int *);
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+openscop_relation_p openscop_relation_read(FILE *);
+openscop_relation_p openscop_relation_read_arrays(FILE *, char ***, int *);
 
 
-/*+****************************************************************************
- *                    Memory allocation/deallocation function                 *
- ******************************************************************************/
-openscop_matrix_p	openscop_matrix_malloc(unsigned, unsigned);
-void			openscop_matrix_free_inside(openscop_matrix_p);
-void			openscop_matrix_free(openscop_matrix_p);
-
-openscop_matrix_list_p	openscop_matrix_list_malloc();
-void			openscop_matrix_list_free(openscop_matrix_list_p);
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+openscop_relation_p openscop_relation_malloc(unsigned, unsigned);
+void                openscop_relation_free_inside(openscop_relation_p);
+void                openscop_relation_free(openscop_relation_p);
 
 
-/*+****************************************************************************
- *                            Processing functions                            *
- ******************************************************************************/
-openscop_matrix_p openscop_matrix_ncopy(openscop_matrix_p, int);
-openscop_matrix_p openscop_matrix_copy(openscop_matrix_p);
-void	openscop_matrix_replace_vector(openscop_matrix_p, openscop_vector_p, int);
-void    openscop_matrix_insert_vector(openscop_matrix_p, openscop_vector_p, int);
-void	openscop_matrix_add_vector(openscop_matrix_p, openscop_vector_p, int);
-void	openscop_matrix_sub_vector(openscop_matrix_p, openscop_vector_p, int);
-openscop_matrix_p openscop_matrix_from_vector(openscop_vector_p);
-void    openscop_matrix_replace_matrix(openscop_matrix_p, openscop_matrix_p, int);
-void    openscop_matrix_insert_matrix(openscop_matrix_p, openscop_matrix_p, int);
-openscop_matrix_p openscop_matrix_concat(openscop_matrix_p, openscop_matrix_p);
-int	openscop_matrix_equal(openscop_matrix_p, openscop_matrix_p);    
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+openscop_relation_p openscop_relation_ncopy(openscop_relation_p, int);
+openscop_relation_p openscop_relation_copy(openscop_relation_p);
+void                openscop_relation_replace_vector(openscop_relation_p,
+                                        openscop_vector_p, int);
+void                openscop_relation_insert_vector(openscop_relation_p,
+                                        openscop_vector_p, int);
+void                openscop_relation_add_vector(openscop_relation_p,
+                                        openscop_vector_p, int);
+void                openscop_relation_sub_vector(openscop_relation_p,
+                                        openscop_vector_p, int);
+openscop_relation_p openscop_relation_from_vector(openscop_vector_p);
+void                openscop_relation_replace_relation(openscop_relation_p,
+                                        openscop_relation_p, int);
+void                openscop_relation_insert_relation(openscop_relation_p,
+                                        openscop_relation_p, int);
+openscop_relation_p openscop_relation_concat(openscop_relation_p,
+                                        openscop_relation_p);
+int                 openscop_relation_equal(openscop_relation_p,
+                                        openscop_relation_p);    
     
 # if defined(__cplusplus)
   }

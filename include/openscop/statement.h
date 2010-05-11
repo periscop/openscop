@@ -21,13 +21,13 @@
  *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
  *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
  *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   | e |   | |   | |   |   |   | |   | |   | |    \  \  \     *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
  *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
  *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud and INRIA                         *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -75,44 +75,31 @@ extern "C"
 
 
 /**
- * The openscop_statement_t structure stores the useful informations of a given
- * statement to process it within a polyhedral framework.
+ * The openscop_statement_t structure stores the useful informations of a
+ * given statement to process it within a polyhedral framework.
  */
 struct openscop_statement
 {
-  openscop_matrix_list_p domain;   /**< Iteration domain of the statement */
-  openscop_matrix_p schedule;      /**< Scheduling function for the statement */
-  openscop_matrix_p read;          /**< Array read access informations */
-  openscop_matrix_p write;         /**< Array write access informations */
-  int nb_iterators;               /**< Original depth of the statement */
-  char ** iterators;              /**< Array of (nb_iterators) iterator names */
-  char * body;                    /**< Original statement body */
-
-
-  /** Support for non-static code analysis (See Benabderrahmane's
-      Research Report #6814). */
-  int nb_exit_predicates;
-  char ** exit_predicates;	/**< Array of exit predicats of all
-				   while loops of the statement  */
-  int nb_control_predicates;
-  char ** control_predicates;	/**< Array of control predicats of all
-				   irregular if of a statement  */
-
-
-  struct openscop_statement * next;/**< Next statement in the linked list */
+  openscop_matrix_p domain;   /**< Iteration domain of the statement */
+  openscop_matrix_p schedule; /**< Scheduling function for the statement */
+  openscop_matrix_p read;     /**< Array read access informations */
+  openscop_matrix_p write;    /**< Array write access informations */
+  int nb_iterators;           /**< Original depth of the statement */
+  char ** iterators;          /**< Array of (nb_iterators) iterator names */
+  char * body;                /**< Original statement body */
+  struct openscop_statement * next; /**< Next statement in the linked list */
 };
 typedef struct openscop_statement   openscop_statement_t;
 typedef struct openscop_statement * openscop_statement_p;
 
 
-/*+****************************************************************************
- *                          Structure display function                        *
- ******************************************************************************/
-void             openscop_statement_print_structure(FILE *, openscop_statement_p,
-						   int);
-void             openscop_statement_print(FILE *, openscop_statement_p);
-void             openscop_statement_print_dot_scop(FILE *, openscop_statement_p,
-						  int, char **, int, char **);
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void openscop_statement_print_structure(FILE *, openscop_statement_p, int);
+void openscop_statement_print(FILE *, openscop_statement_p);
+void openscop_statement_print_dot_scop(FILE *, openscop_statement_p,
+                                       int, char **, int, char **);
 
 
 /******************************************************************************
@@ -125,15 +112,15 @@ openscop_statement_p openscop_statement_read (FILE*, int, char***, int*);
  *                    Memory allocation/deallocation function                 *
  ******************************************************************************/
 openscop_statement_p openscop_statement_malloc();
-void                openscop_statement_free(openscop_statement_p);
+void                 openscop_statement_free(openscop_statement_p);
 
 
 /*+****************************************************************************
  *                            Processing functions                            *
  ******************************************************************************/
-void             openscop_statement_add(openscop_statement_p *, openscop_statement_p);
-void             openscop_statement_compact(openscop_statement_p, int);
-int              openscop_statement_number(openscop_statement_p);
+void openscop_statement_add(openscop_statement_p *, openscop_statement_p);
+void openscop_statement_compact(openscop_statement_p, int);
+int  openscop_statement_number(openscop_statement_p);
 
 
 # if defined(__cplusplus)
