@@ -108,7 +108,7 @@ void openscop_statement_print_dot_scop(FILE *, openscop_statement_p,
 /******************************************************************************
  *                               Reading function                             *
  ******************************************************************************/
-openscop_statement_p openscop_statement_read (FILE*, int, char***, int*);
+openscop_statement_p openscop_statement_read(FILE*, int, char***, int*);
 
 
 /*+****************************************************************************

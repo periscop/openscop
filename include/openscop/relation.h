@@ -106,8 +106,6 @@ struct openscop_relation
   unsigned nb_parameters;          /**< The number of parameters */
   openscop_int_t ** m;             /**< An array of pointers to the beginning
 			                of each row of the relation matrix */
-  openscop_int_t * store;          /**< The relation matrix is stored here,
-                                        contiguously in memory */
   struct openscop_relation * next; /**< Pointer to the next relation in the
                                         union of relations (NULL if none) */
 };
