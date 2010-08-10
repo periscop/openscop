@@ -609,7 +609,7 @@ openscop_scop_read(FILE* file)
   /* Store the remainder of the file, if any. */
   if (tmpbuff[0])
     {
-      int count = strlen(tmpbuff);
+      int count = strlen(tmpbuff) + 1;
       int pos = 0;
       int bufs = OPENSCOP_MAX_STRING;
       scop->optiontags = (char*) malloc(bufs * sizeof(char));
@@ -622,6 +622,7 @@ openscop_scop_read(FILE* file)
 	}
       while ((count = fread(tmpbuff, sizeof(char), OPENSCOP_MAX_STRING, file))
 	     > 0);
+      scop->optiontags[pos++] = 0;
     }
 
   /* Count the number of referenced arrays/variables. */
