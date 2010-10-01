@@ -835,3 +835,41 @@ openscop_scop_dup(openscop_scop_p scop)
 
   return ret;
 }
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+
+
+/**
+ * openscop_scop_equal function:
+ * this function returns true if the two scops are the same, false
+ * otherwise (the usr field is not tested).
+ * \param s1 The first scop.
+ * \param s2 The second scop.
+ * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
+ */
+int
+openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2)
+{
+  int i;
+
+  if (//(s1->version != s2->version) ||
+      (!openscop_matrix_equal(s1->context, s2->context)) ||
+      (s1->nb_parameters != s2->nb_parameters) ||
+      (s1->nb_scattdims != s2->nb_scattdims) ||
+      (!openscop_statement_equal(s1->statement, s2->statement)) ||
+      (strcmp(s1->optiontags, s2->optiontags) != 0))
+    return 0;
+
+  for (i = 0; i < s1->nb_parameters; i++)
+    if (strcmp(s1->parameters[i], s2->parameters[i]) != 0)
+      return 0;
+
+  for (i = 0; i < s1->nb_scattdims; i++)
+    if (strcmp(s1->scattdims[i], s2->scattdims[i]) != 0)
+      return 0;
+
+  return 1;
+}
+

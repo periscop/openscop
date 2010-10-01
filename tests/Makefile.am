@@ -4,7 +4,7 @@
 #    **------------------------------------------------------------------**
 #    **                         makefile.am                              **
 #    **------------------------------------------------------------------**
-#    **                   First version: 30/04/2008                      **
+#    **                   First version: 01/10/2010                      **
 #    **------------------------------------------------------------------**
 #
 #   
@@ -58,7 +58,7 @@
 # * OpenScop Library, a library to manipulate OpenScop formats and data     *
 # * structures. Written by:                                                 *
 # * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                       *
-# * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                        *
+# * Louis-Noel Pouchet <Louis-Noel.Pouchet@inria.fr>                        *
 # *                                                                         *
 # ***************************************************************************/
 #
@@ -68,37 +68,20 @@
 
 
 #############################################################################
-SUBDIRS 		= doc source include tests
-
-
-#############################################################################
-ACLOCAL_AMFLAGS		= -I autoconf
-
-m4datadir		= $(datadir)/aclocal
-
-
-AUX_DIST                =			\
-	$(ac_aux_dir)/config.guess		\
-	$(ac_aux_dir)/config.sub		\
-	$(ac_aux_dir)/install-sh		\
-	$(ac_aux_dir)/ltmain.sh			\
-	$(ac_aux_dir)/missing			\
-	$(ac_aux_dir)/depcomp
-
-
-MAINTAINERCLEANFILES 	=			\
-	autoconf/texinfo.tex			\
-	Makefile.in				\
-	aclocal.m4				\
-	configure				\
-	source/stamp-h.in			\
-	$(AUX_DIST)
-
+SUBDIRS			=
 
 #############################################################################
-dist-hook:
-	(cd $(distdir) && mkdir -p $(ac_aux_dir))
-	for file in $(AUX_DIST); do \
-	  cp $$file $(distdir)/$$file; \
-	done
+MAINTAINERCLEANFILES	= Makefile.in
+
 #############################################################################
+
+noinst_PROGRAMS = openscop_test
+
+openscop_test_CPPFLAGS = -I$(top_srcdir)/include
+
+openscop_test_LDFLAGS  = -L$(top_srcdir)/source
+
+openscop_test_LDADD    = -lopenscop
+
+openscop_test_SOURCES  = openscop_test.c
+

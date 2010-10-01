@@ -512,3 +512,44 @@ openscop_statement_number(openscop_statement_p statement)
   }
   return number;
 }
+
+
+/**
+ * openscop_statement_equal function:
+ * this function returns true if the two statements are the same, false
+ * otherwise (the usr field is not tested).
+ * \param s1 The first statement.
+ * \param s2 The second statement.
+ * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
+ */
+int
+openscop_statement_equal(openscop_statement_p s1, openscop_statement_p s2)
+{
+  int i;
+
+  if (((s1->next != NULL) && (s2->next == NULL)) ||
+      ((s1->next == NULL) && (s2->next != NULL)))
+    return 0;
+
+  if ((s1->next != NULL) && (s2->next != NULL))
+    if (!openscop_statement_equal(s1->next, s2->next))
+      return 0;
+    
+  if (//(s1->version != s2->version) ||
+      (s1->nb_iterators != s2->nb_iterators) ||
+      (!openscop_matrix_equal(s1->domain,   s2->domain)) ||
+      (!openscop_matrix_equal(s1->schedule, s2->schedule)) ||
+      (!openscop_matrix_equal(s1->read,     s2->read)) ||
+      (!openscop_matrix_equal(s1->write,    s2->write)) ||
+      (strcmp(s1->body, s2->body) != 0))
+    return 0;
+
+  for (i = 0; i < s1->nb_iterators; i++)
+    if (strcmp(s1->iterators[i], s2->iterators[i]) != 0)
+      return 0;
+
+  return 1;
+}
+
+
+

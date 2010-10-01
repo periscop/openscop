@@ -114,31 +114,35 @@ typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;
 
 
-/*+****************************************************************************
- *                          Structure display function                        *
- ******************************************************************************/
-void    openscop_scop_print_structure(FILE *, openscop_scop_p, int);
-void    openscop_scop_print(FILE *, openscop_scop_p);
-void    openscop_scop_print_dot_scop(FILE *, openscop_scop_p);
-void	openscop_scop_print_dot_scop_options(FILE * file, openscop_scop_p scop,
-					    int options);
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void openscop_scop_print_structure(FILE *, openscop_scop_p, int);
+void openscop_scop_print(FILE *, openscop_scop_p);
+void openscop_scop_print_dot_scop(FILE *, openscop_scop_p);
+void openscop_scop_print_dot_scop_options(FILE * file, openscop_scop_p scop,
+                                          int options);
 
 
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
 openscop_scop_p	openscop_scop_read(FILE *);
-char*		openscop_scop_tag_content(openscop_scop_p, char*, char*);
-char*		openscop_scop_tag_content_from_string(char*, char*, char*);
+char *          openscop_scop_tag_content(openscop_scop_p, char *, char *);
+char *          openscop_scop_tag_content_from_string(char *, char *, char *);
 
 
-/*+****************************************************************************
- *                    Memory allocation/deallocation function                 *
- ******************************************************************************/
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
 openscop_scop_p	openscop_scop_malloc();
 void		openscop_scop_free(openscop_scop_p);
 openscop_scop_p	openscop_scop_dup(openscop_scop_p);
 
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+int openscop_scop_equal(openscop_scop_p, openscop_scop_p);
 
 
 # if defined(__cplusplus)

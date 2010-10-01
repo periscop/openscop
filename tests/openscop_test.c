@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                         statement.h                             **
+     **                            test.c                               **
      **-----------------------------------------------------------------**
-     **                   First version: 30/04/2008                     **
+     **                   First version: 01/10/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -56,78 +56,102 @@
  * OpenScop Library, a library to manipulate OpenScop formats and data       *
  * structures. Written by:                                                   *
  * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                         *
- * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                          *
+ * Louis-Noel Pouchet <Louis-Noel.Pouchet@inria.fr>                          *
  *                                                                           *
  *****************************************************************************/
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <openscop/openscop.h>
 
-#ifndef OPENSCOP_STATEMENT_H
-# define OPENSCOP_STATEMENT_H
-
-# include <stdio.h>
-# include <openscop/macros.h>
-# include <openscop/matrix.h>
-
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
-
+#define TEST_DIR    "."      // Directory to scan for OpenScop files
+#define TEST_SUFFIX ".scop"  // Suffix of OpenScop files
 
 /**
- * The openscop_statement_t structure stores the useful informations of a
- * given statement to process it within a polyhedral framework.
+ * OpenScop test program.
+ * This program scans a directory for openscop files and test each of them.
+ * A test has four steps:
+ * 1. read the file to raise the data up to OpenScop data structures,
+ * 2. dump the data structures to a new OpenScop file,
+ * 3. read the generated file,
+ * 4. compare the data structures.
+ * If everything went well, the data structure of the two scops are the same.
  */
-struct openscop_statement
+int main(int argc, char * argv[])
 {
-  int version;                /**< Version of the data structure */
-  openscop_matrix_p domain;   /**< Iteration domain of the statement */
-  openscop_matrix_p schedule; /**< Scheduling function for the statement */
-  openscop_matrix_p read;     /**< Array read access informations */
-  openscop_matrix_p write;    /**< Array write access informations */
-  int nb_iterators;           /**< Original depth of the statement */
-  char ** iterators;          /**< Array of (nb_iterators) iterator names */
-  char * body;                /**< Original statement body */
-  void * usr;                 /**< A user-defined field, not touched
-				   by the OpenScop Library. */
-  struct openscop_statement * next; /**< Next statement in the linked list */
-};
-typedef struct openscop_statement   openscop_statement_t;
-typedef struct openscop_statement * openscop_statement_p;
+  int success = 0;
+  int failure = 0;
+  int suffix_length;
+  char * output_name;
+  FILE * input_file, * output_file;
+  DIR  * dir;
+  struct dirent * dp;
+  openscop_scop_p input_scop;
+  openscop_scop_p output_scop;
 
-
-/*+***************************************************************************
- *                          Structure display function                       *
- *****************************************************************************/
-void openscop_statement_print_structure(FILE *, openscop_statement_p, int);
-void openscop_statement_print(FILE *, openscop_statement_p);
-void openscop_statement_print_dot_scop(FILE *, openscop_statement_p,
-                                       int, char **, int, char **);
-
-
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
-openscop_statement_p openscop_statement_read(FILE*, int, char***, int*);
-
-
-/*+****************************************************************************
- *                    Memory allocation/deallocation function                 *
- ******************************************************************************/
-openscop_statement_p openscop_statement_malloc();
-void                 openscop_statement_free(openscop_statement_p);
-
-
-/*+****************************************************************************
- *                            Processing functions                            *
- ******************************************************************************/
-void openscop_statement_add(openscop_statement_p *, openscop_statement_p);
-void openscop_statement_compact(openscop_statement_p, int);
-int  openscop_statement_number(openscop_statement_p);
-int  openscop_statement_equal(openscop_statement_p, openscop_statement_p);
-
-
-# if defined(__cplusplus)
+  if (argc != 1)
+  {
+    fprintf(stderr, "usage: openscop_test\n");
+    exit(1); 
   }
-# endif
-#endif /* define OPENSCOP_STATEMENT_H */
+
+  suffix_length = strlen(TEST_SUFFIX);
+  
+  // For each file in the directory to check...
+  dir = opendir(TEST_DIR);
+  while ((dp = readdir(dir)) != NULL)
+  {
+    // If the file has the convenient suffix...
+    if ((dp->d_namlen > suffix_length) &&
+        (strcmp(dp->d_name+(dp->d_namlen-suffix_length), TEST_SUFFIX) == 0))
+    {
+      printf("Testing file %20s... ", dp->d_name); 
+    
+      // Raise the OpenScop file format to OpenScop data structures.
+      input_file = fopen(dp->d_name, "r");
+      input_scop = openscop_scop_read(input_file);
+      fclose(input_file);
+  
+      // Dump the OpenScop data structures to OpenScop file format.
+      output_name = tmpnam(NULL);
+      output_file = fopen(output_name, "w");
+      openscop_scop_print_dot_scop(output_file, input_scop);
+      fclose(output_file);
+
+      // Raise the generated file to data structures.
+      output_file = fopen(output_name, "r");
+      output_scop = openscop_scop_read(output_file);
+      fclose(output_file);
+
+      // Compare the two scops.
+      if (openscop_scop_equal(input_scop, output_scop) == 1)
+      {
+        printf("Success :-)\n");
+        success++;
+      }
+      else
+      {
+        printf("Failure :-(\n", argv[1]);
+        failure++;
+      }
+
+      /* Save the planet. */
+      openscop_scop_free(input_scop);
+      openscop_scop_free(output_scop);
+      remove(output_name);
+    }
+  }
+
+  closedir(dir);
+  printf("\n  +-----------------------+\n");
+  printf("  | OpenScop Test Summary |\n");
+  printf("  |-----------------------|\n");
+  printf("  | total          %4d   |\n", success+failure);
+  printf("  | success(es)    %4d   |\n", success);
+  printf("  | failure(s)     %4d   |\n", failure);
+  printf("  +-----------------------+\n\n");
+
+  return 0;
+}

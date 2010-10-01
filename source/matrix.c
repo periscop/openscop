@@ -955,7 +955,7 @@ openscop_matrix_concat(openscop_matrix_p m1, openscop_matrix_p m2)
  * otherwise.
  * \param m1  The first matrix.
  * \param m2  The second matrix.
- *
+ * \return 1 if m1 and m2 are the same (content-wise), 0 otherwise.
  */
 int
 openscop_matrix_equal(openscop_matrix_p m1, openscop_matrix_p m2)

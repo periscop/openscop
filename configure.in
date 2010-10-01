@@ -246,6 +246,7 @@ AC_CONFIG_FILES([
 	include/Makefile
 	include/openscop/scop.h
 	source/Makefile
+	tests/Makefile
 	],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > source/stamp-h.in])
 

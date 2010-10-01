@@ -353,3 +353,30 @@ openscop_vector_tag_equality(openscop_vector_p vector)
   }
   SCOPINT_set_si(vector->p[0],0);
 }
+
+
+/**
+ * openscop_vector_equal function:
+ * this function returns true if the two vectors are the same, false
+ * otherwise.
+ * \param v1 The first vector.
+ * \param v2 The second vector.
+ * \return 1 if v1 and v2 are the same (content-wise), 0 otherwise.
+ */
+int
+openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2)
+{
+  int i;
+
+  if (v1->Size != v2->Size)
+    return 0;
+
+  for (i = 0; i < v1->Size; i++)
+    if (SCOPINT_ne(v1->p[i], v2->p[i]))
+      return 0;
+
+  return 1;
+}
+
+
+

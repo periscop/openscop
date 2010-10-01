@@ -90,28 +90,29 @@ typedef struct openscop_vector   openscop_vector_t;
 typedef struct openscop_vector * openscop_vector_p;
 
 
-/*+****************************************************************************
- *                          Structure display function                        *
- ******************************************************************************/
-void          openscop_vector_print_structure(FILE *, openscop_vector_p, int);
-void          openscop_vector_print(FILE *, openscop_vector_p);
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void openscop_vector_print_structure(FILE *, openscop_vector_p, int);
+void openscop_vector_print(FILE *, openscop_vector_p);
 
 
-/*+****************************************************************************
- *                    Memory allocation/deallocation function                 *
- ******************************************************************************/
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
 openscop_vector_p openscop_vector_malloc(unsigned);
-void		 openscop_vector_free(openscop_vector_p);
+void              openscop_vector_free(openscop_vector_p);
 
 
-/*+****************************************************************************
- *                            Processing functions                            *
- ******************************************************************************/
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
 openscop_vector_p openscop_vector_add_scalar(openscop_vector_p, int);
 openscop_vector_p openscop_vector_add(openscop_vector_p, openscop_vector_p);
 openscop_vector_p openscop_vector_sub(openscop_vector_p, openscop_vector_p);
-void		 openscop_vector_tag_inequality(openscop_vector_p);
-void		 openscop_vector_tag_equality(openscop_vector_p);
+void              openscop_vector_tag_inequality(openscop_vector_p);
+void              openscop_vector_tag_equality(openscop_vector_p);
+int               openscop_vector_equal(openscop_vector_p, openscop_vector_p);
 
 # if defined(__cplusplus)
   }
