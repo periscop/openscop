@@ -153,5 +153,8 @@ int main(int argc, char * argv[])
   printf("  | failure(s)     %4d   |\n", failure);
   printf("  +-----------------------+\n\n");
 
-  return 0;
+  if (failure)
+    return 1;
+  else
+    return 0;
 }
