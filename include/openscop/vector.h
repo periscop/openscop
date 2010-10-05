@@ -83,8 +83,8 @@ extern "C"
  */
 struct openscop_vector
 {
-  unsigned Size;  /**< The number of vector entries */
-  openscop_int_t * p; /**< An array of values */
+  unsigned size;      /**< The number of vector entries */
+  openscop_int_t * v; /**< An array of values */
 };
 typedef struct openscop_vector   openscop_vector_t;
 typedef struct openscop_vector * openscop_vector_p;

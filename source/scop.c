@@ -67,9 +67,9 @@
 # include <openscop/scop.h>
 
 
-/*+****************************************************************************
- *                         Structure display functions                        *
- ******************************************************************************/
+/*+***************************************************************************
+ *                         Structure display functions                       *
+ *****************************************************************************/
 
 
 /**
@@ -82,8 +82,6 @@
  * \param file   File where informations are printed.
  * \param scop   The scop whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
@@ -92,70 +90,98 @@ openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
 
   if (scop != NULL)
   {
-    /* Go to the right level. */
+    // Go to the right level.
     for (j = 0; j < level; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"+-- openscop_scop_t\n");
+      fprintf(file, "|\t");
+    fprintf(file, "+-- openscop_scop_t\n");
 
-    /* A blank line. */
+    // A blank line.
     for (j = 0; j <= level+1; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"\n");
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
 
-    /* Print the context of the scop. */
-    openscop_matrix_print_structure(file,scop->context,level+1);
+    // Print the language.
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "|\tLanguage: %s\n", scop->language);
 
-    /* Print the original parameter names. */
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
+
+    // Print the context of the scop.
+    openscop_relation_print_structure(file, scop->context, level+1);
+
+    // Print the original parameter names.
     for (i = 0; i <= level; i++)
-      fprintf(file,"|\t");
+      fprintf(file, "|\t");
     if (scop->nb_parameters > 0)
     {
-      fprintf(file,"+-- Original parameters strings:");
+      fprintf(file, "+-- Parameter strings:");
       for (i = 0; i < scop->nb_parameters; i++)
-        fprintf(file," %s",scop->parameters[i]);
-      fprintf(file,"\n");
+        fprintf(file, " %s", scop->parameters[i]);
+      fprintf(file, "\n");
     }
     else
-      fprintf(file,"+-- No original parameters string\n");
+      fprintf(file, "+-- No parameter strings\n");
 
-    /* A blank line. */
+    // A blank line.
     for (j = 0; j <= level+1; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"\n");
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
 
-    /* Print the original parameter names. */
+    // Print the iterator names.
     for (i = 0; i <= level; i++)
-      fprintf(file,"|\t");
-    if (scop->nb_arrays > 0)
+      fprintf(file, "|\t");
+    if (scop->nb_iterators > 0)
     {
-      fprintf(file,"+-- Accessed array strings:");
-      for (i = 0; i < scop->nb_arrays; i++)
-        fprintf(file," %s",scop->arrays[i]);
-      fprintf(file,"\n");
+      fprintf(file, "+-- Iterator strings:");
+      for (i = 0; i < scop->nb_iterators; i++)
+        fprintf(file, " %s", scop->iterators[i]);
+      fprintf(file, "\n");
     }
     else
-      fprintf(file,"+-- No accessed array string\n");
+      fprintf(file,"+-- No iterator string\n");
 
-    /* A blank line. */
+    // A blank line.
     for (j = 0; j <= level+1; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"\n");
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
 
-    /* Print the statements. */
-    openscop_statement_print_structure(file,scop->statement,level+1);
+    // Print the scattering dimension names.
+    for (i = 0; i <= level; i++)
+      fprintf(file, "|\t");
+    if (scop->nb_scattdims > 0)
+    {
+      fprintf(file, "+-- Scattering dimension strings:");
+      for (i = 0; i < scop->nb_scattdims; i++)
+        fprintf(file, " %s", scop->scattdims[i]);
+      fprintf(file, "\n");
+    }
+    else
+      fprintf(file, "+-- No scattering dimension string\n");
+
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
+
+    // Print the statements.
+    openscop_statement_print_structure(file, scop->statement, level+1);
   }
   else
   {
-    /* Go to the right level. */
+    // Go to the right level.
     for (j = 0; j < level; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"+-- NULL scop\n");
+      fprintf(file, "|\t");
+    fprintf(file, "+-- NULL scop\n");
   }
 
-  /* The last line. */
+  // The last line.
   for (j = 0; j <= level; j++)
-    fprintf(file,"|\t");
-  fprintf(file,"\n");
+    fprintf(file, "|\t");
+  fprintf(file, "\n");
 }
 
 
@@ -165,556 +191,417 @@ openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
  * a file (file, possibly stdout).
  * \param file   File where informations are printed.
  * \param scop   The scop whose information have to be printed.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_scop_print(FILE * file, openscop_scop_p scop)
 {
-  openscop_scop_print_structure(file,scop,0);
+  openscop_scop_print_structure(file, scop, 0);
 }
 
 
-
-static
+/**
+ * openscop_scop_print_openscop function:
+ * This function prints the content of a openscop_scop_t structure (*scop)
+ * into a file (file, possibly stdout) in the OpenScop format.
+ * \param file    File where informations are printed.
+ * \param scop    The scop whose information have to be printed.
+ */
 void
-openscop_scop_print_dot_scop_(FILE * file, openscop_scop_p scop,
-			     int castle, int arraystag)
+openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
 {
   int i;
+  int nb_arrays = 0;
+  char ** arrays = NULL;
+  
+  // Extract array names information.
+  arrays = openscop_util_read_tag_arrays(scop->extensions, &nb_arrays);
 
-  if (castle)
+  if (0)
   {
-    fprintf(file,"#                                                     \n");
-    fprintf(file,"#          <|                                         \n");
-    fprintf(file,"#           A                                         \n");
-    fprintf(file,"#          /.\\                                       \n");
-    fprintf(file,"#     <|  [\"\"M#                                     \n");
-    fprintf(file,"#      A   | #            Clan McCloog Castle         \n");
-    fprintf(file,"#     /.\\ [\"\"M#           [Generated by the OpenScop ");
-    fprintf(file,"Library %s %s bits]\n",OPENSCOP_RELEASE, OPENSCOP_VERSION);
-    fprintf(file,"#    [\"\"M# | #  U\"U#U                              \n");
-    fprintf(file,"#     | #  | #  \\ .:/                                \n");
-    fprintf(file,"#     | #  | #___| #                                  \n");
-    fprintf(file,"#     | \"--'     .-\"                                \n");
-    fprintf(file,"#   |\"-\"-\"-\"-\"-#-#-##                            \n");
-    fprintf(file,"#   |     # ## ######                                 \n");
-    fprintf(file,"#    \\       .::::'/                                 \n");
-    fprintf(file,"#     \\      ::::'/                                  \n");
-    fprintf(file,"#   :8a|    # # ##                                    \n");
-    fprintf(file,"#   ::88a      ###                                    \n");
-    fprintf(file,"#  ::::888a  8a ##::.                                 \n");
-    fprintf(file,"#  ::::::888a88a[]::::                                \n");
-    fprintf(file,"# :::::::::SUNDOGa8a::::. ..                          \n");
-    fprintf(file,"# :::::8::::888:Y8888:::::::::...                     \n");
-    fprintf(file,"#::':::88::::888::Y88a______________________________");
-    fprintf(file,"________________________\n");
-    fprintf(file,"#:: ::::88a::::88a:Y88a                             ");
-    fprintf(file,"     __---__-- __\n");
-    fprintf(file,"#' .: ::Y88a:::::8a:Y88a                            ");
-    fprintf(file,"__----_-- -------_-__\n");
-    fprintf(file,"#  :' ::::8P::::::::::88aa.                   _ _- -");
-    fprintf(file,"-  --_ --- __  --- __--\n");
-    fprintf(file,"#.::  :::::::::::::::::::Y88as88a...s88aa.\n");
+    fprintf(file, "#                                                     \n");
+    fprintf(file, "#          <|                                         \n");
+    fprintf(file, "#           A                                         \n");
+    fprintf(file, "#          /.\\                                       \n");
+    fprintf(file, "#     <|  [\"\"M#                                     \n");
+    fprintf(file, "#      A   | #            Clan McCloog Castle         \n");
+    fprintf(file, "#     /.\\ [\"\"M#           [Generated by the OpenScop ");
+    fprintf(file, "Library %s %s bits]\n",OPENSCOP_RELEASE, OPENSCOP_VERSION);
+    fprintf(file, "#    [\"\"M# | #  U\"U#U                              \n");
+    fprintf(file, "#     | #  | #  \\ .:/                                \n");
+    fprintf(file, "#     | #  | #___| #                                  \n");
+    fprintf(file, "#     | \"--'     .-\"                                \n");
+    fprintf(file, "#   |\"-\"-\"-\"-\"-#-#-##                            \n");
+    fprintf(file, "#   |     # ## ######                                 \n");
+    fprintf(file, "#    \\       .::::'/                                 \n");
+    fprintf(file, "#     \\      ::::'/                                  \n");
+    fprintf(file, "#   :8a|    # # ##                                    \n");
+    fprintf(file, "#   ::88a      ###                                    \n");
+    fprintf(file, "#  ::::888a  8a ##::.                                 \n");
+    fprintf(file, "#  ::::::888a88a[]::::                                \n");
+    fprintf(file, "# :::::::::SUNDOGa8a::::. ..                          \n");
+    fprintf(file, "# :::::8::::888:Y8888:::::::::...                     \n");
+    fprintf(file, "#::':::88::::888::Y88a______________________________");
+    fprintf(file, "________________________\n");
+    fprintf(file, "#:: ::::88a::::88a:Y88a                             ");
+    fprintf(file, "     __---__-- __\n");
+    fprintf(file, "#' .: ::Y88a:::::8a:Y88a                            ");
+    fprintf(file, "__----_-- -------_-__\n");
+    fprintf(file, "#  :' ::::8P::::::::::88aa.                   _ _- -");
+    fprintf(file, "-  --_ --- __  --- __--\n");
+    fprintf(file, "#.::  :::::::::::::::::::Y88as88a...s88aa.\n");
   }
   else
   {
-    fprintf(file,"# [File generated by ScopLib %s %s bits]\n",
+    fprintf(file, "# [File generated by the OpenScop Library %s %s bits]\n",
             OPENSCOP_RELEASE,OPENSCOP_VERSION);
   }
 
-  fprintf(file,"\n");
-  fprintf(file,"SCoP\n");
-  fprintf(file,"\n");
-  fprintf(file,"# =============================================== Global\n");
-  fprintf(file,"# Language\n");
-  fprintf(file,"C\n");
-  fprintf(file,"\n");
+  fprintf(file, "\nOpenScop\n\n");
+  fprintf(file, "# =============================================== Global\n");
+  fprintf(file, "# Language\n");
+  fprintf(file, "%s\n\n", scop->language);
 
-  fprintf(file,"# Context\n");
-  openscop_matrix_print_dot_scop(file,scop->context,OPENSCOP_TYPE_DOMAIN,
-				0,NULL,
-				scop->nb_parameters,scop->parameters,
-				scop->nb_arrays,scop->arrays);
-  fprintf(file,"\n");
+  fprintf(file, "# Context\n");
+  openscop_relation_print_openscop(file, scop->context, OPENSCOP_TYPE_DOMAIN,
+				0, NULL,
+				scop->nb_parameters, scop->parameters,
+				nb_arrays, arrays);
+  fprintf(file, "\n");
 
   if (scop->nb_parameters > 0)
   {
-    fprintf(file,"# Parameter names are provided\n");
-    fprintf(file,"1\n");
-    fprintf(file,"# Parameter names\n");
+    fprintf(file, "# Parameter names are provided\n");
+    fprintf(file, "1\n");
+    fprintf(file, "# Parameter names\n");
     for (i = 0; i < scop->nb_parameters; i++)
-      fprintf(file,"%s ",scop->parameters[i]);
-    fprintf(file,"\n");
-    fprintf(file,"\n");
+      fprintf(file, "%s ", scop->parameters[i]);
+    fprintf(file, "\n\n");
   }
   else
   {
-    fprintf(file,"# Parameter names are not provided\n");
-    fprintf(file,"0\n");
-    fprintf(file,"\n");
+    fprintf(file, "# Parameter names are not provided\n");
+    fprintf(file, "0\n\n");
   }
 
-  fprintf(file,"# Number of statements\n");
-  fprintf(file,"%d\n",openscop_statement_number(scop->statement));
-  fprintf(file,"\n");
+  if (scop->nb_iterators > 0)
+  {
+    fprintf(file, "# Iterator names are provided\n");
+    fprintf(file, "1\n");
+    fprintf(file, "# Iterator names\n");
+    for (i = 0; i < scop->nb_iterators; i++)
+      fprintf(file, "%s ", scop->iterators[i]);
+    fprintf(file, "\n\n");
+  }
+  else
+  {
+    fprintf(file, "# Iterator names are not provided\n");
+    fprintf(file, "0\n\n");
+  }
 
-  openscop_statement_print_dot_scop(file,scop->statement,
-				   scop->nb_parameters,scop->parameters,
-				   scop->nb_arrays,scop->arrays);
+  if (scop->nb_scattdims > 0)
+  {
+    fprintf(file, "# Scattering dimension names are provided\n");
+    fprintf(file, "1\n");
+    fprintf(file, "# Scattering dimension names\n");
+    for (i = 0; i < scop->nb_scattdims; i++)
+      fprintf(file, "%s ", scop->scattdims[i]);
+    fprintf(file, "\n\n");
+  }
+  else
+  {
+    fprintf(file, "# Scattering dimension names are not provided\n");
+    fprintf(file, "0\n\n");
+  }
 
-  fprintf(file,"# =============================================== Options\n");
-  if (scop->optiontags)
-    fprintf(file, "%s", scop->optiontags);
-  if (arraystag)
+  fprintf(file, "# Number of statements\n");
+  fprintf(file, "%d\n\n",openscop_statement_number(scop->statement));
+
+  openscop_statement_print_openscop(file, scop->statement,
+				    scop->nb_parameters, scop->parameters,
+				    nb_arrays, arrays);
+
+  fprintf(file, "# =============================================== Options\n");
+  if (scop->extensions)
+  {
+    if (scop->textual_extensions)
+      fprintf(file, "%s", (char *)scop->extensions);
+    else
+      openscop_extension_print(file, (openscop_extension_p)scop->extensions);
+  }
+
+  // Free array names
+  if (nb_arrays != 0)
+  {
+    for (i = 0; i < nb_arrays; i++)
+      free(arrays[i]);
+    free(arrays);
+  }
+}
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+
+
+static
+void
+openscop_scop_update_val(int * variable, int value)
+{
+  if ((*variable == OPENSCOP_UNDEFINED) || (*variable == value))
+    *variable = value;
+  else
+    fprintf(stderr, "[OpenScop] Warning: number of iterators and "
+                    "parameters inconsistency.\n");
+}
+
+static
+void
+openscop_scop_update_properties(openscop_relation_p relation,
+                                int nb_output_dims, int nb_input_dims,
+                                int nb_parameters)
+{
+  if (relation != NULL)
+  {
+    openscop_scop_update_val(&(relation->nb_output_dims), nb_output_dims);
+    openscop_scop_update_val(&(relation->nb_input_dims),  nb_input_dims);
+    openscop_scop_update_val(&(relation->nb_parameters),  nb_parameters);   
+  }
+}
+
+
+/**
+ * openscop_scop_propagate_properties internal function:
+ * This function tries to propagate information in all relations through the
+ * whole openscop representation. For instance, the number of parameters can
+ * be found in the context as well as in any relation: if it is undefined in
+ * the relation, this function defines it, if it is different than the
+ * expected value, it reports an error. This function does the same for
+ * the number of output and input dimensions.
+ * \param scop  The SCoP we want to propagate properties.
+ */
+static
+void
+openscop_scop_propagate_properties(openscop_scop_p scop)
+{
+  int i, nb_parameters;
+  openscop_statement_p     statement;
+  openscop_relation_p      relation;
+  openscop_relation_list_p list;
+
+  // Context part: get the number of parameters.
+  if ((scop->context != NULL) &&
+      (openscop_relation_is_matrix(scop->context)))
+  {
+    nb_parameters = scop->context->nb_columns - 2;
+    openscop_scop_update_properties(scop->context, 0, 0, nb_parameters);
+  }
+  else
+    return;
+
+  // For each statement:
+  statement = scop->statement;
+  while (statement != NULL)
+  {
+    // - Domain part,
+    relation = statement->domain;
+    if (openscop_relation_is_matrix(relation))
     {
-      /* If the <array> tag is present in the option tags, don't dump it. */
-      char* content = openscop_scop_tag_content (scop, "<arrays>", "</arrays>");
-      if (! content)
-	{
-	  /* It isn't, so dump the list of arrays. */
-	  fprintf(file, "<arrays>\n");
-	  fprintf(file, "%d\n", scop->nb_arrays);
-	  for (i = 0; i < scop->nb_arrays; ++i)
-	    fprintf(file, "%d %s\n", i + 1, scop->arrays[i]);
-	  fprintf(file, "</arrays>\n");
-	}
+      while (relation != NULL)
+      {
+        openscop_scop_update_properties(relation,
+                   relation->nb_columns - nb_parameters - 2, 0, nb_parameters);
+        relation = relation->next;
+      }
+    }
+
+    // - Scattering part,
+    relation = statement->scattering;
+    if (openscop_relation_is_matrix(relation))
+    {
+      while (relation != NULL)
+      {
+        openscop_scop_update_properties(relation,
+                   0, relation->nb_columns - nb_parameters - 2, nb_parameters);
+        relation = relation->next;
+      }
+    }
+
+    // - Access part.
+    for (i = 0; i < 2; i++)
+    {
+      if (i == 0)
+        list = statement->read;
       else
-	free(content);
+        list = statement->write;
+
+      while (list != NULL)
+      {
+        relation = list->elt;
+        if (openscop_relation_is_matrix(relation))
+        {
+          while (relation != NULL)
+          {
+            openscop_scop_update_properties(relation,
+                   0, relation->nb_columns - nb_parameters - 2, nb_parameters);
+            relation = relation->next;
+          }
+        }
+
+        list = list->next;
+      }
     }
-}
-
-
-/**
- * openscop_scop_print_dot_scop function:
- * This function prints the content of a openscop_scop_t structure (*scop)
- * into a file (file, possibly stdout) for the .scop format.
- * \param file    File where informations are printed.
- * \param scop    The scop whose information have to be printed.
- **
- * - 02/05/2008: first version.
- */
-void
-openscop_scop_print_dot_scop(FILE * file, openscop_scop_p scop)
-{
-  openscop_scop_print_dot_scop_(file, scop, 0, 0);
-}
-
-/**
- * openscop_scop_print_dot_scop_castle function:
- * This function prints the content of a openscop_scop_t structure (*scop)
- * into a file (file, possibly stdout) for the .scop format, with the castle.
- * \param file    File where informations are printed.
- * \param scop    The scop whose information have to be printed.
- **
- * - 02/05/2008: first version.
- */
-void
-openscop_scop_print_dot_scop_options(FILE * file, openscop_scop_p scop,
-				    int options)
-{
-  int castle = 0;
-  int arraystag = 0;
-  if ((options & OPENSCOP_SCOP_PRINT_CASTLE) != 0)
-    castle = 1;
-  if ((options & OPENSCOP_SCOP_PRINT_ARRAYSTAG) != 0)
-    arraystag = 1;
-  openscop_scop_print_dot_scop_(file, scop, castle, arraystag);
-}
-
-
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
-
-/**
- * Internal function. Read 'nb_strings' strings on the input 'file'.
- *
- * \FIXME should be placed somewhere else, it's duplicated in statement.c.
- */
-static
-char**
-openscop_scop_read_strings(FILE* file, int nb_strings)
-{
-  char str[OPENSCOP_MAX_STRING];
-  char tmp[OPENSCOP_MAX_STRING];
-  char* s;
-  char** res = NULL;
-  int i;
-  int count;
-
-  /* Skip blank/commented lines. */
-  while (fgets(str, OPENSCOP_MAX_STRING, file) == 0 || str[0] == '#' ||
-	 isspace(str[0]))
-    ;
-  s = str;
-
-  /* Allocate the array of string. Make it NULL-terminated. */
-  res = (char**) malloc(sizeof(char*) * (nb_strings + 1));
-  res[nb_strings] = NULL;
-
-  /* Read the desired number of strings. */
-  for (i = 0; i < nb_strings; ++i)
-    {
-      for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
-	tmp[count] = *(s++);
-      tmp[count] = '\0';
-      res[i] = strdup(tmp);
-      if (*s != '#')
-	++s;
-    }
-
-  return res;
-}
-
-
-/**
- * Internal function. Read an int on the input 'file'.
- *
- * \FIXME should be placed somewhere else, it's duplicated in statement.c.
- */
-static
-int
-openscop_scop_read_int(FILE* file, char** str)
-{
-  char s[OPENSCOP_MAX_STRING];
-  int res;
-  int i = 0;
-  int read_int = 0;
-
-  if (file != NULL && str != NULL)
-    {
-      fprintf(stderr, "[Scoplib] Error: only one of the two parameters of"
-	      " scop_read_int can be non-NULL\n");
-      exit (1);
-    }
-
-  if (file != NULL)
-    {
-      /* Parse from a file. */
-      /* Skip blank/commented lines. */
-      while (fgets(s, OPENSCOP_MAX_STRING, file) == 0 || s[0] == '#' ||
-	     isspace(s[0]))
-	;
-      sscanf(s, "%d", &res);
-    }
-  if (str != NULL)
-    {
-      /* Parse from a string. */
-      /* Skip blank/commented lines. */
-      do
-	{
-	  while (*str && **str && isspace(**str))
-	    ++(*str);
-	  if (**str == '#')
-	    {
-	      while (**str && **str != '\n')
-		++(*str);
-	    }
-	  else
-	    {
-	      /* Build the chain to analyze. */
-	      while (**str && !isspace(**str) && **str != '\n')
-		s[i++] = *((*str)++);
-	      s[i] = '\0';
-	      sscanf(s, "%d", &res);
-	      read_int = 1;
-	    }
-	}
-      while (! read_int);
-    }
-
-  return res;
-}
-
-
-/**
- * openscop_scop_generate_names function:
- * This function generates an array of size 'nb' of chars of the form
- * "seedXX" where XX goes from 1 to nb.
- * \param seed		The template for the created names
- * \param nb		The number of created items.
- */
-char**
-openscop_scop_generate_names(char* seed, int nb)
-{
-  char** res = NULL;
-  char buff[strlen(seed) + 16];
-  int i;
-
-  if (nb)
-    {
-      res = (char**) malloc(sizeof(char*)* nb);
-      if (res == NULL)
-	{
-	  fprintf(stderr, "[Scoplib] Memory Overflow.\n");
-	  exit(1);
-	}
-      for (i = 0; i < nb; ++i)
-	{
-	  sprintf(buff, "%s%d", seed, i + 1);
-	  res[i] = strdup(buff);
-	}
-    }
-
-  return res;
-}
-
-
-/**
- * openscop_scop_tag_content function:
- * This function returns a freshly allocated string containing the
- * content, in the optional tags section, between the tag 'tag' and
- * the tag 'endtag'. If the tag 'tag' is not found, returns NULL.
- */
-char*
-openscop_scop_tag_content(openscop_scop_p scop, char* tag, char* endtag)
-{
-  return openscop_scop_tag_content_from_string(scop->optiontags, tag, endtag);
-}
-
-
-/**
- * openscop_scop_tag_content_from_string function:
- * This function returns a freshly allocated string containing the
- * content, in the given string 'str', between the tag 'tag' and
- * the tag 'endtag'. If the tag 'tag' is not found, returns NULL.
- */
-char*
-openscop_scop_tag_content_from_string(char* str, char* tag, char* endtag)
-{
-  int i;
-  char* start;
-  char* stop;
-  int size = 0;
-  int lentag;
-  char* res = NULL;
-
-  if (str)
-    {
-      start = str;
-      lentag = strlen(tag);
-      for (; start && *start && strncmp(start, tag, lentag); ++start)
-	;
-      /* The tag 'tag' was not found.*/
-      if (! *start)
-	return NULL;
-      start += lentag;
-      stop = start;
-      lentag = strlen(endtag);
-      for (size = 0; *stop && strncmp(stop, endtag, lentag); ++stop, ++size)
-	;
-      /* the tag 'endtag' was not found. */
-      if (! *stop)
-	return NULL;
-      res = (char*) malloc((size + 1) * sizeof(char));
-      if (res == NULL)
-	{
-	  fprintf(stderr, "[Scoplib] Error: memory exhausted\n");
-	  exit(1);
-	}
-      /* Copy the chain between the two tags. */
-      for (++start, i = 0; start != stop; ++start, ++i)
-	res[i] = *start;
-      res[i] = '\0';
-    }
-
-  return res;
+    
+    statement = statement->next;
+  }
 }
 
 
 /**
  * openscop_scop_read function:
  * This function reads a openscop_scop_t structure from an input stream
- * (possibly stdin) corresponding to a openscop SCoP dump.
- * \param file		The input stream
+ * (possibly stdin) corresponding to an OpenScop input file. If some relation
+ * properties (number of input/output/local dimensions and number of
+ * parameters) are undefined, it will define them according to the available
+ * information. 
+ * \param file  The input stream
  */
 openscop_scop_p
-openscop_scop_read(FILE* file)
+openscop_scop_read(FILE * file)
 {
-  char tmpbuff[OPENSCOP_MAX_STRING];
-  openscop_scop_p scop = NULL;
+  openscop_scop_p scop      = NULL;
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
   int nb_statements;
-  char** tmp;
+  int max;
+  char ** tmp;
   int i;
-  char* content;
 
   if (file == NULL)
     return NULL;
 
   scop = openscop_scop_malloc();
 
-  /* Backup the arrays of the program. Buffer is reajustable. */
-  int nb_arr = OPENSCOP_MAX_STRING;
-  char** arrays = (char**) malloc (sizeof(char*) * nb_arr);
+  // Backup the arrays of the program. Buffer is reajustable.
+  /*int nb_arr = OPENSCOP_MAX_STRING;
+  char ** arrays = (char **) malloc (sizeof(char *) * nb_arr);
   for (i = 0; i < nb_arr; ++i)
     arrays[i] = NULL;
+  */
 
-  /* Ensure the file is a .scop. */
-  tmp = openscop_scop_read_strings(file, 1);
-  if (strcmp(*tmp, "SCoP"))
-    {
-      fprintf(stderr, "[Scoplib] Error. The file is not a .scop\n");
-      exit (1);
-    }
+  //
+  // I. CONTEXT PART
+  //
+
+  // Ensure the file is a .scop.
+  tmp = openscop_util_read_strings(file, 1, &max);
+  if ((max == 0) || (strcmp(*tmp, "OpenScop")))
+  {
+    fprintf(stderr, "[OpenScop] Error: not an OpenScop file "
+                    "(type \"%s\".\n", *tmp);
+    exit (1);
+  }
+  if (max > 1)
+    fprintf(stderr, "[OpenScop] Warning: uninterpreted information "
+                    "(after file type).\n");
   free(*tmp);
   free(tmp);
 
-  /* Read the language. */
-  char** language =  openscop_scop_read_strings(file, 1);
-  if (strcmp(*language, "C") && strcmp(*language, "JAVA") &&
-      strcmp(*language, "C#"))
-    {
-      fprintf(stderr, "[Scoplib] Error. The language is not recognized\n");
-      exit (1);
-    }
-  /* language is not used so far. */
-  free(*language);
+  // Read the language.
+  char ** language =  openscop_util_read_strings(file, 1, &max);
+  if (max == 0)
+  {
+    fprintf(stderr, "[OpenScop] Error: no language (backend) specified.\n");
+    exit (1);
+  }
+  if (max > 1)
+    fprintf(stderr, "[OpenScop] Warning: uninterpreted information "
+                    "(after language).\n");
+  scop->language = *language;
   free(language);
 
-  /* Read the context. */
-  scop->context  = openscop_matrix_read (file);
-  scop->nb_parameters = scop->context->NbColumns - 2;
+  // Read the context.
+  scop->context  = openscop_relation_read(file);
+  scop->nb_parameters = scop->context->nb_columns - 2;
 
-  /* Read the parameter names, if any. */
-  if (openscop_scop_read_int(file, NULL) > 0)
-    scop->parameters = openscop_scop_read_strings (file, scop->nb_parameters);
+  // Read the parameter names, if any.
+  if (openscop_util_read_int(file, NULL) > 0)
+  {
+    scop->parameters = openscop_util_read_strings(file,
+                                                  scop->nb_parameters, &max);
+    if (max < scop->nb_parameters)
+    {
+      fprintf(stderr, "[OpenScop] Error: not enough parameter names.\n");
+      exit (1);
+    }
+    if (max > scop->nb_parameters)
+      fprintf(stderr, "[OpenScop] Warning: uninterpreted information "
+                      "(after parameter names).\n");
+  }
   else
-    scop->parameters = openscop_scop_generate_names("M", scop->nb_parameters);
+    scop->parameters = NULL;
 
-  /* Read the number of statements. */
-  nb_statements = openscop_scop_read_int (file, NULL);
+  // Read the iterator names, if any.
+  if (openscop_util_read_int(file, NULL) > 0)
+    scop->iterators = openscop_util_read_strings(file, -1,
+                                                 &(scop->nb_iterators));
+  else
+  {
+    scop->nb_iterators = 0;
+    scop->iterators = NULL;
+  }
+
+  // Read the scattering dimension names, if any.
+  if (openscop_util_read_int(file, NULL) > 0)
+    scop->scattdims = openscop_util_read_strings(file, -1,
+                                                 &(scop->nb_scattdims));
+  else
+  {
+    scop->nb_scattdims = 0;
+    scop->scattdims = NULL;
+  }
+
+  //
+  // II. STATEMENT PART
+  //
+
+  // Read the number of statements.
+  nb_statements = openscop_util_read_int(file, NULL);
 
   for (i = 0; i < nb_statements; ++i)
-    {
-      /* Read each statement. */
-      stmt = openscop_statement_read (file, scop->nb_parameters,
-				  &arrays, &nb_arr);
-      if (scop->statement == NULL)
-	scop->statement = stmt;
-      else
-	prev->next = stmt;
-      prev = stmt;
-    }
+  {
+    // Read each statement.
+    stmt = openscop_statement_read(file);
+    if (scop->statement == NULL)
+      scop->statement = stmt;
+    else
+      prev->next = stmt;
+    prev = stmt;
+  }
 
-  /* Read the remainder of the file, and store it in the optiontags
-     field. */
-  /* Skip blank lines. */
-  while (! feof(file) &&
-	 (fgets(tmpbuff, OPENSCOP_MAX_STRING, file) == 0 ||
-	  tmpbuff[0] == '#' || isspace(tmpbuff[0]) || tmpbuff[0] != '<'))
-    ;
-  /* Store the remainder of the file, if any. */
-  if (tmpbuff[0])
-    {
-      int count = strlen(tmpbuff) + 1;
-      int pos = 0;
-      int bufs = OPENSCOP_MAX_STRING;
-      scop->optiontags = (char*) malloc(bufs * sizeof(char));
-      do
-	{
-	  scop->optiontags = (char*) realloc
-	    (scop->optiontags, (bufs += count) * sizeof(char));
-	  for (i = 0; i < count; ++i)
-	    scop->optiontags[pos++] = tmpbuff[i];
-	}
-      while ((count = fread(tmpbuff, sizeof(char), OPENSCOP_MAX_STRING, file))
-	     > 0);
-      scop->optiontags[pos++] = 0;
-    }
+  //
+  // III. OPTION PART
+  //
 
-  /* Count the number of referenced arrays/variables. */
-  scop->nb_arrays = 0;
-  for (stmt = scop->statement; stmt; stmt = stmt->next)
-    {
-      if (stmt->read)
-	for (i = 0; i < stmt->read->NbRows; ++i)
-	  if (scop->nb_arrays < SCOPINT_get_si(stmt->read->p[i][0]))
-	    scop->nb_arrays = SCOPINT_get_si(stmt->read->p[i][0]);
-      if (stmt->write)
-	for (i = 0; i < stmt->write->NbRows; ++i)
-	  if (scop->nb_arrays < SCOPINT_get_si(stmt->write->p[i][0]))
-	    scop->nb_arrays = SCOPINT_get_si(stmt->write->p[i][0]);
-    }
+  // Read the remainder of the file, and store it in the extensions field.
+  scop->textual_extensions = 1;
+  scop->extensions = (void *)openscop_extension_read_string(file);
+  
+  //
+  // VI. FINALIZE AND CHECK
+  //
+  openscop_scop_propagate_properties(scop);
 
-  /* Allocate the array names array. */
-  scop->arrays = (char**) malloc(sizeof(char*) * (scop->nb_arrays + 1));
-  for (i = 0; i < scop->nb_arrays; ++i)
-    scop->arrays[i] = NULL;
-
-  /* Populate the array list with referenced in the <array> tag, if
-     any. */
-  if ((content = openscop_scop_tag_content(scop, "<arrays>", "</arrays>")))
-    {
-      char* start = content;
-      int n_arr = openscop_scop_read_int(NULL, &content);
-      char buff2[OPENSCOP_MAX_STRING];
-      int idx_array;
-      i = 0;
-      while (n_arr--)
-	{
-	  /* Skip blank or commented lines. */
-	  while (*content == '#' || *content == '\n')
-	    {
-	      for (; *content != '\n'; ++content)
-		;
-	      ++content;
-	    }
-	  /* Get the variable id. */
-	  for (i = 0; *content && ! isspace(*content); ++i, ++content)
-	    buff2[i] = *content;
-	  buff2[i] = '\0';
-	  sscanf (buff2, "%d", &idx_array);
-	  /* Get the variable name. */
-	  while (*content && isspace(*content))
-	    ++content;
-	  for (i = 0; *content && ! isspace(*content); ++i, ++content)
-	    buff2[i] = *content;
-	  buff2[i] = '\0';
-	  /* array is in 0-basis. */
-	  if (arrays[idx_array - 1])
-	    free(arrays[idx_array - 1]);
-	  arrays[idx_array - 1] = strdup(buff2);
-	  /* Go to the end of line. */
-	  while (*content && *content != '\n')
-	    ++content;
-	}
-      content = start;
-    }
-
-  /* Fill the array of array names. */
-  char** tmparrays = openscop_scop_generate_names("var", scop->nb_arrays);
-  for (i = 0; i < scop->nb_arrays; ++i)
-    {
-      if (arrays[i] == NULL || arrays[i][0] == '\0')
-	{
-	  /* Use a generated name in case no array name was parsed. */
-	  scop->arrays[i] = tmparrays[i];
-	  if (arrays[i])
-	    free(arrays[i]);
-	}
-      else
-	{
-	  /* Use the parsed array name. */
-	  scop->arrays[i] = arrays[i];
-	  free(tmparrays[i]);
-	}
-    }
-  scop->arrays[i] = NULL;
-  free(arrays);
-  free(tmparrays);
-
+  if (!openscop_scop_integrity_check(scop))
+    fprintf(stderr, "[OpenScop] Warning: global integrity check failed.\n");
 
   return scop;
 }
 
 
-
-/*+****************************************************************************
- *                   Memory allocation/deallocation functions                 *
- ******************************************************************************/
+/*+***************************************************************************
+ *                   Memory allocation/deallocation functions                *
+ *****************************************************************************/
 
 
 /**
@@ -722,8 +609,7 @@ openscop_scop_read(FILE* file)
  * This function allocates the memory space for a openscop_scop_t structure and
  * sets its fields with default values. Then it returns a pointer to the
  * allocated space.
- **
- * - 30/04/2008: first version.
+ * \return A pointer to an empty scop with fields set to default values.
  */
 openscop_scop_p
 openscop_scop_malloc()
@@ -733,18 +619,24 @@ openscop_scop_malloc()
   scop = (openscop_scop_p)malloc(sizeof(openscop_scop_t));
   if (scop == NULL)
   {
-    fprintf(stderr, "[Scoplib] Memory Overflow.\n");
+    fprintf(stderr, "[OpenScop] Memory Overflow.\n");
     exit(1);
   }
 
-  scop->context       = NULL;
-  scop->nb_parameters = 0;
-  scop->parameters    = NULL;
-  scop->nb_arrays     = 0;
-  scop->arrays        = NULL;
-  scop->statement     = NULL;
-  scop->optiontags    = NULL;
-  scop->usr	      = NULL;
+  scop->version            = 1;
+  scop->textual_names      = 1;
+  scop->textual_extensions = 1;
+  scop->language           = NULL;
+  scop->context            = NULL;
+  scop->nb_parameters      = 0;
+  scop->nb_iterators       = 0;
+  scop->nb_scattdims       = 0;
+  scop->parameters         = NULL;
+  scop->iterators          = NULL;
+  scop->scattdims          = NULL;
+  scop->statement          = NULL;
+  scop->extensions         = NULL;
+  scop->usr	           = NULL;
 
   return scop;
 }
@@ -754,8 +646,6 @@ openscop_scop_malloc()
  * openscop_scop_free function:
  * This function frees the allocated memory for a openscop_scop_t structure.
  * \param scop The pointer to the scop we want to free.
- **
- * - 30/04/2008: first version.
  */
 void
 openscop_scop_free(openscop_scop_p scop)
@@ -764,81 +654,87 @@ openscop_scop_free(openscop_scop_p scop)
 
   if (scop != NULL)
   {
-    openscop_matrix_free(scop->context);
+    if (scop->language != NULL)
+      free(scop->language);
+    
+    openscop_relation_free(scop->context);
+    
     if (scop->parameters != NULL)
     {
       for (i = 0; i < scop->nb_parameters; i++)
         free(scop->parameters[i]);
       free(scop->parameters);
     }
-    if (scop->arrays != NULL)
+    
+    if (scop->iterators != NULL)
     {
-      for (i = 0; i < scop->nb_arrays; i++)
-        free(scop->arrays[i]);
-      free(scop->arrays);
+      for (i = 0; i < scop->nb_iterators; i++)
+        free(scop->iterators[i]);
+      free(scop->iterators);
     }
+    
+    if (scop->scattdims != NULL)
+    {
+      for (i = 0; i < scop->nb_scattdims; i++)
+        free(scop->scattdims[i]);
+      free(scop->scattdims);
+    }
+    
     openscop_statement_free(scop->statement);
-    free(scop->optiontags);
+    
+    if (scop->textual_extensions)
+      free(scop->extensions);
+    else
+      openscop_extension_free((openscop_extension_p)scop->extensions);
+
     free(scop);
   }
 }
 
 
-
-/**
- * openscop_scop_dup function:
- * This function returns a fresh identical (non shadow) copy of the
- * input scop.
- * \param scop   The scop whose information have to be printed.
- **
- */
-openscop_scop_p
-openscop_scop_dup(openscop_scop_p scop)
-{
-  int i;
-  openscop_statement_p stm;
-  openscop_statement_p tmp = NULL;
-  openscop_scop_p ret = openscop_scop_malloc();
-  ret->context = openscop_matrix_copy(scop->context);
-  ret->nb_parameters = scop->nb_parameters;
-  ret->parameters = (char**) malloc(sizeof(char*) * ret->nb_parameters);
-  for (i = 0; i < ret->nb_parameters; ++i)
-    ret->parameters[i] = strdup(scop->parameters[i]);
-  ret->nb_arrays = scop->nb_arrays;
-  ret->arrays = (char**) malloc(sizeof(char*) * ret->nb_arrays);
-  for (i = 0; i < ret->nb_arrays; ++i)
-    ret->arrays[i] = strdup(scop->arrays[i]);
-
-  for (stm = scop->statement; stm; stm = stm->next)
-    {
-      openscop_statement_p newstm = openscop_statement_malloc();
-      newstm->domain = openscop_matrix_copy(stm->domain);
-      newstm->schedule = openscop_matrix_copy(stm->schedule);
-      newstm->read = openscop_matrix_copy(stm->read);
-      newstm->write = openscop_matrix_copy(stm->write);
-      newstm->nb_iterators = stm->nb_iterators;
-      newstm->iterators = (char**) malloc(sizeof(char*) * newstm->nb_iterators);
-      for (i = 0; i < newstm->nb_iterators; ++i)
-	newstm->iterators[i] = strdup(stm->iterators[i]);
-      newstm->body = strdup (stm->body);
-      if (ret->statement == NULL)
-	ret->statement = tmp = newstm;
-      else
-	{
-	  tmp->next = newstm;
-	  tmp = tmp->next;
-	}
-    }
-  if (scop->optiontags)
-    ret->optiontags = strdup(scop->optiontags);
-  ret->usr = scop->usr;
-
-  return ret;
-}
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+
+
+/**
+ * openscop_scop_copy function:
+ * This functions builds and returns a "hard copy" (not a pointer copy)
+ * of a openscop_statement_t data structure provided as parameter.
+ * Note that the usr field is not touched by this function.
+ * \param statement  The pointer to the scop we want to copy.
+ * \return A pointer to the full copy of the scop provided as parameter.
+ */
+openscop_scop_p
+openscop_scop_copy(openscop_scop_p scop)
+{
+  openscop_scop_p copy;
+  
+  copy                     = openscop_scop_malloc();
+  copy->textual_names      = scop->textual_names;
+  copy->textual_extensions = scop->textual_extensions;
+  copy->version            = scop->version;
+  copy->language           = strdup(scop->language);
+  copy->context            = openscop_relation_copy(scop->context);
+  copy->nb_parameters      = scop->nb_parameters;
+  copy->nb_iterators       = scop->nb_iterators;
+  copy->nb_scattdims       = scop->nb_scattdims;
+  copy->parameters         = openscop_util_copy_strings(scop->parameters,
+                                                        scop->nb_parameters);
+  copy->iterators          = openscop_util_copy_strings(scop->iterators,
+                                                        scop->nb_iterators);
+  copy->scattdims          = openscop_util_copy_strings(scop->scattdims,
+                                                        scop->nb_scattdims);
+  copy->statement          = openscop_statement_copy(scop->statement);
+  
+  if (scop->textual_extensions)
+    copy->extensions       = strdup((char *)scop->extensions);
+  else
+    copy->extensions       = openscop_extension_copy((openscop_extension_p)
+                                                     scop->extensions);
+
+  return copy;
+}
 
 
 /**
@@ -854,22 +750,178 @@ openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2)
 {
   int i;
 
-  if (//(s1->version != s2->version) ||
-      (!openscop_matrix_equal(s1->context, s2->context)) ||
-      (s1->nb_parameters != s2->nb_parameters) ||
-      (s1->nb_scattdims != s2->nb_scattdims) ||
-      (!openscop_statement_equal(s1->statement, s2->statement)) ||
-      (strcmp(s1->optiontags, s2->optiontags) != 0))
+  if (s1->version != s2->version)
+  {
+    fprintf(stderr, "[OpenScop] info: versions are not the same.\n"); 
+    //return 0;
+  }
+  
+  if (strcmp(s1->language, s2->language) != 0)
+  {
+    fprintf(stderr, "[OpenScop] info: languages are not the same.\n"); 
     return 0;
+  }
+
+  if (!openscop_relation_equal(s1->context, s2->context))
+  {
+    fprintf(stderr, "[OpenScop] info: contexts are not the same.\n"); 
+    return 0;
+  }
+  
+  if (s1->nb_parameters != s2->nb_parameters)
+  {
+    fprintf(stderr, "[OpenScop] info: #parameters are not the same.\n"); 
+    return 0;
+  }
+  
+  if (s1->nb_iterators != s2->nb_iterators)
+  {
+    fprintf(stderr, "[OpenScop] info: #iterators are not the same.\n"); 
+    return 0;
+  }
+  
+  if (s1->nb_scattdims != s2->nb_scattdims)
+  {
+    fprintf(stderr, "[OpenScop] info: #scattdims are not the same.\n");
+    return 0;
+  }
+
+  if (!openscop_statement_equal(s1->statement, s2->statement))
+  {
+    fprintf(stderr, "[OpenScop] info: statements are not the same.\n"); 
+    return 0;
+  }
+  
+  if ((s1->textual_extensions != s2->textual_extensions) ||
+      (s1->textual_extensions && strcmp(s1->extensions, s2->extensions)) ||
+      (!s1->textual_extensions && !openscop_extension_equal(s1->extensions,
+                                                            s2->extensions)))
+  {
+    fprintf(stderr, "[OpenScop] info: extensions are not the same.\n"); 
+    return 0;
+  }
 
   for (i = 0; i < s1->nb_parameters; i++)
     if (strcmp(s1->parameters[i], s2->parameters[i]) != 0)
+    {
+      fprintf(stderr, "[OpenScop] info: parameter names are not the same.\n");
       return 0;
+    }
+  
+  for (i = 0; i < s1->nb_iterators; i++)
+    if (strcmp(s1->iterators[i], s2->iterators[i]) != 0)
+    {
+      fprintf(stderr, "[OpenScop] info: iterator names are not the same.\n");
+      return 0;
+    }
 
   for (i = 0; i < s1->nb_scattdims; i++)
     if (strcmp(s1->scattdims[i], s2->scattdims[i]) != 0)
+    {
+      fprintf(stderr, "[OpenScop] info: scattdims names are not the same.\n");
       return 0;
+    }
 
   return 1;
 }
 
+
+/**
+ * openscop_scop_integrity_check function:
+ * This function checks that a scop is "well formed". It returns 0 if the
+ * check failed or 1 if no problem has been detected.
+ * \param scop  The scop we want to check.
+ * \return 0 if the integrity check fails, 1 otherwise.
+ */
+int
+openscop_scop_integrity_check(openscop_scop_p scop)
+{
+  int expected_nb_parameters;
+  int nb_iterators, max_nb_iterators = 0;
+  int max_nb_scattdims = 0;
+  openscop_statement_p statement;
+
+  // Check the language.
+  if ((scop->language != NULL) &&
+      (!strcmp(scop->language, "caml")  || !strcmp(scop->language, "Caml") ||
+       !strcmp(scop->language, "ocaml") || !strcmp(scop->language, "OCaml")))
+    fprintf(stderr, "[OpenScop] Alert: Caml ?! Are you sure ?! ;)\n");
+  
+  // Check the context.
+  if (!openscop_relation_integrity_check(scop->context,
+                                         OPENSCOP_TYPE_CONTEXT,
+                                         0, 0, OPENSCOP_UNDEFINED))
+    return 0;
+
+  // Get the number of parameters.
+  if (scop->context != NULL)
+  { 
+    if (openscop_relation_is_matrix(scop->context))
+      expected_nb_parameters = scop->context->nb_columns - 2;
+    else
+      expected_nb_parameters = scop->context->nb_parameters;
+  }
+  else
+    expected_nb_parameters = OPENSCOP_UNDEFINED;
+
+  if (!openscop_statement_integrity_check(scop->statement,
+                                          expected_nb_parameters))
+    return 0;
+
+  // Ensure we have enough names.
+  if (expected_nb_parameters == OPENSCOP_UNDEFINED)
+    expected_nb_parameters = 0;
+
+  statement = scop->statement;
+  while (statement != NULL)
+  {
+    if (statement->domain != NULL)
+    {
+      if (openscop_relation_is_matrix(statement->domain))
+      {
+        nb_iterators = statement->domain->nb_columns -
+                       expected_nb_parameters - 2;
+        if (nb_iterators > max_nb_iterators)
+          max_nb_iterators = nb_iterators;
+      }
+      else
+      {
+        if (statement->domain->nb_output_dims > max_nb_iterators)
+          max_nb_iterators = statement->domain->nb_output_dims;
+      }
+    }
+
+    if (statement->scattering != NULL)
+    {
+      if (openscop_relation_is_matrix(statement->scattering))
+      {
+        if (statement->domain->nb_rows > max_nb_scattdims)
+          max_nb_scattdims = statement->scattering->nb_rows;
+      }
+      else
+      {
+        if (statement->scattering->nb_input_dims > max_nb_scattdims)
+          max_nb_scattdims = statement->scattering->nb_input_dims;
+      }
+    }
+
+    statement = statement->next;
+  }
+  
+  if ((scop->nb_iterators > 0) &&
+      (scop->nb_iterators < max_nb_iterators))
+  {
+    fprintf(stderr, "[OpenScop] Warning: not enough iterator names.\n");
+    return 0;
+  }
+  
+  if ((scop->nb_scattdims > 0) &&
+      (scop->nb_scattdims < max_nb_scattdims))
+  {
+    fprintf(stderr, "[OpenScop] Warning: not enough scattering "
+                    "dimension names.\n");
+    return 0;
+  }
+
+  return 1;
+}

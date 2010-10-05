@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                        relation_list.h                          **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 08/10/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,18 +61,76 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
+#ifndef OPENSCOP_RELATION_LIST_H
+# define OPENSCOP_RELATION_LIST_H
 
-
+# include <stdio.h>
 # include <openscop/macros.h>
-# include <openscop/util.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
-# include <openscop/relation_list.h>
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
+
+
+/**
+ * The openscop_relation_list_t structure describes a (NULL-terminated
+ * linked) list of relations.
+ */
+struct openscop_relation_list
+{
+  openscop_relation_p elt;              /**< An element of the list. */
+  struct openscop_relation_list * next; /**< Pointer to the next element
+				             of the list.*/
+};
+typedef struct openscop_relation_list   openscop_relation_list_t;
+typedef struct openscop_relation_list * openscop_relation_list_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void openscop_relation_list_print_structure(FILE *,
+                                     openscop_relation_list_p, int);
+void openscop_relation_list_print(FILE *, openscop_relation_list_p);
+void openscop_relation_list_print_openscop(FILE *,
+                                     openscop_relation_list_p, int,
+				     int, char **,
+                                     int, char **,
+				     int, char **);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+openscop_relation_list_p openscop_relation_list_read(FILE *);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+openscop_relation_list_p openscop_relation_list_malloc();
+void                     openscop_relation_list_free(openscop_relation_list_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+openscop_relation_list_p openscop_relation_list_node(openscop_relation_p);
+openscop_relation_list_p openscop_relation_list_copy(openscop_relation_list_p);
+openscop_relation_list_p openscop_relation_list_concat(
+                                             openscop_relation_list_p,
+                                             openscop_relation_list_p);
+int                      openscop_relation_list_equal(openscop_relation_list_p,
+                                             openscop_relation_list_p);
+int                      openscop_relation_list_integrity_check(
+                                             openscop_relation_list_p,
+                                             int, int, int, int);
+
+# if defined(__cplusplus)
+  }
+# endif
+#endif /* define OPENSCOP_RELATION_LIST_H */

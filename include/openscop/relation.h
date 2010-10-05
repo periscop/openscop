@@ -66,6 +66,7 @@
 
 # include <stdio.h>
 # include <openscop/macros.h>
+# include <openscop/util.h>
 # include <openscop/vector.h>
 
 
@@ -97,13 +98,13 @@ extern "C"
  */
 struct openscop_relation
 {
-  unsigned nb_rows;                /**< The number of rows */
-  unsigned nb_columns;	           /**< The number of columns */
-  unsigned nb_output_dims;         /**< The number of output dimensions */
-  unsigned nb_input_dims;          /**< The number of input dimensions */
-  unsigned nb_local_dims;          /**< The number of local (existentially
+  int nb_rows;                     /**< The number of rows */
+  int nb_columns;	           /**< The number of columns */
+  int nb_output_dims;              /**< The number of output dimensions */
+  int nb_input_dims;               /**< The number of input dimensions */
+  int nb_local_dims;               /**< The number of local (existentially
                                         quantified) dimensions */
-  unsigned nb_parameters;          /**< The number of parameters */
+  int nb_parameters;               /**< The number of parameters */
   openscop_int_t ** m;             /**< An array of pointers to the beginning
 			                of each row of the relation matrix */
   struct openscop_relation * next; /**< Pointer to the next relation in the
@@ -119,7 +120,7 @@ typedef struct openscop_relation * openscop_relation_p;
 void                openscop_relation_print_structure(FILE *,
                                         openscop_relation_p, int);
 void                openscop_relation_print(FILE *, openscop_relation_p);
-void                openscop_relation_print_dot_scop(FILE *,
+void                openscop_relation_print_openscop(FILE *,
                                         openscop_relation_p, int,
 				        int, char **, int, char **,
 				        int, char **);
@@ -135,7 +136,7 @@ openscop_relation_p openscop_relation_read_arrays(FILE *, char ***, int *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_relation_p openscop_relation_malloc(unsigned, unsigned);
+openscop_relation_p openscop_relation_malloc(int, int);
 void                openscop_relation_free_inside(openscop_relation_p);
 void                openscop_relation_free(openscop_relation_p);
 
@@ -143,6 +144,7 @@ void                openscop_relation_free(openscop_relation_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+int                 openscop_relation_is_matrix(openscop_relation_p);
 openscop_relation_p openscop_relation_ncopy(openscop_relation_p, int);
 openscop_relation_p openscop_relation_copy(openscop_relation_p);
 void                openscop_relation_replace_vector(openscop_relation_p,
@@ -162,7 +164,9 @@ openscop_relation_p openscop_relation_concat(openscop_relation_p,
                                         openscop_relation_p);
 int                 openscop_relation_equal(openscop_relation_p,
                                         openscop_relation_p);    
-    
+int                 openscop_relation_integrity_check(openscop_relation_p,
+                                        int, int, int, int);
+
 # if defined(__cplusplus)
   }
 # endif

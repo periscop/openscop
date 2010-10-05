@@ -78,9 +78,11 @@
 # endif
 
 # include <openscop/macros.h>
-# include <openscop/matrix.h>
-# include <openscop/statement.h>
+# include <openscop/util.h>
 # include <openscop/vector.h>
+# include <openscop/relation.h>
+# include <openscop/extension.h>
+# include <openscop/statement.h>
 
 
 # if defined(__cplusplus)
@@ -90,25 +92,29 @@ extern "C"
 
 
 /**
- * The scop_t structure stores the useful informations of a static
+ * The scop_t structure stores the useful information of a static
  * control part of a program to process it within a polyhedral framework.
  */
 struct openscop_scop
 {
   int version;                    /**< Version of the data structure */
-  openscop_matrix_p context;      /**< Constraints on the SCoP parameters */
+  int textual_names;              /**< 1 if names are strings, 0 otherwise. */
+  int textual_extensions;         /**< 1 if extensions is a string, 0 if not.*/
+  char * language;                /**< Target language (backend) */
+  openscop_relation_p context;    /**< Constraints on the SCoP parameters */
   int nb_parameters;              /**< Number of parameters for the SCoP */
+  int nb_iterators;               /**< Number (max) of output dimensions */
   int nb_scattdims;               /**< Number (max) of scattering dimensions */
-  int nb_arrays;                  /**< Number of arrays accessed in the SCoP */
-  char ** parameters;             /**< Array of (nb_parameters) param names */
-  char ** scattdims;              /**< Array of (nb_scattdims) scattering 
+  char ** parameters;             /**< Array of nb_parameters param names */
+  char ** iterators;              /**< Array of nb_iterators iterator names */
+  char ** scattdims;              /**< Array of nb_scattdims scattering 
                                        dimension names */
-  char ** arrays;                 /**< Array of (nb_arrays) array names */
   openscop_statement_p statement; /**< Statement list of the SCoP */
-  char * optiontags;              /**< The content (as a 0 terminated
-                                       string) of the optional tags. */
+  void * extensions;              /**< Extensions. A 0-terminated string if
+                                       textual_extensions is 1, an
+                                       openscop_extension_p otherwise. */
   void * usr;                     /**< A user-defined field, not touched
-				       by the OpenScop Library. */
+				       AT ALL by the OpenScop Library. */
 };
 typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;
@@ -119,17 +125,13 @@ typedef struct openscop_scop * openscop_scop_p;
  *****************************************************************************/
 void openscop_scop_print_structure(FILE *, openscop_scop_p, int);
 void openscop_scop_print(FILE *, openscop_scop_p);
-void openscop_scop_print_dot_scop(FILE *, openscop_scop_p);
-void openscop_scop_print_dot_scop_options(FILE * file, openscop_scop_p scop,
-                                          int options);
+void openscop_scop_print_openscop(FILE *, openscop_scop_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
 openscop_scop_p	openscop_scop_read(FILE *);
-char *          openscop_scop_tag_content(openscop_scop_p, char *, char *);
-char *          openscop_scop_tag_content_from_string(char *, char *, char *);
 
 
 /*+***************************************************************************
@@ -137,12 +139,14 @@ char *          openscop_scop_tag_content_from_string(char *, char *, char *);
  *****************************************************************************/
 openscop_scop_p	openscop_scop_malloc();
 void		openscop_scop_free(openscop_scop_p);
-openscop_scop_p	openscop_scop_dup(openscop_scop_p);
+
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-int openscop_scop_equal(openscop_scop_p, openscop_scop_p);
+openscop_scop_p	openscop_scop_copy(openscop_scop_p);
+int             openscop_scop_equal(openscop_scop_p, openscop_scop_p);
+int             openscop_scop_integrity_check(openscop_scop_p);
 
 
 # if defined(__cplusplus)

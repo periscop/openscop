@@ -75,10 +75,15 @@ MAINTAINERCLEANFILES	= Makefile.in
 
 #############################################################################
 
-pkginclude_HEADERS 	=			\
-	openscop/openscop.h			\
-	openscop/statement.h			\
-	openscop/vector.h			\
-	openscop/matrix.h			\
-	openscop/macros.h			\
+pkginclude_HEADERS 	=                  \
+	openscop/openscop.h                \
+	openscop/statement.h               \
+	openscop/comment.h                 \
+	openscop/arrays.h                  \
+	openscop/extension.h               \
+	openscop/vector.h                  \
+	openscop/relation.h                \
+	openscop/relation_list.h           \
+	openscop/macros.h                  \
+	openscop/util.h                    \
 	openscop/scop.h

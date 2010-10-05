@@ -66,7 +66,9 @@
 
 # include <stdio.h>
 # include <openscop/macros.h>
-# include <openscop/matrix.h>
+# include <openscop/util.h>
+# include <openscop/relation.h>
+# include <openscop/relation_list.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -75,21 +77,23 @@ extern "C"
 
 
 /**
- * The openscop_statement_t structure stores the useful informations of a
- * given statement to process it within a polyhedral framework.
+ * The openscop_statement_t structure stores a list of statement. Each node
+ * contains the useful informations for a given statement to process it
+ * within a polyhedral framework. The order in the list may matter for naming
+ * conventions (e.g. "S1" for the first statement in the list).
  */
 struct openscop_statement
 {
-  int version;                /**< Version of the data structure */
-  openscop_matrix_p domain;   /**< Iteration domain of the statement */
-  openscop_matrix_p schedule; /**< Scheduling function for the statement */
-  openscop_matrix_p read;     /**< Array read access informations */
-  openscop_matrix_p write;    /**< Array write access informations */
-  int nb_iterators;           /**< Original depth of the statement */
-  char ** iterators;          /**< Array of (nb_iterators) iterator names */
-  char * body;                /**< Original statement body */
-  void * usr;                 /**< A user-defined field, not touched
-				   by the OpenScop Library. */
+  int version;                    /**< Version of the data structure */
+  openscop_relation_p domain;     /**< Iteration domain of the statement */
+  openscop_relation_p scattering; /**< Scattering function for the statement */
+  openscop_relation_list_p read;  /**< Array read access informations */
+  openscop_relation_list_p write; /**< Array write access informations */
+  int nb_iterators;               /**< Number of names in 'iterators' */
+  char ** iterators;              /**< Array of iterator names */
+  char * body;                    /**< Original statement body */
+  void * usr;                     /**< A user-defined field, not touched
+				       AT ALL by the OpenScop Library. */
   struct openscop_statement * next; /**< Next statement in the linked list */
 };
 typedef struct openscop_statement   openscop_statement_t;
@@ -101,31 +105,32 @@ typedef struct openscop_statement * openscop_statement_p;
  *****************************************************************************/
 void openscop_statement_print_structure(FILE *, openscop_statement_p, int);
 void openscop_statement_print(FILE *, openscop_statement_p);
-void openscop_statement_print_dot_scop(FILE *, openscop_statement_p,
+void openscop_statement_print_openscop(FILE *, openscop_statement_p,
                                        int, char **, int, char **);
 
 
-/******************************************************************************
- *                               Reading function                             *
- ******************************************************************************/
-openscop_statement_p openscop_statement_read(FILE*, int, char***, int*);
+/*****************************************************************************
+ *                              Reading function                             *
+ *****************************************************************************/
+openscop_statement_p openscop_statement_read(FILE*);
 
 
-/*+****************************************************************************
- *                    Memory allocation/deallocation function                 *
- ******************************************************************************/
+/*+***************************************************************************
+ *                   Memory allocation/deallocation function                 *
+ *****************************************************************************/
 openscop_statement_p openscop_statement_malloc();
 void                 openscop_statement_free(openscop_statement_p);
 
 
-/*+****************************************************************************
- *                            Processing functions                            *
- ******************************************************************************/
+/*+***************************************************************************
+ *                           Processing functions                            *
+ *****************************************************************************/
 void openscop_statement_add(openscop_statement_p *, openscop_statement_p);
 void openscop_statement_compact(openscop_statement_p, int);
 int  openscop_statement_number(openscop_statement_p);
+openscop_statement_p openscop_statement_copy(openscop_statement_p);
 int  openscop_statement_equal(openscop_statement_p, openscop_statement_p);
-
+int  openscop_statement_integrity_check(openscop_statement_p, int);
 
 # if defined(__cplusplus)
   }

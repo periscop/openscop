@@ -108,18 +108,20 @@ int test_file(char * input_name, int verbose)
   // Dump the OpenScop data structures to OpenScop file format.
   output_name = tmpnam(NULL);
   output_file = fopen(output_name, "w");
-  openscop_scop_print_dot_scop(output_file, input_scop);
+  openscop_scop_print_openscop(output_file, input_scop);
   fclose(output_file);
 
   // Raise the generated file to data structures.
   output_file = fopen(output_name, "r");
   output_scop = openscop_scop_read(output_file);
+  //output_scop = openscop_scop_copy(output_scop);
   fclose(output_file);
 
   if (verbose)
   {
     printf("\n\n*************************************************\n\n");
-    openscop_scop_print_dot_scop(stdout, output_scop);
+    openscop_scop_print(stdout, output_scop);
+    openscop_scop_print_openscop(stdout, output_scop);
     printf("\n*************************************************\n\n");
   }
 
@@ -152,6 +154,7 @@ int main(int argc, char * argv[])
   int verbose = 0; // 1 if the verbose option is set, 0 otherwise.
   int dirtest = 1; // 1 if we check a whole directory, 0 for a single file.
   int fileidx = 0; // Index of the file to check in argv (0 if none).
+  int d_namlen;
   int suffix_length;
   DIR * dir;
   struct dirent * dp;
@@ -182,9 +185,10 @@ int main(int argc, char * argv[])
     dir = opendir(TEST_DIR);
     while ((dp = readdir(dir)) != NULL)
     {
+      d_namlen = strlen(dp->d_name);
       // If the file has the convenient suffix...
-      if ((dp->d_namlen > suffix_length) &&
-          (!strcmp(dp->d_name+(dp->d_namlen-suffix_length), TEST_SUFFIX)))
+      if ((d_namlen > suffix_length) &&
+          (!strcmp(dp->d_name+(d_namlen-suffix_length), TEST_SUFFIX)))
       {
         // Test it !
         success += test_file(dp->d_name, verbose);

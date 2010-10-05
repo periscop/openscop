@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                      extensions/arrays.c                        **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -60,19 +60,83 @@
  *                                                                           *
  *****************************************************************************/
 
-
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
-
-
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <string.h>
 # include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+
+
+void openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
+                                     int level)
+{
+
+
+}
+
+
+void openscop_arrays_print(FILE * file, openscop_arrays_p arrays)
+{
+  openscop_arrays_print_structure(file, arrays, 0);
+}
+
+
+void openscop_arrays_print_openscop(FILE * file, openscop_arrays_p arrays)
+{
+
+}
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+
+openscop_arrays_p openscop_arrays_read(char * extensions)
+{
+
+
+  return NULL;
+}
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+
+
+openscop_arrays_p openscop_arrays_malloc()
+{
+
+
+  return NULL;
+}
+
+
+void openscop_arrays_free(openscop_arrays_p arrays)
+{
+
+
+}
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+
+
+openscop_arrays_p openscop_arrays_copy(openscop_arrays_p arrays)
+{
+
+  return NULL;
+}
+
+
+int openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2)
+{
+
+  return 1;
+}

@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                      extensions/arrays.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,18 +61,66 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
-
+#ifndef OPENSCOP_ARRAYS_H
+# define OPENSCOP_ARRAYS_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
+
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+# define OPENSCOP_TAG_ARRAYS_START  "<arrays>"
+# define OPENSCOP_TAG_ARRAYS_STOP   "</arrays>"
+
+
+/**
+ * The openscop_arrays_t structure stores an arrays to the core
+ * OpenScop representation. It is a node of a NULL-terminated linked list of
+ * arrayss.
+ */
+struct openscop_arrays
+{
+  int textual;       /**< 1 is the array names are strings, 0 otherwise. */
+  void * names;      /**< NULL-terminated array of names. */
+};
+typedef struct openscop_arrays   openscop_arrays_t;
+typedef struct openscop_arrays * openscop_arrays_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void openscop_arrays_print_structure(FILE *, openscop_arrays_p, int);
+void openscop_arrays_print(FILE *, openscop_arrays_p);
+void openscop_arrays_print_openscop(FILE *, openscop_arrays_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+openscop_arrays_p openscop_arrays_read(char *);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+openscop_arrays_p openscop_arrays_malloc();
+void              openscop_arrays_free(openscop_arrays_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+openscop_arrays_p openscop_arrays_copy(openscop_arrays_p);
+int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
+
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OPENSCOP_ARRAYS_H */

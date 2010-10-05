@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                           matrix.h                              **
+     **                     extensions/comment.c                        **
      **-----------------------------------------------------------------**
-     **                   First version: 30/04/2008                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -60,85 +60,81 @@
  *                                                                           *
  *****************************************************************************/
 
-
-#ifndef OPENSCOP_MATRIX_H
-# define OPENSCOP_MATRIX_H
-
+# include <stdlib.h>
 # include <stdio.h>
-# include <openscop/macros.h>
-# include <openscop/vector.h>
-
-
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
-
-
-/**
- * The openscop_matrix_t structure stores a matrix information in the PolyLib
- * format (the first entry of each row has a specific meaning). When a row
- * describes a linear constraint, a 0 means it is an equality == 0, a 1 means
- * an inequality >= 0. When a row describes an array access, a number different
- * than 0 is the array identifier (the remainder of the row describes the
- * access function of the first dimension of this array), otherwise it means
- * the row describes access functions for next array dimensions.
- */
-struct openscop_matrix
-{
-  unsigned NbRows;         /**< The number of rows */
-  unsigned NbColumns;	   /**< The number of columns */
-  openscop_int_t ** p;     /**< An array of pointers to the beginning
-			        of each row */
-  openscop_int_t * p_Init; /**< The matrix is stored here, contiguously
-			        in memory */
-  int p_Init_size;         /**< Needed to free the memory allocated by
-			        mpz_init. */
-};
-typedef struct openscop_matrix   openscop_matrix_t;
-typedef struct openscop_matrix * openscop_matrix_p;
+# include <string.h>
+# include <openscop/extension.h>
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_matrix_print_structure(FILE *, openscop_matrix_p, int);
-void openscop_matrix_print(FILE *, openscop_matrix_p);
-void openscop_matrix_print_dot_scop(FILE *, openscop_matrix_p, int,
-				    int, char **, int, char **, int, char **);
+
+
+void openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
+                                      int level)
+{
+
+
+}
+
+
+void openscop_comment_print(FILE * file, openscop_comment_p comment)
+{
+  openscop_comment_print_structure(file, comment, 0);
+}
+
+
+void openscop_comment_print_openscop(FILE * file, openscop_comment_p comment)
+{
+
+}
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_matrix_p openscop_matrix_read(FILE *);
-openscop_matrix_p openscop_matrix_read_arrays(FILE *, char ***, int *);
+
+openscop_comment_p openscop_comment_read(char * extensions)
+{
+
+  return NULL;
+}
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_matrix_p openscop_matrix_malloc(unsigned, unsigned);
-void              openscop_matrix_free_inside(openscop_matrix_p);
-void              openscop_matrix_free(openscop_matrix_p);
+
+
+openscop_comment_p openscop_comment_malloc()
+{
+
+  return NULL;
+}
+
+
+void openscop_comment_free(openscop_comment_p comment)
+{
+
+
+}
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_matrix_p openscop_matrix_ncopy(openscop_matrix_p, int);
-openscop_matrix_p openscop_matrix_copy(openscop_matrix_p);
-openscop_matrix_p openscop_matrix_concat(openscop_matrix_p, openscop_matrix_p);
-openscop_matrix_p openscop_matrix_from_vector(openscop_vector_p);
-void openscop_matrix_replace_vector(openscop_matrix_p, openscop_vector_p, int);
-void openscop_matrix_insert_vector(openscop_matrix_p, openscop_vector_p, int);
-void openscop_matrix_add_vector(openscop_matrix_p, openscop_vector_p, int);
-void openscop_matrix_sub_vector(openscop_matrix_p, openscop_vector_p, int);
-void openscop_matrix_replace_matrix(openscop_matrix_p, openscop_matrix_p, int);
-void openscop_matrix_insert_matrix(openscop_matrix_p, openscop_matrix_p, int);
-int  openscop_matrix_equal(openscop_matrix_p, openscop_matrix_p);    
-    
-# if defined(__cplusplus)
-  }
-# endif
-#endif /* define OPENSCOP_MATRIX_H */
+
+
+openscop_comment_p openscop_comment_copy(openscop_comment_p comment)
+{
+
+  return NULL;
+}
+
+
+int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2)
+{
+
+  return 1;
+}

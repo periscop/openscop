@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                            util.h                               **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 08/10/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,18 +61,32 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
-
+#ifndef OPENSCOP_UTIL_H
+# define OPENSCOP_UTIL_H
 
 # include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
+
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+char ** openscop_util_copy_strings(char **, int);
+char *  openscop_util_skip_blank_and_comments(FILE *, char *);
+char ** openscop_util_read_strings(FILE *, int, int *);
+int     openscop_util_read_int(FILE *, char **);
+void    openscop_util_free_name_array(char **, int);
+char ** openscop_util_generate_names(char *, int);
+char *  openscop_util_tag_content(char *, char *, char *);
+char ** openscop_util_read_tag_arrays(char *, int *);
+
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OPENSCOP_UTIL_H */

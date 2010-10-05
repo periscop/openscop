@@ -79,7 +79,7 @@ noinst_PROGRAMS = openscop_test
 
 TESTS = openscop_test
 
-openscop_test_CPPFLAGS = -I$(top_srcdir)/include
+openscop_test_CPPFLAGS = -I$(top_srcdir)/include -static
 
 openscop_test_LDFLAGS  = -L$(top_srcdir)/source
 

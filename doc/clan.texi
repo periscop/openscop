@@ -1,30 +1,27 @@
 \input texinfo
 @c %
 @c %  /**-----------------------------------------------------------------**
-@c %   **                               Clan                              **
+@c %   **                           OpenScop Library                      **
 @c %   **-----------------------------------------------------------------**
-@c %   **                             clan.texi                           **
+@c %   **                            openscop.texi                        **
 @c %   **-----------------------------------------------------------------**
 @c %   **                 First version: september 10th 2006              **
 @c %   **-----------------------------------------------------------------**/
 @c %
 @c % release 0.0: May 4th 2008
 @c %
-@c %/**************************************************************************
-@c % *               Clan: the Chunky Loop Analyzer (experimental)            *
-@c % **************************************************************************/
-
 
 @c % /*************************************************************************
 @c %  *                              PART I: HEADER                           *
 @c %  *************************************************************************/
 @c %**start of header
-@setfilename clan.info
-@settitle Clan - a polyhedral representation extractor for high level programs
+@setfilename openscop.info
+@settitle OpenScop - File Format and Data Structures for Polyhedral Compilation Tools
 
 @set EDITION 1.0
-@set VERSION 1.0.0
-@set UPDATED May 4th 2008
+@set SPEC_VERSION 1.0
+@set LIB_VERSION 1.0
+@set UPDATED November 13th 2010
 @c @set UPDATED Coming soon
 @setchapternewpage odd
 
@@ -35,18 +32,19 @@
 
 @c %**end of header
 
-@c % /*************************************************************************
-@c %  *                 PART II: SUMMARY DESCRIPTION AND COPYRIGHT            *
-@c %  *************************************************************************/
+@c % /************************************************************************
+@c %  *                PART II: SUMMARY DESCRIPTION AND COPYRIGHT            *
+@c %  ************************************************************************/
 
 @copying
-This manual is for Clan version @value{VERSION}, a software
-which extracts the polyhedral representation of some parts of
-high level programs written in C, C++, C# or Java.
+This document describes OpenScop, a specification of a file format and a set
+of data structures for polyhedral compilation tools to be able to talk
+together. It also describes the OpenScop Library version @value{LIB_VERSION}, 
+a Free Software that provides an example of OpenScop implementation.
 
 It would be quite kind to refer the following paper in any publication that
-results from the use of the Clan software or its library (the reason to cite
-it is, amongst many other interesting things, it defines what is a @emph{SCoP},
+results from the use of the OpenScop library (the reason to cite this paper is,
+amongst many other interesting thing, that it defines what is a @emph{SCoP},
 or @emph{static control part}):
 
 @example
@@ -63,7 +61,7 @@ or @emph{static control part}):
 @}
 @end example
 
-Copyright @copyright{} 2008 C@'edric Bastoul.
+Copyright @copyright{} 2010 C@'edric Bastoul.
 
 @c quotation
 Permission is granted to copy, distribute and/or modify this document under
@@ -78,9 +76,9 @@ GNU Free Documentation License, write to the Free Software Foundation, Inc.,
 @c %  *                 PART III: TITLEPAGE, CONTENTS, COPYRIGHT              *
 @c %  *************************************************************************/
 @titlepage
-@title Clan
-@subtitle A Polyhedral Representation Extractor for High Level Programs
-@subtitle Edition @value{EDITION}, for Clan @value{VERSION}
+@title OpenScop
+@subtitle File Format and Data Structures for Data Exchange in Polyhedral Compilation Tools
+@subtitle Edition @value{EDITION}, for OpenScop Specification @value{SPEC_VERSION} and OpenScop Library @value{LIB_VERSION}
 @subtitle @value{UPDATED}
 @author C@'edric Bastoul
 
@@ -98,7 +96,7 @@ GNU Free Documentation License, write to the Free Software Foundation, Inc.,
 @c %  *************************************************************************/
 @ifnottex
 @node Top
-@top CLooG
+@top OpenSCop
 
 @insertcopying
 @end ifnottex
@@ -106,9 +104,8 @@ GNU Free Documentation License, write to the Free Software Foundation, Inc.,
 @menu
 * Introduction::
 * Polyhedral Representation::
-* Clan Software::
+* OpenScop File Format Specification::
 * Clan Library::
-@c * Hacking::
 * Installing::
 * Documentation::
 * References::
@@ -123,55 +120,94 @@ GNU Free Documentation License, write to the Free Software Foundation, Inc.,
 @c %  ****************************** INTRODUCTION ******************************
 @node Introduction
 @chapter Introduction
-Clan is a free software and library that translates some particular parts of
-high level programs written in C, C++, C# or Java into a polyhedral representation.
-This representation
-may be manipulated by other tools to, e.g., achieve complex program
-restructurations (for optimization, parallelization or any other kind of
-manipulation). It has been created to avoid tedious and error-prone input
-file writing for polyhedral tools (such as CLooG, LeTSeE, Candl etc.).
-Using Clan, the user has to deal with source codes based on C grammar only
-(as C, C++, C# or Java).
+OpenScop is an open specification that defines a file format and a set of
+data structures to represent a @emph{static control part} (SCoP for short),
+i.e., a program part that can be represented in the @emph{polyhedral model}.
+The goal of OpenScop is to provide a common interface to the different
+polyhedral compilation tools in order to simplify their interaction. 
 
-Clan stands for @emph{Chunky Loop ANalyzer}: it is a part of the Chunky
-project, a research tool for data locality improvement (@pxref{Bas03a}).
-It is designed to be the front-end of any source-to-source automatic optimizers
-and/or parallelizers.
+Designing a single format for tools that have different purposes
+(e.g., as different as code generation and data dependence analysis) may
+sound strange at first. However we could observe that most available
+polyhedral compilation tool during the last decade were manipulating
+more or less the same kind of data (polyhedra, affine functions...) and
+were actually sharing a part of their input (e.g., iteration domains and
+context concepts are nearly everywhere). We could also observe that
+those tools may rely on different internal representations, mostly based on
+one of the major polyhedral libraries (e.g., Polylib, PPL or isl), and
+this representation may change over time (e.g., when switching to a
+more convenient polyhedral library).
+The OpenScop aim is to provide a stable, unified format that offers a
+durable guarantee that a tool can use an output or provide an input to
+another tool without breaking a tool chain because of slight internal
+changes. The other promise of OpenScop is the ablility to assemble or
+replace the basic blocs of a polyhedral compilation framework at no, or
+at least low engineering cost.
 
-Clan is a very basic tool since it is only a translator from a given program
-representation to another representation. Nevertheless the current version is
-still under evaluation, and there is no guarantee that the upward compatibility
-will be respected. A lot of reports are necessary to freeze the library
-API and the input/output file shapes. The current output file format has been
-designed after discussions between several compilation researchers from
-various institutions. Thus you are very welcome and encouraged to send reports
-on bugs, wishes, critics, comments, suggestions or (please !) successful
-experiences to cedric.bastoul@@inria.fr.
+The policy that drives OpenScop can be summarized by these three main rules:
+@itemize @bullet
+@item  Embbed the @emph{minimum} information to build a complete polyhedral
+       compilation framework in the core part (to avoid as much as possible
+       empty or useless fields for each tool).
+@item  Provide a @emph{very stable} core part (including powerful enough
+       objects to support state-of-the-art techniques, to avoid 
+       spending time to maintain an OpenScop input or output),
+@item  Provide a @emph{very flexible} extension part (so OpenScop can also
+       be used to test wild new ideas).
+@end itemize
+
+The success of OpenScop in meeting its goals totally depend on its
+acceptance by the tool developpers (that have to support it in their tools).
+To help them, we provide an example implementation: the OpenScop Library.
+This library (and in particular its API) is not part of the OpenScop
+specification (which includes only the file format and the set of data
+structures). It is licensed under the 3-clause BSD license so developpers may
+feel free to use it in their code (either by linking it or copy-pasting its
+code). This document also describes this library in details.
+The current version of the OpenScop Library is still under evaluation,
+and there is no guarantee that the upward compatibility will be respected,
+even if we do think so. A lot of reports are
+necessary to freeze the library API. Thus you are very welcome and
+encouraged to send reports on bugs, wishes, critics, comments, suggestions
+or (please !) successful experiences to cedric.bastoul@@u-psud.fr.
+
+This document is organized as follows. First, we provide some
+background on the polyhedral model and how it is used to represent and to
+manipulate programs (@pxref{Polyhedral Representation}). Next,
+we describe the OpenScop specification, from the file format
+(@pxref{OpenScop File Format Specification}) to the data structures and
+details of the OpenScop Library API
+(@pxref{OpenScop Data Structure Specification}).
+Finally we will detail how to install the OpenScop Library
+(@pxref{Installing}).
 
 
 @c %  ******************* POLYHEDRAL REPRESENTATION OF PROGRAMS ****************
 @node Polyhedral Representation
 @chapter Polyhedral Representation of Programs
-If you are reading the Clan's user manual, you probably don't need any
-explanation about the Polyhedral Model. It's unlikely someone will read this
-manual by chance. However some vicious advisor may ask their poor
+If you are reading at OpenScop's documentation, you probably don't need any
+explanation about the Polyhedral Model. It is unlikely someone will read this
+paper by chance. However some vicious advisor may ask their poor
 engineers/interns/students
 to work for the very first time on this exciting topic. Most papers on
-Polyhedral Compilation are hard to read. Despite my efforts,
+polyhedral compilation are hard to read. Despite my efforts,
 mine are no exception according to some reviewers... Hence I give there a new
 try to provide a comprehensive explanation of the polyhedral model without the
 size and style limits of a classical research paper.
 
-Be aware that to be able to understand the Polyhedral Model, there are few
+Be aware that to be able to understand the polyhedral model, there are few
 prerequisites. You should not read the following while you still ignore
 what is:
 @itemize @bullet
-@item  a @code{for} loop construction in C programs,
+@item  a @code{for} loop construction in C programs (@code{do} loops in FORTRAN are OK too !),
 @item  an @emph{affine expression},
 @item  a @emph{vector},
 @item  a @emph{matrix},
 @item  a @emph{matrix-vector multiply}.
 @end itemize
+If you do not know those concepts, please do some search and come back
+afterwards. And if you are courageous enough, send me a few lines that
+describe them so I can insert that here !
 
 @menu
 * Motivation::
@@ -182,8 +218,8 @@ what is:
 @node Motivation
 @section Motivation: Program Transformations
 
-A direct translation of high level programs written, e.g., in C to assembly
-then object code is likely to produce (very) inefficient applications.
+A direct translation of high level programs written, e.g., in C, to assembly
+then to object code is likely to produce (very) inefficient applications.
 Architectures are
 quite complex, including several levels of cache memory, many cores, deep
 pipelines, various number of functionnal units, of registers etc.
@@ -233,9 +269,8 @@ y = c + d;
 
 We could also notice that it is possible to run the three statements in
 parallel and explicit this in the way the compiler and/or the architecture is
-able to understand. Here we use OpenMP to describe parallelism. It is
-supported in GCC since 4.2 version (this is called a @emph{parallelizing}
-transformation):
+able to understand. Here we use OpenMP to describe parallelism
+(this is called a @emph{parallelizing} transformation):
 
 @example
 @group
@@ -280,12 +315,11 @@ to run too many operations in parallel:
 
 Such transformations are quite trivial. The reason is the statements are
 executed only once. The real sport begins when we have to deal with loops
-as we will see momentarily. However, Clan users have to be conscious that
-we @emph{need} to transform programs to achieve the best performance and that
-the best transformation  that have to be discovered
-(with often many, many efforts) and performed may be
-quite complex. Hence the need of powerful model and tools
-(Who said Polyhedral Model and CLooG ? Right !).
+as we will see momentarily. However, polyhedral compilation framework users
+have to be conscious that we @emph{need} to transform programs to achieve
+the best performance and that the best transformation  that have to be
+discovered (with often many, many efforts) and performed may be
+quite complex. Hence the need of powerful model and tools.
 
 
 @node Thinking in Polyhedra
@@ -308,7 +342,7 @@ Loop transformations operate on statement executions. For instance,
 because they consider all statement executions at the same time, present day
 production compilers are not able to achieve loop fusion (that tries to
 merge the loop bodies of two loops) if the loop bounds
-of the two loops do not match.
+of the two loops do not match (hahaha).
 
 @noindent @strong{This is a limitation for program manipulation flexibility.}
 Trees are very rigid data structures that are not easy to manipulate.
@@ -337,7 +371,7 @@ a @strong{Static Control Part} or @strong{SCoP} for short.
 @node Iteration Domain
 @subsection Iteration Domain
 
-The key aspect of the Polyhedral Model is to consider @emph{statement
+The key aspect of the polyhedral model is to consider @emph{statement
 instances}. A statement instance is @emph{one} execution of a statement.
 A statement
 outside a loop has only one instance while those inside loops may have many.
@@ -358,11 +392,11 @@ unroll the loop):
 @example
 @group
 pi = 3.14;
-A[0] = x;
-A[1] = x;
-A[2] = x;
-A[3] = x;
-A[4] = x;
+A[0] = pi;
+A[1] = pi;
+A[2] = pi;
+A[3] = pi;
+A[4] = pi;
 @end group
 @end example
 
@@ -371,7 +405,7 @@ thanks to its outer loop counters (or @emph{iterators}). In the Polyhedral
 Model we consider statements as functions of the outer loop counters that may
 produce statement instances:
 instead of simply "@code{S2}", we use preferably the notation @code{S2(i)}.
-For instance we  denote the statement instance @code{A[3] = x;} of the
+For instance we  denote the statement instance @code{A[3] = pi;} of the
 previous example as @code{S2(3)}. This means @emph{instance of
 statement @code{S2} for} @code{i = 3}.
 If a statement @code{S3} is enclosed inside two loops of iterators @code{i}
@@ -408,7 +442,7 @@ Here the only parameter is @code{N}.
 A compact way to represent all the instances of a given statement
 is to consider the set of all possible values of its iteration vector.
 This set is called the @strong{iteration domain}. It can be conveniently
-described thanks to all the constraints on the various iterator the statement
+described thanks to all the constraints on the various iterators the statement
 depends on. For instance, let us consider
 the statement @code{S3} of the previous program. The iteration domain is the set
 of iteration vectors @code{(i,j)}. Because of the parameter, we are not able to
@@ -1106,9 +1140,9 @@ of a given statement.
 
 
 
-@c %  *********************** Using the Clan Software **************************
-@node Clan Software
-@chapter Using the Clan Software
+@c %  *********************** OpenScop Specification **************************
+@node OpenScop File Format Specification
+@chapter OpenScop File Format Specification
 
 
 @menu
@@ -1734,10 +1768,10 @@ the end of the .scop file, between the @samp{<arrays>} and
 
 
 @c %/*************************************************************************
-@c % *                            Clan Library                               *
+@c % *                 OpenScop Data Structure Specification                 *
 @c % *************************************************************************/
-@node Clan Library
-@chapter Using the Clan Library
+@node OpenScop Data Structure Specification
+@chapter OpenScop Data Structure Specification
 The Clan Library was implemented to allow the user to call Clan
 directly from his programs, without file accesses or system calls. The
 user only needs to link his programs with C libraries. The Clan

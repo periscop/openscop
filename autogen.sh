@@ -1,5 +1,5 @@
 #! /bin/sh
 
 aclocal -I autoconf
-glibtoolize --force --copy
+libtoolize --force --copy
 autoreconf -vfi

@@ -86,26 +86,31 @@
 
 # endif
 
-# define OPENSCOP_DEBUG	                0 /* Set to 1 for debug mode,
-                                           0 otherwise */
+# define OPENSCOP_DEBUG	                0    // 1 for debug mode, 0 otherwise.
+# define OPENSCOP_BACKEND_C             0
+# define OPENSCOP_BACKEND_FORTRAN       1
+# define OPENSCOP_UNDEFINED             -1
 # define OPENSCOP_MAX_STRING		2048
+# define OPENSCOP_MAX_ARRAYS		128
+# define OPENSCOP_TYPE_BARE	        0
 # define OPENSCOP_TYPE_ITERATOR	        1
 # define OPENSCOP_TYPE_PARAMETER        2
 # define OPENSCOP_TYPE_ARRAY            3
 # define OPENSCOP_TYPE_FUNCTION	        4
-# define OPENSCOP_TYPE_DOMAIN	        6
-# define OPENSCOP_TYPE_SCATTERING       7
-# define OPENSCOP_TYPE_ACCESS	        8
-# define OPENSCOP_TYPE_UNKNOWN	        9
+# define OPENSCOP_TYPE_CONTEXT	        6
+# define OPENSCOP_TYPE_DOMAIN           7
+# define OPENSCOP_TYPE_SCATTERING       8
+# define OPENSCOP_TYPE_ACCESS	        9
+# define OPENSCOP_TYPE_UNKNOWN	        10
 # define OPENSCOP_FAKE_ARRAY            "fakearray"
 
-# define OPENSCOP_SCOP_PRINT_CASTLE     1
-# define OPENSCOP_SCOP_PRINT_ARRAYSTAG  2
+# define OPENSCOP_TAG_ARRAY_START       "<arrays>"
+# define OPENSCOP_TAG_ARRAY_STOP        "</arrays>"
 
 
-/*+****************************************************************************
- *                              SCOP GMP MACROS                               *
- ******************************************************************************/
+/*+***************************************************************************
+ *                            OPENSCOP GMP MACROS                            *
+ *****************************************************************************/
 # ifdef OPENSCOP_INT_T_IS_MP
 /* Basic Macros */
 #  define SCOPINT_init(val)                (mpz_init((val)))
@@ -143,9 +148,9 @@
 #  define SCOPINT_one_p(val)               (mpz_cmp_si(val,1)  == 0)
 #  define SCOPINT_mone_p(val)              (mpz_cmp_si(val,-1) == 0)
 
-/*+****************************************************************************
- *                           SCOPINT BASIC TYPES MACROS                          *
- ******************************************************************************/
+/*+***************************************************************************
+ *                         OPENSCOP BASIC TYPES MACROS                       *
+ *****************************************************************************/
 # else
 /* Basic Macros */
 #  define SCOPINT_init(val)                ((val) = 0)
