@@ -251,6 +251,64 @@ openscop_util_read_int(FILE * file, char ** str)
 }
 
 
+/**
+ * openscop_util_read_tail function:
+ * this function puts the remainder of a file (from the current file pointer to
+ * the end of the file) to a string and returns this string. This excepts the
+ * first blank or commented lines (commented according to the OpenScop textual
+ * format).
+ * \param  file The file where to read the tail.
+ * \return The string corresponding to the tail of the input file.
+ */
+char *
+openscop_util_read_tail(FILE * file)
+{
+  int high_water_mark = OPENSCOP_MAX_STRING;
+  int nb_chars = 0;
+  char buff[OPENSCOP_MAX_STRING], *c;
+  char * extensions;
+
+  // - Skip blank/commented lines and spaces.
+  c = openscop_util_skip_blank_and_comments(file, buff);
+  if (c ==  NULL)
+    return NULL;
+
+  extensions = (char *)malloc(high_water_mark * sizeof(char));
+  if (extensions == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
+  
+  strcpy(extensions, c);
+  nb_chars = strlen(c);
+
+  // - Copy everything else to the option tags field.
+  while (!feof(file))
+  {
+    extensions[nb_chars] = fgetc(file); 
+    nb_chars++;
+
+    if (nb_chars >= high_water_mark)
+    {
+      high_water_mark += high_water_mark;
+      extensions = (char *)realloc(extensions, high_water_mark * sizeof(char));
+      if (extensions == NULL)
+      {
+        fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+        exit(1);
+      }
+    }
+  }
+
+  // - 0-terminate the string.
+  extensions = (char *)realloc(extensions, nb_chars * sizeof(char));
+  extensions[nb_chars - 1] = '\0';
+
+  return extensions;
+}
+
+
 void
 openscop_util_free_name_array(char ** name_array, int nb_names)
 {
@@ -461,3 +519,42 @@ openscop_util_read_tag_arrays(char * str, int * nb_arrays)
   *nb_arrays = max_index;
   return arrays;
 }
+
+
+/**
+ * openscop_util_safe_strcat function:
+ * this function concatenates the string src to the string *dst
+ * and reallocates *dst if necessary. The current size of the
+ * *dst buffer must be *hwm (high water mark), if there is some
+ * reallocation, this value is updated.
+ * \param dst pointer to the destination string (may be reallocated).
+ * \param src string to concatenate to dst.
+ * \param hwm pointer to the size of the *dst buffer (may be updated).
+ */
+void
+openscop_util_safe_strcat(char ** dst, char * src, int * hwm)
+{
+
+  if (strlen(src) >= OPENSCOP_MAX_STRING)
+  {
+    fprintf(stderr, "[OpenScop] Error: string to concatenate is too long.\n");
+    exit(1);
+  }
+
+  if (strlen(*dst) + strlen(src) >= *hwm)
+  {
+    *hwm += OPENSCOP_MAX_STRING;
+    *dst = (char *)realloc(*dst, *hwm * sizeof(char));
+    if (*dst == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
+  }
+
+  strcat(*dst, src);
+}
+
+
+
+

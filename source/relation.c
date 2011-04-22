@@ -75,10 +75,10 @@
 
 /**
  * openscop_relation_print_structure function:
- * Displays a openscop_relation_t structure (*relation) into a file (file,
- * possibly stdout) in a way that trends to be understandable. It includes an
- * indentation level (level) in order to work with others print_structure
- * functions.
+ * this function displays a openscop_relation_t structure (*relation) into a
+ * file (file, possibly stdout) in a way that trends to be understandable.
+ * It includes an indentation level (level) in order to work with others
+ * print_structure functions.
  * \param file     File where informations are printed.
  * \param relation The relation whose information have to be printed.
  * \param level    Number of spaces before printing, for each line.
@@ -94,7 +94,7 @@ openscop_relation_print_structure(FILE * file, openscop_relation_p relation,
     fprintf(file, "|\t");
 
   if (relation != NULL)
-    fprintf(file,"+-- openscop_relation_t\n");
+    fprintf(file, "+-- openscop_relation_t\n");
   else
     fprintf(file, "+-- NULL relation\n");
 
@@ -158,9 +158,9 @@ openscop_relation_print_structure(FILE * file, openscop_relation_p relation,
 
 /**
  * openscop_relation_print function:
- * This function prints the content of a openscop_relation_t structure
+ * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout).
- * \param file   File where informations are printed.
+ * \param file     File where informations are printed.
  * \param relation The relation whose information have to be printed.
  */
 void
@@ -173,7 +173,7 @@ openscop_relation_print(FILE * file, openscop_relation_p relation)
 
 /**
  * openscop_relation_expression_element function:
- * This function returns a string containing the printing of a value (possibly
+ * this function returns a string containing the printing of a value (possibly
  * an iterator or a parameter with its coefficient or a constant).
  * \param val   The coefficient or constant value.
  * \param first Pointer to a boolean set to 1 if the current value is the first
@@ -255,7 +255,7 @@ openscop_relation_expression_element(openscop_int_t val, int * first, int cst,
 
 /**
  * openscop_relation_expression function:
- * This function returns a string corresponding to an affine expression
+ * this function returns a string corresponding to an affine expression
  * stored at the "row"^th row of the relation pointed by "relation".
  * \param relation      A set of linear expressions.
  * \param row           The row corresponding to the expression.
@@ -307,7 +307,7 @@ openscop_relation_expression(openscop_relation_p relation, int row,
 
 /**
  * openscop_relation_get_array_id internal function:
- * This function returns the array identifier when the relation provided
+ * this function returns the array identifier when the relation provided
  * as parameter corresponds to an access function.
  * \param  relation  The access function.
  * \return The accessed array identifier.
@@ -351,7 +351,7 @@ openscop_relation_get_array_id(openscop_relation_p relation)
 
 /**
  * openscop_relation_print_openscop function:
- * This function prints the content of a openscop_relation_t structure
+ * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param file          File where informations are printed.
  * \param relation      The relation whose information have to be printed.
@@ -509,7 +509,7 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
   if (generated_parameter_names)
     openscop_util_free_name_array(parameters, nb_parameters);
   if (generated_array_names)
-    openscop_util_free_name_array(arrays, nb_arrays);
+    openscop_util_free_name_array(arrays, array_id);
 }
 
 
@@ -520,9 +520,8 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
 
 /**
  * openscop_relation_read function:
- * This function reads a relation into a file (foo, posibly stdin) and
- * returns a pointer this relation. In addition, it reads the arrays as
- * comments at the end of the line.
+ * this function reads a relation into a file (foo, posibly stdin) and
+ * returns a pointer this relation.
  * \param file  The input stream.
  * \return A pointer to the relation structure that has been read.
  */
@@ -647,9 +646,10 @@ openscop_relation_read(FILE * foo)
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
 
+
 /**
  * openscop_relation_malloc function:
- * This function allocates the memory space for a openscop_relation_t
+ * this function allocates the memory space for a openscop_relation_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \param nb_rows    The number of row of the relation to allocate.
@@ -667,7 +667,7 @@ openscop_relation_malloc(int nb_rows, int nb_columns)
   relation = (openscop_relation_p)malloc(sizeof(openscop_relation_t));
   if (relation == NULL)
   {
-    fprintf(stderr, "[OpenScop] Memory Overflow.\n");
+    fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
     exit(1);
   }
   
@@ -686,13 +686,13 @@ openscop_relation_malloc(int nb_rows, int nb_columns)
     p = (openscop_int_t **)malloc(nb_rows * sizeof(openscop_int_t *));
     if (p == NULL)
     {
-      fprintf(stderr, "[OpenScop] Memory Overflow.\n");
+      fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
       exit(1);
     }
     q = (openscop_int_t *)malloc(nb_rows*nb_columns*sizeof(openscop_int_t));
     if (q == NULL)
     {
-      fprintf(stderr, "[OpenScop] Memory Overflow.\n");
+      fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
       exit(1);
     }
     relation->m = p;
@@ -713,7 +713,7 @@ openscop_relation_malloc(int nb_rows, int nb_columns)
 
 /**
  * openscop_relation_free_inside function:
- * This function frees the allocated memory for the inside of a
+ * this function frees the allocated memory for the inside of a
  * openscop_relation_t structure, i.e. only m.
  * \param relation The pointer to the relation we want to free.
  */
@@ -745,7 +745,7 @@ openscop_relation_free_inside(openscop_relation_p relation)
 
 /**
  * openscop_relation_free function:
- * This function frees the allocated memory for a openscop_relation_t
+ * this function frees the allocated memory for a openscop_relation_t
  * structure.
  * \param relation The pointer to the relation we want to free.
  */
@@ -774,7 +774,7 @@ openscop_relation_free(openscop_relation_p relation)
 
 /**
  * openscop_relation_is_matrix function:
- * This function returns 1 if the relation provided as parameter corresponds
+ * this function returns 1 if the relation provided as parameter corresponds
  * to a "matrix" representation (see documentation), -1 if it is NULL and
  * 0 in all other cases.
  * \param relation The relation we want to know whether it is a matrix or not.
@@ -803,7 +803,7 @@ openscop_relation_is_matrix(openscop_relation_p relation)
 
 /**
  * openscop_relation_ncopy function:
- * This functions builds and returns a "hard copy" (not a pointer copy) of a
+ * this functions builds and returns a "hard copy" (not a pointer copy) of a
  * openscop_relation_t data structure such that the copy is restricted to the
  * "n" first rows of the relation. This applies to all the parts in the case
  * of a relation union.
@@ -861,7 +861,7 @@ openscop_relation_ncopy(openscop_relation_p relation, int n)
 
 /**
  * openscop_relation_copy function:
- * this function builds and returns a "hard copy" (not a pointer copy) of a
+ * this function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_relation_t data structure (the full union of relation).
  * \param relation The pointer to the relation we want to copy.
  * \return A pointer to the copy of the union of relations.

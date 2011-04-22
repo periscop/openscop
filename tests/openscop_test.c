@@ -110,6 +110,8 @@ int test_file(char * input_name, int verbose)
   output_file = fopen(output_name, "w");
   openscop_scop_print_openscop(output_file, input_scop);
   fclose(output_file);
+  
+  openscop_scop_print_openscop(stdout, input_scop);
 
   // Raise the generated file to data structures.
   output_file = fopen(output_name, "r");

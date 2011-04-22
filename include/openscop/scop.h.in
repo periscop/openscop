@@ -98,10 +98,9 @@ extern "C"
 struct openscop_scop
 {
   int version;                    /**< Version of the data structure */
-  int textual_names;              /**< 1 if names are strings, 0 otherwise. */
-  int textual_extensions;         /**< 1 if extensions is a string, 0 if not.*/
   char * language;                /**< Target language (backend) */
   openscop_relation_p context;    /**< Constraints on the SCoP parameters */
+  int textual_names;              /**< 1 if names are strings, 0 otherwise. */
   int nb_parameters;              /**< Number of parameters for the SCoP */
   int nb_iterators;               /**< Number (max) of output dimensions */
   int nb_scattdims;               /**< Number (max) of scattering dimensions */
@@ -110,9 +109,7 @@ struct openscop_scop
   char ** scattdims;              /**< Array of nb_scattdims scattering 
                                        dimension names */
   openscop_statement_p statement; /**< Statement list of the SCoP */
-  void * extensions;              /**< Extensions. A 0-terminated string if
-                                       textual_extensions is 1, an
-                                       openscop_extension_p otherwise. */
+  openscop_extension_p extension; /**< Extension list. */
   void * usr;                     /**< A user-defined field, not touched
 				       AT ALL by the OpenScop Library. */
 };

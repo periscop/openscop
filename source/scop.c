@@ -169,6 +169,14 @@ openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
 
     // Print the statements.
     openscop_statement_print_structure(file, scop->statement, level+1);
+
+    // Print the extensions.
+    openscop_extension_print_structure(file, scop->extension, level+1);
+
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
   }
   else
   {
@@ -212,9 +220,12 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
   int i;
   int nb_arrays = 0;
   char ** arrays = NULL;
+  openscop_arrays_p array_ids;
   
   // Extract array names information.
-  arrays = openscop_util_read_tag_arrays(scop->extensions, &nb_arrays);
+  array_ids = (openscop_arrays_p)openscop_extension_lookup(scop->extension,
+                                     OPENSCOP_EXTENSION_ARRAYS);
+  arrays = openscop_arrays_generate_names(array_ids, &nb_arrays);
 
   if (0)
   {
@@ -319,14 +330,11 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
   openscop_statement_print_openscop(file, scop->statement,
 				    scop->nb_parameters, scop->parameters,
 				    nb_arrays, arrays);
-
-  fprintf(file, "# =============================================== Options\n");
-  if (scop->extensions)
+  if (scop->extension)
   {
-    if (scop->textual_extensions)
-      fprintf(file, "%s", (char *)scop->extensions);
-    else
-      openscop_extension_print(file, (openscop_extension_p)scop->extensions);
+    fprintf(file, "# ==============================================="
+                  " Extensions\n");
+    openscop_extension_print_openscop(file, scop->extension);
   }
 
   // Free array names
@@ -583,9 +591,8 @@ openscop_scop_read(FILE * file)
   // III. OPTION PART
   //
 
-  // Read the remainder of the file, and store it in the extensions field.
-  scop->textual_extensions = 1;
-  scop->extensions = (void *)openscop_extension_read_string(file);
+  // Read the remainder of the file, and store it in the extension field.
+  scop->extension = openscop_extension_read(file);
   
   //
   // VI. FINALIZE AND CHECK
@@ -625,7 +632,6 @@ openscop_scop_malloc()
 
   scop->version            = 1;
   scop->textual_names      = 1;
-  scop->textual_extensions = 1;
   scop->language           = NULL;
   scop->context            = NULL;
   scop->nb_parameters      = 0;
@@ -635,7 +641,7 @@ openscop_scop_malloc()
   scop->iterators          = NULL;
   scop->scattdims          = NULL;
   scop->statement          = NULL;
-  scop->extensions         = NULL;
+  scop->extension          = NULL;
   scop->usr	           = NULL;
 
   return scop;
@@ -681,11 +687,7 @@ openscop_scop_free(openscop_scop_p scop)
     }
     
     openscop_statement_free(scop->statement);
-    
-    if (scop->textual_extensions)
-      free(scop->extensions);
-    else
-      openscop_extension_free((openscop_extension_p)scop->extensions);
+    openscop_extension_free(scop->extension);
 
     free(scop);
   }
@@ -712,7 +714,6 @@ openscop_scop_copy(openscop_scop_p scop)
   
   copy                     = openscop_scop_malloc();
   copy->textual_names      = scop->textual_names;
-  copy->textual_extensions = scop->textual_extensions;
   copy->version            = scop->version;
   copy->language           = strdup(scop->language);
   copy->context            = openscop_relation_copy(scop->context);
@@ -726,12 +727,7 @@ openscop_scop_copy(openscop_scop_p scop)
   copy->scattdims          = openscop_util_copy_strings(scop->scattdims,
                                                         scop->nb_scattdims);
   copy->statement          = openscop_statement_copy(scop->statement);
-  
-  if (scop->textual_extensions)
-    copy->extensions       = strdup((char *)scop->extensions);
-  else
-    copy->extensions       = openscop_extension_copy((openscop_extension_p)
-                                                     scop->extensions);
+  copy->extension          = openscop_extension_copy(scop->extension);
 
   return copy;
 }
@@ -792,10 +788,7 @@ openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2)
     return 0;
   }
   
-  if ((s1->textual_extensions != s2->textual_extensions) ||
-      (s1->textual_extensions && strcmp(s1->extensions, s2->extensions)) ||
-      (!s1->textual_extensions && !openscop_extension_equal(s1->extensions,
-                                                            s2->extensions)))
+  if (!openscop_extension_equal(s1->extension, s2->extension))
   {
     fprintf(stderr, "[OpenScop] info: extensions are not the same.\n"); 
     return 0;

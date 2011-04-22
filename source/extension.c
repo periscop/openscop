@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                           extension.c                           **
+     **                          extension.c                            **
      **-----------------------------------------------------------------**
      **                   First version: 26/11/2010                     **
      **-----------------------------------------------------------------**
@@ -66,190 +66,10 @@
 # include <openscop/extension.h>
 
 
-/*+***************************************************************************
- *                          Structure display function                       *
- *****************************************************************************/
-
-
-/**
- * openscop_extension_print_structure function:
- * Displays a openscop_extension_t structure (*extensions) into a file (file,
- * possibly stdout) in a way that trends to be understandable. It includes an
- * indentation level (level) in order to work with others print_structure
- * functions.
- * \param file       File where informations are printed.
- * \param extensions The extensions whose information have to be printed.
- * \param level      Number of spaces before printing, for each line.
- */
-void
-openscop_extension_print_structure(FILE * file,
-                                   openscop_extension_p extension,
-                                   int level)
-{
-  if (extension == NULL)
-    return;
-
-  switch (extension->type) {
-    case OPENSCOP_EXTENSION_COMMENT: {
-      openscop_comment_print_structure(file, extension->extension, level);
-      break;
-    }
-    case OPENSCOP_EXTENSION_ARRAYS: {
-      openscop_arrays_print_structure(file, extension->extension, level);
-      break;
-    }
-    default: {
-      fprintf(stderr, "[OpenScop] Error: unknown extension.\n");
-      exit(1);
-    }
-  }
-}
-
-
-void openscop_extension_print(FILE * file, openscop_extension_p extension)
-{
-
-}
-
-void openscop_extension_print_openscop(FILE * file,
-                                       openscop_extension_p extension)
-{
-
-}
-
-
-/*****************************************************************************
- *                               Reading function                            *
- *****************************************************************************/
-
-char * openscop_extension_read_string(FILE * file)
-{
-  int high_water_mark = OPENSCOP_MAX_STRING;
-  int nb_chars = 0;
-  char buff[OPENSCOP_MAX_STRING], *c;
-  char * extensions;
-
-  extensions = (char *)malloc(high_water_mark * sizeof(char));
-  if (extensions == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
-  // - Skip blank/commented lines and spaces.
-  c = openscop_util_skip_blank_and_comments(file, buff);
-  strcpy(extensions, c);
-  nb_chars = strlen(c);
-
-  // - Copy everything else to the option tags field.
-  while (!feof(file))
-  {
-    extensions[nb_chars] = fgetc(file); 
-    nb_chars++;
-
-    //printf("EXTENSIONS: %s", extensions);
-    if (nb_chars >= high_water_mark)
-    {
-      high_water_mark += high_water_mark;
-      extensions = (char *)realloc(extensions, high_water_mark * sizeof(char));
-      if (extensions == NULL)
-      {
-        fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-        exit(1);
-      }
-    }
-  }
-
-  // - 0-terminate the string.
-  extensions = (char *)realloc(extensions, nb_chars * sizeof(char));
-  extensions[nb_chars - 1] = '\0';
-
-  return extensions;
-}
-
 /*
-openscop_extension_p openscop_extension_read(FILE * file)
-{
-  char * extension_string;
-  openscop_extension_p extension = NULL;
-
-  extension_string = openscop_extension_read_string(file);
-  
-  openscop_extension_add(&extension, extension_string,
-                         OPENSCOP_EXTENSION_COMMENT, openscop_comment_read);   
-  openscop_extension_add(&extension, extension_string,
-                         OPENSCOP_EXTENSION_ARRAYS,  openscop_arrays_read); 
-
-  return NULL;
-}
-*/
-
-
-/*+***************************************************************************
- *                    Memory allocation/deallocation function                *
- *****************************************************************************/
-/*
-void openscop_extension(openscop_extension_p * extension, char * string,
-                        int type, (void *)read(char *))
-{
-  void * new_ext;
-
-  new_ext = (void *)
-  if (*extension == NULL)
-  {
-    
-  }
-
-}
-*/
-
-openscop_extension_p openscop_extension_malloc()
-{
-  openscop_extension_p extension;
-
-  extension = (openscop_extension_p)malloc(sizeof(openscop_extension_p));
-  extension->type      = OPENSCOP_EXTENSION_UNDEFINED;
-  extension->extension = NULL;
-  extension->next      = NULL;
-
-  return extension;
-}
-
-
-void openscop_extension_free(openscop_extension_p extension)
-{
-
-
-}
-
-
-/*+***************************************************************************
- *                            Processing functions                           *
- *****************************************************************************/
-
-
-openscop_extension_p openscop_extension_copy(openscop_extension_p extension)
-{
-
-  return NULL;
-}
-
-
-int openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
-{
-
-  return 1;
-}
-
-
-/*+***************************************************************************
- *                        Extension-Dependent Functions                      *
- *****************************************************************************/
-
-/*
- * For each extension called FOOEXT that a programmer wishes to add to
+ * For each extension called FOO that a programmer wishes to add to
  * OpenScop, the following functions must be provided in a dedicated
- * section (follow the "Array Extension" example):
+ * file FOO.c (follow the "comment" example):
  * - Display function (for internal use)
  * - Print function (to OpenScop's file format as a string)
  * - Read function (from OpenScop's file format as a string)
@@ -261,120 +81,478 @@ int openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
 
 
 /*+***************************************************************************
- *                                Array Extension                            *
+ *                          Structure display function                       *
  *****************************************************************************/
 
 
-/*
-char **
-openscop_extension_read_tag_arrays(char * str, int * nb_arrays)
+/**
+ * openscop_extension_print_structure function:
+ * this function displays a openscop_extension_t structure (*extensions) into
+ * a file (file, possibly stdout) in a way that trends to be understandable.
+ * It includes an indentation level (level) in order to work with others
+ * print_structure functions.
+ * \param file       File where informations are printed.
+ * \param extensions The extensions whose information have to be printed.
+ * \param level      Number of spaces before printing, for each line.
+ */
+void
+openscop_extension_print_structure(FILE * file,
+                                   openscop_extension_p extension,
+                                   int level)
 {
-  int i, k, nb_names, array_index, max_index = 0;
-  int high_water_mark = OPENSCOP_MAX_ARRAYS;
-  char ** arrays;
-  char ** tmpnames;
-  char * content;
-  char buff[OPENSCOP_MAX_STRING];
+  int j, first = 1;
+  
+  // Go to the right level.
+  for (j = 0; j < level; j++)
+    fprintf(file,"|\t");
 
-  content = openscop_util_tag_content(str, OPENSCOP_TAG_ARRAY_START,
-                                           OPENSCOP_TAG_ARRAY_STOP);
-
-  if (content == NULL)
+  if (extension != NULL)
+    fprintf(file, "+-- openscop_extension_t\n");
+  else
+    fprintf(file, "+-- NULL extension\n");
+ 
+  while (extension != NULL)
   {
-    fprintf(stderr, "[OpenScop] Info: no array optional tag.\n");
-    *nb_arrays = 0;
-    return NULL;
-  }
-
-  // Allocate the array of names.
-  arrays = (char **)malloc(high_water_mark * sizeof(char *));
-  for (i = 0; i < high_water_mark; i++)
-    arrays[i] = NULL;
-
-  // Find the number of names provided.
-  nb_names = openscop_util_read_int(NULL, &content);
-
-  // Get each array name.
-  for (k = 0; k < nb_names; k++)
-  { 
-    // Skip blank or commented lines.
-    while (*content == '#' || *content == '\n')
+    if (!first)
     {
-      for (; *content != '\n'; ++content)
-        ;
-      ++content;
+      // Go to the right level.
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
+      fprintf(file, "|   openscop_extension_t\n");
     }
+    else
+      first = 0;
 
-    // Get the array name index.
-    for (i = 0; *content && ! isspace(*content); ++i, ++content)
-      buff[i] = *content;
-    buff[i] = '\0';
-    sscanf(buff, "%d", &array_index);
-    max_index = (max_index > array_index) ? max_index : array_index;
-    if (array_index > high_water_mark)
-    { 
-      fprintf(stderr, "[OpenScop] Info: array name indices sound high.\n");
-      high_water_mark += OPENSCOP_MAX_ARRAYS;
-      arrays = (char **)realloc(arrays, high_water_mark * sizeof(char *));
-      if (arrays == NULL)
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
+    
+    // Go to the right level.
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
+    switch (extension->type)
+    {
+      case OPENSCOP_EXTENSION_COMMENT:
       {
-        fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-        exit(1);
+        fprintf(file, "|\ttype = OPENSCOP_EXTENSION_COMMENT\n");
+        break;
       }
-      for (i = high_water_mark - OPENSCOP_MAX_ARRAYS; i < high_water_mark; i++)
-        arrays[i] = NULL;
+      case OPENSCOP_EXTENSION_ARRAYS:
+      {
+        fprintf(file, "|\ttype = OPENSCOP_EXTENSION_ARRAYS\n");
+        break;
+      }
+      default:
+      {
+        fprintf(file, "|\ttype = unsupported (%d)\n", extension->type);
+      }
     }
-    if (array_index <= 0)
+
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
+    
+    switch (extension->type)
     {
-      fprintf(stderr, "[OpenScop] Error: array index must be > 0.\n");
-      exit(1);
+      case OPENSCOP_EXTENSION_COMMENT:
+      {
+        openscop_comment_print_structure(
+            file,
+            (openscop_comment_p)extension->extension,
+            level + 1);
+        break;
+      }
+      case OPENSCOP_EXTENSION_ARRAYS:
+      {
+        openscop_arrays_print_structure(
+            file,
+            (openscop_arrays_p)extension->extension,
+            level + 1);
+        break;
+      }
+      default:
+      {
+        // A blank line.
+        for (j = 0; j <= level+1; j++)
+          fprintf(file, "|\t");
+        fprintf(file, "| Unsupported extension\n");
+      }
     }
     
-    // Get the array name in buff.
-    while (*content && isspace(*content))
-      ++content;
-    for (i = 0; *content && ! isspace(*content); ++i, ++content)
-      buff[i] = *content;
-    buff[i] = '\0';
+    extension = extension->next;
 
-    // Array index is in 0-basis.
-    if (arrays[array_index - 1] != NULL)
+    // Next line.
+    if (extension != NULL)
     {
-      fprintf(stderr, "[OpenScop] Warning: two array names have the "
-                      "same index.\n");
-      free(arrays[array_index - 1]);
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
+      fprintf(file, "V\n");
     }
-    arrays[array_index - 1] = strdup(buff);
-
-    // Go to the end of line.
-    while (*content && *content != '\n')
-      ++content;
   }
-
-  // Free unused memory.
-  arrays = (char **)realloc(arrays, max_index * sizeof(char *));
-
-  // Fill the missing names (and let's hope there is no need for higher index).
-  tmpnames = openscop_util_generate_names("var", max_index);
-  for (i = 0; i < max_index; i++)
-  {
-    if (arrays[i] == NULL || arrays[i][0] == '\0')
-      arrays[i] = tmpnames[i]; // Use a generated name.
-    else
-      free(tmpnames[i]);       // Use a read name.
-  }
-  free(tmpnames);
-
-  
-  if (OPENSCOP_DEBUG == 1)
-  {
-    printf("max_index: %d\n", max_index); 
-    for (i = 0; i < max_index; i++)
-      printf("%s ", arrays[i]);
-    printf("\n");
-  }
-
-  *nb_arrays = max_index;
-  return arrays;
 }
-*/
+
+
+/**
+ * openscop_extension_print function:
+ * this function prints the content of a openscop_extension_t structure
+ * (*extension) into a file (file, possibly stdout).
+ * \param file  File where informations are printed.
+ * \param extension The extension structure to print.
+ */
+void
+openscop_extension_print(FILE * file, openscop_extension_p extension)
+{
+  openscop_extension_print_structure(file, extension, 0); 
+}
+
+
+/**
+ * openscop_extension_print_openscop function:
+ * this function prints the content of a openscop_extension_t structure
+ * (*extension) into a string (returned) in the OpenScop format.
+ * \param  extension The extension structure to print.
+ * \return A string containing the OpenScop dump of the extension structure.
+ */
+void
+openscop_extension_print_openscop(FILE * file, openscop_extension_p extension)
+{
+  char * string;
+  int ignored;
+  
+  if (extension == NULL)
+    return;
+
+  while (extension != NULL)
+  {
+    ignored = 0;
+    switch (extension->type)
+    {
+      case OPENSCOP_EXTENSION_COMMENT:
+      {
+        string = openscop_comment_print_openscop(
+                     (openscop_comment_p)extension->extension);
+        break;
+      }
+      case OPENSCOP_EXTENSION_ARRAYS:
+      {
+        string = openscop_arrays_print_openscop(
+                     (openscop_arrays_p)extension->extension);
+        break;
+      }
+      default:
+      {
+        ignored = 1;
+        fprintf(stderr,
+                "[OpenScop] Warning: unsupported extension, "
+                "printing it has been ignored.\n");
+      }
+    }
+    if (!ignored)
+    {
+      fprintf(file, "%s\n", string);
+      free(string);
+    }
+
+    extension = extension->next;
+  }
+}
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+
+
+/**
+ * openscop_extension_read function:
+ * this function reads a list of extensions from a file (possibly stdin)
+ * complying to the OpenScop textual format and returns a pointer to an
+ * extension structure which contain this list of extension.
+ * \param  file The input file where to read a list of extension fields.
+ * \return A pointer to the extension structure that has been read.
+ */
+openscop_extension_p
+openscop_extension_read(FILE * file)
+{
+  char * extension_string;
+  openscop_extension_p extension = NULL;
+  void * x;
+
+  extension_string = openscop_util_read_tail(file);
+  
+  x = (void *)openscop_comment_read(extension_string);
+  openscop_extension_add(&extension, OPENSCOP_EXTENSION_COMMENT, x);   
+ 
+  x = (void *)openscop_arrays_read(extension_string);
+  openscop_extension_add(&extension, OPENSCOP_EXTENSION_ARRAYS, x);   
+  
+  free(extension_string);
+  return extension;
+}
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+
+
+/**
+ * openscop_extension_add function:
+ * this function adds an extension node to a list of extensions provided
+ * as parameter (extension). The new node is allocated in this function and
+ * filled with the information provided as parameter (type and x). The new
+ * node is inserted at the beginning of the list. 
+ * \param extension The list of extension fields to add a node (NULL if empty).
+ * \param type      The type of the new extension to add.
+ * \param x         The new extension to add.
+ */
+void
+openscop_extension_add(openscop_extension_p * extension, int type, void * x)
+{
+  openscop_extension_p new;
+
+  if (x != NULL)
+  {
+    new = openscop_extension_malloc();
+    new->type = type;
+    new->extension = x;
+    new->next = *extension;
+    *extension = new;
+  }
+}
+
+
+/**
+ * openscop_extension_malloc function:
+ * This function allocates the memory space for a openscop_extension_t
+ * structure and sets its fields with default values. Then it returns a
+ * pointer to the allocated space.
+ * \return A pointer to an empty extension structure with fields set to
+ *         default values.
+ */
+openscop_extension_p
+openscop_extension_malloc()
+{
+  openscop_extension_p extension;
+
+  extension = (openscop_extension_p)malloc(sizeof(openscop_extension_t));
+  if (extension == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
+    exit(1);
+  }
+  
+  extension->type      = OPENSCOP_EXTENSION_UNDEFINED;
+  extension->extension = NULL;
+  extension->next      = NULL;
+
+  return extension;
+}
+
+
+/**
+ * openscop_extension_free function:
+ * This function frees the allocated memory for an extension structure.
+ * \param extension The pointer to the extension structure we want to free.
+ */
+void
+openscop_extension_free(openscop_extension_p extension)
+{
+  openscop_extension_p next;
+
+  while (extension != NULL)
+  {
+    next = extension->next;
+    switch (extension->type)
+    {
+      case OPENSCOP_EXTENSION_COMMENT:
+      {
+        openscop_comment_free(extension->extension);
+        break;
+      }
+      case OPENSCOP_EXTENSION_ARRAYS:
+      {
+        openscop_arrays_free(extension->extension);
+        break;
+      }
+      default:
+      {
+        fprintf(stderr,
+                "[OpenScop] Warning: unsupported extension, "
+                "memory leaks are possible.\n");
+        free(extension->extension);
+      }
+    }
+    free(extension);
+    extension = next;
+  }
+}
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+
+
+/**
+ * openscop_extension_copy function:
+ * This function builds and returns a "hard copy" (not a pointer copy) of an
+ * openscop_extension_t data structure.
+ * \param extension The pointer to the extension structure we want to copy.
+ * \return A pointer to the copy of the extension structure.
+ */
+openscop_extension_p
+openscop_extension_copy(openscop_extension_p extension)
+{
+  openscop_extension_p copy = NULL;
+  void * x;
+
+  while (extension != NULL)
+  { 
+    switch (extension->type)
+    {
+      case OPENSCOP_EXTENSION_COMMENT:
+      {
+        x = (void *)openscop_comment_copy(extension->extension);
+        break;
+      }
+      case OPENSCOP_EXTENSION_ARRAYS:
+      {
+        x = (void *)openscop_arrays_copy(extension->extension);
+        break;
+      }
+      default:
+      {
+        fprintf(stderr,
+                "[OpenScop] Warning: unsupported extension, "
+                "copy ignored.\n");
+        x = NULL;
+      }
+    }
+    
+    openscop_extension_add(&copy, extension->type, x);
+    extension = extension->next;
+  }
+
+  return copy;
+}
+
+
+/**
+ * openscop_extension_count function:
+ * this function counts the number of elements in the extension list provided
+ * as parameter (x) and returns this number.
+ * \param x The list of extensions.
+ * \return  The number of elements in the list.
+ */
+int
+openscop_extension_count(openscop_extension_p x)
+{
+  int extension_number = 0;
+
+  while (x != NULL)
+  {
+    extension_number++;
+    x = x->next;
+  }
+
+  return extension_number;
+}
+
+
+/**
+ * openscop_extension_equal function:
+ * this function returns true if the two extension structures are the same, false
+ * otherwise. This functions considers two extension structures as equal if
+ * the order of the array names differ, however the identifiers and names
+ * must be the same.
+ * \param a1  The first extension structure.
+ * \param a2  The second extension structure.
+ * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
+ */
+int
+openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
+{
+  int x1_extension_number, x2_extension_number;
+  int found, equal;
+  openscop_extension_p backup_x2 = x2;
+
+  // Check whether the number of extensions is the same or not.
+  x1_extension_number = openscop_extension_count(x1);
+  x2_extension_number = openscop_extension_count(x2);
+  if (x1_extension_number != x2_extension_number)
+    return 0;
+
+  // Check that for each extension in x1 a similar extension is in x2.
+  while (x1 != NULL)
+  {
+    x2 = backup_x2;
+    found = 0;
+    while ((x2 != NULL) && (found != 1))
+    {
+      if (x1->type == x2->type)
+      {
+        switch (x1->type)
+        {
+          case OPENSCOP_EXTENSION_COMMENT:
+          {
+            equal = openscop_comment_equal(x1->extension, x2->extension);
+            break;
+          }
+          case OPENSCOP_EXTENSION_ARRAYS:
+          {
+            equal = openscop_arrays_equal(x1->extension, x2->extension);
+            break;
+          }
+          default:
+          {
+            fprintf(stderr,
+                    "[OpenScop] Warning: unsupported extension, "
+                    "cannot state extension equality.\n");
+            equal = 0;
+          }
+        }
+
+        if (equal == 0)
+          return 0;
+        else
+          found = 1;
+      }
+
+      x2 = x2->next;
+    }
+
+    if (found != 1)
+      return 0;
+
+    x1 = x1->next;
+  }
+
+  return 1;
+}
+
+
+/**
+ * openscop_extension_lookup function:
+ * this function returns the first extension of a given type (type) in the
+ * extension list provided as parameter (x) and NULL if it doesn't find such
+ * an extension.
+ * \param x    The extension list where to search a given extension type.
+ * \param type The type of the extension we are looking for.
+ * \return The first extension of the requested type in the list.
+ */
+void *
+openscop_extension_lookup(openscop_extension_p x, int type)
+{
+  while (x != NULL)
+  {
+    if (x->type == type)
+      return x->extension;
+
+    x = x->next;
+  }
+
+  return NULL;
+}

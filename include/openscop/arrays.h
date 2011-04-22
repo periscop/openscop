@@ -78,14 +78,16 @@ extern "C"
 
 
 /**
- * The openscop_arrays_t structure stores an arrays to the core
- * OpenScop representation. It is a node of a NULL-terminated linked list of
- * arrayss.
+ * The openscop_arrays_t structure stores a set of array names in
+ * the extension part of the OpenScop representation. Each name
+ * has a name string and an identifier: the ith name as name
+ * string names[i] and identifier id[i].
  */
 struct openscop_arrays
 {
-  int textual;       /**< 1 is the array names are strings, 0 otherwise. */
-  void * names;      /**< NULL-terminated array of names. */
+  int nb_names;      /**< Number of names. */
+  int  *  id;        /**< Array of nb_names identifiers. */
+  char ** names;     /**< Array of nb_names names. */
 };
 typedef struct openscop_arrays   openscop_arrays_t;
 typedef struct openscop_arrays * openscop_arrays_p;
@@ -94,9 +96,9 @@ typedef struct openscop_arrays * openscop_arrays_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_arrays_print_structure(FILE *, openscop_arrays_p, int);
-void openscop_arrays_print(FILE *, openscop_arrays_p);
-void openscop_arrays_print_openscop(FILE *, openscop_arrays_p);
+void   openscop_arrays_print_structure(FILE *, openscop_arrays_p, int);
+void   openscop_arrays_print(FILE *, openscop_arrays_p);
+char * openscop_arrays_print_openscop(openscop_arrays_p);
 
 
 /*****************************************************************************
@@ -117,7 +119,7 @@ void              openscop_arrays_free(openscop_arrays_p);
  *****************************************************************************/
 openscop_arrays_p openscop_arrays_copy(openscop_arrays_p);
 int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
-
+char **           openscop_arrays_generate_names(openscop_arrays_p, int *);
 
 # if defined(__cplusplus)
   }

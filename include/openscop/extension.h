@@ -75,8 +75,9 @@ extern "C"
 # endif
 
 #define OPENSCOP_EXTENSION_UNDEFINED   0
-#define OPENSCOP_EXTENSION_COMMENT     1
-#define OPENSCOP_EXTENSION_ARRAYS      2
+#define OPENSCOP_EXTENSION_STRING      1
+#define OPENSCOP_EXTENSION_COMMENT     2
+#define OPENSCOP_EXTENSION_ARRAYS      3
 
 /**
  * The openscop_extension_t structure stores an extension to the core
@@ -111,6 +112,7 @@ openscop_extension_p openscop_extension_read(FILE *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
+void                 openscop_extension_add(openscop_extension_p*, int, void*);
 openscop_extension_p openscop_extension_malloc();
 void                 openscop_extension_free(openscop_extension_p);
 
@@ -120,6 +122,7 @@ void                 openscop_extension_free(openscop_extension_p);
  *****************************************************************************/
 openscop_extension_p openscop_extension_copy(openscop_extension_p);
 int openscop_extension_equal(openscop_extension_p, openscop_extension_p);
+void * openscop_extension_lookup(openscop_extension_p, int);
 
 
 # if defined(__cplusplus)
