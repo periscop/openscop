@@ -872,7 +872,7 @@ openscop_relation_copy(openscop_relation_p relation)
   if (relation == NULL)
     return NULL;
 
-  return openscop_relation_ncopy(relation, relation->nb_rows);
+  return openscop_relation_ncopy(relation, -1);
 }
 
 
