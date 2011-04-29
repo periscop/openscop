@@ -1122,12 +1122,14 @@ openscop_relation_insert_relation(openscop_relation_p r1,
 
 /**
  * openscop_relation_concat function:
- * this function builds a new relation as the concatenation of the rows of
- * two other matrices sent as parameters.
+ * this function builds a new relation from two relations sent as
+ * parameters. The new set of constraints is built as the concatenation
+ * of the rows of the first elements of the two relations r1 and r2.
+ * This means, the next field is not supported.
  * \param r1  The first relation.
  * \param r2  The second relation.
  * \return A pointer to the relation resulting from the concatenation of
- *         r1 and r2.
+ *         the first elements of r1 and r2.
  */
 openscop_relation_p
 openscop_relation_concat(openscop_relation_p r1, openscop_relation_p r2)
@@ -1142,8 +1144,13 @@ openscop_relation_concat(openscop_relation_p r1, openscop_relation_p r2)
 
   if (r1->nb_columns != r2->nb_columns)
   {
-    fprintf(stderr,"[OpenScop] Error: matrices cannot be concatenated\n");
+    fprintf(stderr, "[OpenScop] Error: matrices cannot be concatenated\n");
     exit(1);
+  }
+  if (r1->next || r2->next)
+  {
+    fprintf(stderr, "[OpenScop] Warning: relation concatenation is done "
+                    "on the first elements only.\n");
   }
 
   new = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
