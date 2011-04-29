@@ -370,4 +370,23 @@ openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2)
 }
 
 
+/**
+ * openscop_vector_mul_scalar function:
+ * this function returns a new vector corresponding to the one provided
+ * as parameter with each entry multiplied by a scalar.
+ * \param v      The vector to multiply.
+ * \param scalar The scalar coefficient.
+ * \return A new vector corresponding to scalar * v.
+ */
+openscop_vector_p openscop_vector_mul_scalar(openscop_vector_p v,
+                                             int scalar)
+{
+  int i;
+  openscop_vector_p result = openscop_vector_malloc(v->size);
+  
+  for(i = 0; i < v->size; i++)
+    SCOPINT_multo(result->v[i], scalar, v->v[i]);
+
+  return result;
+}
 

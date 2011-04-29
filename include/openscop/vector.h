@@ -108,6 +108,7 @@ void              openscop_vector_free(openscop_vector_p);
  *                            Processing functions                           *
  *****************************************************************************/
 openscop_vector_p openscop_vector_add_scalar(openscop_vector_p, int);
+openscop_vector_p openscop_vector_mul_scalar(openscop_vector_p, int);
 openscop_vector_p openscop_vector_add(openscop_vector_p, openscop_vector_p);
 openscop_vector_p openscop_vector_sub(openscop_vector_p, openscop_vector_p);
 void              openscop_vector_tag_inequality(openscop_vector_p);
