@@ -1421,3 +1421,38 @@ openscop_relation_integrity_check(openscop_relation_p relation,
 
   return 1;
 }
+
+
+/**
+ * openscop_relation_union function:
+ * this function builds a new relation from two relations provided
+ * as parameters. The new relation is built as an union of the
+ * two relations: the list of constraint sets are linked together.
+ * \param r1 The first relation.
+ * \param r2 The second relation.
+ * \return A new relation corresponding to the union of r1 and r2.
+ */
+openscop_relation_p
+openscop_relation_union(openscop_relation_p r1, openscop_relation_p r2)
+{
+  openscop_relation_p copy1, copy2, tmp;
+  
+  if ((r1 == NULL) && (r2 == NULL))
+    return NULL;
+  
+  copy1 = openscop_relation_copy(r1);
+  copy2 = openscop_relation_copy(r2);
+
+  if ((r1 != NULL) && (r2 == NULL))
+    return copy1;
+    
+  if ((r1 == NULL) && (r2 != NULL))
+    return copy2;
+
+  tmp = copy1;
+  while (tmp->next != NULL)
+    tmp = tmp->next;
+
+  tmp->next = copy2;
+  return copy1;
+}

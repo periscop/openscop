@@ -166,7 +166,8 @@ int                 openscop_relation_equal(openscop_relation_p,
                                         openscop_relation_p);    
 int                 openscop_relation_integrity_check(openscop_relation_p,
                                         int, int, int, int);
-
+openscop_relation_p openscop_relation_union(openscop_relation_p,
+                                        openscop_relation_p);
 # if defined(__cplusplus)
   }
 # endif
