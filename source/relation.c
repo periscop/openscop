@@ -1104,7 +1104,7 @@ openscop_relation_insert_relation(openscop_relation_p r1,
 
   openscop_relation_replace_relation(new, r2, row);
 
-  for (i = row + r2->nb_rows; i < r1->nb_rows; i++)
+  for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
       SCOPINT_assign(new->m[i][j], r1->m[i-r2->nb_rows][j]);
 
