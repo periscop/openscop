@@ -276,6 +276,7 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
   openscop_relation_print_openscop(file, scop->context, OPENSCOP_TYPE_DOMAIN,
 				0, NULL,
 				scop->nb_parameters, scop->parameters,
+				0, NULL,
 				nb_arrays, arrays);
   fprintf(file, "\n");
 

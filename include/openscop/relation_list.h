@@ -100,6 +100,7 @@ void openscop_relation_list_print_openscop(FILE *,
                                      openscop_relation_list_p, int,
 				     int, char **,
                                      int, char **,
+				     int, char **,
 				     int, char **);
 
 

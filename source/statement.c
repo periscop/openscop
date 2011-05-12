@@ -222,6 +222,7 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
                                      statement->nb_iterators,
                                      statement->iterators,
                                      nb_parameters, parameters,
+				     statement->nb_local_dims, statement->local_dims,
                                      nb_arrays, arrays);
     fprintf(file, "\n");
 
@@ -234,6 +235,7 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
                                  OPENSCOP_TYPE_SCATTERING,
                                  statement->nb_iterators, statement->iterators,
                                  nb_parameters, parameters,
+				 statement->nb_local_dims, statement->local_dims,
                                  nb_arrays, arrays);
     fprintf(file, "\n");
 
@@ -246,12 +248,14 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
                                  OPENSCOP_TYPE_ACCESS,
                                  statement->nb_iterators, statement->iterators,
                                  nb_parameters, parameters,
+				 statement->nb_local_dims, statement->local_dims,
                                  nb_arrays, arrays);
     fprintf(file, "\n# Write access information\n");
     openscop_relation_list_print_openscop(file, statement->write,
                                  OPENSCOP_TYPE_ACCESS,
                                  statement->nb_iterators, statement->iterators,
                                  nb_parameters, parameters,
+				 statement->nb_local_dims, statement->local_dims,
                                  nb_arrays, arrays);
     fprintf(file, "\n");
 
@@ -375,6 +379,8 @@ openscop_statement_malloc()
   statement->write      = NULL;
   statement->nb_iterators = 0;
   statement->iterators  = NULL;
+  statement->nb_local_dims = 0;
+  statement->local_dims = NULL;
   statement->body       = NULL;
   statement->next       = NULL;
 

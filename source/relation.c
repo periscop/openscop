@@ -269,7 +269,8 @@ static
 char *
 openscop_relation_expression(openscop_relation_p relation, int row,
 			  int nb_iterators,  char ** iterators,
-			  int nb_parameters, char ** parameters)
+			  int nb_parameters, char ** parameters,
+			  int nb_local_dims, char ** local_dims)
 {
   int i, first = 1;
   char * sline, * sval;
@@ -286,11 +287,21 @@ openscop_relation_expression(openscop_relation_p relation, int row,
     free(sval);
   }
 
-  // Next the parameter part.
-  for (i = nb_iterators + 1; i <= nb_iterators + nb_parameters; i++)
+  // Next the local dims part.
+  for (i = nb_iterators + 1; i <= nb_iterators + nb_local_dims; i++)
   {
     sval = openscop_relation_expression_element(relation->m[row][i], &first, 0,
-					     parameters[i - nb_iterators - 1]);
+					     local_dims[i - nb_iterators - 1]);
+    strcat(sline, sval);
+    free(sval);
+  }
+
+
+  // Next the parameter part.
+  for (i = nb_iterators + nb_local_dims + 1; i <= nb_iterators + nb_local_dims + nb_parameters; i++)
+  {
+    sval = openscop_relation_expression_element(relation->m[row][i], &first, 0,
+					     parameters[i - nb_iterators - nb_local_dims - 1]);
     strcat(sline, sval);
     free(sval);
   }
@@ -368,6 +379,7 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
                                  int type,
 			         int nb_iterators,  char ** iterators,
 			         int nb_parameters, char ** parameters,
+				 int nb_local_dims, char ** local_dims,
 			         int nb_arrays,     char ** arrays)
 {
   int i, j, k;
@@ -375,7 +387,7 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
   int generated_parameter_names = 0;
   int generated_array_names     = 0;
   int part, nb_parts;
-  int array_id;
+  int array_id = 0;
   char * expression;
   openscop_relation_p r;
 
@@ -455,7 +467,9 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
       {
         expression = openscop_relation_expression(relation, i,
                                                   nb_iterators,  iterators,
-                                                  nb_parameters, parameters);
+                                                  nb_parameters, parameters,
+						  nb_local_dims, local_dims);
+
         fprintf(file, "   ## %s", expression);
         free(expression);
         if (SCOPINT_zero_p(relation->m[i][0]))
@@ -468,7 +482,8 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
       {
         expression = openscop_relation_expression(relation, i,
                                                   nb_iterators,  iterators,
-                                                  nb_parameters, parameters);
+                                                  nb_parameters, parameters,
+						  nb_local_dims, local_dims);
         fprintf(file, "   ## %s", expression);
         free(expression);
       }
@@ -486,7 +501,8 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
           {
             expression = openscop_relation_expression(relation, k,
                                                     nb_iterators,  iterators,
-                                                    nb_parameters, parameters);
+                                                    nb_parameters, parameters,
+						    nb_local_dims, local_dims);
             fprintf(file, "[%s]", expression);
             free(expression);
             k++;

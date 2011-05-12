@@ -101,7 +101,9 @@
 # define OPENSCOP_TYPE_DOMAIN           7
 # define OPENSCOP_TYPE_SCATTERING       8
 # define OPENSCOP_TYPE_ACCESS	        9
-# define OPENSCOP_TYPE_UNKNOWN	        10
+# define OPENSCOP_TYPE_LOCAL_DIMS       10
+# define OPENSCOP_TYPE_ITERATOR_DEC     11
+# define OPENSCOP_TYPE_UNKNOWN	        12
 # define OPENSCOP_FAKE_ARRAY            "fakearray"
 
 # define OPENSCOP_TAG_ARRAY_START       "<arrays>"

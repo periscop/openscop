@@ -169,6 +169,7 @@ openscop_relation_list_print_openscop(FILE * file,
                                       int type,
 				      int nb_iterators,  char ** iterators,
 				      int nb_parameters, char ** parameters,
+				      int nb_local_dims, char ** local_dims,
 				      int nb_arrays,     char ** arrays)
 {
   int i;
@@ -192,6 +193,7 @@ openscop_relation_list_print_openscop(FILE * file,
     openscop_relation_print_openscop(file, head->elt, type,
                                      nb_iterators, iterators,
                                      nb_parameters, parameters,
+				     nb_local_dims, local_dims,
                                      nb_arrays, arrays);
     head = head->next;
     i++;
