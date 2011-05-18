@@ -195,22 +195,34 @@ openscop_statement_print(FILE * file, openscop_statement_p statement)
  * openscop_statement_print_openscop function:
  * This function prints the content of a openscop_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
- * \param file          File where informations are printed.
- * \param statement     The statement whose information have to be printed.
- * \param nb_parameters The number of parameters in the SCoP.
- * \param parameters    An array containing all parameters names.
- * \param nb_arrays     The number of arrays accessed in the SCoP.
- * \param arrays        An array containing all accessed array names.
+ * \param file      File where informations are printed.
+ * \param statement The statement whose information have to be printed.
+ * \param names     The textual names of the various elements. Is is important
+ *                  that names->nb_parameters is exact if the matrix
+ *                  representation is used. Set to NULL if printing comments
+ *                  is not needed.
  */
 void
 openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
-                                  int nb_parameters, char ** parameters,
-                                  int nb_arrays, char ** arrays)
+                                  openscop_names_p names)                      
 {
-  int i, number = 1;
+  int i, switched, number = 1;
+  int tmp_nb_iterators = 0;
+  char ** tmp_iterators = NULL;
 
   while (statement != NULL)
   {
+    // Switch iterator names to the current statement names if possible.
+    switched = 0;
+    if (statement->nb_iterators > 0)
+    {
+      tmp_nb_iterators = names->nb_iterators;
+      tmp_iterators = names->iterators;
+      names->nb_iterators = statement->nb_iterators;
+      names->iterators = statement->iterators;
+      switched = 1;
+    }
+
     fprintf(file, "# =============================================== ");
     fprintf(file, "Statement %d\n", number);
 
@@ -218,12 +230,7 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
     fprintf(file, "%2d.1 Domain\n", number);
     fprintf(file, "# Iteration domain\n");
     openscop_relation_print_openscop(file, statement->domain,
-                                     OPENSCOP_TYPE_DOMAIN,
-                                     statement->nb_iterators,
-                                     statement->iterators,
-                                     nb_parameters, parameters,
-				     statement->nb_local_dims, statement->local_dims,
-                                     nb_arrays, arrays);
+                                     OPENSCOP_TYPE_DOMAIN, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
@@ -232,11 +239,7 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
     fprintf(file, "1\n");
     fprintf(file, "# Scattering function\n");
     openscop_relation_print_openscop(file, statement->scattering,
-                                 OPENSCOP_TYPE_SCATTERING,
-                                 statement->nb_iterators, statement->iterators,
-                                 nb_parameters, parameters,
-				 statement->nb_local_dims, statement->local_dims,
-                                 nb_arrays, arrays);
+                                     OPENSCOP_TYPE_SCATTERING, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
@@ -245,18 +248,10 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
     fprintf(file, "1\n");
     fprintf(file, "\n# Read access information\n");
     openscop_relation_list_print_openscop(file, statement->read,
-                                 OPENSCOP_TYPE_ACCESS,
-                                 statement->nb_iterators, statement->iterators,
-                                 nb_parameters, parameters,
-				 statement->nb_local_dims, statement->local_dims,
-                                 nb_arrays, arrays);
+                                          OPENSCOP_TYPE_ACCESS, names);
     fprintf(file, "\n# Write access information\n");
     openscop_relation_list_print_openscop(file, statement->write,
-                                 OPENSCOP_TYPE_ACCESS,
-                                 statement->nb_iterators, statement->iterators,
-                                 nb_parameters, parameters,
-				 statement->nb_local_dims, statement->local_dims,
-                                 nb_arrays, arrays);
+                                          OPENSCOP_TYPE_ACCESS, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
@@ -276,6 +271,11 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
     fprintf(file, "%s\n", statement->body);
     fprintf(file, "\n\n");
 
+    if (switched == 1)
+    {
+      statement->nb_iterators = tmp_nb_iterators;
+      statement->iterators = tmp_iterators;
+    }
     statement = statement->next;
     number++;
   }
@@ -321,7 +321,7 @@ openscop_statement_read(FILE * file)
     if (openscop_util_read_int(file, NULL) > 0)
     {
       // Read the original iterator names.
-      stmt->iterators = openscop_util_read_strings(file, -1, &nb_iterators);
+      stmt->iterators = openscop_util_strings_read(file, &nb_iterators);
       stmt->nb_iterators = nb_iterators;
       
       // Read the body:
@@ -488,7 +488,7 @@ openscop_statement_copy(openscop_statement_p statement)
     node->read         = openscop_relation_list_copy(statement->read);
     node->write        = openscop_relation_list_copy(statement->write);
     node->nb_iterators = statement->nb_iterators;
-    node->iterators    = openscop_util_copy_strings(statement->iterators,
+    node->iterators    = openscop_util_strings_copy(statement->iterators,
                                                     statement->nb_iterators);
     node->body         = strdup(statement->body);
     node->next         = NULL;

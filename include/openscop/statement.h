@@ -67,6 +67,7 @@
 # include <stdio.h>
 # include <openscop/macros.h>
 # include <openscop/util.h>
+# include <openscop/names.h>
 # include <openscop/relation.h>
 # include <openscop/relation_list.h>
 
@@ -108,7 +109,7 @@ typedef struct openscop_statement * openscop_statement_p;
 void openscop_statement_print_structure(FILE *, openscop_statement_p, int);
 void openscop_statement_print(FILE *, openscop_statement_p);
 void openscop_statement_print_openscop(FILE *, openscop_statement_p,
-                                       int, char **, int,char**);
+                                       openscop_names_p);
 
 
 /*****************************************************************************

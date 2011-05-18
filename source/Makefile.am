@@ -91,6 +91,7 @@ libopenscop_la_SOURCES 	=     \
 	relation.c            \
 	relation_list.c       \
 	vector.c              \
+	names.c               \
 	util.c
 
 AM_CFLAGS = -Wall -fomit-frame-pointer -g

@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                            scop.h                               **
+     **                      extensions/names.h                         **
      **-----------------------------------------------------------------**
-     **                   First version: 30/04/2008                     **
+     **                   First version: 18/05/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,30 +61,11 @@
  *****************************************************************************/
 
 
-/*+****************************************************************************
- *  THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM scop.h.in BY configure    *
- ******************************************************************************/
-
-
-#ifndef OPENSCOP_SCOP_H
-# define OPENSCOP_SCOP_H
-
-# include <unistd.h>
-
-# define OPENSCOP_RELEASE "@PACKAGE_VERSION@"
-# define OPENSCOP_VERSION "@BITS@"
-# ifndef @OPENSCOP_INT_T@
-#  define @OPENSCOP_INT_T@
-# endif
+#ifndef OPENSCOP_NAMES_H
+# define OPENSCOP_NAMES_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/names.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-
 
 # if defined(__cplusplus)
 extern "C"
@@ -93,55 +74,65 @@ extern "C"
 
 
 /**
- * The scop_t structure stores the useful information of a static
- * control part of a program to process it within a polyhedral framework.
+ * The openscop_names_t structure stores the various names (names of iterators,
+ * parameters...) necessary to generate a code from the OpenScop data
+ * structure. The term "name" is generic and corresponds to a pointer to the
+ * information necessary to generate the code. A name may be a string of
+ * characters (char *) or a pointer to anything else. For textual tools
+ * convenience, the default type is (char *), but it may be casted to your
+ * preferred type iff the "textual" field is 0.
  */
-struct openscop_scop
+struct openscop_names
 {
-  int version;                    /**< Version of the data structure */
-  char * language;                /**< Target language (backend) */
-  openscop_relation_p  context;   /**< Constraints on the SCoP parameters */
-  openscop_names_p     names;     /**< Various names for code generation */
-  openscop_statement_p statement; /**< Statement list of the SCoP */
-  openscop_extension_p extension; /**< Extension list. */
-  void * usr;                     /**< A user-defined field, not touched
-				       AT ALL by the OpenScop Library. */
+  int textual;        /**< 1 if names are character strings, 0 otherwise. */
+  int nb_parameters;  /**< Number of parameters names. */
+  int nb_iterators;   /**< Number of iterators names. */
+  int nb_scattdims;   /**< Number of scattering dimensions names. */
+  char ** parameters; /**< Array of nb_parameters parameter names. */
+  char ** iterators;  /**< Array of nb_iterators iterator names. */
+  char ** scattdims;  /**< Array of nb_scattdims scattering dimension names. */
+
+  // The following is not part of the OpenScop specification (internal use).
+  int nb_localdims;   //   Number of local dimension names.
+  int nb_arrays;      //   Number of array names.
+  char ** localdims;  //   Array of nb_locals local dimension names.
+  char ** arrays;     //   Array of nb_arrays array dimension names.
 };
-typedef struct openscop_scop   openscop_scop_t;
-typedef struct openscop_scop * openscop_scop_p;
+typedef struct openscop_names   openscop_names_t;
+typedef struct openscop_names * openscop_names_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_scop_print_structure(FILE *, openscop_scop_p, int);
-void openscop_scop_print(FILE *, openscop_scop_p);
-void openscop_scop_print_openscop(FILE *, openscop_scop_p);
+void             openscop_names_print_structure(FILE *, openscop_names_p, int);
+void             openscop_names_print(FILE *, openscop_names_p);
+void             openscop_names_print_openscop(FILE *, openscop_names_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_read(FILE *);
+openscop_names_p openscop_names_read(FILE *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_malloc();
-void		openscop_scop_free(openscop_scop_p);
+openscop_names_p openscop_names_malloc();
+void             openscop_names_free(openscop_names_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_copy(openscop_scop_p);
-int             openscop_scop_equal(openscop_scop_p, openscop_scop_p);
-int             openscop_scop_integrity_check(openscop_scop_p);
+openscop_names_p openscop_names_copy(openscop_names_p);
+int              openscop_names_equal(openscop_names_p, openscop_names_p);
+int              openscop_names_integrity_check(openscop_names_p,int,int,int);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_SCOP_H */
+#endif /* define OPENSCOP_NAMES_H */

@@ -302,7 +302,7 @@ openscop_comment_copy(openscop_comment_p comment)
 /**
  * openscop_comment_equal function:
  * this function returns true if the two comment structures are the same
- * (content-wise), false otherwise. This functions considers two comment
+ * (content-wise), false otherwise.
  * \param c1  The first comment structure.
  * \param c2  The second comment structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.

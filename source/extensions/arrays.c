@@ -456,11 +456,23 @@ openscop_arrays_generate_names(openscop_arrays_p arrays, int * nb_names)
   
     // Allocate the array of names and store the existing names.
     names = (char **)malloc(*nb_names * sizeof(char *));
+    if (names == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     for (i = 0; i < arrays->nb_names; i++)
+    {
       names[arrays->id[i] - 1] = strdup(arrays->names[i]);
-    
+      if (names[arrays->id[i] - 1] == NULL)
+      {
+	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+	exit(1);
+      }
+    }
+
     // Fill the missing names.
-    tmpnames = openscop_util_generate_names("A_", *nb_names);
+    tmpnames = openscop_util_strings_generate("A_", *nb_names);
     for (i = 0; i < *nb_names; i++)
     {
       if (names[i] == NULL || names[i][0] == '\0')

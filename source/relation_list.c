@@ -153,31 +153,25 @@ openscop_relation_list_print(FILE * file, openscop_relation_list_p list)
  * openscop_relation_list_print_openscop function:
  * This function prints the content of a openscop_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format.
- * \param file          File where informations are printed.
- * \param list          The relation list whose information have to be printed.
- * \param type          Semantic about this relation (domain, access...).
- * \param nb_iterators  The number of iterators for the considered statement.
- * \param iterators     An array containing iterator names for the statement.
- * \param nb_parameters The number of parameters in the SCoP.
- * \param parameters    An array containing all parameters names.
- * \param nb_arrays     The number of arrays accessed in the SCoP.
- * \param arrays        An array containing all accessed array names.
+ * \param file  File where informations are printed.
+ * \param list  The relation list whose information have to be printed.
+ * \param type  Semantic about this relation (domain, access...).
+ * \param names The textual names of the various elements. Is is important
+ *              that names->nb_parameters is exact if the matrix
+ *              representation is used. Set to NULL if printing comments
+ *              is not needed.
  */
 void
 openscop_relation_list_print_openscop(FILE * file,
                                       openscop_relation_list_p list,
-                                      int type,
-				      int nb_iterators,  char ** iterators,
-				      int nb_parameters, char ** parameters,
-				      int nb_local_dims, char ** local_dims,
-				      int nb_arrays,     char ** arrays)
+                                      int type, openscop_names_p names)
 {
   int i;
   openscop_relation_list_p head = list;
 
   // Count the number of elements in the list.
   for (i = 0; list; list = list->next, i++)
-    ;
+    continue;
   
   // Print it.
   if (i > 1)
@@ -190,11 +184,7 @@ openscop_relation_list_print_openscop(FILE * file,
   while (head)
   {
     fprintf(file, "# List element No.%d\n", i);
-    openscop_relation_print_openscop(file, head->elt, type,
-                                     nb_iterators, iterators,
-                                     nb_parameters, parameters,
-				     nb_local_dims, local_dims,
-                                     nb_arrays, arrays);
+    openscop_relation_print_openscop(file, head->elt, type, names);
     head = head->next;
     i++;
   }
@@ -225,7 +215,7 @@ openscop_relation_list_read(FILE* file)
   // Skip blank/commented lines.
   while (fgets(s, OPENSCOP_MAX_STRING, file) == 0 || s[0] == '#' ||
       isspace(s[0]))
-    ;
+    continue;
   
   // Read the number of relations to read.
   sscanf(s, "%d", &nb_mat);

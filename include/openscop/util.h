@@ -73,17 +73,24 @@ extern "C"
 
 
 /*+***************************************************************************
- *                            Processing functions                           *
+ *                       Functions on arrays of strings                      *
  *****************************************************************************/
-char ** openscop_util_copy_strings(char **, int);
+void    openscop_util_strings_print_structure(FILE*, char**, int, int, char*);
+void    openscop_util_strings_print_openscop(FILE*, char**, int, int, char*);
+char ** openscop_util_strings_read(FILE *, int *);
+char ** openscop_util_strings_generate(char *, int);
+void    openscop_util_strings_complete(char ***, int *, char *, int);
+void    openscop_util_strings_free(char **, int);
+char ** openscop_util_strings_copy(char **, int);
+int     openscop_util_strings_equal(char **, int, char **, int);
+
+/*+***************************************************************************
+ *                            Utility functions                              *
+ *****************************************************************************/
 char *  openscop_util_skip_blank_and_comments(FILE *, char *);
-char ** openscop_util_read_strings(FILE *, int, int *);
 int     openscop_util_read_int(FILE *, char **);
 char *  openscop_util_read_tail(FILE *);
-void    openscop_util_free_name_array(char **, int);
-char ** openscop_util_generate_names(char *, int);
 char *  openscop_util_tag_content(char *, char *, char *);
-char ** openscop_util_read_tag_arrays(char *, int *);
 void    openscop_util_safe_strcat(char **, char *, int *);
 
 # if defined(__cplusplus)

@@ -67,16 +67,262 @@
 # include <openscop/util.h>
 
 
+/*+***************************************************************************
+ *                       Functions on arrays of strings                      *
+ *****************************************************************************/
+
+
 /**
- * openscop_util_copy_strings internal function.
- * This function builds and return a "hard copy" (not a pointer copy) of an
- * array of strings.
- * \param strings    The array of strings to copy.
- * \param nb_strings The number of strings in the array to copy.
- * \return A pointer to the copy of the array of strings.
+ * openscop_util_strings_print_structure function:
+ * this function displays an array of strings into a file (file, possibly
+ * stdout) in a way that trends to be understandable. It includes an
+ * indentation level (level) in order to work with others
+ * print_structure functions.
+ * \param file       The file where the information has to be printed.
+ * \param strings    The array of strings that has to be printed.
+ * \param nb_strings The number of strings in the array of strings.
+ * \param level      Number of spaces before printing, for each line.
+ * \param title      A string to use as a title for the array of strings.
+ */
+void
+openscop_util_strings_print_structure(FILE * file,
+                                      char ** strings, int nb_strings,
+				      int level,
+				      char * title)
+{
+  int i;
+  
+  // Print the original parameter names.
+  for (i = 0; i <= level; i++)
+    fprintf(file, "|\t");
+  if (nb_strings > 0)
+  {
+    fprintf(file, "+-- %s:", title);
+    for (i = 0; i < nb_strings; i++)
+      fprintf(file, " %s", strings[i]);
+    fprintf(file, "\n");
+  }
+  else
+    fprintf(file, "+-- No %s\n", title);
+
+  // A blank line.
+  for (i = 0; i <= level+1; i++)
+    fprintf(file, "|\t");
+  fprintf(file, "\n");
+}
+
+
+/**
+ * openscop_util_strings_print_openscop function:
+ * this function prints the content of an array of strings
+ * into a file (file, possibly stdout) in the OpenScop textual format.
+ * \param file       The file where the information has to be printed.
+ * \param strings    The array of strings that has to be printed.
+ * \param nb_strings The number of strings in the array of strings.
+ * \param print      Boolean not set to 0 to print the names, 0 otherwise.
+ * \param title      A string to use as a title for the array of strings.
+ */
+void
+openscop_util_strings_print_openscop(FILE * file, 
+                                     char ** strings, int nb_strings,
+		                     int print,
+				     char * title)
+{
+  int i;
+  
+  if ((print != 0) && (nb_strings > 0))
+  {
+    fprintf(file, "# %s are provided\n", title);
+    fprintf(file, "1\n");
+    fprintf(file, "# %s\n", title);
+    for (i = 0; i < nb_strings; i++)
+      fprintf(file, "%s ", strings[i]);
+    fprintf(file, "\n\n");
+  }
+  else
+  {
+    fprintf(file, "# %s are not provided\n", title);
+    fprintf(file, "0\n\n");
+  }
+}
+
+
+/**
+ * openscop_util_strings_read function.
+ * this function reads an array of strings from a file (possibly stdin)
+ * complying to the OpenScop textual format and returns a pointer to this
+ * array as well as the number of elements of this array (through the
+ * parameter nb_strings).
+ * \param file       The file where to read the array of strings.
+ * \param nb_strings Pointer to where to store the number of strings (output).
+ * \return The array of strings that has been read.
  */
 char **
-openscop_util_copy_strings(char ** strings, int nb_strings)
+openscop_util_strings_read(FILE * file, int * nb_strings)
+{
+  char str[OPENSCOP_MAX_STRING];
+  char tmp[OPENSCOP_MAX_STRING];
+  char * s, * start;
+  char ** strings = NULL;
+  int i, count;
+
+  // Skip blank/commented lines and spaces.
+  start = openscop_util_skip_blank_and_comments(file, str);
+
+  // Count the actual number of strings.
+  *nb_strings = 0;
+  s = start;
+  while (1)
+  {
+    for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
+      s++;
+    
+    if (count != 0)
+      (*nb_strings)++;
+
+    if ((*s == '#') || (*s == '\n'))
+      break;
+    else
+      ++s;
+  }
+
+  if (*nb_strings > 0)
+  {
+    // Allocate the array of strings. Make it NULL-terminated.
+    strings = (char **) malloc(sizeof(char *) * ((*nb_strings) + 1));
+    if (strings == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
+    strings[*nb_strings] = NULL;
+
+    // Read the desired number of strings.
+    s = start;
+    for (i = 0; i < *nb_strings; ++i)
+    {
+      for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
+	tmp[count] = *(s++);
+      tmp[count] = '\0';
+      strings[i] = strdup(tmp);
+      if (strings[i] == NULL)
+      {
+	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+	exit(1);
+      }
+      if (*s != '#')
+	++s;
+    }
+  }
+
+  return strings;
+}
+
+
+/**
+ * openscop_util_strings_generate function:
+ * This function generates an array of size 'nb' of strings of the form
+ * "prefixXX" where XX goes from 1 to nb.
+ * \param prefix     The prefix of the generated names.
+ * \param nb_strings The number of strings to generate.
+ * \return An array of 'nb' generated strings.
+ */
+char **
+openscop_util_strings_generate(char * prefix, int nb_strings)
+{
+  char ** strings = NULL;
+  char buff[strlen(prefix) + 16]; // TODO: better (log10(INT_MAX) ?) :-D.
+  int i;
+
+  if (nb_strings)
+  {
+    strings = (char **)malloc(sizeof(char *) * nb_strings);
+    if (strings == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
+    for (i = 0; i < nb_strings; i++)
+    {
+      sprintf(buff, "%s%d", prefix, i + 1);
+      strings[i] = strdup(buff);
+      if (strings[i] == NULL)
+      {
+	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+	exit(1);
+      }
+    }
+  }
+
+  return strings;
+}
+
+
+/**
+ * openscop_util_strings_complete function:
+ * this function completes an array of strings with generated strings.
+ * \param strings     Pointer to the initial array of strings (modified).
+ * \param nb_strings  Pointer to the initial number of strings (modified).
+ * \param prefix      The prefix of the generated names.
+ * \param nb_complete The desired number of strings in the new array.
+ */
+void
+openscop_util_strings_complete(char *** strings, int * nb_strings,
+                               char *   prefix,  int   nb_complete)
+{
+  int i, nb_new;
+  char ** completion;
+
+  nb_new = nb_complete - *nb_strings;
+  if (nb_new < 0)
+  {
+    fprintf(stderr, "[OpenScop] Error: completed smaller than original.\n");
+    exit(1);
+  }
+
+  if (nb_new > 0)
+  {
+    *strings = (char **)realloc(*strings, nb_complete * sizeof(char *));
+    completion = openscop_util_strings_generate(prefix, nb_new);
+    for (i = 0; i < nb_new; i++)
+      (*strings)[i + *nb_strings] = completion[i];
+    free(completion);
+    *nb_strings = nb_complete;
+  }
+}
+
+
+/**
+ * openscop_util_strings_free function:
+ * this function frees the allocated memory for an array of strings.
+ * \param strings The array of strings we want to free.
+ * \param nb_strings The number of strings in the array of strings.
+ */
+void
+openscop_util_strings_free(char ** strings, int nb_strings)
+{
+  int i;
+
+  if (strings != NULL)
+  {
+    for (i = 0; i < nb_strings; i++)
+      if (strings[i] != NULL)
+	free(strings[i]);
+    free(strings);
+  }
+}
+
+
+/**
+ * openscop_util_copy_strings internal function.
+ * this function builds and return a "hard copy" (not a pointer copy) of an
+ * array of strings provided as parameter.
+ * \param strings    The array of strings to copy.
+ * \param nb_strings The number of strings in the array to copy.
+ * \return The copy of the array of strings.
+ */
+char **
+openscop_util_strings_copy(char ** strings, int nb_strings)
 {
   int i;
   char ** copy;
@@ -85,13 +331,59 @@ openscop_util_copy_strings(char ** strings, int nb_strings)
     return NULL;
 
   copy = (char **)malloc(nb_strings * sizeof(char *));
-
+  if (copy == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   for (i = 0; i < nb_strings; i++)
+  {
     copy[i] = strdup(strings[i]);
+    if (copy[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
+  }
 
   return copy;
 }
 
+
+/**
+ * openscop_util_strings_equal function:
+ * this function returns true if the two arrays of strings are the same
+ * (content-wise), false otherwise.
+ * \param s1    The first array of strings.
+ * \param nb_s1 The number of strings in the first array of string.
+ * \param s2    The second array of strings.
+ * \param nb_s2 The number of strings in the second array of string.
+ * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
+ */
+int
+openscop_util_strings_equal(char ** s1, int nb_s1, char ** s2, int nb_s2)
+{
+  int i;
+  
+  if ((s1 == NULL) && (s2 == NULL))
+    return 1;
+
+  if (((s1 == NULL) && (s2 != NULL)) ||
+      ((s1 != NULL) && (s2 == NULL)) ||
+      (nb_s1 != nb_s2))
+    return 0;
+
+  for (i = 0; i < nb_s1; i++)
+    if (strcmp(s1[i], s2[i]) != 0)
+      return 0;
+
+  return 1;
+}
+
+
+/*+***************************************************************************
+ *                             Utility functions                             *
+ *****************************************************************************/
 
 /**
  * openscop_util_skip_blank_and_comments internal function.
@@ -124,77 +416,9 @@ char * openscop_util_skip_blank_and_comments(FILE * file, char * str)
 
 
 /**
- * openscop_util_read_strings internal function.
- * Read a line in the input 'file' and extract the first 'nb_strings' strings
- * from it. nb_strings is a maximum number (the special value -1 corresponds
- * to infinity). If *max is not NULL, it is updated with the maximum number
- * of strings that could have been read. It returns the NULL-terminated array
- * of strings that have been read.
- * \param file       The file where to read some strings.
- * \param nb_strings Maximum number of strings to read (-1: infinity).
- * \param max        Address to store the maximum number of strings that could
- *                   have been read (stored if the address is not NULL).
- * \return An array of strings.
- */
-char **
-openscop_util_read_strings(FILE * file, int nb_strings, int * max)
-{
-  char str[OPENSCOP_MAX_STRING];
-  char tmp[OPENSCOP_MAX_STRING];
-  char * s, * start;
-  char ** res = NULL;
-  int i, count, actual_nb_strings = 0;
-
-  // Skip blank/commented lines and spaces.
-  start = openscop_util_skip_blank_and_comments(file, str);
-
-  // Count the actual number of strings.
-  s = start;
-  while (1)
-  {
-    for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
-      s++;
-    
-    if (count != 0)
-      actual_nb_strings++;
-
-    if ((*s == '#') || (*s == '\n'))
-      break;
-    else
-      ++s;
-  }
-
-  // Update the number of strings if necessary.
-  if ((nb_strings == -1) || (actual_nb_strings < nb_strings))
-    nb_strings = actual_nb_strings;
-
-  if (max != NULL)
-    *max = actual_nb_strings;
-  
-  // Allocate the array of strings. Make it NULL-terminated.
-  res = (char **) malloc(sizeof(char *) * (nb_strings + 1));
-  res[nb_strings] = NULL;
-
-  // Read the desired number of strings.
-  s = start;
-  for (i = 0; i < nb_strings; ++i)
-  {
-    for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
-      tmp[count] = *(s++);
-    tmp[count] = '\0';
-    res[i] = strdup(tmp);
-    if (*s != '#')
-      ++s;
-  }
-
-  return res;
-}
-
-
-/**
  * openscop_util_read_int internal function.
  * Read an int on the input 'file' or the input string 'str' depending on
- * which one is not NULL.
+ * which one is not NULL (exactly one of them must not be NULL).
  * \param file The file where to read an int (if not NULL).
  * \param str  The string where to read an int (if not NULL). This pointer
  *             is updated to reflect the read and points after the int.
@@ -240,7 +464,11 @@ openscop_util_read_int(FILE * file, char ** str)
         while (**str && !isspace(**str) && **str != '\n')
           s[i++] = *((*str)++);
         s[i] = '\0';
-        sscanf(s, "%d", &res);
+        if (sscanf(s, "%d", &res) != 1)
+	{
+	  fprintf(stderr, "[OpenScop] Error: an int was expected.\n");
+	  exit(1);
+	}
         read_int = 1;
       }
     }
@@ -309,51 +537,6 @@ openscop_util_read_tail(FILE * file)
 }
 
 
-void
-openscop_util_free_name_array(char ** name_array, int nb_names)
-{
-  int i;
-
-  for (i = 0; i < nb_names; i++)
-    free(name_array[i]);
-  free(name_array);
-}
-
-
-/**
- * openscop_util_generate_names internal function:
- * This function generates an array of size 'nb' of chars of the form
- * "seedXX" where XX goes from 1 to nb.
- * \param seed  The prefix for the created names.
- * \param nb    The number of names to generate.
- * \return An array of 'nb' generated strings.
- */
-char **
-openscop_util_generate_names(char * seed, int nb)
-{
-  char ** res = NULL;
-  char buff[strlen(seed) + 16];
-  int i;
-
-  if (nb)
-  {
-    res = (char **)malloc(sizeof(char *) * nb);
-    if (res == NULL)
-    {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
-    for (i = 0; i < nb; ++i)
-    {
-      sprintf(buff, "%s%d", seed, i + 1);
-      res[i] = strdup(buff);
-    }
-  }
-
-  return res;
-}
-
-
 /**
  * openscop_util_tag_content function:
  * This function returns a freshly allocated string containing the
@@ -407,120 +590,6 @@ openscop_util_tag_content(char * str, char * tag, char * endtag)
 }
 
 
-char **
-openscop_util_read_tag_arrays(char * str, int * nb_arrays)
-{
-  int i, k, nb_names, array_index, max_index = 0;
-  int high_water_mark = OPENSCOP_MAX_ARRAYS;
-  char ** arrays;
-  char ** tmpnames;
-  char * content, * content_backup;
-  char buff[OPENSCOP_MAX_STRING];
-
-  content = openscop_util_tag_content(str, OPENSCOP_TAG_ARRAY_START,
-                                           OPENSCOP_TAG_ARRAY_STOP);
-
-  if (content == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Info: no array optional tag.\n");
-    *nb_arrays = 0;
-    return NULL;
-  }
-  content_backup = content;
-
-  // Allocate the array of names.
-  arrays = (char **)malloc(high_water_mark * sizeof(char *));
-  for (i = 0; i < high_water_mark; i++)
-    arrays[i] = NULL;
-
-  // Find the number of names provided.
-  nb_names = openscop_util_read_int(NULL, &content);
-
-  // Get each array name.
-  for (k = 0; k < nb_names; k++)
-  { 
-    // Skip blank or commented lines.
-    while (*content == '#' || *content == '\n')
-    {
-      for (; *content != '\n'; ++content)
-        ;
-      ++content;
-    }
-
-    // Get the array name index.
-    for (i = 0; *content && ! isspace(*content); ++i, ++content)
-      buff[i] = *content;
-    buff[i] = '\0';
-    sscanf(buff, "%d", &array_index);
-    max_index = (max_index > array_index) ? max_index : array_index;
-    if (array_index > high_water_mark)
-    { 
-      fprintf(stderr, "[OpenScop] Info: array name indices sound high.\n");
-      high_water_mark += OPENSCOP_MAX_ARRAYS;
-      arrays = (char **)realloc(arrays, high_water_mark * sizeof(char *));
-      if (arrays == NULL)
-      {
-        fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-        exit(1);
-      }
-      for (i = high_water_mark - OPENSCOP_MAX_ARRAYS; i < high_water_mark; i++)
-        arrays[i] = NULL;
-    }
-    if (array_index <= 0)
-    {
-      fprintf(stderr, "[OpenScop] Error: array index must be > 0.\n");
-      exit(1);
-    }
-    
-    // Get the array name in buff.
-    while (*content && isspace(*content))
-      ++content;
-    for (i = 0; *content && ! isspace(*content); ++i, ++content)
-      buff[i] = *content;
-    buff[i] = '\0';
-
-    // Array index is in 0-basis.
-    if (arrays[array_index - 1] != NULL)
-    {
-      fprintf(stderr, "[OpenScop] Warning: two array names have the "
-                      "same index.\n");
-      free(arrays[array_index - 1]);
-    }
-    arrays[array_index - 1] = strdup(buff);
-
-    // Go to the end of line.
-    while (*content && *content != '\n')
-      ++content;
-  }
-  free(content_backup);
-
-  // Free unused memory.
-  arrays = (char **)realloc(arrays, max_index * sizeof(char *));
-
-  // Fill the missing names (and let's hope there is no need for higher index).
-  tmpnames = openscop_util_generate_names("var", max_index);
-  for (i = 0; i < max_index; i++)
-  {
-    if (arrays[i] == NULL || arrays[i][0] == '\0')
-      arrays[i] = tmpnames[i]; // Use a generated name.
-    else
-      free(tmpnames[i]);       // Use a read name.
-  }
-  free(tmpnames);
-  
-  if (OPENSCOP_DEBUG == 1)
-  {
-    printf("max_index: %d\n", max_index); 
-    for (i = 0; i < max_index; i++)
-      printf("%s ", arrays[i]);
-    printf("\n");
-  }
-
-  *nb_arrays = max_index;
-  return arrays;
-}
-
-
 /**
  * openscop_util_safe_strcat function:
  * this function concatenates the string src to the string *dst
@@ -530,6 +599,7 @@ openscop_util_read_tag_arrays(char * str, int * nb_arrays)
  * \param dst pointer to the destination string (may be reallocated).
  * \param src string to concatenate to dst.
  * \param hwm pointer to the size of the *dst buffer (may be updated).
+ * TODO: This function is not that safe, improve it !
  */
 void
 openscop_util_safe_strcat(char ** dst, char * src, int * hwm)

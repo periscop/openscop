@@ -101,4 +101,7 @@ dist-hook:
 	for file in $(AUX_DIST); do \
 	  cp $$file $(distdir)/$$file; \
 	done
+
+ctags:
+	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q -f$(HOME)/.ctags .
 #############################################################################

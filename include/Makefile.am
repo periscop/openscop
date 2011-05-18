@@ -85,5 +85,6 @@ pkginclude_HEADERS 	=                  \
 	openscop/relation.h                \
 	openscop/relation_list.h           \
 	openscop/macros.h                  \
+	openscop/names.h                   \
 	openscop/util.h                    \
 	openscop/scop.h

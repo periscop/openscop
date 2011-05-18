@@ -67,6 +67,7 @@
 # include <stdio.h>
 # include <openscop/macros.h>
 # include <openscop/util.h>
+# include <openscop/names.h>
 # include <openscop/vector.h>
 
 
@@ -122,9 +123,7 @@ void                openscop_relation_print_structure(FILE *,
 void                openscop_relation_print(FILE *, openscop_relation_p);
 void                openscop_relation_print_openscop(FILE *,
                                         openscop_relation_p, int,
-				        int, char **, int, char **,
-				        int, char **,
-					int, char **);
+                                        openscop_names_p);
 
 
 /*****************************************************************************

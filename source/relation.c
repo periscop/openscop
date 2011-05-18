@@ -179,7 +179,7 @@ openscop_relation_print(FILE * file, openscop_relation_p relation)
  * \param first Pointer to a boolean set to 1 if the current value is the first
  *              of an expresion, 0 otherwise (this function may update it).
  * \param cst   A boolean set to 1 if the value is a constant, 0 otherwise.
- * \param name  String containing the name of the iterator or of the parameter.
+ * \param name  String containing the name of the element.
  * \return A string that contains the printing of a value.
  */
 static
@@ -257,20 +257,18 @@ openscop_relation_expression_element(openscop_int_t val, int * first, int cst,
  * openscop_relation_expression function:
  * this function returns a string corresponding to an affine expression
  * stored at the "row"^th row of the relation pointed by "relation".
- * \param relation      A set of linear expressions.
- * \param row           The row corresponding to the expression.
- * \param nb_iterators  The number of iterators for the considered statement.
- * \param iterators     An array containing iterator names for the statement.
- * \param nb_parameters The number of parameters in the SCoP.
- * \param parameters    An array containing all parameters names.
+ * \param relation A set of linear expressions.
+ * \param row      The row corresponding to the expression.
+ * \param names    The textual names of the various elements. Is is important
+ *                 that names->nb_parameters is exact if the matrix
+ *                 representation is used. Set to NULL if printing comments
+ *                 is not needed.
  * \return A string that contains the printing of an affine expression.
  */
 static
 char *
 openscop_relation_expression(openscop_relation_p relation, int row,
-			  int nb_iterators,  char ** iterators,
-			  int nb_parameters, char ** parameters,
-			  int nb_local_dims, char ** local_dims)
+                             openscop_names_p names)
 {
   int i, first = 1;
   char * sline, * sval;
@@ -279,29 +277,31 @@ openscop_relation_expression(openscop_relation_p relation, int row,
   sline[0] = '\0' ;
 
   // First the iterator part.
-  for (i = 1; i <= nb_iterators; i++)
+  for (i = 1; i <= names->nb_iterators; i++)
   {
     sval = openscop_relation_expression_element(relation->m[row][i], 
-                                                &first, 0, iterators[i-1]);
+                                            &first, 0, names->iterators[i-1]);
     strcat(sline, sval);
     free(sval);
   }
 
   // Next the local dims part.
-  for (i = nb_iterators + 1; i <= nb_iterators + nb_local_dims; i++)
+  for (i = names->nb_iterators + 1;
+       i <= names->nb_iterators + names->nb_localdims; i++)
   {
     sval = openscop_relation_expression_element(relation->m[row][i], &first, 0,
-					     local_dims[i - nb_iterators - 1]);
+				names->localdims[i - names->nb_iterators - 1]);
     strcat(sline, sval);
     free(sval);
   }
 
-
   // Next the parameter part.
-  for (i = nb_iterators + nb_local_dims + 1; i <= nb_iterators + nb_local_dims + nb_parameters; i++)
+  for (i = names->nb_iterators + names->nb_localdims + 1;
+       i <= names->nb_iterators + names->nb_localdims + names->nb_parameters;
+       i++)
   {
     sval = openscop_relation_expression_element(relation->m[row][i], &first, 0,
-					     parameters[i - nb_iterators - nb_local_dims - 1]);
+	names->parameters[i - names->nb_iterators - names->nb_localdims - 1]);
     strcat(sline, sval);
     free(sval);
   }
@@ -355,7 +355,7 @@ openscop_relation_get_array_id(openscop_relation_p relation)
       exit(1);
     }
     // TODO: do something more general
-    return SCOPINT_get_si(relation->m[0][1]);
+    return SCOPINT_get_si(relation->m[0][relation->nb_columns - 1]);
   }
 }
 
@@ -364,30 +364,20 @@ openscop_relation_get_array_id(openscop_relation_p relation)
  * openscop_relation_print_openscop function:
  * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
- * \param file          File where informations are printed.
- * \param relation      The relation whose information have to be printed.
- * \param type          Semantics about this relation (domain, access...).
- * \param nb_iterators  The number of iterators for the considered statement.
- * \param iterators     An array containing iterator names for the statement.
- * \param nb_parameters The number of parameters in the SCoP.
- * \param parameters    An array containing all parameters names.
- * \param nb_arrays     The number of arrays accessed in the SCoP.
- * \param arrays        An array containing all accessed array names.
+ * \param file     File where informations are printed.
+ * \param relation The relation whose information have to be printed.
+ * \param type     Semantics about this relation (domain, access...).
+ * \param names    The textual names of the various elements. Is is important
+ *                 that names->nb_parameters is exact if the matrix
+ *                 representation is used. Set to NULL if printing comments
+ *                 is not needed.
  */
 void
 openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
-                                 int type,
-			         int nb_iterators,  char ** iterators,
-			         int nb_parameters, char ** parameters,
-				 int nb_local_dims, char ** local_dims,
-			         int nb_arrays,     char ** arrays)
+                                 int type,    openscop_names_p names)
 {
   int i, j, k;
-  int generated_iterator_names  = 0;
-  int generated_parameter_names = 0;
-  int generated_array_names     = 0;
   int part, nb_parts;
-  int array_id = 0;
   char * expression;
   openscop_relation_p r;
 
@@ -397,37 +387,18 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
     fprintf(file, "# NULL relation\n");
     return;
   }
- 
-  // Generate names for comments if necessary.
-  if (((type == OPENSCOP_TYPE_DOMAIN) &&
-       (relation->nb_output_dims > nb_iterators)) ||
-      (((type == OPENSCOP_TYPE_SCATTERING) ||
-        (type == OPENSCOP_TYPE_ACCESS)) &&
-       (relation->nb_input_dims > nb_iterators)))
+
+  // TODO: check whether there are enough names or not, if not set to NULL.
+  // TODO: if names are not textual, set to NULL.
+  /*if (names != NULL)
   {
-    generated_iterator_names = 1;
     if (type == OPENSCOP_TYPE_DOMAIN)
-      nb_iterators = relation->nb_output_dims;
-    else
-      nb_iterators = relation->nb_input_dims;
+    {
 
-    iterators = openscop_util_generate_names("i_", nb_iterators);
-  }
+        (names
 
-  if (relation->nb_parameters > nb_parameters)
-  {
-    generated_parameter_names = 1;
-    nb_parameters = relation->nb_parameters;
-    parameters = openscop_util_generate_names("P_", nb_parameters);
-  }
-
-  if ((type == OPENSCOP_TYPE_ACCESS) &&
-      ((array_id = openscop_relation_get_array_id(relation)) > nb_arrays))
-  {
-    generated_array_names = 1;
-    arrays = openscop_util_generate_names("A_", array_id);
-  }
-
+  }*/
+ 
   // Count the number of parts in the union and print it if it is not 1.
   r = relation;
   nb_parts = 0;
@@ -465,11 +436,7 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
 
       if (type == OPENSCOP_TYPE_DOMAIN)
       {
-        expression = openscop_relation_expression(relation, i,
-                                                  nb_iterators,  iterators,
-                                                  nb_parameters, parameters,
-						  nb_local_dims, local_dims);
-
+        expression = openscop_relation_expression(relation, i, names);
         fprintf(file, "   ## %s", expression);
         free(expression);
         if (SCOPINT_zero_p(relation->m[i][0]))
@@ -480,29 +447,24 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
 
       if (type == OPENSCOP_TYPE_SCATTERING)
       {
-        expression = openscop_relation_expression(relation, i,
-                                                  nb_iterators,  iterators,
-                                                  nb_parameters, parameters,
-						  nb_local_dims, local_dims);
+        expression = openscop_relation_expression(relation, i, names);
         fprintf(file, "   ## %s", expression);
         free(expression);
       }
 
       if (type == OPENSCOP_TYPE_ACCESS)
       {
+        //TODO: works only for matrix: use openscop_relation_get_array_id
         if (SCOPINT_notzero_p(relation->m[i][0]))
         {
-          if (strncmp(arrays[SCOPINT_get_si(relation->m[i][0]) - 1],
+          if (strncmp(names->arrays[SCOPINT_get_si(relation->m[i][0]) - 1],
                 OPENSCOP_FAKE_ARRAY, strlen(OPENSCOP_FAKE_ARRAY)))
             fprintf(file, "   ## %s",
-                    arrays[SCOPINT_get_si(relation->m[i][0]) - 1]);
+                    names->arrays[SCOPINT_get_si(relation->m[i][0]) - 1]);
           k = i;
           do
           {
-            expression = openscop_relation_expression(relation, k,
-                                                    nb_iterators,  iterators,
-                                                    nb_parameters, parameters,
-						    nb_local_dims, local_dims);
+            expression = openscop_relation_expression(relation, k, names);
             fprintf(file, "[%s]", expression);
             free(expression);
             k++;
@@ -519,13 +481,6 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
     }
     relation = relation->next;
   }
-
-  if (generated_iterator_names)
-    openscop_util_free_name_array(iterators, nb_iterators);
-  if (generated_parameter_names)
-    openscop_util_free_name_array(parameters, nb_parameters);
-  if (generated_array_names)
-    openscop_util_free_name_array(arrays, array_id);
 }
 
 
@@ -1431,6 +1386,12 @@ openscop_relation_integrity_check(openscop_relation_p relation,
         }
       }
     }
+
+    // TODO: in relation format, array identifiers are
+    //       m[i][#columns -1] / m[i][1], with i the only row
+    //       where m[i][1] is not 0.
+    //       - check there is exactly one row such that m[i][1] is not 0,
+    //       - check that (m[i][#columns -1] % m[i][1]) == 0.
 
     relation = relation->next;
   }
