@@ -79,9 +79,9 @@
  * file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
  * print_structure functions.
- * \param file     File where informations are printed.
- * \param relation The relation whose information have to be printed.
- * \param level    Number of spaces before printing, for each line.
+ * \param[in] file     File where informations are printed.
+ * \param[in] relation The relation whose information have to be printed.
+ * \param[in] level    Number of spaces before printing, for each line.
  */
 void
 openscop_relation_print_structure(FILE * file, openscop_relation_p relation,
@@ -160,8 +160,8 @@ openscop_relation_print_structure(FILE * file, openscop_relation_p relation,
  * openscop_relation_print function:
  * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout).
- * \param file     File where informations are printed.
- * \param relation The relation whose information have to be printed.
+ * \param[in] file     File where informations are printed.
+ * \param[in] relation The relation whose information have to be printed.
  */
 void
 openscop_relation_print(FILE * file, openscop_relation_p relation)
@@ -175,11 +175,12 @@ openscop_relation_print(FILE * file, openscop_relation_p relation)
  * openscop_relation_expression_element function:
  * this function returns a string containing the printing of a value (possibly
  * an iterator or a parameter with its coefficient or a constant).
- * \param val   The coefficient or constant value.
- * \param first Pointer to a boolean set to 1 if the current value is the first
- *              of an expresion, 0 otherwise (this function may update it).
- * \param cst   A boolean set to 1 if the value is a constant, 0 otherwise.
- * \param name  String containing the name of the element.
+ * \param[in]     val   The coefficient or constant value.
+ * \param[in,out] first Pointer to a boolean set to 1 if the current value is
+ *                      the first of an expresion, 0 otherwise (maybe updated).
+ * \param[in]     cst   A boolean set to 1 if the value is a constant,
+ *                      0 otherwise.
+ * \param[in]     name  String containing the name of the element.
  * \return A string that contains the printing of a value.
  */
 static
@@ -257,12 +258,12 @@ openscop_relation_expression_element(openscop_int_t val, int * first, int cst,
  * openscop_relation_expression function:
  * this function returns a string corresponding to an affine expression
  * stored at the "row"^th row of the relation pointed by "relation".
- * \param relation A set of linear expressions.
- * \param row      The row corresponding to the expression.
- * \param names    The textual names of the various elements. Is is important
- *                 that names->nb_parameters is exact if the matrix
- *                 representation is used. Set to NULL if printing comments
- *                 is not needed.
+ * \param[in] relation A set of linear expressions.
+ * \param[in] row      The row corresponding to the expression.
+ * \param[in] names    The textual names of the various elements. Is is
+ *                     important that names->nb_parameters is exact if the
+ *                     matrix representation is used. Set to NULL if
+ *                     printing comments is not needed.
  * \return A string that contains the printing of an affine expression.
  */
 static
@@ -320,7 +321,7 @@ openscop_relation_expression(openscop_relation_p relation, int row,
  * openscop_relation_get_array_id internal function:
  * this function returns the array identifier when the relation provided
  * as parameter corresponds to an access function.
- * \param  relation  The access function.
+ * \param[in] relation The access function.
  * \return The accessed array identifier.
  */
 static
@@ -364,13 +365,13 @@ openscop_relation_get_array_id(openscop_relation_p relation)
  * openscop_relation_print_openscop function:
  * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
- * \param file     File where informations are printed.
- * \param relation The relation whose information have to be printed.
- * \param type     Semantics about this relation (domain, access...).
- * \param names    The textual names of the various elements. Is is important
- *                 that names->nb_parameters is exact if the matrix
- *                 representation is used. Set to NULL if printing comments
- *                 is not needed.
+ * \param[in] file     File where informations are printed.
+ * \param[in] relation The relation whose information has to be printed.
+ * \param[in] type     Semantics about this relation (domain, access...).
+ * \param[in] names    The textual names of the various elements. Is is
+ *                     important that names->nb_parameters is exact if the
+ *                     matrix representation is used. Set to NULL if printing
+ *                     comments is not needed.
  */
 void
 openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
@@ -390,14 +391,6 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
 
   // TODO: check whether there are enough names or not, if not set to NULL.
   // TODO: if names are not textual, set to NULL.
-  /*if (names != NULL)
-  {
-    if (type == OPENSCOP_TYPE_DOMAIN)
-    {
-
-        (names
-
-  }*/
  
   // Count the number of parts in the union and print it if it is not 1.
   r = relation;
@@ -493,7 +486,7 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
  * openscop_relation_read function:
  * this function reads a relation into a file (foo, posibly stdin) and
  * returns a pointer this relation.
- * \param file  The input stream.
+ * \param[in] file The input stream.
  * \return A pointer to the relation structure that has been read.
  */
 openscop_relation_p
@@ -587,10 +580,18 @@ openscop_relation_read(FILE * foo)
         }
 #if defined(OPENSCOP_INT_T_IS_MP)
         long long val;
-        sscanf(str, "%lld", &val);
+        if (sscanf(str, "%lld", &val) == 0)
+        {
+          fprintf(stderr, "[OpenScop] Error: failed to read an integer.\n");
+          exit(1);
+        }
         mpz_set_si(*p++, val);
 #else
-        sscanf(str, OPENSCOP_FMT_TXT, p++);
+        if (sscanf(str, OPENSCOP_FMT_TXT, p++) == 0)
+        {
+          fprintf(stderr, "[OpenScop] Error: failed to read an integer.\n");
+          exit(1);
+        }
 #endif
         c += n;
       }
@@ -623,8 +624,8 @@ openscop_relation_read(FILE * foo)
  * this function allocates the memory space for a openscop_relation_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
- * \param nb_rows    The number of row of the relation to allocate.
- * \param nb_columns The number of columns of the relation to allocate.
+ * \param[in] nb_rows    The number of row of the relation to allocate.
+ * \param[in] nb_columns The number of columns of the relation to allocate.
  * \return A pointer to an empty relation with fields set to default values
  *         and a ready-to-use constraint matrix.
  */
@@ -686,7 +687,7 @@ openscop_relation_malloc(int nb_rows, int nb_columns)
  * openscop_relation_free_inside function:
  * this function frees the allocated memory for the inside of a
  * openscop_relation_t structure, i.e. only m.
- * \param relation The pointer to the relation we want to free.
+ * \param[in] relation The pointer to the relation we want to free internals.
  */
 void
 openscop_relation_free_inside(openscop_relation_p relation)
@@ -718,7 +719,7 @@ openscop_relation_free_inside(openscop_relation_p relation)
  * openscop_relation_free function:
  * this function frees the allocated memory for a openscop_relation_t
  * structure.
- * \param relation The pointer to the relation we want to free.
+ * \param[in] relation The pointer to the relation we want to free.
  */
 void
 openscop_relation_free(openscop_relation_p relation)
@@ -748,7 +749,7 @@ openscop_relation_free(openscop_relation_p relation)
  * this function returns 1 if the relation provided as parameter corresponds
  * to a "matrix" representation (see documentation), -1 if it is NULL and
  * 0 in all other cases.
- * \param relation The relation we want to know whether it is a matrix or not.
+ * \param[in] relation The relation we want to know if it is a matrix or not.
  * \return 1 if the relation has "matrix" representation, -1 if it is NULL,
  *         0 in all other cases.
  */
@@ -778,9 +779,9 @@ openscop_relation_is_matrix(openscop_relation_p relation)
  * openscop_relation_t data structure such that the copy is restricted to the
  * "n" first rows of the relation. This applies to all the parts in the case
  * of a relation union.
- * \param relation The pointer to the relation we want to copy.
- * \param n        The number of row of the relation we want to copy (the
- *                 special value -1 means "all the rows").
+ * \param[in] relation The pointer to the relation we want to copy.
+ * \param[in] n        The number of row of the relation we want to copy (the
+ *                     special value -1 means "all the rows").
  * \return A pointer to the full copy of the relation union restricted to the
  *         first n rows of constraint matrix for each part of the union.
  */
@@ -806,6 +807,10 @@ openscop_relation_ncopy(openscop_relation_p relation, int n)
     }
 
     node = openscop_relation_malloc(n, relation->nb_columns);
+    node->nb_output_dims = relation->nb_output_dims;
+    node->nb_input_dims  = relation->nb_input_dims;
+    node->nb_local_dims  = relation->nb_local_dims;
+    node->nb_parameters  = relation->nb_parameters;
 
     for (i = 0; i < n; i++)
       for (j = 0; j < relation->nb_columns; j++)
@@ -834,7 +839,7 @@ openscop_relation_ncopy(openscop_relation_p relation, int n)
  * openscop_relation_copy function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_relation_t data structure (the full union of relation).
- * \param relation The pointer to the relation we want to copy.
+ * \param[in] relation The pointer to the relation we want to copy.
  * \return A pointer to the copy of the union of relations.
  */
 openscop_relation_p
@@ -852,9 +857,9 @@ openscop_relation_copy(openscop_relation_p relation)
  * this function replaces the "row"^th row of a relation "relation" with the
  * vector "vector". It directly updates the relation union part pointed
  * by "relation" and this part only.
- * \param relation The relation we want to change a row.
- * \param vector The vector that will replace a row of the relation.
- * \param row    The row of the relation to be replaced.
+ * \param[in,out] relation The relation we want to replace a row.
+ * \param[in]     vector   The vector that will replace a row of the relation.
+ * \param[in]     row      The row of the relation to be replaced.
  */
 void
 openscop_relation_replace_vector(openscop_relation_p relation,
@@ -877,12 +882,12 @@ openscop_relation_replace_vector(openscop_relation_p relation,
 
 /**
  * openscop_relation_add_vector function:
- * this function adds the "row"^th row of a relation "relation" with the
- * vector "vector". It directly updates the relation union part pointed
+ * this function adds (meaning, +) a vector to the "row"^th row of a
+ * relation "relation". It directly updates the relation union part pointed
  * by "relation" and this part only.
- * \param relation The relation we want to change a row.
- * \param vector The vector that will replace a row of the relation.
- * \param row    The row of the relation to be replaced.
+ * \param[in,out] relation The relation we want to add a vector to a row.
+ * \param[in]     vector   The vector that will replace a row of the relation.
+ * \param[in]     row      The row of the relation to be replaced.
  */
 void
 openscop_relation_add_vector(openscop_relation_p relation,
@@ -908,12 +913,12 @@ openscop_relation_add_vector(openscop_relation_p relation,
 
 /**
  * openscop_relation_sub_vector function:
- * this function substracts the vector "vector" to the "row"^th row of
+ * this function subtracts the vector "vector" to the "row"^th row of
  * a relation "relation. It directly updates the relation union part pointed
  * by "relation" and this part only.
- * \param relation The relation we want to change a row.
- * \param vector The vector that will be subtracted to a row of the relation.
- * \param row    The row of the relation to subtract the vector.
+ * \param[in,out] relation The relation where to subtract a vector to a row.
+ * \param[in]     vector   The vector to subtract to a relation row.
+ * \param[in]     row      The row of the relation to subtract the vector.
  */
 void
 openscop_relation_sub_vector(openscop_relation_p relation,
@@ -939,53 +944,24 @@ openscop_relation_sub_vector(openscop_relation_p relation,
 
 /**
  * openscop_relation_insert_vector function:
- * this function adds a new row corresponding to the vector "vector" to
+ * this function inserts a new row corresponding to the vector "vector" to
  * the relation "relation" by inserting it at the "row"^th row. It directly
  * updates the relation union part pointed by "relation" and this part only.
  * If "vector" (or "relation") is NULL, the relation is left unmodified.
- * \param relation The relation we want to extend.
- * \param vector The vector that will be added relation.
- * \param row The row where to insert the vector.
+ * \param[in,out] relation The relation we want to extend.
+ * \param[in]     vector   The vector that will be added relation.
+ * \param[in]     row      The row where to insert the vector.
  */
 void
 openscop_relation_insert_vector(openscop_relation_p relation,
                                 openscop_vector_p vector, 
                                 int row)
 {
-  int i, j;
-  openscop_relation_p new;
+  openscop_relation_p temp;
 
-  if ((vector == NULL) || (relation == NULL))
-    return;
-
-  if ((relation->nb_columns != vector->size) ||
-      (row > relation->nb_rows) || (row < 0))
-  {
-    fprintf(stderr,"[OpenScop] Error: vector cannot be inserted.\n");
-    exit(1);
-  }
-
-  // We use a temporary relation just to reuse existing functions. Cleaner.
-  new = openscop_relation_malloc(relation->nb_rows+1, relation->nb_columns);
-
-  for (i = 0; i < row; i++)
-    for (j = 0; j < relation->nb_columns; j++)
-      SCOPINT_assign(new->m[i][j], relation->m[i][j]);
-
-  openscop_relation_replace_vector(new,vector, row);
-
-  for (i = row+1; i < relation->nb_rows; i++)
-    for (j = 0; j < relation->nb_columns; j++)
-      SCOPINT_assign(new->m[i][j], relation->m[i-1][j]);
-
-  openscop_relation_free_inside(relation);
-
-  // Replace the inside of relation.
-  relation->nb_rows = new->nb_rows;
-  relation->nb_columns = new->nb_columns;
-  relation->m = new->m;
-  // Free the new "shell".
-  free(new);
+  temp = openscop_relation_from_vector(vector);
+  openscop_relation_insert_relation(relation, temp, row);
+  openscop_relation_free(temp);
 }
 
 
@@ -993,8 +969,8 @@ openscop_relation_insert_vector(openscop_relation_p relation,
  * openscop_relation_from_vector function:
  * this function converts a vector "vector" to a relation with a single row
  * and returns a pointer to that relation.
- * \param vector The vector to convert to a relation.
- * \return A pointer to a relation resulting from the conversion of the vector.
+ * \param[in] vector The vector to convert to a relation.
+ * \return A pointer to a relation resulting from the vector conversion.
  */
 openscop_relation_p
 openscop_relation_from_vector(openscop_vector_p vector)
@@ -1015,9 +991,9 @@ openscop_relation_from_vector(openscop_vector_p vector)
  * this function replaces some rows of a relation "r1" with the rows of
  * the relation "r2". It begins at the "row"^th row of "r1". It directly
  * updates the relation union part pointed by "r1" and this part only.
- * \param r1  The relation we want to change some rows.
- * \param r2  The relation containing the new rows.
- * \param row The first row of the relation r1 to be replaced.
+ * \param[in,out] r1  The relation we want to change some rows.
+ * \param[in]     r2  The relation containing the new rows.
+ * \param[in]     row The first row of the relation r1 to be replaced.
  */
 void
 openscop_relation_replace_relation(openscop_relation_p r1,
@@ -1045,16 +1021,16 @@ openscop_relation_replace_relation(openscop_relation_p r1,
  * the relation "r2" by inserting it at the "row"^th row. It directly
  * updates the relation union part pointed by "r1" and this part only.
  * If "r2" (or "r1") is NULL, the relation is left unmodified.
- * \param r1  The relation we want to extend.
- * \param r2  The relation to be inserted.
- * \param row The row where to insert the relation
+ * \param[in,out] r1  The relation we want to extend.
+ * \param[in]     r2  The relation to be inserted.
+ * \param[in]     row The row where to insert the relation
  */
 void
 openscop_relation_insert_relation(openscop_relation_p r1,
                                   openscop_relation_p r2, int row)
 {
   int i, j;
-  openscop_relation_p new;
+  openscop_relation_p temp;
 
   if ((r1 == NULL) || (r2 == NULL))
     return;
@@ -1062,32 +1038,31 @@ openscop_relation_insert_relation(openscop_relation_p r1,
   if ((r1->nb_columns != r2->nb_columns) ||
       (row > r1->nb_rows) || (row < 0))
   {
-    fprintf(stderr,"[OpenScop] Error: relation cannot be inserted.\n");
+    fprintf(stderr,"[OpenScop] Error: constraints cannot be inserted.\n");
     exit(1);
   }
 
   // We use a temporary relation just to reuse existing functions. Cleaner.
-  new = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
+  temp = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
 
   for (i = 0; i < row; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      SCOPINT_assign(new->m[i][j], r1->m[i][j]);
+      SCOPINT_assign(temp->m[i][j], r1->m[i][j]);
 
-  openscop_relation_replace_relation(new, r2, row);
+  openscop_relation_replace_relation(temp, r2, row);
 
   for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      SCOPINT_assign(new->m[i][j], r1->m[i-r2->nb_rows][j]);
+      SCOPINT_assign(temp->m[i][j], r1->m[i-r2->nb_rows][j]);
 
   openscop_relation_free_inside(r1);
 
   // Replace the inside of relation.
-  r1->nb_rows = new->nb_rows;
-  r1->nb_columns = new->nb_columns;
-  r1->m = new->m;
+  r1->nb_rows = temp->nb_rows;
+  r1->m = temp->m;
 
-  // Free the new "container".
-  free(new);
+  // Free the temp "shell".
+  free(temp);
 }
 
 
@@ -1095,10 +1070,10 @@ openscop_relation_insert_relation(openscop_relation_p r1,
  * openscop_relation_concat function:
  * this function builds a new relation from two relations sent as
  * parameters. The new set of constraints is built as the concatenation
- * of the rows of the first elements of the two relations r1 and r2.
- * This means, the next field is not supported.
- * \param r1  The first relation.
- * \param r2  The second relation.
+ * of the rows of the first elements of the two relation unions r1 and r2.
+ * This means, there is no next field in the result.
+ * \param[in] r1  The first relation.
+ * \param[in] r2  The second relation.
  * \return A pointer to the relation resulting from the concatenation of
  *         the first elements of r1 and r2.
  */
@@ -1115,7 +1090,8 @@ openscop_relation_concat(openscop_relation_p r1, openscop_relation_p r2)
 
   if (r1->nb_columns != r2->nb_columns)
   {
-    fprintf(stderr, "[OpenScop] Error: matrices cannot be concatenated\n");
+    fprintf(stderr, "[OpenScop] Error: incompatible sizes "
+                    "for concatenation.\n");
     exit(1);
   }
   if (r1->next || r2->next)
@@ -1134,10 +1110,10 @@ openscop_relation_concat(openscop_relation_p r1, openscop_relation_p r2)
 
 /**
  * openscop_relation_equal function:
- * this function returns true if the two matrices are the same, false
- * otherwise.
- * \param r1  The first relation.
- * \param r2  The second relation.
+ * this function returns true if the two relations provided as parameters
+ * are the same, false otherwise.
+ * \param[in] r1  The first relation.
+ * \param[in] r2  The second relation.
  * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
  */
 int
@@ -1150,7 +1126,12 @@ openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2)
     if (r1 == r2)
       return 1;
 
-    if ((r1->nb_rows != r2->nb_rows) || (r1->nb_columns != r2->nb_columns))
+    if ((r1->nb_rows        != r2->nb_rows)        ||
+        (r1->nb_columns     != r2->nb_columns)     ||
+        (r1->nb_output_dims != r2->nb_output_dims) ||
+        (r1->nb_input_dims  != r2->nb_input_dims)  ||
+        (r1->nb_local_dims  != r2->nb_local_dims)  ||
+        (r1->nb_parameters  != r2->nb_parameters))
       return 0;
 
     for (i = 0; i < r1->nb_rows; ++i)
@@ -1176,9 +1157,9 @@ openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2)
  * OPENSCOP_UNDEFINED, this function sets it to the "actual" value
  * and do not report a difference has been detected.
  * It returns 0 if a difference has been detected, 1 otherwise.
- * \param expected Pointer to the expected value (the value is modified if
- *                 it was set to OPENSCOP_UNDEFINED).
- * \param actual   Value we want to check.
+ * \param[in,out] expected Pointer to the expected value (the value is
+ *                         modified if it was set to OPENSCOP_UNDEFINED).
+ * \param[in]     actual   Value we want to check.
  * \return 0 if the values are not the same while the expected value was
  *         not OPENSCOP_UNDEFINED, 1 otherwise.
  */
@@ -1187,7 +1168,8 @@ int
 openscop_relation_check_property(int * expected, int actual)
 {
   if (*expected != OPENSCOP_UNDEFINED)
-  { if ((actual != OPENSCOP_UNDEFINED) &&
+  { 
+    if ((actual != OPENSCOP_UNDEFINED) &&
         (actual != *expected))
     {
       fprintf(stderr, "[OpenScop] Warning: unexpected property.\n");
@@ -1195,7 +1177,9 @@ openscop_relation_check_property(int * expected, int actual)
     }
   }
   else
+  {
     *expected = actual;
+  }
 
   return 1;
 }
@@ -1203,15 +1187,15 @@ openscop_relation_check_property(int * expected, int actual)
 
 /**
  * openscop_relation_check_nb_columns internal function:
- * This function checks that the number of columns of a relation is
+ * This function checks that the number of columns of a relation
  * corresponds to some expected properties (setting an expected property to
  * OPENSCOP_UNDEFINED makes this function unable to detect a problem).
  * It returns 0 if the number of columns seems incorrect or 1 if no problem
  * has been detected.
- * \param relation  The relation we want to check the number of column.
- * \param expected_nb_output_dims Expected number of output dimensions.
- * \param expected_nb_input_dims  Expected number of input dimensions.
- * \param expected_nb_parameters  Expected number of parameters.
+ * \param[in] relation  The relation we want to check the number of columns.
+ * \param[in] expected_nb_output_dims Expected number of output dimensions.
+ * \param[in] expected_nb_input_dims  Expected number of input dimensions.
+ * \param[in] expected_nb_parameters  Expected number of parameters.
  * \return 0 if the number of columns seems incorrect, 1 otherwise.
  */
 static
@@ -1256,11 +1240,11 @@ openscop_relation_check_nb_columns(openscop_relation_p relation,
  * that we do not expect a specific value) and what the relation is supposed
  * to represent. It returns 0 if the check failed or 1 if no problem has been
  * detected.
- * \param relation  The relation we want to check.
- * \param type      Semantics about this relation (domain, access...).
- * \param expected_nb_output_dims Expected number of output dimensions.
- * \param expected_nb_input_dims  Expected number of input dimensions.
- * \param expected_nb_parameters  Expected number of parameters.
+ * \param[in] relation  The relation we want to check.
+ * \param[in] type      Semantics about this relation (domain, access...).
+ * \param[in] expected_nb_output_dims Expected number of output dimensions.
+ * \param[in] expected_nb_input_dims  Expected number of input dimensions.
+ * \param[in] expected_nb_parameters  Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
 int
@@ -1405,8 +1389,8 @@ openscop_relation_integrity_check(openscop_relation_p relation,
  * this function builds a new relation from two relations provided
  * as parameters. The new relation is built as an union of the
  * two relations: the list of constraint sets are linked together.
- * \param r1 The first relation.
- * \param r2 The second relation.
+ * \param[in] r1 The first relation.
+ * \param[in] r2 The second relation.
  * \return A new relation corresponding to the union of r1 and r2.
  */
 openscop_relation_p
