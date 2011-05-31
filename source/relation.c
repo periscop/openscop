@@ -1232,10 +1232,39 @@ openscop_relation_check_nb_columns(openscop_relation_p relation,
   return 1;
 }
 
-  
+
+/**
+ * openscop_relation_consistency_check function:
+ * this function checks that each part of an union of relations use the same
+ * representation type (either matrix or relation representation). It returns
+ * 1 if it is the case, 0 otherwise.
+ * \param[in] r The relation to check for representation consistency.
+ * \return 0 if the representation consistency check fails, 1 if it succeeds.
+ */
+static
+int
+openscop_relation_consistency_check(openscop_relation_p r)
+{
+  int matrix   = 0;
+  int relation = 0;
+
+  while (r != NULL)
+  {
+    if (r->nb_local_dims == OPENSCOP_UNDEFINED)
+      matrix = 1;
+    else
+      relation = 1;
+
+    r = r->next;
+  }
+
+  return (matrix == relation) ? 0 : 1;
+}
+
+
 /**
  * openscop_relation_integrity_check function:
- * This function checks that a relation is "well formed" according to some
+ * this function checks that a relation is "well formed" according to some
  * expected properties (setting an expected value to OPENSCOP_UNDEFINED means
  * that we do not expect a specific value) and what the relation is supposed
  * to represent. It returns 0 if the check failed or 1 if no problem has been
@@ -1274,17 +1303,25 @@ openscop_relation_integrity_check(openscop_relation_p relation,
     }
   }
 
-  // Check properties according to expected values (and if expected values
-  // are undefined, define them with the first relation part properties).
-  if (!openscop_relation_check_property(&expected_nb_output_dims,
-                                        relation->nb_output_dims) ||
-      !openscop_relation_check_property(&expected_nb_input_dims,
-                                        relation->nb_input_dims)  ||
-      !openscop_relation_check_property(&expected_nb_parameters,
-                                        relation->nb_parameters))
+  // Check the relation is using either matrix or relation representation.
+  if (!openscop_relation_consistency_check(relation))
+  {
+    fprintf(stderr, "[OpenScop] Warning: inconsistent representation "
+                    "(both matrix and relation).\n");
     return 0;
+  }
 
-  // Check that a domain has actually 0 input dimensions.
+  // Check that a context has actually 0 or an undefined #output dimensions.
+  if ((type == OPENSCOP_TYPE_CONTEXT) &&
+      ((relation->nb_output_dims != 0) &&
+       (relation->nb_output_dims != OPENSCOP_UNDEFINED)))
+  {
+    fprintf(stderr, "[OpenScop] Warning: context without 0 "
+                    "as number of output dimensions.\n");
+    return 0;
+  }
+
+  // Check that a domain has actually 0 or an undefined #input dimensions.
   if (((type == OPENSCOP_TYPE_DOMAIN) ||
        (type == OPENSCOP_TYPE_CONTEXT)) &&
       ((relation->nb_input_dims != 0) &&
@@ -1294,6 +1331,16 @@ openscop_relation_integrity_check(openscop_relation_p relation,
                     "as number of input dimensions.\n");
     return 0;
   }
+
+  // Check properties according to expected values (and if expected values
+  // are undefined, define them with the first relation part properties).
+  if (!openscop_relation_check_property(&expected_nb_output_dims,
+                                        relation->nb_output_dims) ||
+      !openscop_relation_check_property(&expected_nb_input_dims,
+                                        relation->nb_input_dims)  ||
+      !openscop_relation_check_property(&expected_nb_parameters,
+                                        relation->nb_parameters))
+    return 0;
 
   while (relation != NULL)
   {
@@ -1339,7 +1386,7 @@ openscop_relation_integrity_check(openscop_relation_p relation,
       for (i = start; i < relation->nb_rows; i++)
       {
         if ((type == OPENSCOP_TYPE_ACCESS) &&
-            (relation->nb_local_dims == OPENSCOP_UNDEFINED))
+            (openscop_relation_is_matrix(relation)))
         {
           if (!SCOPINT_zero_p(relation->m[i][0]))
           {
@@ -1349,7 +1396,7 @@ openscop_relation_integrity_check(openscop_relation_p relation,
           }
         }
         else if ((type == OPENSCOP_TYPE_SCATTERING) &&
-                 (relation->nb_local_dims == OPENSCOP_UNDEFINED))
+                 (openscop_relation_is_matrix(relation)))
         {
           if (!SCOPINT_zero_p(relation->m[i][0]))
           {

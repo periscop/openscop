@@ -571,7 +571,7 @@ openscop_statement_integrity_check(openscop_statement_p statement,
     if (!openscop_relation_integrity_check(statement->domain,
                                            OPENSCOP_TYPE_DOMAIN,
                                            OPENSCOP_UNDEFINED,
-                                           0,
+                                           OPENSCOP_UNDEFINED,
                                            expected_nb_parameters))
       return 0;
 

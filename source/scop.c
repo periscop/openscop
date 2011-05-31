@@ -820,9 +820,13 @@ openscop_scop_integrity_check(openscop_scop_p scop)
     fprintf(stderr, "[OpenScop] Alert: What ?! Caml ?! Are you sure ?!\n");
   
   // Check the context.
+  if (openscop_relation_is_matrix(scop->context))
+
   if (!openscop_relation_integrity_check(scop->context,
                                          OPENSCOP_TYPE_CONTEXT,
-                                         0, 0, OPENSCOP_UNDEFINED))
+                                         OPENSCOP_UNDEFINED,
+                                         OPENSCOP_UNDEFINED,
+                                         OPENSCOP_UNDEFINED))
     return 0;
 
   // Get the number of parameters.
