@@ -379,8 +379,6 @@ openscop_statement_malloc()
   statement->write      = NULL;
   statement->nb_iterators = 0;
   statement->iterators  = NULL;
-  statement->nb_local_dims = 0;
-  statement->local_dims = NULL;
   statement->body       = NULL;
   statement->next       = NULL;
 

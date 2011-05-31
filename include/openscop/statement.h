@@ -92,8 +92,6 @@ struct openscop_statement
   openscop_relation_list_p write; /**< Array write access informations */
   int nb_iterators;               /**< Number of names in 'iterators' */
   char ** iterators;              /**< Array of iterator names */
-  int nb_local_dims;              /**< Number of local dims for the SCoP */ 
-  char ** local_dims;             /**< Array of nb_local_dims local dims names */ 
   char * body;                    /**< Original statement body */
   void * usr;                     /**< A user-defined field, not touched
 				       AT ALL by the OpenScop Library. */
