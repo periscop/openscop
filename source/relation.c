@@ -249,8 +249,8 @@ char * openscop_relation_expression_element(openscop_int_t val, int * first,
  *                     printing comments is not needed.
  * \return A string that contains the printing of an affine expression.
  */
-static char * openscop_relation_expression(openscop_relation_p relation,
-                                           int row, openscop_names_p names) {
+char * openscop_relation_expression(openscop_relation_p relation,
+                                    int row, openscop_names_p names) {
   int i, first = 1;
   char * sval;
   char * sline = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));

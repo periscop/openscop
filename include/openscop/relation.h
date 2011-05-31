@@ -120,6 +120,9 @@ typedef struct openscop_relation * openscop_relation_p;
 void                openscop_relation_print_structure(FILE *,
                                         openscop_relation_p, int);
 void                openscop_relation_print(FILE *, openscop_relation_p);
+char *              openscop_relation_expression(
+                                        openscop_relation_p relation,
+                                        int row, openscop_names_p names);
 void                openscop_relation_print_openscop(FILE *,
                                         openscop_relation_p, int,
                                         openscop_names_p);
