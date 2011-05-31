@@ -361,6 +361,8 @@ void
 openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
 {
   openscop_names_p names;
+  int tmp_nb_iterators = 0;
+  char ** tmp_iterators = NULL;
 
   if (openscop_scop_integrity_check(scop) == 0)
   {
@@ -417,8 +419,17 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
   fprintf(file, "%s\n\n", scop->language);
 
   fprintf(file, "# Context\n");
+  // Remove the iterators from the names structure to print comments, as
+  // this information is used to know the number of iterators.
+  // TODO: do this in openscop_relation_print_openscop
+  tmp_nb_iterators = names->nb_iterators;
+  tmp_iterators = names->iterators;
+  names->nb_iterators = 0;
+  names->iterators = NULL;
   openscop_relation_print_openscop(file, scop->context,
                                    OPENSCOP_TYPE_DOMAIN, names);
+  names->nb_iterators = tmp_nb_iterators;
+  names->iterators = tmp_iterators;
   fprintf(file, "\n");
 
   openscop_names_print_openscop(file, scop->names);

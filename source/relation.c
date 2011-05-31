@@ -389,7 +389,10 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
     return;
   }
 
-  // TODO: check whether there are enough names or not, if not set to NULL.
+  // TODO: check whether there are enough names or not, if not, set to NULL.
+  //       (or generate them temporarily ?)
+  // TODO: check whether there are too many names or not, if yes, set to NULL.
+  //       (or remove them temporarily ?)
   // TODO: if names are not textual, set to NULL.
  
   // Count the number of parts in the union and print it if it is not 1.
@@ -463,8 +466,7 @@ openscop_relation_print_openscop(FILE * file, openscop_relation_p relation,
             k++;
           }
           while ((k < relation->nb_rows) &&
-                 SCOPINT_zero_p(relation->m[k][0]))
-            ;
+                 SCOPINT_zero_p(relation->m[k][0]));
         }
         else
           fprintf(file, "   ##");
