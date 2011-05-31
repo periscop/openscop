@@ -80,6 +80,8 @@ pkginclude_HEADERS 	=                  \
 	openscop/statement.h               \
 	openscop/comment.h                 \
 	openscop/arrays.h                  \
+	openscop/lines.h                   \
+	openscop/irregular.h               \
 	openscop/extension.h               \
 	openscop/vector.h                  \
 	openscop/relation.h                \

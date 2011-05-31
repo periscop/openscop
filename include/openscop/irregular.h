@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          extension.h                            **
+     **                     extensions/irregular.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 26/11/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,75 +61,87 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_EXTENSION_H
-# define OPENSCOP_EXTENSION_H
+#ifndef OPENSCOP_IRREGULAR_H
+# define OPENSCOP_IRREGULAR_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/comment.h>
-# include <openscop/arrays.h>
-# include <openscop/lines.h>
-# include <openscop/irregular.h>
 
 # if defined(__cplusplus)
 extern "C"
   {
 # endif
 
-#define OPENSCOP_EXTENSION_UNDEFINED   0
-#define OPENSCOP_EXTENSION_STRING      1
-#define OPENSCOP_EXTENSION_COMMENT     2
-#define OPENSCOP_EXTENSION_ARRAYS      3
-#define OPENSCOP_EXTENSION_LINES       4
-#define OPENSCOP_EXTENSION_IRREGULAR   5
+
+# define OPENSCOP_TAG_IRREGULAR_START  "<irregular>"
+# define OPENSCOP_TAG_IRREGULAR_STOP   "</irregular>"
+
 
 /**
- * The openscop_extension_t structure stores an extension to the core
- * OpenScop representation. It is a node of a NULL-terminated linked list of
- * extensions.
+ * The openscop_irregular_t structure stores an irregular extension to the core
+ * OpenScop representation. It contains a list of predicates (in their textual
+ * representation), and for each statement, its list of associated predicates.
+ * The list of predicates contains both control and exit predicates (see
+ * Benabderrhamane et al.'s paper at CC'2010), control predicates are listed
+ * first, then come exit predicates.
  */
-struct openscop_extension {
-  int type;                         /**< This extension's type. */
-  void * extension;                 /**< Pointer to the extension itself. */
-  struct openscop_extension * next; /**< Pointer to the next extension. */
+struct openscop_irregular {
+  // List of predicates (textual representation).
+  int nb_control;      /**< Number of control predicates in the SCoP. */
+  int nb_exit;         /**< Number of exit predicates in the SCoP. */
+  int * nb_iterators;  /**< nb_iterators[i]: #iterators for ith predicate. */
+  char *** iterators;  /**< iterators[i]: array of (nb_control + nb_exit)
+                            arrays of nb_iterators[i] strings. Each element
+                            corresponds to the list of original iterators
+                            for the ith predicate. */
+  char ** body;        /**< body[i]: original source code of ith predicate. */
+  
+  // List of associated predicates for each statement.
+  int nb_statements;   /**< Number of statements in the SCoP. */
+  int * nb_predicates; /**< nb_predicates[i]: #predicates for ith statement. */
+  int ** predicates;   /**< predicates[i]: array of nb_predicates[i] predicates
+                            corresponding to the list of predicates associated
+                            to the ith statement. */
 };
-typedef struct openscop_extension   openscop_extension_t;
-typedef struct openscop_extension * openscop_extension_p;
+typedef struct openscop_irregular   openscop_irregular_t;
+typedef struct openscop_irregular * openscop_irregular_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_extension_print_structure(FILE *, openscop_extension_p, int);
-void openscop_extension_print(FILE *, openscop_extension_p);
-void openscop_extension_print_openscop(FILE *, openscop_extension_p);
+void   openscop_irregular_print_structure(FILE *, openscop_irregular_p, int);
+void   openscop_irregular_print(FILE *, openscop_irregular_p);
+char * openscop_irregular_print_openscop(openscop_irregular_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-char *               openscop_extension_read_string(FILE *);
-openscop_extension_p openscop_extension_read(FILE *);
+openscop_irregular_p openscop_irregular_read(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void                 openscop_extension_add(openscop_extension_p*, int, void*);
-openscop_extension_p openscop_extension_malloc();
-void                 openscop_extension_free(openscop_extension_p);
+openscop_irregular_p openscop_irregular_malloc();
+void                 openscop_irregular_free(openscop_irregular_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_extension_p openscop_extension_copy(openscop_extension_p);
-int openscop_extension_equal(openscop_extension_p, openscop_extension_p);
-void * openscop_extension_lookup(openscop_extension_p, int);
+openscop_irregular_p openscop_irregular_copy(openscop_irregular_p);
+int                  openscop_irregular_equal(openscop_irregular_p,
+                                  openscop_irregular_p);
+openscop_irregular_p openscop_irregular_add_control(openscop_irregular_p,
+                                  char**, int, char*);
+openscop_irregular_p openscop_irregular_add_predicates(openscop_irregular_p,
+                                  int*, int);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_EXTENSION_H */
+#endif /* define OPENSCOP_IRREGULAR_H */

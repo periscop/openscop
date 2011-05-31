@@ -82,16 +82,18 @@ INCLUDES		= -I$(top_builddir) -I$(top_srcdir)  \
 lib_LTLIBRARIES 	= libopenscop.la
 
 
-libopenscop_la_SOURCES 	=     \
-	scop.c                \
-	statement.c           \
-	extensions/comment.c  \
-	extensions/arrays.c   \
-	extension.c           \
-	relation.c            \
-	relation_list.c       \
-	vector.c              \
-	names.c               \
+libopenscop_la_SOURCES 	=      \
+	scop.c                 \
+	statement.c            \
+	extensions/comment.c   \
+	extensions/arrays.c    \
+	extensions/lines.c     \
+	extensions/irregular.c \
+	extension.c            \
+	relation.c             \
+	relation_list.c        \
+	vector.c               \
+	names.c                \
 	util.c
 
 AM_CFLAGS = -Wall -fomit-frame-pointer -g
