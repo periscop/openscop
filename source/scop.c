@@ -682,6 +682,7 @@ openscop_scop_malloc()
   scop->version            = 1;
   scop->language           = NULL;
   scop->context            = NULL;
+  scop->names              = NULL;
   scop->statement          = NULL;
   scop->extension          = NULL;
   scop->usr	           = NULL;
