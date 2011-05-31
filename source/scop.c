@@ -733,7 +733,8 @@ openscop_scop_copy(openscop_scop_p scop)
   
   copy                     = openscop_scop_malloc();
   copy->version            = scop->version;
-  copy->language           = strdup(scop->language);
+  if (scop->language != NULL)
+    copy->language         = strdup(scop->language);
   copy->context            = openscop_relation_copy(scop->context);
   copy->names              = openscop_names_copy(scop->names);
   copy->statement          = openscop_statement_copy(scop->statement);
