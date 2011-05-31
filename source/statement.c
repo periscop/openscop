@@ -568,12 +568,22 @@ openscop_statement_integrity_check(openscop_statement_p statement,
 
   while (statement != NULL)
   {
-    if (!openscop_relation_integrity_check(statement->domain,
-                                           OPENSCOP_TYPE_DOMAIN,
-                                           OPENSCOP_UNDEFINED,
-                                           OPENSCOP_UNDEFINED,
-                                           expected_nb_parameters))
+    // Check the domain.
+    if ((openscop_relation_is_matrix(statement->domain) &&
+         !openscop_relation_integrity_check(statement->domain,
+                                            OPENSCOP_TYPE_DOMAIN,
+                                            OPENSCOP_UNDEFINED,
+                                            OPENSCOP_UNDEFINED,
+                                            OPENSCOP_UNDEFINED)) ||
+        (!openscop_relation_is_matrix(statement->domain) &&
+         !openscop_relation_integrity_check(statement->domain,
+                                            OPENSCOP_TYPE_DOMAIN,
+                                            OPENSCOP_UNDEFINED,
+                                            0,
+                                            expected_nb_parameters)))
+    {
       return 0;
+    }
 
     // Get the number of iterators.
     if (statement->domain != NULL)
@@ -590,12 +600,25 @@ openscop_statement_integrity_check(openscop_statement_p statement,
         expected_nb_iterators = statement->domain->nb_output_dims;
     }
 
-    if (!openscop_relation_integrity_check(statement->scattering,
-                                           OPENSCOP_TYPE_SCATTERING,
-                                           OPENSCOP_UNDEFINED,
-                                           expected_nb_iterators,
-                                           expected_nb_parameters) ||
-        !openscop_relation_list_integrity_check(statement->read,
+    // Check the scattering function.
+    if ((openscop_relation_is_matrix(statement->scattering) &&
+         !openscop_relation_integrity_check(statement->scattering,
+                                            OPENSCOP_TYPE_SCATTERING,
+                                            OPENSCOP_UNDEFINED,
+                                            OPENSCOP_UNDEFINED,
+                                            OPENSCOP_UNDEFINED)) ||
+        (!openscop_relation_is_matrix(statement->scattering) &&
+         !openscop_relation_integrity_check(statement->scattering,
+                                            OPENSCOP_TYPE_SCATTERING,
+                                            OPENSCOP_UNDEFINED,
+                                            expected_nb_iterators,
+                                            expected_nb_parameters)))
+    {
+      return 0;
+    }
+
+    // Check the access functions.
+    if (!openscop_relation_list_integrity_check(statement->read,
                                            OPENSCOP_TYPE_ACCESS,
                                            OPENSCOP_UNDEFINED,
                                            expected_nb_iterators,
@@ -605,8 +628,10 @@ openscop_statement_integrity_check(openscop_statement_p statement,
                                            OPENSCOP_UNDEFINED,
                                            expected_nb_iterators,
                                            expected_nb_parameters))
+    {
       return 0;
-    
+    }
+
     if ((statement->nb_iterators > 0) &&
         (statement->nb_iterators < statement->domain->nb_output_dims))
     {

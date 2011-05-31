@@ -436,13 +436,23 @@ openscop_relation_list_integrity_check(openscop_relation_list_p list,
 {
   while (list != NULL)
   {
-    if (!openscop_relation_integrity_check(list->elt,
-                                           type,
-                                           expected_nb_output_dims,
-                                           expected_nb_input_dims,
-                                           expected_nb_parameters))
+    // Check the access function.
+    if (( openscop_relation_is_matrix(list->elt) &&
+         !openscop_relation_integrity_check(list->elt,
+                                            type,
+                                            OPENSCOP_UNDEFINED,
+                                            OPENSCOP_UNDEFINED,
+                                            OPENSCOP_UNDEFINED)) ||
+        (!openscop_relation_is_matrix(list->elt) &&
+         !openscop_relation_integrity_check(list->elt,
+                                            type,
+                                            expected_nb_output_dims,
+                                            expected_nb_input_dims,
+                                            expected_nb_parameters)))
+    {
       return 0;
-  
+    }
+
     list = list->next;
   }
 
