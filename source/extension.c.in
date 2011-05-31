@@ -132,17 +132,7 @@ openscop_extension_print_structure(FILE * file,
     for (j = 0; j < level; j++)
       fprintf(file, "|\t");
     switch (extension->type)
-    {
-      case OPENSCOP_EXTENSION_COMMENT:
-      {
-        fprintf(file, "|\ttype = OPENSCOP_EXTENSION_COMMENT\n");
-        break;
-      }
-      case OPENSCOP_EXTENSION_ARRAYS:
-      {
-        fprintf(file, "|\ttype = OPENSCOP_EXTENSION_ARRAYS\n");
-        break;
-      }
+    { @PRINT_STRUCTURE1@
       default:
       {
         fprintf(file, "|\ttype = unsupported (%d)\n", extension->type);
@@ -155,23 +145,7 @@ openscop_extension_print_structure(FILE * file,
     fprintf(file, "\n");
     
     switch (extension->type)
-    {
-      case OPENSCOP_EXTENSION_COMMENT:
-      {
-        openscop_comment_print_structure(
-            file,
-            (openscop_comment_p)extension->extension,
-            level + 1);
-        break;
-      }
-      case OPENSCOP_EXTENSION_ARRAYS:
-      {
-        openscop_arrays_print_structure(
-            file,
-            (openscop_arrays_p)extension->extension,
-            level + 1);
-        break;
-      }
+    { @PRINT_STRUCTURE2@
       default:
       {
         // A blank line.
@@ -228,19 +202,7 @@ openscop_extension_print_openscop(FILE * file, openscop_extension_p extension)
   {
     ignored = 0;
     switch (extension->type)
-    {
-      case OPENSCOP_EXTENSION_COMMENT:
-      {
-        string = openscop_comment_print_openscop(
-                     (openscop_comment_p)extension->extension);
-        break;
-      }
-      case OPENSCOP_EXTENSION_ARRAYS:
-      {
-        string = openscop_arrays_print_openscop(
-                     (openscop_arrays_p)extension->extension);
-        break;
-      }
+    { @PRINT_OPENSCOP@
       default:
       {
         ignored = 1;
@@ -281,12 +243,7 @@ openscop_extension_read(FILE * file)
   void * x;
 
   extension_string = openscop_util_read_tail(file);
-  
-  x = (void *)openscop_comment_read(extension_string);
-  openscop_extension_add(&extension, OPENSCOP_EXTENSION_COMMENT, x);   
- 
-  x = (void *)openscop_arrays_read(extension_string);
-  openscop_extension_add(&extension, OPENSCOP_EXTENSION_ARRAYS, x);   
+  @READ@ 
   
   free(extension_string);
   return extension;
@@ -366,17 +323,7 @@ openscop_extension_free(openscop_extension_p extension)
   {
     next = extension->next;
     switch (extension->type)
-    {
-      case OPENSCOP_EXTENSION_COMMENT:
-      {
-        openscop_comment_free(extension->extension);
-        break;
-      }
-      case OPENSCOP_EXTENSION_ARRAYS:
-      {
-        openscop_arrays_free(extension->extension);
-        break;
-      }
+    { @FREE@
       default:
       {
         fprintf(stderr,
@@ -412,17 +359,7 @@ openscop_extension_copy(openscop_extension_p extension)
   while (extension != NULL)
   { 
     switch (extension->type)
-    {
-      case OPENSCOP_EXTENSION_COMMENT:
-      {
-        x = (void *)openscop_comment_copy(extension->extension);
-        break;
-      }
-      case OPENSCOP_EXTENSION_ARRAYS:
-      {
-        x = (void *)openscop_arrays_copy(extension->extension);
-        break;
-      }
+    { @COPY@
       default:
       {
         fprintf(stderr,
@@ -495,17 +432,7 @@ openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
       if (x1->type == x2->type)
       {
         switch (x1->type)
-        {
-          case OPENSCOP_EXTENSION_COMMENT:
-          {
-            equal = openscop_comment_equal(x1->extension, x2->extension);
-            break;
-          }
-          case OPENSCOP_EXTENSION_ARRAYS:
-          {
-            equal = openscop_arrays_equal(x1->extension, x2->extension);
-            break;
-          }
+        { @EQUAL@
           default:
           {
             fprintf(stderr,

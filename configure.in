@@ -93,6 +93,8 @@ AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(CD, cd)
+AC_CHECK_PROG(TR, tr)
+AC_CHECK_PROG(SED, sed, sed)
 AC_PROG_LIBTOOL
 AC_CHECK_PROGS(DOXYGEN,doxygen,doxygen)
 
@@ -252,6 +254,9 @@ AC_CONFIG_FILES([
 
 AC_OUTPUT
 
+echo -n "Generating the source/extension.c... "
+./source/extension.sh
+echo "OK"
 
 echo "             /*-----------------------------------------------*"
 echo "              *      OpenScop Library configuration is OK     *"
