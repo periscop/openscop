@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          extension.h                            **
+     **                     extensions/lines.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 26/11/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,72 +61,65 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_EXTENSION_H
-# define OPENSCOP_EXTENSION_H
+#ifndef OPENSCOP_LINES_H
+# define OPENSCOP_LINES_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/comment.h>
-# include <openscop/arrays.h>
 
 # if defined(__cplusplus)
 extern "C"
   {
 # endif
 
-#define OPENSCOP_EXTENSION_UNDEFINED   0
-#define OPENSCOP_EXTENSION_STRING      1
-#define OPENSCOP_EXTENSION_COMMENT     2
-#define OPENSCOP_EXTENSION_ARRAYS      3
-#define OPENSCOP_EXTENSION_LINES       4
+
+# define OPENSCOP_TAG_LINES_START  "<lines>"
+# define OPENSCOP_TAG_LINES_STOP   "</lines>"
+
 
 /**
- * The openscop_extension_t structure stores an extension to the core
- * OpenScop representation. It is a node of a NULL-terminated linked list of
- * extensions.
+ * The openscop_lines_t structure stores a lines extention to the core
+ * OpenScop representation. It provides information about the line
+ * numbers of the SCoP in the original source file.
  */
-struct openscop_extension {
-  int type;                         /**< This extension's type. */
-  void * extension;                 /**< Pointer to the extension itself. */
-  struct openscop_extension * next; /**< Pointer to the next extension. */
+struct openscop_lines {
+  int start;   /**< First line of the SCoP in the original source file. */
+  int end;     /**< Last line of the SCoP in the original source file. */
 };
-typedef struct openscop_extension   openscop_extension_t;
-typedef struct openscop_extension * openscop_extension_p;
+typedef struct openscop_lines   openscop_lines_t;
+typedef struct openscop_lines * openscop_lines_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_extension_print_structure(FILE *, openscop_extension_p, int);
-void openscop_extension_print(FILE *, openscop_extension_p);
-void openscop_extension_print_openscop(FILE *, openscop_extension_p);
+void   openscop_lines_print_structure(FILE *, openscop_lines_p, int);
+void   openscop_lines_print(FILE *, openscop_lines_p);
+char * openscop_lines_print_openscop(openscop_lines_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-char *               openscop_extension_read_string(FILE *);
-openscop_extension_p openscop_extension_read(FILE *);
+openscop_lines_p openscop_lines_read(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void                 openscop_extension_add(openscop_extension_p*, int, void*);
-openscop_extension_p openscop_extension_malloc();
-void                 openscop_extension_free(openscop_extension_p);
+openscop_lines_p openscop_lines_malloc();
+void openscop_lines_free(openscop_lines_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_extension_p openscop_extension_copy(openscop_extension_p);
-int openscop_extension_equal(openscop_extension_p, openscop_extension_p);
-void * openscop_extension_lookup(openscop_extension_p, int);
+openscop_lines_p openscop_lines_copy(openscop_lines_p);
+int openscop_lines_equal(openscop_lines_p, openscop_lines_p);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_EXTENSION_H */
+#endif /* define OPENSCOP_LINES_H */
