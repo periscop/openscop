@@ -84,8 +84,7 @@ extern "C"
  * OpenScop representation. It is a node of a NULL-terminated linked list of
  * extensions.
  */
-struct openscop_extension
-{
+struct openscop_extension {
   int type;                         /**< This extension's type. */
   void * extension;                 /**< Pointer to the extension itself. */
   struct openscop_extension * next; /**< Pointer to the next extension. */

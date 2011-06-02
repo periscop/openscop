@@ -95,11 +95,9 @@
  * \param extensions The extensions whose information have to be printed.
  * \param level      Number of spaces before printing, for each line.
  */
-void
-openscop_extension_print_structure(FILE * file,
-                                   openscop_extension_p extension,
-                                   int level)
-{
+void openscop_extension_print_structure(FILE * file,
+                                        openscop_extension_p extension,
+                                        int level) {
   int j, first = 1;
   
   // Go to the right level.
@@ -111,10 +109,8 @@ openscop_extension_print_structure(FILE * file,
   else
     fprintf(file, "+-- NULL extension\n");
  
-  while (extension != NULL)
-  {
-    if (!first)
-    {
+  while (extension != NULL) {
+    if (!first) {
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
@@ -131,10 +127,8 @@ openscop_extension_print_structure(FILE * file,
     // Go to the right level.
     for (j = 0; j < level; j++)
       fprintf(file, "|\t");
-    switch (extension->type)
-    { @PRINT_STRUCTURE1@
-      default:
-      {
+    switch (extension->type) { @PRINT_STRUCTURE1@
+      default: {
         fprintf(file, "|\ttype = unsupported (%d)\n", extension->type);
       }
     }
@@ -144,10 +138,8 @@ openscop_extension_print_structure(FILE * file,
       fprintf(file, "|\t");
     fprintf(file, "\n");
     
-    switch (extension->type)
-    { @PRINT_STRUCTURE2@
-      default:
-      {
+    switch (extension->type) { @PRINT_STRUCTURE2@
+      default: {
         // A blank line.
         for (j = 0; j <= level+1; j++)
           fprintf(file, "|\t");
@@ -158,8 +150,7 @@ openscop_extension_print_structure(FILE * file,
     extension = extension->next;
 
     // Next line.
-    if (extension != NULL)
-    {
+    if (extension != NULL) {
       for (j = 0; j <= level; j++)
         fprintf(file, "|\t");
       fprintf(file, "V\n");
@@ -175,9 +166,7 @@ openscop_extension_print_structure(FILE * file,
  * \param file  File where informations are printed.
  * \param extension The extension structure to print.
  */
-void
-openscop_extension_print(FILE * file, openscop_extension_p extension)
-{
+void openscop_extension_print(FILE * file, openscop_extension_p extension) {
   openscop_extension_print_structure(file, extension, 0); 
 }
 
@@ -189,30 +178,25 @@ openscop_extension_print(FILE * file, openscop_extension_p extension)
  * \param  extension The extension structure to print.
  * \return A string containing the OpenScop dump of the extension structure.
  */
-void
-openscop_extension_print_openscop(FILE * file, openscop_extension_p extension)
-{
+void openscop_extension_print_openscop(FILE * file,
+                                       openscop_extension_p extension) {
   char * string;
   int ignored;
   
   if (extension == NULL)
     return;
 
-  while (extension != NULL)
-  {
+  while (extension != NULL) {
     ignored = 0;
-    switch (extension->type)
-    { @PRINT_OPENSCOP@
-      default:
-      {
+    switch (extension->type) { @PRINT_OPENSCOP@
+      default: {
         ignored = 1;
         fprintf(stderr,
                 "[OpenScop] Warning: unsupported extension, "
                 "printing it has been ignored.\n");
       }
     }
-    if (!ignored)
-    {
+    if (!ignored) {
       fprintf(file, "%s\n", string);
       free(string);
     }
@@ -235,9 +219,7 @@ openscop_extension_print_openscop(FILE * file, openscop_extension_p extension)
  * \param  file The input file where to read a list of extension fields.
  * \return A pointer to the extension structure that has been read.
  */
-openscop_extension_p
-openscop_extension_read(FILE * file)
-{
+openscop_extension_p openscop_extension_read(FILE * file) {
   char * extension_string;
   openscop_extension_p extension = NULL;
   void * x;
@@ -265,13 +247,11 @@ openscop_extension_read(FILE * file)
  * \param type      The type of the new extension to add.
  * \param x         The new extension to add.
  */
-void
-openscop_extension_add(openscop_extension_p * extension, int type, void * x)
-{
+void openscop_extension_add(openscop_extension_p * extension, int type,
+                            void * x) {
   openscop_extension_p new;
 
-  if (x != NULL)
-  {
+  if (x != NULL) {
     new = openscop_extension_malloc();
     new->type = type;
     new->extension = x;
@@ -289,14 +269,11 @@ openscop_extension_add(openscop_extension_p * extension, int type, void * x)
  * \return A pointer to an empty extension structure with fields set to
  *         default values.
  */
-openscop_extension_p
-openscop_extension_malloc()
-{
+openscop_extension_p openscop_extension_malloc() {
   openscop_extension_p extension;
 
   extension = (openscop_extension_p)malloc(sizeof(openscop_extension_t));
-  if (extension == NULL)
-  {
+  if (extension == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
     exit(1);
   }
@@ -314,18 +291,13 @@ openscop_extension_malloc()
  * This function frees the allocated memory for an extension structure.
  * \param extension The pointer to the extension structure we want to free.
  */
-void
-openscop_extension_free(openscop_extension_p extension)
-{
+void openscop_extension_free(openscop_extension_p extension) {
   openscop_extension_p next;
 
-  while (extension != NULL)
-  {
+  while (extension != NULL) {
     next = extension->next;
-    switch (extension->type)
-    { @FREE@
-      default:
-      {
+    switch (extension->type) { @FREE@
+      default: {
         fprintf(stderr,
                 "[OpenScop] Warning: unsupported extension, "
                 "memory leaks are possible.\n");
@@ -350,18 +322,13 @@ openscop_extension_free(openscop_extension_p extension)
  * \param extension The pointer to the extension structure we want to copy.
  * \return A pointer to the copy of the extension structure.
  */
-openscop_extension_p
-openscop_extension_copy(openscop_extension_p extension)
-{
+openscop_extension_p openscop_extension_copy(openscop_extension_p extension) {
   openscop_extension_p copy = NULL;
   void * x;
 
-  while (extension != NULL)
-  { 
-    switch (extension->type)
-    { @COPY@
-      default:
-      {
+  while (extension != NULL) { 
+    switch (extension->type) { @COPY@
+      default: {
         fprintf(stderr,
                 "[OpenScop] Warning: unsupported extension, "
                 "copy ignored.\n");
@@ -384,13 +351,10 @@ openscop_extension_copy(openscop_extension_p extension)
  * \param x The list of extensions.
  * \return  The number of elements in the list.
  */
-int
-openscop_extension_count(openscop_extension_p x)
-{
+int openscop_extension_count(openscop_extension_p x) {
   int extension_number = 0;
 
-  while (x != NULL)
-  {
+  while (x != NULL) {
     extension_number++;
     x = x->next;
   }
@@ -401,17 +365,16 @@ openscop_extension_count(openscop_extension_p x)
 
 /**
  * openscop_extension_equal function:
- * this function returns true if the two extension structures are the same, false
- * otherwise. This functions considers two extension structures as equal if
- * the order of the array names differ, however the identifiers and names
+ * this function returns true if the two extension structures are the same,
+ * false otherwise. This functions considers two extension structures as equal
+ * if the order of the array names differ, however the identifiers and names
  * must be the same.
  * \param a1  The first extension structure.
  * \param a2  The second extension structure.
  * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
-{
+int openscop_extension_equal(openscop_extension_p x1,
+                             openscop_extension_p x2) {
   int x1_extension_number, x2_extension_number;
   int found, equal;
   openscop_extension_p backup_x2 = x2;
@@ -423,18 +386,13 @@ openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
     return 0;
 
   // Check that for each extension in x1 a similar extension is in x2.
-  while (x1 != NULL)
-  {
+  while (x1 != NULL) {
     x2 = backup_x2;
     found = 0;
-    while ((x2 != NULL) && (found != 1))
-    {
-      if (x1->type == x2->type)
-      {
-        switch (x1->type)
-        { @EQUAL@
-          default:
-          {
+    while ((x2 != NULL) && (found != 1)) {
+      if (x1->type == x2->type) {
+        switch (x1->type) { @EQUAL@
+          default: {
             fprintf(stderr,
                     "[OpenScop] Warning: unsupported extension, "
                     "cannot state extension equality.\n");
@@ -470,11 +428,8 @@ openscop_extension_equal(openscop_extension_p x1, openscop_extension_p x2)
  * \param type The type of the extension we are looking for.
  * \return The first extension of the requested type in the list.
  */
-void *
-openscop_extension_lookup(openscop_extension_p x, int type)
-{
-  while (x != NULL)
-  {
+void * openscop_extension_lookup(openscop_extension_p x, int type) {
+  while (x != NULL) {
     if (x->type == type)
       return x->extension;
 

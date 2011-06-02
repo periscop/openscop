@@ -84,19 +84,16 @@
  * \param level      Number of spaces before printing, for each line.
  * \param title      A string to use as a title for the array of strings.
  */
-void
-openscop_util_strings_print_structure(FILE * file,
-                                      char ** strings, int nb_strings,
-				      int level,
-				      char * title)
-{
+void openscop_util_strings_print_structure(FILE * file,
+                                           char ** strings, int nb_strings,
+				           int level,
+				           char * title) {
   int i;
   
   // Print the original parameter names.
   for (i = 0; i <= level; i++)
     fprintf(file, "|\t");
-  if (nb_strings > 0)
-  {
+  if (nb_strings > 0) {
     fprintf(file, "+-- %s:", title);
     for (i = 0; i < nb_strings; i++)
       fprintf(file, " %s", strings[i]);
@@ -122,16 +119,13 @@ openscop_util_strings_print_structure(FILE * file,
  * \param print      Boolean not set to 0 to print the names, 0 otherwise.
  * \param title      A string to use as a title for the array of strings.
  */
-void
-openscop_util_strings_print_openscop(FILE * file, 
-                                     char ** strings, int nb_strings,
-		                     int print,
-				     char * title)
-{
+void openscop_util_strings_print_openscop(FILE * file, 
+                                          char ** strings, int nb_strings,
+		                          int print,
+				          char * title) {
   int i;
   
-  if ((print != 0) && (nb_strings > 0))
-  {
+  if ((print != 0) && (nb_strings > 0)) {
     fprintf(file, "# %s are provided\n", title);
     fprintf(file, "1\n");
     fprintf(file, "# %s\n", title);
@@ -139,8 +133,7 @@ openscop_util_strings_print_openscop(FILE * file,
       fprintf(file, "%s ", strings[i]);
     fprintf(file, "\n\n");
   }
-  else
-  {
+  else {
     fprintf(file, "# %s are not provided\n", title);
     fprintf(file, "0\n\n");
   }
@@ -157,9 +150,7 @@ openscop_util_strings_print_openscop(FILE * file,
  * \param nb_strings Pointer to where to store the number of strings (output).
  * \return The array of strings that has been read.
  */
-char **
-openscop_util_strings_read(FILE * file, int * nb_strings)
-{
+char ** openscop_util_strings_read(FILE * file, int * nb_strings) {
   char str[OPENSCOP_MAX_STRING];
   char tmp[OPENSCOP_MAX_STRING];
   char * s, * start;
@@ -172,8 +163,7 @@ openscop_util_strings_read(FILE * file, int * nb_strings)
   // Count the actual number of strings.
   *nb_strings = 0;
   s = start;
-  while (1)
-  {
+  while (1) {
     for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
       s++;
     
@@ -186,12 +176,10 @@ openscop_util_strings_read(FILE * file, int * nb_strings)
       ++s;
   }
 
-  if (*nb_strings > 0)
-  {
+  if (*nb_strings > 0) {
     // Allocate the array of strings. Make it NULL-terminated.
     strings = (char **) malloc(sizeof(char *) * ((*nb_strings) + 1));
-    if (strings == NULL)
-    {
+    if (strings == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
@@ -199,14 +187,12 @@ openscop_util_strings_read(FILE * file, int * nb_strings)
 
     // Read the desired number of strings.
     s = start;
-    for (i = 0; i < *nb_strings; ++i)
-    {
+    for (i = 0; i < *nb_strings; ++i) {
       for (count = 0; *s && ! isspace(*s) && *s != '#'; ++count)
 	tmp[count] = *(s++);
       tmp[count] = '\0';
       strings[i] = strdup(tmp);
-      if (strings[i] == NULL)
-      {
+      if (strings[i] == NULL) {
 	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
 	exit(1);
       }
@@ -227,27 +213,21 @@ openscop_util_strings_read(FILE * file, int * nb_strings)
  * \param nb_strings The number of strings to generate.
  * \return An array of 'nb' generated strings.
  */
-char **
-openscop_util_strings_generate(char * prefix, int nb_strings)
-{
+char ** openscop_util_strings_generate(char * prefix, int nb_strings) {
   char ** strings = NULL;
   char buff[strlen(prefix) + 16]; // TODO: better (log10(INT_MAX) ?) :-D.
   int i;
 
-  if (nb_strings)
-  {
+  if (nb_strings) {
     strings = (char **)malloc(sizeof(char *) * nb_strings);
-    if (strings == NULL)
-    {
+    if (strings == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
-    for (i = 0; i < nb_strings; i++)
-    {
+    for (i = 0; i < nb_strings; i++) {
       sprintf(buff, "%s%d", prefix, i + 1);
       strings[i] = strdup(buff);
-      if (strings[i] == NULL)
-      {
+      if (strings[i] == NULL) {
 	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
 	exit(1);
       }
@@ -266,22 +246,18 @@ openscop_util_strings_generate(char * prefix, int nb_strings)
  * \param prefix      The prefix of the generated names.
  * \param nb_complete The desired number of strings in the new array.
  */
-void
-openscop_util_strings_complete(char *** strings, int * nb_strings,
-                               char *   prefix,  int   nb_complete)
-{
+void openscop_util_strings_complete(char *** strings, int * nb_strings,
+                                    char *   prefix,  int   nb_complete) {
   int i, nb_new;
   char ** completion;
 
   nb_new = nb_complete - *nb_strings;
-  if (nb_new < 0)
-  {
+  if (nb_new < 0) {
     fprintf(stderr, "[OpenScop] Error: completed smaller than original.\n");
     exit(1);
   }
 
-  if (nb_new > 0)
-  {
+  if (nb_new > 0) {
     *strings = (char **)realloc(*strings, nb_complete * sizeof(char *));
     completion = openscop_util_strings_generate(prefix, nb_new);
     for (i = 0; i < nb_new; i++)
@@ -298,13 +274,10 @@ openscop_util_strings_complete(char *** strings, int * nb_strings,
  * \param strings The array of strings we want to free.
  * \param nb_strings The number of strings in the array of strings.
  */
-void
-openscop_util_strings_free(char ** strings, int nb_strings)
-{
+void openscop_util_strings_free(char ** strings, int nb_strings) {
   int i;
 
-  if (strings != NULL)
-  {
+  if (strings != NULL) {
     for (i = 0; i < nb_strings; i++)
       if (strings[i] != NULL)
 	free(strings[i]);
@@ -321,9 +294,7 @@ openscop_util_strings_free(char ** strings, int nb_strings)
  * \param nb_strings The number of strings in the array to copy.
  * \return The copy of the array of strings.
  */
-char **
-openscop_util_strings_copy(char ** strings, int nb_strings)
-{
+char ** openscop_util_strings_copy(char ** strings, int nb_strings) {
   int i;
   char ** copy;
   
@@ -331,16 +302,13 @@ openscop_util_strings_copy(char ** strings, int nb_strings)
     return NULL;
 
   copy = (char **)malloc(nb_strings * sizeof(char *));
-  if (copy == NULL)
-  {
+  if (copy == NULL)  {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  for (i = 0; i < nb_strings; i++)
-  {
+  for (i = 0; i < nb_strings; i++) {
     copy[i] = strdup(strings[i]);
-    if (copy[i] == NULL)
-    {
+    if (copy[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
@@ -360,9 +328,7 @@ openscop_util_strings_copy(char ** strings, int nb_strings)
  * \param nb_s2 The number of strings in the second array of string.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_util_strings_equal(char ** s1, int nb_s1, char ** s2, int nb_s2)
-{
+int openscop_util_strings_equal(char ** s1, int nb_s1, char ** s2, int nb_s2) {
   int i;
   
   if ((s1 == NULL) && (s2 == NULL))
@@ -385,6 +351,7 @@ openscop_util_strings_equal(char ** s1, int nb_s1, char ** s2, int nb_s2)
  *                             Utility functions                             *
  *****************************************************************************/
 
+
 /**
  * openscop_util_skip_blank_and_comments internal function.
  * This function reads the open file 'file' line by line and skips
@@ -399,12 +366,10 @@ openscop_util_strings_equal(char ** s1, int nb_s1, char ** s2, int nb_s2)
  *             that contains useful information.
  * \return The address of the the first useful digit in str.
  */
-char * openscop_util_skip_blank_and_comments(FILE * file, char * str)
-{
+char * openscop_util_skip_blank_and_comments(FILE * file, char * str) {
   char * start;
 
-  do
-  {
+  do {
     start = fgets(str, OPENSCOP_MAX_STRING, file);
     while ((start != NULL) && isspace(*start) && (*start != '\n'))
       start++;
@@ -424,51 +389,42 @@ char * openscop_util_skip_blank_and_comments(FILE * file, char * str)
  *             is updated to reflect the read and points after the int.
  * \return The int that have been read.
  */
-int
-openscop_util_read_int(FILE * file, char ** str)
-{
+int openscop_util_read_int(FILE * file, char ** str) {
   char s[OPENSCOP_MAX_STRING], * start;
   int res;
   int i = 0;
   int read_int = 0;
 
-  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
-  {
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL)) {
     fprintf(stderr, "[OpenScop] Error: one and only one of the two parameters"
                     " of util_read_int can be non-NULL\n");
     exit (1);
   }
 
-  if (file != NULL)
-  {
+  if (file != NULL) {
     // Parse from a file.
     start = openscop_util_skip_blank_and_comments(file, s);
     sscanf(start, " %d", &res);
   }
-  if (str != NULL)
-  {
+  if (str != NULL) {
     // Parse from a string.
     // Skip blank/commented lines.
-    do
-    {
+    do {
       while (*str && **str && isspace(**str))
         ++(*str);
-      if (**str == '#')
-      {
+      if (**str == '#') {
         while (**str && **str != '\n')
           ++(*str);
       }
-      else
-      {
+      else {
         // Build the chain to analyze.
         while (**str && !isspace(**str) && **str != '\n')
           s[i++] = *((*str)++);
         s[i] = '\0';
-        if (sscanf(s, "%d", &res) != 1)
-	{
-	  fprintf(stderr, "[OpenScop] Error: an int was expected.\n");
-	  exit(1);
-	}
+        if (sscanf(s, "%d", &res) != 1)	{
+          fprintf(stderr, "[OpenScop] Error: an int was expected.\n");
+          exit(1);
+        }
         read_int = 1;
       }
     }
@@ -488,9 +444,7 @@ openscop_util_read_int(FILE * file, char ** str)
  * \param  file The file where to read the tail.
  * \return The string corresponding to the tail of the input file.
  */
-char *
-openscop_util_read_tail(FILE * file)
-{
+char * openscop_util_read_tail(FILE * file) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   int nb_chars = 0;
   char buff[OPENSCOP_MAX_STRING], *c;
@@ -502,8 +456,7 @@ openscop_util_read_tail(FILE * file)
     return NULL;
 
   extensions = (char *)malloc(high_water_mark * sizeof(char));
-  if (extensions == NULL)
-  {
+  if (extensions == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
@@ -512,17 +465,14 @@ openscop_util_read_tail(FILE * file)
   nb_chars = strlen(c);
 
   // - Copy everything else to the option tags field.
-  while (!feof(file))
-  {
+  while (!feof(file)) {
     extensions[nb_chars] = fgetc(file); 
     nb_chars++;
 
-    if (nb_chars >= high_water_mark)
-    {
+    if (nb_chars >= high_water_mark) {
       high_water_mark += high_water_mark;
       extensions = (char *)realloc(extensions, high_water_mark * sizeof(char));
-      if (extensions == NULL)
-      {
+      if (extensions == NULL) {
         fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
         exit(1);
       }
@@ -547,9 +497,7 @@ openscop_util_read_tail(FILE * file)
  * \param endtag The string that marks the end of the content.
  * \return The string between 'tag' and 'endtag' in 'str'.
  */
-char *
-openscop_util_tag_content(char * str, char * tag, char * endtag)
-{
+char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
   int i;
   char * start;
   char * stop;
@@ -557,12 +505,12 @@ openscop_util_tag_content(char * str, char * tag, char * endtag)
   int lentag;
   char * res = NULL;
 
-  if (str)
-  {
+  if (str) {
     start = str;
     lentag = strlen(tag);
     for (; start && *start && strncmp(start, tag, lentag); ++start)
-      ;
+      continue;
+    
     // The tag 'tag' was not found.
     if (! *start)
       return NULL;
@@ -570,16 +518,17 @@ openscop_util_tag_content(char * str, char * tag, char * endtag)
     stop = start;
     lentag = strlen(endtag);
     for (size = 0; *stop && strncmp(stop, endtag, lentag); ++stop, ++size)
-      ;
+      continue;
+    
     // the tag 'endtag' was not found.
     if (! *stop)
       return NULL;
     res = (char *)malloc((size + 1) * sizeof(char));
-    if (res == NULL)
-    {
+    if (res == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
+    
     // Copy the chain between the two tags.
     for (++start, i = 0; start != stop; ++start, ++i)
       res[i] = *start;
@@ -601,22 +550,17 @@ openscop_util_tag_content(char * str, char * tag, char * endtag)
  * \param hwm pointer to the size of the *dst buffer (may be updated).
  * TODO: This function is not that safe, improve it !
  */
-void
-openscop_util_safe_strcat(char ** dst, char * src, int * hwm)
-{
+void openscop_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
-  if (strlen(src) >= OPENSCOP_MAX_STRING)
-  {
+  if (strlen(src) >= OPENSCOP_MAX_STRING) {
     fprintf(stderr, "[OpenScop] Error: string to concatenate is too long.\n");
     exit(1);
   }
 
-  if (strlen(*dst) + strlen(src) >= *hwm)
-  {
+  if (strlen(*dst) + strlen(src) >= *hwm) {
     *hwm += OPENSCOP_MAX_STRING;
     *dst = (char *)realloc(*dst, *hwm * sizeof(char));
-    if (*dst == NULL)
-    {
+    if (*dst == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
@@ -624,7 +568,3 @@ openscop_util_safe_strcat(char ** dst, char * src, int * hwm)
 
   strcat(*dst, src);
 }
-
-
-
-

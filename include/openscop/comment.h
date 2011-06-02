@@ -81,8 +81,7 @@ extern "C"
  * The openscop_comment_t structure stores a comment extention to the core
  * OpenScop representation. It is simply a 0-terminated string.
  */
-struct openscop_comment
-{
+struct openscop_comment {
   char * comment;  /**< A comment message as a 0-terminated string. */
 };
 typedef struct openscop_comment   openscop_comment_t;

@@ -82,8 +82,7 @@ extern "C"
  * convenience, the default type is (char *), but it may be casted to your
  * preferred type iff the "textual" field is 0.
  */
-struct openscop_names
-{
+struct openscop_names {
   int textual;        /**< 1 if names are character strings, 0 otherwise. */
   int nb_parameters;  /**< Number of parameters names. */
   int nb_iterators;   /**< Number of iterators names. */

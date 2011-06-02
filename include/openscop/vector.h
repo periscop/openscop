@@ -81,8 +81,7 @@ extern "C"
  * an inequality >= 0. When the vector describes an array access, a number
  * different than 0 is the array identifier.
  */
-struct openscop_vector
-{
+struct openscop_vector {
   unsigned size;      /**< The number of vector entries */
   openscop_int_t * v; /**< An array of values */
 };

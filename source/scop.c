@@ -82,17 +82,15 @@
  * \param scop  The scop structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void
-openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
-{
+void openscop_scop_print_structure(FILE * file, openscop_scop_p scop,
+                                   int level) {
   int j;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (scop != NULL)
-  {
+  if (scop != NULL) {
     fprintf(file, "+-- openscop_scop_t\n");
 
     // A blank line.
@@ -127,8 +125,7 @@ openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
       fprintf(file, "|\t");
     fprintf(file, "\n");
   }
-  else
-  {
+  else {
     fprintf(file, "+-- NULL scop\n");
   }
 
@@ -146,9 +143,7 @@ openscop_scop_print_structure(FILE * file, openscop_scop_p scop, int level)
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void
-openscop_scop_print(FILE * file, openscop_scop_p scop)
-{
+void openscop_scop_print(FILE * file, openscop_scop_p scop) {
   openscop_scop_print_structure(file, scop, 0);
 }
 
@@ -167,14 +162,12 @@ openscop_scop_print(FILE * file, openscop_scop_p scop)
  * \parem nb_arrays     The number of arrays in the scop (output).
  */
 static
-void
-openscop_scop_name_limits(openscop_scop_p scop,
-                          int * nb_parameters,
-                          int * nb_iterators,
-                          int * nb_scattdims,
-                          int * nb_localdims,
-                          int * nb_arrays)
-{
+void openscop_scop_name_limits(openscop_scop_p scop,
+                              int * nb_parameters,
+                              int * nb_iterators,
+                              int * nb_scattdims,
+                              int * nb_localdims,
+                              int * nb_arrays) {
   int i, k, tmp, coef, id;
   openscop_statement_p statement;
   openscop_relation_list_p list;
@@ -186,14 +179,11 @@ openscop_scop_name_limits(openscop_scop_p scop,
   //   in the corresponding field, it is 0 for matrix format.
   *nb_parameters = 0;
   *nb_localdims = 0;
-  if (scop->context != NULL)
-  { 
-    if (openscop_relation_is_matrix(scop->context))
-    {
+  if (scop->context != NULL) { 
+    if (openscop_relation_is_matrix(scop->context)) {
       *nb_parameters = scop->context->nb_columns - 2;
     }
-    else
-    {
+    else {
       *nb_parameters = scop->context->nb_parameters;
       *nb_localdims  = scop->context->nb_local_dims;
     }
@@ -203,21 +193,17 @@ openscop_scop_name_limits(openscop_scop_p scop,
   *nb_scattdims = 0;
   *nb_arrays    = 0;
   statement = scop->statement;
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     // * The number of iterators are defined by iteration domains,
     //   - in matrix format we compute it using #columns and #parameters,
     //   - in relation format it corresponds to the #output_dims.
-    if (statement->domain != NULL)
-    {
-      if (openscop_relation_is_matrix(statement->domain))
-      {
+    if (statement->domain != NULL) {
+      if (openscop_relation_is_matrix(statement->domain)) {
         tmp = statement->domain->nb_columns - *nb_parameters - 2;
         if (tmp > *nb_iterators)
           *nb_iterators = tmp;
       }
-      else
-      {
+      else {
         if (statement->domain->nb_output_dims > *nb_iterators)
           *nb_iterators = statement->domain->nb_output_dims;
 	
@@ -229,15 +215,12 @@ openscop_scop_name_limits(openscop_scop_p scop,
     // * The number of scattdims are defined by scattering,
     //   - in matrix format it corresponds to the number of rows,
     //   - in relation format it corresponds to the #input_dims.
-    if (statement->scattering != NULL)
-    {
-      if (openscop_relation_is_matrix(statement->scattering))
-      {
+    if (statement->scattering != NULL) {
+      if (openscop_relation_is_matrix(statement->scattering)) {
         if (statement->domain->nb_rows > *nb_scattdims)
           *nb_scattdims = statement->scattering->nb_rows;
       }
-      else
-      {
+      else {
         if (statement->scattering->nb_input_dims > *nb_scattdims)
           *nb_scattdims = statement->scattering->nb_input_dims;
 	
@@ -251,29 +234,22 @@ openscop_scop_name_limits(openscop_scop_p scop,
     //   - in relation format, array identifiers are
     //     m[i][#columns -1] / m[i][1], with i the (supposedly only) row
     //     where m[i][1] is not 0.
-    for (k = 0; k < 2; k++)
-    {
+    for (k = 0; k < 2; k++) {
       if (k == 0)
 	list = statement->read;
       else
 	list = statement->write;
       
-      while (list != NULL)
-      {
-	if (list->elt != NULL)
-	{
-	  if (openscop_relation_is_matrix(list->elt))
-	  {
+      while (list != NULL) {
+	if (list->elt != NULL) {
+	  if (openscop_relation_is_matrix(list->elt)) {
 	    if (SCOPINT_get_si(list->elt->m[0][0]) > *nb_arrays)
 	      *nb_arrays = SCOPINT_get_si(list->elt->m[0][0]);
 	  }
-	  else
-	  {
-	    for (i = 0; i < list->elt->nb_rows; i++)
-	    {
+	  else {
+	    for (i = 0; i < list->elt->nb_rows; i++) {
 	      coef = SCOPINT_get_si(list->elt->m[i][1]);
-	      if (coef != 0)
-	      {
+	      if (coef != 0) {
 		id = SCOPINT_get_si(list->elt->m[0][list->elt->nb_columns-1]);
 		if (abs(id / coef) > *nb_arrays)
 		  *nb_arrays = abs(id / coef);
@@ -304,9 +280,7 @@ openscop_scop_name_limits(openscop_scop_p scop,
  * \return A set of names for the scop.
  */
 static
-openscop_names_p
-openscop_scop_full_names(openscop_scop_p scop)
-{
+openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
   int nb_parameters;
   int nb_iterators;
   int nb_scattdims;
@@ -357,15 +331,12 @@ openscop_scop_full_names(openscop_scop_p scop)
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void
-openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
-{
+void openscop_scop_print_openscop(FILE * file, openscop_scop_p scop) {
   openscop_names_p names;
   int tmp_nb_iterators = 0;
   char ** tmp_iterators = NULL;
 
-  if (openscop_scop_integrity_check(scop) == 0)
-  {
+  if (openscop_scop_integrity_check(scop) == 0) {
     fprintf(stderr, "[OpenScop] Error: OpenScop integrity check failed.\n");
     exit(1);
   }
@@ -373,8 +344,7 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
   // Build a name structure for pretty printing of relations.
   names = openscop_scop_full_names(scop);
 
-  if (0)
-  {
+  if (0) {
     fprintf(file, "#                                                     \n");
     fprintf(file, "#          <|                                         \n");
     fprintf(file, "#           A                                         \n");
@@ -407,8 +377,7 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
     fprintf(file, "-  --_ --- __  --- __--\n");
     fprintf(file, "#.::  :::::::::::::::::::Y88as88a...s88aa.\n");
   }
-  else
-  {
+  else {
     fprintf(file, "# [File generated by the OpenScop Library %s %s bits]\n",
             OPENSCOP_RELEASE,OPENSCOP_VERSION);
   }
@@ -439,8 +408,7 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
 
   openscop_statement_print_openscop(file, scop->statement, names);
   
-  if (scop->extension)
-  {
+  if (scop->extension) {
     fprintf(file, "# ==============================================="
                   " Extensions\n");
     openscop_extension_print_openscop(file, scop->extension);
@@ -456,9 +424,7 @@ openscop_scop_print_openscop(FILE * file, openscop_scop_p scop)
 
 
 static
-void
-openscop_scop_update_val(int * variable, int value)
-{
+void openscop_scop_update_val(int * variable, int value) {
   if ((*variable == OPENSCOP_UNDEFINED) || (*variable == value))
     *variable = value;
   else
@@ -467,13 +433,10 @@ openscop_scop_update_val(int * variable, int value)
 }
 
 static
-void
-openscop_scop_update_properties(openscop_relation_p relation,
-                                int nb_output_dims, int nb_input_dims,
-                                int nb_parameters)
-{
-  if (relation != NULL)
-  {
+void openscop_scop_update_properties(openscop_relation_p relation,
+                                     int nb_output_dims, int nb_input_dims,
+                                     int nb_parameters) {
+  if (relation != NULL) {
     openscop_scop_update_val(&(relation->nb_output_dims), nb_output_dims);
     openscop_scop_update_val(&(relation->nb_input_dims),  nb_input_dims);
     openscop_scop_update_val(&(relation->nb_parameters),  nb_parameters);   
@@ -492,9 +455,7 @@ openscop_scop_update_properties(openscop_relation_p relation,
  * \param scop  The SCoP we want to propagate properties.
  */
 static
-void
-openscop_scop_propagate_properties(openscop_scop_p scop)
-{
+void openscop_scop_propagate_properties(openscop_scop_p scop) {
   int i, nb_parameters;
   openscop_statement_p     statement;
   openscop_relation_p      relation;
@@ -502,59 +463,51 @@ openscop_scop_propagate_properties(openscop_scop_p scop)
 
   // Context part: get the number of parameters.
   if ((scop->context != NULL) &&
-      (openscop_relation_is_matrix(scop->context)))
-  {
+      (openscop_relation_is_matrix(scop->context))) {
     nb_parameters = scop->context->nb_columns - 2;
     openscop_scop_update_properties(scop->context, 0, 0, nb_parameters);
   }
-  else
+  else {
     return;
+  }
 
   // For each statement:
   statement = scop->statement;
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     // - Domain part,
     relation = statement->domain;
-    if (openscop_relation_is_matrix(relation))
-    {
-      while (relation != NULL)
-      {
-        openscop_scop_update_properties(relation,
-                   relation->nb_columns - nb_parameters - 2, 0, nb_parameters);
+    if (openscop_relation_is_matrix(relation)) {
+      while (relation != NULL) {
+        openscop_scop_update_properties(
+            relation, relation->nb_columns-nb_parameters-2, 0, nb_parameters);
         relation = relation->next;
       }
     }
 
     // - Scattering part,
     relation = statement->scattering;
-    if (openscop_relation_is_matrix(relation))
-    {
-      while (relation != NULL)
-      {
-        openscop_scop_update_properties(relation,
-                   0, relation->nb_columns - nb_parameters - 2, nb_parameters);
+    if (openscop_relation_is_matrix(relation)) {
+      while (relation != NULL) {
+        openscop_scop_update_properties(
+            relation, 0, relation->nb_columns-nb_parameters-2, nb_parameters);
         relation = relation->next;
       }
     }
 
     // - Access part.
-    for (i = 0; i < 2; i++)
-    {
+    for (i = 0; i < 2; i++) {
       if (i == 0)
         list = statement->read;
       else
         list = statement->write;
 
-      while (list != NULL)
-      {
+      while (list != NULL) {
         relation = list->elt;
-        if (openscop_relation_is_matrix(relation))
-        {
-          while (relation != NULL)
-          {
-            openscop_scop_update_properties(relation,
-                   0, relation->nb_columns - nb_parameters - 2, nb_parameters);
+        if (openscop_relation_is_matrix(relation)) {
+          while (relation != NULL) {
+            openscop_scop_update_properties(
+                relation, 0, relation->nb_columns - nb_parameters - 2,
+                nb_parameters);
             relation = relation->next;
           }
         }
@@ -578,9 +531,7 @@ openscop_scop_propagate_properties(openscop_scop_p scop)
  * \param file The file where the scop has to be read.
  * \return A pointer to the scop structure that has been read.
  */
-openscop_scop_p
-openscop_scop_read(FILE * file)
-{
+openscop_scop_p openscop_scop_read(FILE * file) {
   openscop_scop_p scop      = NULL;
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
@@ -600,8 +551,7 @@ openscop_scop_read(FILE * file)
 
   // Ensure the file is a .scop.
   tmp = openscop_util_strings_read(file, &max);
-  if ((max == 0) || (strcmp(*tmp, "OpenScop")))
-  {
+  if ((max == 0) || (strcmp(*tmp, "OpenScop"))) {
     fprintf(stderr, "[OpenScop] Error: not an OpenScop file "
                     "(type \"%s\".\n", *tmp);
     exit (1);
@@ -614,8 +564,7 @@ openscop_scop_read(FILE * file)
 
   // Read the language.
   char ** language =  openscop_util_strings_read(file, &max);
-  if (max == 0)
-  {
+  if (max == 0) {
     fprintf(stderr, "[OpenScop] Error: no language (backend) specified.\n");
     exit (1);
   }
@@ -636,8 +585,7 @@ openscop_scop_read(FILE * file)
   // Read the number of statements.
   nb_statements = openscop_util_read_int(file, NULL);
 
-  for (i = 0; i < nb_statements; ++i)
-  {
+  for (i = 0; i < nb_statements; ++i) {
     // Read each statement.
     stmt = openscop_statement_read(file);
     if (scop->statement == NULL)
@@ -678,14 +626,11 @@ openscop_scop_read(FILE * file)
  * allocated space.
  * \return A pointer to an empty scop with fields set to default values.
  */
-openscop_scop_p
-openscop_scop_malloc()
-{
+openscop_scop_p openscop_scop_malloc() {
   openscop_scop_p scop;
 
   scop = (openscop_scop_p)malloc(sizeof(openscop_scop_t));
-  if (scop == NULL)
-  {
+  if (scop == NULL) {
     fprintf(stderr, "[OpenScop] Memory Overflow.\n");
     exit(1);
   }
@@ -707,11 +652,8 @@ openscop_scop_malloc()
  * This function frees the allocated memory for a openscop_scop_t structure.
  * \param scop The pointer to the scop we want to free.
  */
-void
-openscop_scop_free(openscop_scop_p scop)
-{
-  if (scop != NULL)
-  {
+void openscop_scop_free(openscop_scop_p scop) {
+  if (scop != NULL) {
     if (scop->language != NULL)
       free(scop->language);
     
@@ -738,9 +680,7 @@ openscop_scop_free(openscop_scop_p scop)
  * \param statement The pointer to the scop we want to copy.
  * \return A pointer to the full copy of the scop provided as parameter.
  */
-openscop_scop_p
-openscop_scop_copy(openscop_scop_p scop)
-{
+openscop_scop_p openscop_scop_copy(openscop_scop_p scop) {
   openscop_scop_p copy;
   
   copy                     = openscop_scop_malloc();
@@ -764,49 +704,39 @@ openscop_scop_copy(openscop_scop_p scop)
  * \param s2 The second scop.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2)
-{
-  if (s1->version != s2->version)
-  {
+int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
+  if (s1->version != s2->version) {
     fprintf(stderr, "[OpenScop] info: versions are not the same.\n"); 
     //return 0;
   }
   
-  if (strcmp(s1->language, s2->language) != 0)
-  {
+  if (strcmp(s1->language, s2->language) != 0) {
     fprintf(stderr, "[OpenScop] info: languages are not the same.\n"); 
     return 0;
   }
 
-  if (!openscop_relation_equal(s1->context, s2->context))
-  {
+  if (!openscop_relation_equal(s1->context, s2->context)) {
     fprintf(stderr, "[OpenScop] info: contexts are not the same.\n"); 
     return 0;
   }
   
-  if (!openscop_names_equal(s1->names, s2->names))
-  {
+  if (!openscop_names_equal(s1->names, s2->names)) {
     fprintf(stderr, "[OpenScop] info: names are not the same.\n"); 
     return 0;
   }
   
-  if (!openscop_statement_equal(s1->statement, s2->statement))
-  {
+  if (!openscop_statement_equal(s1->statement, s2->statement)) {
     fprintf(stderr, "[OpenScop] info: statements are not the same.\n"); 
     return 0;
   }
   
-  if (!openscop_extension_equal(s1->extension, s2->extension))
-  {
+  if (!openscop_extension_equal(s1->extension, s2->extension)) {
     fprintf(stderr, "[OpenScop] info: extensions are not the same.\n"); 
     return 0;
   }
 
   return 1;
 }
-
-
 
 
 /**
@@ -816,9 +746,7 @@ openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2)
  * \param scop  The scop we want to check.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int
-openscop_scop_integrity_check(openscop_scop_p scop)
-{
+int openscop_scop_integrity_check(openscop_scop_p scop) {
   int expected_nb_parameters;
   int max_nb_parameters;
   int max_nb_iterators;
@@ -843,8 +771,7 @@ openscop_scop_integrity_check(openscop_scop_p scop)
     return 0;
 
   // Get the number of parameters.
-  if (scop->context != NULL)
-  { 
+  if (scop->context != NULL) { 
     if (openscop_relation_is_matrix(scop->context))
       expected_nb_parameters = scop->context->nb_columns - 2;
     else

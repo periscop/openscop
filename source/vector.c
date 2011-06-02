@@ -83,14 +83,11 @@
  * \param vector The vector whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void
-openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
-                                int level)
-{
+void openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
+                                     int level) {
   int j;
 
-  if (vector != NULL)
-  {
+  if (vector != NULL) {
     // Go to the right level.
     for (j = 0; j < level; j++)
       fprintf(file,"|\t");
@@ -106,16 +103,14 @@ openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
 
     fprintf(file,"[ ");
 
-    for (j = 0; j < vector->size; j++)
-    {
+    for (j = 0; j < vector->size; j++) {
       SCOPINT_print(file,OPENSCOP_FMT,vector->v[j]);
       fprintf(file," ");
     }
 
     fprintf(file,"]\n");
   }
-  else
-  {
+  else {
     // Go to the right level.
     for (j = 0; j < level; j++)
       fprintf(file,"|\t");
@@ -136,9 +131,7 @@ openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
  * \param file   File where informations are printed.
  * \param vector The vector whose information have to be printed.
  */
-void
-openscop_vector_print(FILE * file, openscop_vector_p vector)
-{
+void openscop_vector_print(FILE * file, openscop_vector_p vector) {
   openscop_vector_print_structure(file,vector,0);
 }
 
@@ -156,27 +149,23 @@ openscop_vector_print(FILE * file, openscop_vector_p vector)
  * \param size The number of entries of the vector to allocate.
  * \return A pointer to the newly allocated openscop_vector_t structure.
  */
-openscop_vector_p
-openscop_vector_malloc(unsigned size)
-{
+openscop_vector_p openscop_vector_malloc(unsigned size) {
   openscop_vector_p vector;
   openscop_int_t * p;
-  int i ;
+  int i;
 
   vector = (openscop_vector_p)malloc(sizeof(openscop_vector_t));
-  if (vector == NULL)
-  {
+  if (vector == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   vector->size = size;
-  if (size == 0)
+  if (size == 0) {
     vector->v = NULL;
-  else
-  {
+  }
+  else {
     p = (openscop_int_t *)malloc(size * sizeof(openscop_int_t));
-    if (p == NULL)
-    {
+    if (p == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
@@ -193,14 +182,11 @@ openscop_vector_malloc(unsigned size)
  * This function frees the allocated memory for a openscop_vector_t structure.
  * \param vector The pointer to the vector we want to free.
  */
-void
-openscop_vector_free(openscop_vector_p vector)
-{
+void openscop_vector_free(openscop_vector_p vector) {
   int i;
   openscop_int_t * p;
 
-  if (vector != NULL)
-  {
+  if (vector != NULL) {
     p = vector->v;
     for (i = 0; i < vector->size; i++)
       SCOPINT_clear(*p++);
@@ -225,14 +211,12 @@ openscop_vector_free(openscop_vector_p vector)
  * \param scalar The scalar to add to the vector.
  * \return A pointer to a new vector, copy of the basis one plus the scalar.
  */
-openscop_vector_p
-openscop_vector_add_scalar(openscop_vector_p vector, int scalar)
-{
+openscop_vector_p openscop_vector_add_scalar(openscop_vector_p vector,
+                                             int scalar) {
   int i;
   openscop_vector_p result;
 
-  if ((vector == NULL) || (vector->size < 2))
-  {
+  if ((vector == NULL) || (vector->size < 2)) {
     fprintf(stderr,"[OpenScop] Error: incompatible vector for addition.\n");
     exit(1);
   }
@@ -256,14 +240,12 @@ openscop_vector_add_scalar(openscop_vector_p vector, int scalar)
  * \param v2 The second vector for the addition.
  * \return A pointer to a new vector, corresponding to v1 + v2.
  */
-openscop_vector_p
-openscop_vector_add(openscop_vector_p v1, openscop_vector_p v2)
-{
+openscop_vector_p openscop_vector_add(openscop_vector_p v1,
+                                      openscop_vector_p v2) {
   int i;
   openscop_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size))
-  {
+  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size)) {
     fprintf(stderr,"[OpenScop] Error: incompatible vectors for addition.\n");
     exit(1);
   }
@@ -285,14 +267,12 @@ openscop_vector_add(openscop_vector_p v1, openscop_vector_p v2)
  * \param v2 The second vector for the subtraction (result is v1-v2).
  * \return A pointer to a new vector, corresponding to v1 - v2.
  */
-openscop_vector_p
-openscop_vector_sub(openscop_vector_p v1, openscop_vector_p v2)
-{
+openscop_vector_p openscop_vector_sub(openscop_vector_p v1,
+                                      openscop_vector_p v2) {
   int i;
   openscop_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size))
-  {
+  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size)) {
     fprintf(stderr,"[OpenScop] Error: "
                    "incompatible vectors for subtraction.\n");
     exit(1);
@@ -314,11 +294,8 @@ openscop_vector_sub(openscop_vector_p v1, openscop_vector_p v2)
  * an argument.
  * \param vector The vector to be tagged.
  */
-void
-openscop_vector_tag_inequality(openscop_vector_p vector)
-{
-  if ((vector == NULL) || (vector->size < 1))
-  {
+void openscop_vector_tag_inequality(openscop_vector_p vector) {
+  if ((vector == NULL) || (vector->size < 1)) {
     fprintf(stderr,"[OpenScop] Error: vector cannot be tagged.\n");
     exit(1);
   }
@@ -334,11 +311,8 @@ openscop_vector_tag_inequality(openscop_vector_p vector)
  * an argument.
  * \param vector The vector to be tagged.
  */
-void
-openscop_vector_tag_equality(openscop_vector_p vector)
-{
-  if ((vector == NULL) || (vector->size < 1))
-  {
+void openscop_vector_tag_equality(openscop_vector_p vector) {
+  if ((vector == NULL) || (vector->size < 1)) {
     fprintf(stderr,"[OpenScop] Error: vector cannot be tagged.\n");
     exit(1);
   }
@@ -354,9 +328,7 @@ openscop_vector_tag_equality(openscop_vector_p vector)
  * \param v2 The second vector.
  * \return 1 if v1 and v2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2)
-{
+int openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2) {
   int i;
 
   if (v1->size != v2->size)
@@ -379,8 +351,7 @@ openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2)
  * \return A new vector corresponding to scalar * v.
  */
 openscop_vector_p openscop_vector_mul_scalar(openscop_vector_p v,
-                                             int scalar)
-{
+                                             int scalar) {
   int i;
   openscop_vector_p result = openscop_vector_malloc(v->size);
   

@@ -81,10 +81,8 @@
  * \param comment The comment structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void
-openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
-                                 int level)
-{
+void openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
+                                      int level) {
   int j;
   char * tmp;
 
@@ -97,8 +95,7 @@ openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
   else
     fprintf(file, "+-- NULL comment\n");
 
-  if (comment != NULL)
-  {
+  if (comment != NULL) {
     // Go to the right level.
     for(j = 0; j <= level; j++)
       fprintf(file, "|\t");
@@ -126,9 +123,7 @@ openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
  * \param file    The file where the information has to be printed.
  * \param comment The comment structure whose information has to be printed.
  */
-void
-openscop_comment_print(FILE * file, openscop_comment_p comment)
-{
+void openscop_comment_print(FILE * file, openscop_comment_p comment) {
   openscop_comment_print_structure(file, comment, 0);
 }
 
@@ -140,19 +135,15 @@ openscop_comment_print(FILE * file, openscop_comment_p comment)
  * \param  comment The comment structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the comment structure.
  */
-char *
-openscop_comment_print_openscop(openscop_comment_p comment)
-{
+char * openscop_comment_print_openscop(openscop_comment_p comment) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;
   char * buffer;
 
-  if (comment != NULL)
-  {
+  if (comment != NULL) {
     string = (char *)malloc(high_water_mark * sizeof(char));
     buffer = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-    if ((string == NULL) || (buffer == NULL))
-    {
+    if ((string == NULL) || (buffer == NULL)) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
@@ -191,22 +182,18 @@ openscop_comment_print_openscop(openscop_comment_p comment)
  * \param  extensions The input string where to find a comment structure.
  * \return A pointer to the comment structure that has been read.
  */
-openscop_comment_p
-openscop_comment_read(char * extensions)
-{
+openscop_comment_p openscop_comment_read(char * extensions) {
   char * content;
   openscop_comment_p comment;
 
   content = openscop_util_tag_content(extensions, OPENSCOP_TAG_COMMENT_START,
                                                   OPENSCOP_TAG_COMMENT_STOP);
-  if (content == NULL)
-  {
+  if (content == NULL) {
     fprintf(stderr, "[OpenScop] Info: no comment optional tag.\n");
     return NULL;
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING)
-  { 
+  if (strlen(content) > OPENSCOP_MAX_STRING) { 
     fprintf(stderr, "[OpenScop] Error: comment too long.\n");
     exit(1);
   }
@@ -231,14 +218,11 @@ openscop_comment_read(char * extensions)
  * \return A pointer to an empty comment structure with fields set to
  *         default values.
  */
-openscop_comment_p
-openscop_comment_malloc()
-{
+openscop_comment_p openscop_comment_malloc() {
   openscop_comment_p comment;
 
   comment = (openscop_comment_p)malloc(sizeof(openscop_comment_t));
-  if (comment == NULL)
-  {
+  if (comment == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
@@ -255,11 +239,8 @@ openscop_comment_malloc()
  * structure.
  * \param comment The pointer to the comment structure we want to free.
  */
-void
-openscop_comment_free(openscop_comment_p comment)
-{
-  if (comment != NULL)
-  {
+void openscop_comment_free(openscop_comment_p comment) {
+  if (comment != NULL) {
     if(comment->comment != NULL)
       free(comment->comment);
     free(comment);
@@ -279,9 +260,7 @@ openscop_comment_free(openscop_comment_p comment)
  * \param comment The pointer to the comment structure we want to copy.
  * \return A pointer to the copy of the comment structure.
  */
-openscop_comment_p
-openscop_comment_copy(openscop_comment_p comment)
-{
+openscop_comment_p openscop_comment_copy(openscop_comment_p comment) {
   openscop_comment_p copy;
 
   if (comment == NULL)
@@ -289,8 +268,7 @@ openscop_comment_copy(openscop_comment_p comment)
 
   copy = openscop_comment_malloc();
   copy->comment = strdup(comment->comment);
-  if ((copy->comment == NULL) && (comment->comment != NULL))
-  {
+  if ((copy->comment == NULL) && (comment->comment != NULL)) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
@@ -307,9 +285,7 @@ openscop_comment_copy(openscop_comment_p comment)
  * \param c2  The second comment structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2)
-{
+int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2) {
   if ((c1 == NULL) && (c2 == NULL))
     return 1;
 

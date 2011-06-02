@@ -72,8 +72,7 @@ EXTENSIONS_OUT='./source/extension.c'
 TEMPLATE_STRING[0]=
 TEMPLATE_SUBSTITUTION[0]='@PRINT_STRUCTURE1@'
 TEMPLATE[0]='\
-      case OPENSCOP_EXTENSION_TEMPLATE:\
-      {\
+      case OPENSCOP_EXTENSION_TEMPLATE: {\
         fprintf(file, "|\\\\ttype = OPENSCOP_EXTENSION_TEMPLATE\\\\n");\
         break;\
       }'
@@ -83,8 +82,7 @@ TEMPLATE[0]='\
 TEMPLATE_STRING[1]=
 TEMPLATE_SUBSTITUTION[1]='@PRINT_STRUCTURE2@'
 TEMPLATE[1]='\
-      case OPENSCOP_EXTENSION_TEMPLATE:\
-      {\
+      case OPENSCOP_EXTENSION_TEMPLATE: {\
         openscop_template_print_structure(\
             file,\
             (openscop_template_p)extension->extension,\
@@ -97,8 +95,7 @@ TEMPLATE[1]='\
 TEMPLATE_STRING[2]=
 TEMPLATE_SUBSTITUTION[2]='@PRINT_OPENSCOP@'
 TEMPLATE[2]='\
-      case OPENSCOP_EXTENSION_TEMPLATE:\
-      {\
+      case OPENSCOP_EXTENSION_TEMPLATE: {\
         string = openscop_template_print_openscop(\
                      (openscop_template_p)extension->extension);\
         break;\
@@ -117,8 +114,7 @@ TEMPLATE[3]='\
 TEMPLATE_STRING[4]=
 TEMPLATE_SUBSTITUTION[4]='@FREE@'
 TEMPLATE[4]='\
-      case OPENSCOP_EXTENSION_TEMPLATE:\
-      {\
+      case OPENSCOP_EXTENSION_TEMPLATE: {\
         openscop_template_free(extension->extension);\
         break;\
       }'
@@ -128,8 +124,7 @@ TEMPLATE[4]='\
 TEMPLATE_STRING[5]=
 TEMPLATE_SUBSTITUTION[5]='@COPY@'
 TEMPLATE[5]='\
-      case OPENSCOP_EXTENSION_TEMPLATE:\
-      {\
+      case OPENSCOP_EXTENSION_TEMPLATE: {\
         x = (void *)openscop_template_copy(extension->extension);\
         break;\
       }'
@@ -139,8 +134,7 @@ TEMPLATE[5]='\
 TEMPLATE_STRING[6]=
 TEMPLATE_SUBSTITUTION[6]='@EQUAL@'
 TEMPLATE[6]='\
-          case OPENSCOP_EXTENSION_TEMPLATE:\
-          {\
+          case OPENSCOP_EXTENSION_TEMPLATE: {\
             equal = openscop_template_equal(x1->extension, x2->extension);\
             break;\
           }'

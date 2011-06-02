@@ -82,10 +82,8 @@
  * \param arrays The arrays structure whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void
-openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
-                                int level)
-{
+void openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
+                                     int level) {
   int i, j;
 
   // Go to the right level.
@@ -97,8 +95,7 @@ openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
   else
     fprintf(file, "+-- NULL arrays\n");
 
-  if (arrays != NULL)
-  {
+  if (arrays != NULL) {
     // Go to the right level.
     for(j = 0; j <= level; j++)
       fprintf(file, "|\t");
@@ -107,8 +104,7 @@ openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
     fprintf(file, "nb_names: %d\n", arrays->nb_names);
 
     // Display the id/name.
-    for(i = 0; i < arrays->nb_names; i++)
-    {
+    for(i = 0; i < arrays->nb_names; i++) {
       // Go to the right level.
       for(j = 0; j <= level; j++)
         fprintf(file, "|\t");
@@ -131,9 +127,7 @@ openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
  * \param file   The file where the information has to be printed.
  * \param arrays The arrays structure whose information has to be printed.
  */
-void
-openscop_arrays_print(FILE * file, openscop_arrays_p arrays)
-{
+void openscop_arrays_print(FILE * file, openscop_arrays_p arrays) {
   openscop_arrays_print_structure(file, arrays, 0);
 }
 
@@ -145,20 +139,16 @@ openscop_arrays_print(FILE * file, openscop_arrays_p arrays)
  * \param  arrays The arrays structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the arrays structure.
  */
-char *
-openscop_arrays_print_openscop(openscop_arrays_p arrays)
-{
+char * openscop_arrays_print_openscop(openscop_arrays_p arrays) {
   int i;
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;
   char * buffer;
 
-  if (arrays != NULL)
-  {
+  if (arrays != NULL) {
     string = (char *)malloc(high_water_mark * sizeof(char));
     buffer = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-    if ((string == NULL) || (buffer == NULL))
-    {
+    if ((string == NULL) || (buffer == NULL)) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
@@ -170,8 +160,7 @@ openscop_arrays_print_openscop(openscop_arrays_p arrays)
     sprintf(buffer, "\n%d\n", arrays->nb_names);
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    for (i = 0; i < arrays->nb_names; i++)
-    {
+    for (i = 0; i < arrays->nb_names; i++) {
       sprintf(buffer, "%d %s\n", arrays->id[i], arrays->names[i]);
       openscop_util_safe_strcat(&string, buffer, &high_water_mark);
     }
@@ -199,9 +188,7 @@ openscop_arrays_print_openscop(openscop_arrays_p arrays)
  * \param  extensions The input string where to find an arrays structure.
  * \return A pointer to the arrays structure that has been read.
  */
-openscop_arrays_p
-openscop_arrays_read(char * extensions)
-{
+openscop_arrays_p openscop_arrays_read(char * extensions) {
   int i, k, array_id;
   int  nb_names;
   int  *  id;
@@ -213,8 +200,7 @@ openscop_arrays_read(char * extensions)
   content = openscop_util_tag_content(extensions, OPENSCOP_TAG_ARRAY_START,
                                                   OPENSCOP_TAG_ARRAY_STOP);
 
-  if (content == NULL)
-  {
+  if (content == NULL) {
     fprintf(stderr, "[OpenScop] Info: no array optional tag.\n");
     return NULL;
   }
@@ -230,11 +216,9 @@ openscop_arrays_read(char * extensions)
     names[i] = NULL;
 
   // Get each array name.
-  for (k = 0; k < nb_names; k++)
-  { 
+  for (k = 0; k < nb_names; k++) { 
     // Skip blank or commented lines.
-    while (*content == '#' || *content == '\n')
-    {
+    while (*content == '#' || *content == '\n') {
       for (; *content != '\n'; ++content)
         continue;
       ++content;
@@ -245,8 +229,7 @@ openscop_arrays_read(char * extensions)
       buff[i] = *content;
     buff[i] = '\0';
     sscanf(buff, "%d", &array_id);
-    if (array_id <= 0)
-    {
+    if (array_id <= 0) {
       fprintf(stderr, "[OpenScop] Error: array id must be > 0.\n");
       exit(1);
     }
@@ -288,14 +271,11 @@ openscop_arrays_read(char * extensions)
  * \return A pointer to an empty arrays structure with fields set to
  *         default values.
  */
-openscop_arrays_p
-openscop_arrays_malloc()
-{
+openscop_arrays_p openscop_arrays_malloc() {
   openscop_arrays_p arrays;
 
   arrays = (openscop_arrays_p)malloc(sizeof(openscop_arrays_t));
-  if (arrays == NULL)
-  {
+  if (arrays == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
@@ -313,15 +293,11 @@ openscop_arrays_malloc()
  * This function frees the allocated memory for an arrays structure.
  * \param arrays The pointer to the arrays structure we want to free.
  */
-void
-openscop_arrays_free(openscop_arrays_p arrays)
-{
+void openscop_arrays_free(openscop_arrays_p arrays) {
   int i;
 
-  if (arrays != NULL)
-  {
-    if (arrays->names != NULL)
-    {
+  if (arrays != NULL) {
+    if (arrays->names != NULL) {
       free(arrays->id);
       for (i = 0; i < arrays->nb_names; i++)
         free(arrays->names[i]);
@@ -345,9 +321,7 @@ openscop_arrays_free(openscop_arrays_p arrays)
  * \param arrays The pointer to the arrays structure we want to copy.
  * \return A pointer to the copy of the arrays structure.
  */
-openscop_arrays_p
-openscop_arrays_copy(openscop_arrays_p arrays)
-{
+openscop_arrays_p openscop_arrays_copy(openscop_arrays_p arrays) {
   openscop_arrays_p copy;
   int i;
 
@@ -355,22 +329,18 @@ openscop_arrays_copy(openscop_arrays_p arrays)
     return NULL;
 
   copy = openscop_arrays_malloc();
-  if (copy != NULL)
-  {
+  if (copy != NULL) {
     copy->nb_names = arrays->nb_names;
     copy->id = (int *)malloc(arrays->nb_names * sizeof(int));
     copy->names = (char **)malloc(arrays->nb_names * sizeof(char*));
-    if ((copy->id == NULL) || (copy->names == NULL))
-    {
+    if ((copy->id == NULL) || (copy->names == NULL)) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
-    for (i = 0; i < arrays->nb_names; i++)
-    {
+    for (i = 0; i < arrays->nb_names; i++) {
       copy->id[i] = arrays->id[i];
       copy->names[i] = strdup(arrays->names[i]);
-      if ((copy->names[i] == NULL) && (arrays->names[i] != NULL))
-      {
+      if ((copy->names[i] == NULL) && (arrays->names[i] != NULL)) {
         fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
         exit(1);
       }
@@ -391,9 +361,7 @@ openscop_arrays_copy(openscop_arrays_p arrays)
  * \param a2  The second arrays structure.
  * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2)
-{
+int openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2) {
   int i, j, found;
 
   if ((a1 == NULL) && (a2 == NULL))
@@ -408,13 +376,10 @@ openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2)
 
   // We accept a different order of the names, as long as the identifiers
   // are the same.
-  for (i = 0; i < a1->nb_names; i++)
-  {
+  for (i = 0; i < a1->nb_names; i++) {
     found = 0;
-    for (j = 0; j < a2->nb_names; j++)
-    {
-      if ((a1->id[i] == a2->id[j]) && (!strcmp(a1->names[i], a2->names[j])))
-      {
+    for (j = 0; j < a2->nb_names; j++) {
+      if ((a1->id[i] == a2->id[j]) && (!strcmp(a1->names[i], a2->names[j]))) {
         found = 1;
         break;
       }
@@ -438,17 +403,15 @@ openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2)
  * \param nb_names Pointer to the location to store the number of names.
  * \return An array of strings corresponding to the array names.
  */
-char **
-openscop_arrays_generate_names(openscop_arrays_p arrays, int * nb_names)
-{
+char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
+                                       int * nb_names) {
   char ** names = NULL;
   char ** tmpnames;
   int i;
 
   *nb_names = 0;
 
-  if (arrays != NULL)
-  {
+  if (arrays != NULL) {
     // Get the maximum id (it will be nb_names).
     for (i = 0; i < arrays->nb_names; i++)
       if (arrays->id[i] > *nb_names)
@@ -456,16 +419,13 @@ openscop_arrays_generate_names(openscop_arrays_p arrays, int * nb_names)
   
     // Allocate the array of names and store the existing names.
     names = (char **)malloc(*nb_names * sizeof(char *));
-    if (names == NULL)
-    {
+    if (names == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
     }
-    for (i = 0; i < arrays->nb_names; i++)
-    {
+    for (i = 0; i < arrays->nb_names; i++) {
       names[arrays->id[i] - 1] = strdup(arrays->names[i]);
-      if (names[arrays->id[i] - 1] == NULL)
-      {
+      if (names[arrays->id[i] - 1] == NULL) {
 	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
 	exit(1);
       }
@@ -473,8 +433,7 @@ openscop_arrays_generate_names(openscop_arrays_p arrays, int * nb_names)
 
     // Fill the missing names.
     tmpnames = openscop_util_strings_generate("A_", *nb_names);
-    for (i = 0; i < *nb_names; i++)
-    {
+    for (i = 0; i < *nb_names; i++) {
       if (names[i] == NULL || names[i][0] == '\0')
 	names[i] = tmpnames[i]; // Use a generated name.
       else

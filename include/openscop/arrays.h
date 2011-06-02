@@ -83,8 +83,7 @@ extern "C"
  * has a name string and an identifier: the ith name as name
  * string names[i] and identifier id[i].
  */
-struct openscop_arrays
-{
+struct openscop_arrays {
   int nb_names;      /**< Number of names. */
   int  *  id;        /**< Array of nb_names identifiers. */
   char ** names;     /**< Array of nb_names names. */

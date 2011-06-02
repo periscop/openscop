@@ -81,29 +81,25 @@
  * \param names The names structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void
-openscop_names_print_structure(FILE * file, openscop_names_p names, int level)
-{
+void openscop_names_print_structure(FILE * file, openscop_names_p names,
+                                    int level) {
   int j;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (names != NULL)
-  {
+  if (names != NULL) {
     if (names->textual == 1)
       fprintf(file, "+-- openscop_names_t\n");
     else
       fprintf(file, "+-- openscop_names_t (non textual)\n");
   }
-  else
-  {
+  else {
     fprintf(file, "+-- NULL names\n");
   }
 
-  if ((names != NULL) && (names->textual == 1))
-  {
+  if ((names != NULL) && (names->textual == 1)) {
     // A blank line.
     for (j = 0; j <= level+1; j++)
       fprintf(file, "|\t");
@@ -149,9 +145,7 @@ openscop_names_print_structure(FILE * file, openscop_names_p names, int level)
  * \param file  The file where the information has to be printed.
  * \param names The names structure whose information has to be printed.
  */
-void
-openscop_names_print(FILE * file, openscop_names_p names)
-{
+void openscop_names_print(FILE * file, openscop_names_p names) {
   openscop_names_print_structure(file, names, 0);
 }
 
@@ -163,9 +157,7 @@ openscop_names_print(FILE * file, openscop_names_p names)
  * \param file The file where the information has to be printed.
  * \param names The names structure whose information has to be printed.
  */
-void
-openscop_names_print_openscop(FILE * file, openscop_names_p names)
-{
+void openscop_names_print_openscop(FILE * file, openscop_names_p names) {
   int print = ((names != NULL) && (names->textual == 1));
   
   openscop_util_strings_print_openscop(file,
@@ -195,41 +187,32 @@ openscop_names_print_openscop(FILE * file, openscop_names_p names)
  * \param file The file where the names has to be read.
  * \return A pointer to the names structure that has been read.
  */
-openscop_names_p
-openscop_names_read(FILE * file)
-{
-  openscop_names_p names;
+openscop_names_p openscop_names_read(FILE * file) {
+  openscop_names_p names = openscop_names_malloc();
 
-  names = openscop_names_malloc();
-  if (openscop_util_read_int(file, NULL) > 0)
-  {
+  if (openscop_util_read_int(file, NULL) > 0) {
     names->parameters = openscop_util_strings_read(file,
                                                    &(names->nb_parameters));
   }
-  else
-  {
+  else {
     names->nb_parameters = 0;
     names->parameters = NULL;
   }
 
-  if (openscop_util_read_int(file, NULL) > 0)
-  {
+  if (openscop_util_read_int(file, NULL) > 0) {
     names->iterators  = openscop_util_strings_read(file,
                                                    &(names->nb_iterators));
   }
-  else
-  {
+  else {
     names->nb_iterators = 0;
     names->iterators = NULL;
   }
 
-  if (openscop_util_read_int(file, NULL) > 0)
-  {
+  if (openscop_util_read_int(file, NULL) > 0) {
       names->scattdims  = openscop_util_strings_read(file,
                                                      &(names->nb_scattdims));
   }
-  else
-  {
+  else {
     names->nb_scattdims = 0;
     names->scattdims = NULL;
   }
@@ -251,14 +234,10 @@ openscop_names_read(FILE * file)
  * \return A pointer to an empty names structure with fields set to
  *         default values.
  */
-openscop_names_p
-openscop_names_malloc()
-{
-  openscop_names_p names;
+openscop_names_p openscop_names_malloc() {
+  openscop_names_p names = (openscop_names_p)malloc(sizeof(openscop_names_t));
 
-  names = (openscop_names_p)malloc(sizeof(openscop_names_t));
-  if (names == NULL)
-  {
+  if (names == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
@@ -288,13 +267,9 @@ openscop_names_malloc()
  * the array itself), this function will only free the openscop_names_t shell.
  * \param names The pointer to the names structure we want to free.
  */
-void
-openscop_names_free(openscop_names_p names)
-{
-  if (names != NULL)
-  {
-    if (names->textual == 1)
-    {
+void openscop_names_free(openscop_names_p names) {
+  if (names != NULL) {
+    if (names->textual == 1) {
       openscop_util_strings_free(names->parameters, names->nb_parameters);
       openscop_util_strings_free(names->iterators,  names->nb_iterators);
       openscop_util_strings_free(names->scattdims,  names->nb_scattdims);
@@ -320,12 +295,9 @@ openscop_names_free(openscop_names_p names)
  * \param names The pointer to the names structure we want to copy.
  * \return A pointer to the copy of the names structure provided as parameter.
  */
-openscop_names_p
-openscop_names_copy(openscop_names_p names)
-{
-  openscop_names_p copy;
+openscop_names_p openscop_names_copy(openscop_names_p names) {
+  openscop_names_p copy = openscop_names_malloc();
 
-  copy = openscop_names_malloc();
   copy->textual       = names->textual;
   copy->nb_parameters = names->nb_parameters;
   copy->nb_iterators  = names->nb_iterators;
@@ -356,47 +328,39 @@ openscop_names_copy(openscop_names_p names)
  * \param n2  The second names structure.
  * \return 1 if n1 and n2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_names_equal(openscop_names_p n1, openscop_names_p n2)
-{
+int openscop_names_equal(openscop_names_p n1, openscop_names_p n2) {
   if ((n1 == NULL) && (n2 == NULL))
     return 1;
 
   if (((n1 == NULL) && (n2 != NULL)) || ((n1 != NULL) && (n2 == NULL)))
     return 0;
-  
 
   if (!openscop_util_strings_equal(n1->parameters, n1->nb_parameters,
-	                           n2->parameters, n1->nb_parameters))
-  {
+	                           n2->parameters, n1->nb_parameters)) {
     fprintf(stderr, "[OpenScop] info: parameters are not the same.\n"); 
     return 0;
   }
   
   if (!openscop_util_strings_equal(n1->iterators, n1->nb_iterators,
-	                           n2->iterators, n1->nb_iterators))
-  {
+	                           n2->iterators, n1->nb_iterators)) {
     fprintf(stderr, "[OpenScop] info: iterators are not the same.\n"); 
     return 0;
   }
   
   if (!openscop_util_strings_equal(n1->scattdims, n1->nb_scattdims,
-	                           n2->scattdims, n1->nb_scattdims))
-  {
+	                           n2->scattdims, n1->nb_scattdims)) {
     fprintf(stderr, "[OpenScop] info: scattdims are not the same.\n");
     return 0;
   }
   
   if (!openscop_util_strings_equal(n1->localdims, n1->nb_localdims,
-	                           n2->localdims, n1->nb_localdims))
-  {
+	                           n2->localdims, n1->nb_localdims)) {
     fprintf(stderr, "[OpenScop] info: localdims are not the same.\n");
     return 0;
   }
 
   if (!openscop_util_strings_equal(n1->arrays, n1->nb_arrays,
-	                           n2->arrays, n1->nb_arrays))
-  {
+	                           n2->arrays, n1->nb_arrays)) {
     fprintf(stderr, "[OpenScop] info: arrays are not the same.\n");
     return 0;
   }
@@ -415,29 +379,24 @@ openscop_names_equal(openscop_names_p n1, openscop_names_p n2)
  * \param min_nb_scattdims  The minimum acceptable number of scattdims.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int
-openscop_names_integrity_check(openscop_names_p names,
-                               int min_nb_parameters,
-                               int min_nb_iterators,
-                               int min_nb_scattdims)
-{
+int openscop_names_integrity_check(openscop_names_p names,
+                                   int min_nb_parameters,
+                                   int min_nb_iterators,
+                                   int min_nb_scattdims) {
   if ((names->nb_parameters > 0) &&
-      (names->nb_parameters < min_nb_parameters))
-  {
+      (names->nb_parameters < min_nb_parameters)) {
     fprintf(stderr, "[OpenScop] Warning: not enough parameter names.\n");
     return 0;
   }
 
   if ((names->nb_iterators > 0) &&
-      (names->nb_iterators < min_nb_iterators))
-  {
+      (names->nb_iterators < min_nb_iterators)) {
     fprintf(stderr, "[OpenScop] Warning: not enough iterator names.\n");
     return 0;
   }
   
   if ((names->nb_scattdims > 0) &&
-      (names->nb_scattdims < min_nb_scattdims))
-  {
+      (names->nb_scattdims < min_nb_scattdims)) {
     fprintf(stderr, "[OpenScop] Warning: not enough scattering "
                     "dimension names.\n");
     return 0;

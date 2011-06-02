@@ -96,8 +96,7 @@ extern "C"
  * The scop_t structure stores the useful information of a static
  * control part of a program to process it within a polyhedral framework.
  */
-struct openscop_scop
-{
+struct openscop_scop {
   int version;                    /**< Version of the data structure */
   char * language;                /**< Target language (backend) */
   openscop_relation_p  context;   /**< Constraints on the SCoP parameters */

@@ -97,8 +97,7 @@ extern "C"
  * - The first output dimension of any access relations corresponds to
  *   the name of the array.
  */
-struct openscop_relation
-{
+struct openscop_relation {
   int nb_rows;                     /**< The number of rows */
   int nb_columns;	           /**< The number of columns */
   int nb_output_dims;              /**< The number of output dimensions */

@@ -81,8 +81,7 @@ extern "C"
  * The openscop_relation_list_t structure describes a (NULL-terminated
  * linked) list of relations.
  */
-struct openscop_relation_list
-{
+struct openscop_relation_list {
   openscop_relation_p elt;              /**< An element of the list. */
   struct openscop_relation_list * next; /**< Pointer to the next element
 				             of the list.*/

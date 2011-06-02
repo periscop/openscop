@@ -93,6 +93,7 @@ char *  openscop_util_read_tail(FILE *);
 char *  openscop_util_tag_content(char *, char *, char *);
 void    openscop_util_safe_strcat(char **, char *, int *);
 
+
 # if defined(__cplusplus)
   }
 # endif

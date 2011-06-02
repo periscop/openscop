@@ -84,10 +84,9 @@
  * \param statement The statement whose information have to be printed.
  * \param level     Number of spaces before printing, for each line.
  */
-void
-openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
-                                   int level)
-{
+void openscop_statement_print_structure(FILE * file,
+                                        openscop_statement_p statement,
+                                        int level) {
   int i, j, first = 1, number = 1;
 
   // Go to the right level.
@@ -99,9 +98,8 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
   else
     fprintf(file, "+-- NULL statement\n");
 
-  while (statement != NULL)
-  { if (!first)
-    {
+  while (statement != NULL) {
+    if (!first) {
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
@@ -130,8 +128,7 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
     // Print the original iterator names.
     for (i = 0; i <= level; i++)
       fprintf(file, "|\t");
-    if (statement->nb_iterators > 0)
-    {
+    if (statement->nb_iterators > 0) {
       fprintf(file, "+-- Original iterator strings:");
       for (i = 0; i < statement->nb_iterators; i++)
         fprintf(file, " %s", statement->iterators[i]);
@@ -162,8 +159,7 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
     number++;
 
     // Next line.
-    if (statement != NULL)
-    {
+    if (statement != NULL) {
       for (j = 0; j <= level; j++)
         fprintf(file, "|\t");
       fprintf(file, "V\n");
@@ -184,9 +180,7 @@ openscop_statement_print_structure(FILE * file, openscop_statement_p statement,
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
  */
-void
-openscop_statement_print(FILE * file, openscop_statement_p statement)
-{
+void openscop_statement_print(FILE * file, openscop_statement_p statement) {
   openscop_statement_print_structure(file, statement, 0);
 }
 
@@ -202,20 +196,17 @@ openscop_statement_print(FILE * file, openscop_statement_p statement)
  *                  representation is used. Set to NULL if printing comments
  *                  is not needed.
  */
-void
-openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
-                                  openscop_names_p names)                      
-{
+void openscop_statement_print_openscop(FILE * file,
+                                       openscop_statement_p statement,
+                                       openscop_names_p names) {
   int i, switched, number = 1;
   int tmp_nb_iterators = 0;
   char ** tmp_iterators = NULL;
 
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     // Switch iterator names to the current statement names if possible.
     switched = 0;
-    if (statement->nb_iterators > 0)
-    {
+    if (statement->nb_iterators > 0) {
       tmp_nb_iterators = names->nb_iterators;
       tmp_iterators = names->iterators;
       names->nb_iterators = statement->nb_iterators;
@@ -258,8 +249,7 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
     fprintf(file, "%2d.4 Body\n", number);
     fprintf(file, "# Statement body is provided\n");
     fprintf(file, "1\n");
-    if (statement->nb_iterators > 0)
-    {
+    if (statement->nb_iterators > 0) {
       fprintf(file, "# Original iterator names\n");
       for (i = 0; i < statement->nb_iterators; i++)
         fprintf(file, "%s ", statement->iterators[i]);
@@ -271,8 +261,7 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
     fprintf(file, "%s\n", statement->body);
     fprintf(file, "\n\n");
 
-    if (switched == 1)
-    {
+    if (switched == 1) {
       statement->nb_iterators = tmp_nb_iterators;
       statement->iterators = tmp_iterators;
     }
@@ -294,15 +283,12 @@ openscop_statement_print_openscop(FILE * file, openscop_statement_p statement,
  * \param file  The input stream.
  * \return A pointer to the statement structure that has been read.
  */
-openscop_statement_p
-openscop_statement_read(FILE * file)
-{
+openscop_statement_p openscop_statement_read(FILE * file) {
   openscop_statement_p stmt = openscop_statement_malloc();
   char buff[OPENSCOP_MAX_STRING], * start, * end;
   int nb_iterators;
 
-  if (file)
-  {
+  if (file) {
     // Read the domain matrices.
     stmt->domain = openscop_relation_read(file);
 
@@ -311,15 +297,13 @@ openscop_statement_read(FILE * file)
       stmt->scattering = openscop_relation_read(file);
 
     // Read the access functions, if any.
-    if (openscop_util_read_int(file, NULL) > 0)
-    {
+    if (openscop_util_read_int(file, NULL) > 0) {
       stmt->read = openscop_relation_list_read(file);
       stmt->write = openscop_relation_list_read(file);
     }
 
     // Read the body information, if any.
-    if (openscop_util_read_int(file, NULL) > 0)
-    {
+    if (openscop_util_read_int(file, NULL) > 0) {
       // Read the original iterator names.
       stmt->iterators = openscop_util_strings_read(file, &nb_iterators);
       stmt->nb_iterators = nb_iterators;
@@ -337,8 +321,7 @@ openscop_statement_read(FILE * file)
       // - Copy the body.
       stmt->body = strdup(start);
     }
-    else
-    {
+    else {
       stmt->nb_iterators = OPENSCOP_UNDEFINED;
       stmt->iterators = NULL;
       stmt->body = strdup("[undefined]");
@@ -361,14 +344,11 @@ openscop_statement_read(FILE * file)
  * to the allocated space.
  * \return A pointer to an empty statement with fields set to default values.
  */
-openscop_statement_p
-openscop_statement_malloc()
-{
+openscop_statement_p openscop_statement_malloc() {
   openscop_statement_p statement;
 
   statement = (openscop_statement_p)malloc(sizeof(openscop_statement_t));
-  if (statement == NULL)
-  {
+  if (statement == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
@@ -392,21 +372,17 @@ openscop_statement_malloc()
  * structure.
  * \param statement The pointer to the statement we want to free.
  */
-void
-openscop_statement_free(openscop_statement_p statement)
-{
+void openscop_statement_free(openscop_statement_p statement) {
   int i;
   openscop_statement_p next;
 
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     next = statement->next;
     openscop_relation_free(statement->domain);
     openscop_relation_free(statement->scattering);
     openscop_relation_list_free(statement->read);
     openscop_relation_list_free(statement->write);
-    if (statement->iterators != NULL)
-    {
+    if (statement->iterators != NULL) {
       for (i = 0; i < statement->nb_iterators; i++)
         free(statement->iterators[i]);
       free(statement->iterators);
@@ -432,10 +408,8 @@ openscop_statement_free(openscop_statement_p statement)
  * \param location  Address of the first element of the statement list.
  * \param statement The statement to add to the list.
  */
-void
-openscop_statement_add(openscop_statement_p * location,
-                       openscop_statement_p   statement)
-{
+void openscop_statement_add(openscop_statement_p * location,
+                            openscop_statement_p   statement) {
   while (*location != NULL)
     location = &((*location)->next);
 
@@ -450,13 +424,10 @@ openscop_statement_add(openscop_statement_p * location,
  * \param statement The first element of the statement list.
  * \return The number of statements in the statement list.
  */
-int
-openscop_statement_number(openscop_statement_p statement)
-{
+int openscop_statement_number(openscop_statement_p statement) {
   int number = 0;
 
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     number++;
     statement = statement->next;
   }
@@ -471,14 +442,11 @@ openscop_statement_number(openscop_statement_p statement)
  * \param statement  The pointer to the statement we want to copy.
  * \return A pointer to the full copy of the statement provided as parameter.
  */
-openscop_statement_p
-openscop_statement_copy(openscop_statement_p statement)
-{
+openscop_statement_p openscop_statement_copy(openscop_statement_p statement) {
   int first = 1;
   openscop_statement_p copy = NULL, node, previous = NULL;
 
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     node               = openscop_statement_malloc();
     node->version      = statement->version;
     node->domain       = openscop_relation_copy(statement->domain);
@@ -491,14 +459,12 @@ openscop_statement_copy(openscop_statement_p statement)
     node->body         = strdup(statement->body);
     node->next         = NULL;
     
-    if (first)
-    {
+    if (first) {
       first = 0;
       copy = node;
       previous = node;
     }
-    else
-    {
+    else {
       previous->next = node;
       previous = previous->next;
     }
@@ -518,9 +484,8 @@ openscop_statement_copy(openscop_statement_p statement)
  * \param s2 The second statement.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int
-openscop_statement_equal(openscop_statement_p s1, openscop_statement_p s2)
-{
+int openscop_statement_equal(openscop_statement_p s1,
+                             openscop_statement_p s2) {
   int i;
 
   if (((s1->next != NULL) && (s2->next == NULL)) ||
@@ -558,14 +523,11 @@ openscop_statement_equal(openscop_statement_p s1, openscop_statement_p s2)
  * \param expected_nb_parameters  Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int
-openscop_statement_integrity_check(openscop_statement_p statement,
-                                   int expected_nb_parameters)
-{
+int openscop_statement_integrity_check(openscop_statement_p statement,
+                                       int expected_nb_parameters) {
   int expected_nb_iterators = OPENSCOP_UNDEFINED;
 
-  while (statement != NULL)
-  {
+  while (statement != NULL) {
     // Check the domain.
     if ((openscop_relation_is_matrix(statement->domain) &&
          !openscop_relation_integrity_check(statement->domain,
@@ -578,16 +540,13 @@ openscop_statement_integrity_check(openscop_statement_p statement,
                                             OPENSCOP_TYPE_DOMAIN,
                                             OPENSCOP_UNDEFINED,
                                             0,
-                                            expected_nb_parameters)))
-    {
+                                            expected_nb_parameters))) {
       return 0;
     }
 
     // Get the number of iterators.
-    if (statement->domain != NULL)
-    {
-      if (openscop_relation_is_matrix(statement->domain))
-      {
+    if (statement->domain != NULL) {
+      if (openscop_relation_is_matrix(statement->domain)) {
         if (expected_nb_parameters != OPENSCOP_UNDEFINED)
           expected_nb_iterators = statement->domain->nb_columns -
                                   expected_nb_parameters - 2;
@@ -610,8 +569,7 @@ openscop_statement_integrity_check(openscop_statement_p statement,
                                             OPENSCOP_TYPE_SCATTERING,
                                             OPENSCOP_UNDEFINED,
                                             expected_nb_iterators,
-                                            expected_nb_parameters)))
-    {
+                                            expected_nb_parameters))) {
       return 0;
     }
 
@@ -625,14 +583,12 @@ openscop_statement_integrity_check(openscop_statement_p statement,
                                            OPENSCOP_TYPE_ACCESS,
                                            OPENSCOP_UNDEFINED,
                                            expected_nb_iterators,
-                                           expected_nb_parameters))
-    {
+                                           expected_nb_parameters)) {
       return 0;
     }
 
     if ((statement->nb_iterators > 0) &&
-        (statement->nb_iterators < statement->domain->nb_output_dims))
-    {
+        (statement->nb_iterators < statement->domain->nb_output_dims)) {
       fprintf(stderr, "[OpenScop] Warning: not enough original iterator "
                       "names.\n");
       return 0;
