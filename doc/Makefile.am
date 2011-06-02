@@ -77,7 +77,7 @@ MAINTAINERCLEANFILES	= Makefile.in
 
 EXTRA_DIST		=			\
 	htmldoc.tar.gz				\
-	clan.pdf				\
+	openscop.pdf				\
 	S4.cloog				\
 	ascii-art.txt				\
 	images/basic.eps			\
@@ -102,7 +102,7 @@ EXTRA_DIST		=			\
 	images/tree.txt
 
 
-info_TEXINFOS		= clan.texi
+info_TEXINFOS		= openscop.texi
 
 DOCDIR			= htmldoc
 DOXYFILE		= Doxyfile
@@ -110,8 +110,8 @@ DOXYGEN			= @DOXYGEN@
 
 # The following requires a fixed version of the Emacs 19.30 etags.
 ETAGS_ARGS		= --lang=none \
- --regex='/^@node[ \t]+\([^,]+\)/\1/' $(srcdir)/doc/clan.texi
-TAGS_DEPENDENCIES	= clan.texi $(DOXYFILE).in
+ --regex='/^@node[ \t]+\([^,]+\)/\1/' $(srcdir)/doc/openscop.texi
+TAGS_DEPENDENCIES	= openscop.texi $(DOXYFILE).in
 
 htmldoc.tar.gz:
 	mkdir -p $(top_srcdir)/doc/htmldoc

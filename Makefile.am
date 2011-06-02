@@ -92,6 +92,7 @@ MAINTAINERCLEANFILES 	=			\
 	aclocal.m4				\
 	configure				\
 	source/stamp-h.in			\
+	source/extension.c			\
 	$(AUX_DIST)
 
 
