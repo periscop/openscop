@@ -162,8 +162,11 @@ void openscop_relation_list_print_openscop(FILE * file,
   openscop_relation_list_p head = list;
 
   // Count the number of elements in the list.
-  for (i = 0; list; list = list->next, i++)
-    continue;
+  i = 0;
+  while (list != NULL) {
+    i++;
+    list = list->next;
+  }
   
   // Print it.
   if (i > 1)
@@ -172,12 +175,14 @@ void openscop_relation_list_print_openscop(FILE * file,
     fprintf(file,"# List of %d element \n%d\n", i, i);
 
   // Print each element of the relation list.
-  i = 0;
-  while (head) {
-    fprintf(file, "# List element No.%d\n", i);
-    openscop_relation_print_openscop(file, head->elt, type, names);
-    head = head->next;
-    i++;
+  if (i > 0) {
+    i = 0;
+    while (head) {
+      fprintf(file, "# List element No.%d\n", i);
+      openscop_relation_print_openscop(file, head->elt, type, names);
+      head = head->next;
+      i++;
+    }
   }
 }
 
