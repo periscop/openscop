@@ -478,7 +478,7 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
     
       if (((read != 1) && (read != 2) && (read != 6)) ||
           ((read == 1) && (may_read_nb_union_parts != 1))) {
-        fprintf(stderr, "[OpenScop] Error:: badly formated relation.\n");
+        fprintf(stderr, "[OpenScop] Error: badly formated relation.\n");
         exit(1);
       }
 

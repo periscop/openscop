@@ -84,7 +84,6 @@ extern "C"
  * conventions (e.g. "S1" for the first statement in the list).
  */
 struct openscop_statement {
-  int version;                    /**< Version of the data structure */
   openscop_relation_p domain;     /**< Iteration domain of the statement */
   openscop_relation_p scattering; /**< Scattering function for the statement */
   openscop_relation_list_p read;  /**< Array read access informations */

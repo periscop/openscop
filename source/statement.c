@@ -226,39 +226,58 @@ void openscop_statement_print_openscop(FILE * file,
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.2 Scattering\n", number);
-    fprintf(file, "# Scattering function is provided\n");
-    fprintf(file, "1\n");
-    fprintf(file, "# Scattering function\n");
-    openscop_relation_print_openscop(file, statement->scattering,
-                                     OPENSCOP_TYPE_SCATTERING, names);
+    if (statement->scattering != NULL) {
+      fprintf(file, "# Scattering function is provided\n");
+      fprintf(file, "1\n");
+      fprintf(file, "# Scattering function\n");
+      openscop_relation_print_openscop(file, statement->scattering,
+                                       OPENSCOP_TYPE_SCATTERING, names);
+    }
+    else {
+      fprintf(file, "# Scattering function is not provided\n");
+      fprintf(file, "0\n");
+    }
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.3 Access\n", number);
-    fprintf(file, "# Access informations are provided\n");
-    fprintf(file, "1\n");
-    fprintf(file, "\n# Read access information\n");
-    openscop_relation_list_print_openscop(file, statement->read,
-                                          OPENSCOP_TYPE_ACCESS, names);
-    fprintf(file, "\n# Write access information\n");
-    openscop_relation_list_print_openscop(file, statement->write,
-                                          OPENSCOP_TYPE_ACCESS, names);
+    if ((statement->read != NULL) || (statement->write != NULL)) {
+      fprintf(file, "# Access information is provided\n");
+      fprintf(file, "1\n");
+      fprintf(file, "\n# Read access information\n");
+      openscop_relation_list_print_openscop(file, statement->read,
+                                            OPENSCOP_TYPE_ACCESS, names);
+      fprintf(file, "\n# Write access information\n");
+      openscop_relation_list_print_openscop(file, statement->write,
+                                            OPENSCOP_TYPE_ACCESS, names);
+    }
+    else {
+      fprintf(file, "# Access information is not provided\n");
+      fprintf(file, "0\n");
+    }
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
-    fprintf(file, "# Statement body is provided\n");
-    fprintf(file, "1\n");
-    if (statement->nb_iterators > 0) {
-      fprintf(file, "# Original iterator names\n");
-      for (i = 0; i < statement->nb_iterators; i++)
-        fprintf(file, "%s ", statement->iterators[i]);
-      fprintf(file, "\n");
+    if (statement->body != NULL) {
+      fprintf(file, "# Statement body is provided\n");
+      fprintf(file, "1\n");
+      if (statement->nb_iterators > 0) {
+        fprintf(file, "# Original iterator names\n");
+        for (i = 0; i < statement->nb_iterators; i++)
+          fprintf(file, "%s ", statement->iterators[i]);
+        fprintf(file, "\n");
+      }
+      else {
+        fprintf(file, "# No original iterator names\n");
+      }
+      fprintf(file, "# Statement body\n");
+      fprintf(file, "%s\n", statement->body);
     }
-    else
-      fprintf(file, "# No original iterator names\n");
-    fprintf(file, "# Statement body\n");
-    fprintf(file, "%s\n", statement->body);
+    else {
+      fprintf(file, "# Statement body is not provided\n");
+      fprintf(file, "0\n");
+    }
     fprintf(file, "\n\n");
 
     if (switched == 1) {
@@ -322,9 +341,9 @@ openscop_statement_p openscop_statement_read(FILE * file) {
       stmt->body = strdup(start);
     }
     else {
-      stmt->nb_iterators = OPENSCOP_UNDEFINED;
+      stmt->nb_iterators = 0;
       stmt->iterators = NULL;
-      stmt->body = strdup("[undefined]");
+      stmt->body = NULL;
     }
   }
 
@@ -448,7 +467,6 @@ openscop_statement_p openscop_statement_copy(openscop_statement_p statement) {
 
   while (statement != NULL) {
     node               = openscop_statement_malloc();
-    node->version      = statement->version;
     node->domain       = openscop_relation_copy(statement->domain);
     node->scattering   = openscop_relation_copy(statement->scattering);
     node->read         = openscop_relation_list_copy(statement->read);
@@ -499,18 +517,31 @@ int openscop_statement_equal(openscop_statement_p s1,
     if (!openscop_statement_equal(s1->next, s2->next))
       return 0;
     
-  if (//(s1->version != s2->version) ||
-      (s1->nb_iterators != s2->nb_iterators) ||
+  if ((s1->nb_iterators != s2->nb_iterators) ||
       (!openscop_relation_equal(s1->domain,     s2->domain))     ||
       (!openscop_relation_equal(s1->scattering, s2->scattering)) ||
       (!openscop_relation_list_equal(s1->read,  s2->read))       ||
-      (!openscop_relation_list_equal(s1->write, s2->write))      ||
-      (strcmp(s1->body, s2->body) != 0))
+      (!openscop_relation_list_equal(s1->write, s2->write)))
     return 0;
 
-  for (i = 0; i < s1->nb_iterators; i++)
-    if (strcmp(s1->iterators[i], s2->iterators[i]) != 0)
+  if (((s1->body == NULL) && (s2->body != NULL)) ||
+      ((s1->body != NULL) && (s2->body == NULL)) ||
+      ((s1->body != NULL) && (s2->body != NULL) &&
+       (strcmp(s1->body, s2->body) != 0))) {
+    fprintf(stderr, "[OpenScop] info: bodies are not the same.\n"); 
+    return 0;
+  }
+
+  for (i = 0; i < s1->nb_iterators; i++) {
+    if (((s1->iterators[i] == NULL) && (s2->iterators[i] != NULL)) ||
+        ((s1->iterators[i] != NULL) && (s2->iterators[i] == NULL)) ||
+        ((s1->iterators[i] != NULL) && (s2->iterators[i] != NULL) &&
+         (strcmp(s1->iterators[i], s2->iterators[i]) != 0))) {
+      fprintf(stderr, "[OpenScop] info: original iterators "
+                      "are not the same.\n"); 
       return 0;
+    }
+  }
 
   return 1;
 }
