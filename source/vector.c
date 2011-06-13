@@ -331,6 +331,9 @@ void openscop_vector_tag_equality(openscop_vector_p vector) {
 int openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2) {
   int i;
 
+  if (v1 == v2)
+    return 1;
+
   if (v1->size != v2->size)
     return 0;
 

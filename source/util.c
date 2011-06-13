@@ -331,7 +331,7 @@ char ** openscop_util_strings_copy(char ** strings, int nb_strings) {
 int openscop_util_strings_equal(char ** s1, int nb_s1, char ** s2, int nb_s2) {
   int i;
   
-  if ((s1 == NULL) && (s2 == NULL))
+  if (s1 == s2)
     return 1;
 
   if (((s1 == NULL) && (s2 != NULL)) ||

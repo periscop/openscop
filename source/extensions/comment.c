@@ -286,7 +286,8 @@ openscop_comment_p openscop_comment_copy(openscop_comment_p comment) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2) {
-  if ((c1 == NULL) && (c2 == NULL))
+  
+  if (c1 == c2)
     return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))

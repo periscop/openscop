@@ -379,6 +379,9 @@ int openscop_extension_equal(openscop_extension_p x1,
   int found, equal;
   openscop_extension_p backup_x2 = x2;
 
+  if (x1 == x2)
+    return 1;
+
   // Check whether the number of extensions is the same or not.
   x1_extension_number = openscop_extension_count(x1);
   x2_extension_number = openscop_extension_count(x2);

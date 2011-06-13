@@ -288,7 +288,7 @@ openscop_lines_p openscop_lines_copy(openscop_lines_p lines) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int openscop_lines_equal(openscop_lines_p c1, openscop_lines_p c2) {
-  if ((c1 == NULL) && (c2 == NULL))
+  if (c1 == c2)
     return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))

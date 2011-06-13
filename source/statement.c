@@ -488,6 +488,9 @@ int openscop_statement_equal(openscop_statement_p s1,
                              openscop_statement_p s2) {
   int i;
 
+  if (s1 == s2)
+    return 1;
+  
   if (((s1->next != NULL) && (s2->next == NULL)) ||
       ((s1->next == NULL) && (s2->next != NULL)))
     return 0;

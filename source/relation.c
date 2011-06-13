@@ -1023,7 +1023,7 @@ openscop_relation_p openscop_relation_concat(openscop_relation_p r1,
  */
 int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
   int i, j;
-  
+
   while ((r1 != NULL) && (r2 != NULL)) {
     if (r1 == r2)
       return 1;

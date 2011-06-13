@@ -705,9 +705,13 @@ openscop_scop_p openscop_scop_copy(openscop_scop_p scop) {
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
 int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
+  
+  if (s1 == s2)
+    return 1;
+
   if (s1->version != s2->version) {
     fprintf(stderr, "[OpenScop] info: versions are not the same.\n"); 
-    //return 0;
+    return 0;
   }
   
   if (strcmp(s1->language, s2->language) != 0) {

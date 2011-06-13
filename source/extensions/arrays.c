@@ -364,7 +364,7 @@ openscop_arrays_p openscop_arrays_copy(openscop_arrays_p arrays) {
 int openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2) {
   int i, j, found;
 
-  if ((a1 == NULL) && (a2 == NULL))
+  if (a1 == a2)
     return 1;
 
   if (((a1 == NULL) && (a2 != NULL)) || ((a1 != NULL) && (a2 == NULL)))

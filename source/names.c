@@ -329,7 +329,7 @@ openscop_names_p openscop_names_copy(openscop_names_p names) {
  * \return 1 if n1 and n2 are the same (content-wise), 0 otherwise.
  */
 int openscop_names_equal(openscop_names_p n1, openscop_names_p n2) {
-  if ((n1 == NULL) && (n2 == NULL))
+  if (n1 == n2)
     return 1;
 
   if (((n1 == NULL) && (n2 != NULL)) || ((n1 != NULL) && (n2 == NULL)))

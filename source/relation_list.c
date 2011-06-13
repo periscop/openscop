@@ -374,6 +374,9 @@ openscop_relation_list_p openscop_relation_list_concat(
 int openscop_relation_list_equal(openscop_relation_list_p l1,
                                  openscop_relation_list_p l2) {
   while ((l1 != NULL) && (l2 != NULL)) {
+    if (l1 == l2)
+      return 1;
+    
     if (!openscop_relation_equal(l1->elt, l2->elt))
       return 0;
 

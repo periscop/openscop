@@ -497,7 +497,7 @@ int
 openscop_irregular_equal(openscop_irregular_p c1, openscop_irregular_p c2)
 {
   int i,j,bool = 0;
-  if (((c1 == NULL) && (c2 == NULL)) || c1 == c2)
+  if (c1 == c2)
     return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
