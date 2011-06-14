@@ -216,7 +216,7 @@ void openscop_scop_name_limits(openscop_scop_p scop,
     //   - in relation format it corresponds to the #input_dims.
     if (statement->scattering != NULL) {
       if (openscop_relation_is_matrix(statement->scattering)) {
-        if (statement->domain->nb_rows > *nb_scattdims)
+        if (statement->scattering->nb_rows > *nb_scattdims)
           *nb_scattdims = statement->scattering->nb_rows;
       }
       else {
@@ -571,7 +571,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   }
 
   //
-  // III. OPTION PART
+  // III. EXTENSION PART
   //
 
   // Read the remainder of the file, and store it in the extension field.

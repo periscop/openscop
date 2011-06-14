@@ -92,7 +92,7 @@ int test_file(char * input_name, int verbose)
   openscop_scop_p input_scop;
   openscop_scop_p output_scop;
 
-  printf("Testing file %20s... ", input_name); 
+  printf("Testing file %20s... \n", input_name); 
     
   // Raise the OpenScop file format to OpenScop data structures.
   input_file = fopen(input_name, "r");
@@ -108,16 +108,15 @@ int test_file(char * input_name, int verbose)
   // Dump the OpenScop data structures to OpenScop file format.
   output_name = tmpnam(NULL);
   output_file = fopen(output_name, "w");
-  openscop_scop_print(stdout, input_scop);
+  //openscop_scop_dump(stdout, input_scop);
+  //openscop_scop_print(stdout, input_scop);
   openscop_scop_print(output_file, input_scop);
   fclose(output_file);
   
-  //openscop_scop_print(stdout, input_scop);
-
   // Raise the generated file to data structures.
   output_file = fopen(output_name, "r");
   output_scop = openscop_scop_read(output_file);
-  //output_scop = openscop_scop_copy(output_scop);
+  //openscop_scop_dump(stdout, output_scop);
   fclose(output_file);
 
   if (verbose)

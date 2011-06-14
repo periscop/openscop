@@ -266,8 +266,8 @@ void openscop_statement_print(FILE * file,
     fprintf(file, "\n\n");
 
     if (switched == 1) {
-      statement->nb_iterators = tmp_nb_iterators;
-      statement->iterators = tmp_iterators;
+      names->nb_iterators = tmp_nb_iterators;
+      names->iterators = tmp_iterators;
     }
     statement = statement->next;
     number++;
@@ -304,10 +304,14 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
                     "statement.\n");
     exit(1);
   }
-  if (domain_list != NULL)
+  if (domain_list != NULL) {
     stmt->domain = domain_list->elt;
-  else
+    domain_list->elt = NULL;
+    openscop_relation_list_free(domain_list);
+  }
+  else {
     stmt->domain = NULL;
+  }
 
   // Scattering.
   scattering_list=openscop_relation_list_filter(list,OPENSCOP_TYPE_SCATTERING);
@@ -317,10 +321,14 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
                     "for a statement.\n");
     exit(1);
   }
-  if (scattering_list != NULL)
+  if (scattering_list != NULL) {
     stmt->scattering = scattering_list->elt;
-  else
+    scattering_list->elt = NULL;
+    openscop_relation_list_free(scattering_list);
+  }
+  else {
     stmt->scattering = NULL;
+  }
 
   // Access.
   stmt->access = openscop_relation_list_filter(list, OPENSCOP_TYPE_ACCESS);
@@ -371,7 +379,7 @@ openscop_statement_p openscop_statement_read(FILE * file,
           }
 
           expected_nb_iterators = stmt->domain->nb_columns -
-            nb_parameters - 2;
+                                  nb_parameters - 2;
         }
         else {
           expected_nb_iterators = stmt->domain->nb_output_dims;
