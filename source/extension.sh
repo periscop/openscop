@@ -73,7 +73,7 @@ TEMPLATE_STRING[0]=
 TEMPLATE_SUBSTITUTION[0]='@IDUMP1@'
 TEMPLATE[0]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
-        fprintf(file, "|\\\\ttype = OPENSCOP_EXTENSION_TEMPLATE\\\\n");\
+        fprintf(file, "|\\ttype = OPENSCOP_EXTENSION_TEMPLATE\\n");\
         break;\
       }'
 
