@@ -67,7 +67,7 @@ dnl Input file for autoconf to build a configuration shellscript.
 
 AC_PREREQ(2.13)
 dnl Fill here the @bug email adress.
-AC_INIT([openscop], [0.4.0], [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
+AC_INIT([openscop], [0.5.0], [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
 dnl A common file, which serve as a test.
 AC_CONFIG_SRCDIR([include/openscop/macros.h])
 dnl Put as most as possible configuration files to an auxialiry
