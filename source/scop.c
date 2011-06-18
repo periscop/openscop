@@ -758,6 +758,8 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
   int max_nb_localdims;
   int max_nb_arrays;
 
+  openscop_scop_print(stdout, scop);
+
   // Check the language.
   if ((scop->language != NULL) &&
       (!strcmp(scop->language, "caml")  || !strcmp(scop->language, "Caml") ||

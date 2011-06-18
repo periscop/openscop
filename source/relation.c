@@ -1172,7 +1172,8 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
                                       int expected_nb_output_dims,
                                       int expected_nb_input_dims,
                                       int expected_nb_parameters) {
-  int i, start;
+  int i, is_matrix, nb_array_id, row_id = -1;
+  openscop_int_t array_id, tmp;
 
   // Check the NULL case.
   if (relation == NULL) {
@@ -1184,7 +1185,8 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
       return 0;
     }
     else { 
-      fprintf(stderr, "[OpenScop] Warning: NULL relation.\n");
+      fprintf(stderr, "[OpenScop] Warning: integrity check of a NULL "
+                      "relation.\n");
       return 1;
     }
   }
@@ -1195,6 +1197,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
                     "(both matrix and relation).\n");
     return 0;
   }
+  is_matrix = openscop_relation_is_matrix(relation); 
 
   // Check that a context has actually 0 or an undefined #output dimensions.
   if ((type == OPENSCOP_TYPE_CONTEXT) &&
@@ -1242,37 +1245,16 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
                                             expected_nb_parameters))
       return 0;
 
-    // The first column of a relation part should be made of 0 or 1 only,
-    // except:
+    // Check the first column. The first column of a relation part
+    // should be made of 0 or 1 only, except:
     // - for the [0][0] element of an access function in "matrix"
-    //   representation which should be > 0 (array identifier),
-    //   and all other elements are 0.
+    //   representation (array identifier),
     // - for scattering functions in "matrix" representation, the
     //   first column is made only of 0.
     if ((relation->nb_rows > 0) && (relation->nb_columns > 0)) {
-      start = 0;
-      if ((relation->nb_local_dims == OPENSCOP_UNDEFINED) &&
-          (type == OPENSCOP_TYPE_ACCESS)) {
-        start = 1;
-        if (SCOPINT_get_si(relation->m[0][0]) <= 0) {
-          fprintf(stderr, "[OpenScop] Warning: bad array identifier "
-                          "in access function.\n");
-          return 0;
-        }
-      }
-
-      for (i = start; i < relation->nb_rows; i++) {
-        if ((type == OPENSCOP_TYPE_ACCESS) &&
-            (openscop_relation_is_matrix(relation))) {
-          if (!SCOPINT_zero_p(relation->m[i][0])) {
-            fprintf(stderr, "[OpenScop] Warning: non-first element of the "
-                            "first column of an access function is not 0.\n");
-            return 0;
-          }
-        }
-        else {
-          if ((type == OPENSCOP_TYPE_SCATTERING) &&
-              (openscop_relation_is_matrix(relation))) {
+      for (i = 0; i < relation->nb_rows; i++) {
+        if (!((i == 0) && (type == OPENSCOP_TYPE_ACCESS) && is_matrix)) {
+          if ((type == OPENSCOP_TYPE_SCATTERING) && is_matrix) {
             if (!SCOPINT_zero_p(relation->m[i][0])) {
               fprintf(stderr, "[OpenScop] Warning: first column of a "
                               "scattering function not made of 0s.\n");
@@ -1283,7 +1265,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
             if (!SCOPINT_zero_p(relation->m[i][0]) &&
                 !SCOPINT_one_p(relation->m[i][0])) {
               fprintf(stderr, "[OpenScop] Warning: first column of a "
-                              "relation is not made of 0 or 1 only.\n");
+                              "relation is not strictly made of 0 or 1.\n");
               return 0;
             }
           }
@@ -1291,11 +1273,78 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
       }
     }
 
-    // TODO: in relation format, array identifiers are
-    //       m[i][#columns -1] / m[i][1], with i the only row
-    //       where m[i][1] is not 0.
-    //       - check there is exactly one row such that m[i][1] is not 0,
-    //       - check that (m[i][#columns -1] % m[i][1]) == 0.
+    // Array accesses must provide the array identifier.
+    if (type == OPENSCOP_TYPE_ACCESS) {
+
+      // There should be room to store the array identifier.
+      if ((relation->nb_rows == 0) ||
+          (is_matrix && (relation->nb_columns < 2)) ||
+          (!is_matrix && (relation->nb_columns < 3))) {
+        fprintf(stderr, "[OpenScop] Warning: no array identifier in "
+                        "an access function.\n");
+        return 0;
+      }
+
+      // In matrix format, the array identifier is in m[0][0] and it should
+      // be greater than 0.
+      if (is_matrix && SCOPINT_get_si(relation->m[0][0]) <= 0) {
+          fprintf(stderr, "[OpenScop] Warning: negative or 0 identifier "
+                          "in access function.\n");
+          return 0;
+      }
+
+      // In relation format, array identifiers are
+      // m[i][#columns -1] / m[i][1], with i the only row
+      // where m[i][1] is not 0.
+      // - check there is exactly one row such that m[i][1] is not 0,
+      // - check the whole ith row if full of 0 except m[i][1] and the id,
+      // - check that (m[i][#columns -1] % m[i][1]) == 0,
+      // - check that (-m[i][#columns -1] / m[i][1]) > 0.
+      if (!is_matrix) {
+        nb_array_id = 0;
+        for (i = 0; i < relation->nb_rows; i++) {
+          if (!SCOPINT_zero_p(relation->m[i][1])) {
+            nb_array_id ++;
+            row_id = i;
+          }
+        }
+        if (nb_array_id == 0) {
+          fprintf(stderr, "[OpenScop] Warning: no array identifier in "
+                          "an access function.\n");
+          return 0;
+        }
+        if (nb_array_id > 1) {
+          fprintf(stderr, "[OpenScop] Warning: several array identification "
+                          "rows in one access function.\n");
+          return 0;
+        }
+        for (i = 0; i < relation->nb_columns - 1; i++) {
+          if ((i != 1) && !SCOPINT_zero_p(relation->m[row_id][i])) {
+            fprintf(stderr, "[OpenScop] Warning: non integer array "
+                            "identifier.\n");
+            return 0;
+          }
+        }
+        if (!SCOPINT_divisible(relation->m[row_id][relation->nb_columns - 1],
+                               relation->m[row_id][1])) {
+          fprintf(stderr, "[OpenScop] Warning: rational array identifier.\n");
+          return 0;
+        }
+        SCOPINT_init(array_id);
+        SCOPINT_init(tmp);
+        SCOPINT_oppose(tmp, relation->m[row_id][relation->nb_columns - 1]); 
+        SCOPINT_fdiv(array_id, tmp, relation->m[row_id][1]);
+        if (!SCOPINT_pos_p(array_id)) {
+          SCOPINT_clear(array_id);
+          SCOPINT_clear(tmp);
+          fprintf(stderr, "[OpenScop] Warning: negative or 0 identifier "
+                          "in access function.\n");
+          return 0;
+        }
+        SCOPINT_clear(array_id);
+        SCOPINT_clear(tmp);
+      }
+    }
 
     relation = relation->next;
   }
