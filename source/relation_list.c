@@ -146,7 +146,8 @@ void openscop_relation_list_print(FILE * file, openscop_relation_list_p list) {
 /**
  * openscop_relation_list_print_openscop function:
  * This function prints the content of a openscop_relation_list_t structure
- * into a file (file, possibly stdout) in the OpenScop format.
+ * into a file (file, possibly stdout) in the OpenScop format. It prints
+ * an element of the list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information have to be printed.
  * \param type  Semantic about this relation (domain, access...).
@@ -161,10 +162,11 @@ void openscop_relation_list_print_openscop(FILE * file,
   int i;
   openscop_relation_list_p head = list;
 
-  // Count the number of elements in the list.
+  // Count the number of elements in the list with non-NULL content.
   i = 0;
   while (list != NULL) {
-    i++;
+    if (list->elt != NULL)
+      i++;
     list = list->next;
   }
   
@@ -178,10 +180,12 @@ void openscop_relation_list_print_openscop(FILE * file,
   if (i > 0) {
     i = 0;
     while (head) {
-      fprintf(file, "# List element No.%d\n", i);
-      openscop_relation_print_openscop(file, head->elt, type, names);
+      if (head->elt != NULL) {
+        fprintf(file, "# List element No.%d\n", i);
+        openscop_relation_print_openscop(file, head->elt, type, names);
+        i++;
+      }
       head = head->next;
-      i++;
     }
   }
 }
@@ -212,7 +216,16 @@ openscop_relation_list_p openscop_relation_list_read(FILE* file) {
     continue;
   
   // Read the number of relations to read.
-  sscanf(s, "%d", &nb_mat);
+  if (sscanf(s, "%d", &nb_mat) != 1) {
+    fprintf(stderr, "[OpenScop] Error: not possible to read the "
+                    "number of relations.\n");
+    exit(1);
+  }
+
+  if (nb_mat < 0) {
+    fprintf(stderr, "[OpenScop] Error: negative number of relations.\n");
+    exit(1);
+  }
 
   // Allocate the header of the list and start reading each element.
   res = list = openscop_relation_list_malloc();
