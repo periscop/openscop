@@ -149,7 +149,6 @@ void openscop_relation_list_print(FILE * file, openscop_relation_list_p list) {
  * into a file (file, possibly stdout) in the OpenScop format.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information have to be printed.
- * \param type  Semantic about this relation (domain, access...).
  * \param names The textual names of the various elements. Is is important
  *              that names->nb_parameters is exact if the matrix
  *              representation is used. Set to NULL if printing comments
@@ -157,7 +156,7 @@ void openscop_relation_list_print(FILE * file, openscop_relation_list_p list) {
  */
 void openscop_relation_list_print_openscop(FILE * file,
                                            openscop_relation_list_p list,
-                                           int type, openscop_names_p names) {
+                                           openscop_names_p names) {
   int i;
   openscop_relation_list_p head = list;
 
@@ -179,7 +178,7 @@ void openscop_relation_list_print_openscop(FILE * file,
     i = 0;
     while (head) {
       fprintf(file, "# List element No.%d\n", i);
-      openscop_relation_print_openscop(file, head->elt, type, names);
+      openscop_relation_print_openscop(file, head->elt, names);
       head = head->next;
       i++;
     }
@@ -433,4 +432,23 @@ int openscop_relation_list_integrity_check(openscop_relation_list_p list,
 
   return 1;
 }
+
+
+/** 
+ * openscop_relation_list_set_type function:
+ * this function sets the type of each relation in the relation list to the
+ * one provided as parameter.
+ * \param list The list of relations to set the type.
+ * \param type The type.
+ */
+void openscop_relation_list_set_type(openscop_relation_list_p list, int type) {
+
+  while (list != NULL) {
+    if (list->elt != NULL) {
+      list->elt->type = type;
+    }
+    list = list->next;
+  }
+}
+
 

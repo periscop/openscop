@@ -97,7 +97,7 @@ void openscop_relation_list_print_structure(FILE *,
                                      openscop_relation_list_p, int);
 void openscop_relation_list_print(FILE *, openscop_relation_list_p);
 void openscop_relation_list_print_openscop(FILE *,
-                                     openscop_relation_list_p, int,
+                                     openscop_relation_list_p,
                                      openscop_names_p);
 
 
@@ -127,6 +127,8 @@ int                      openscop_relation_list_equal(openscop_relation_list_p,
 int                      openscop_relation_list_integrity_check(
                                              openscop_relation_list_p,
                                              int, int, int, int);
+void                     openscop_relation_list_set_type(
+                                             openscop_relation_list_p, int);
 
 # if defined(__cplusplus)
   }

@@ -74,13 +74,50 @@
 
 
 /**
+ * openscop_relation_print_type function:
+ * this function displays the type of an openscop_relation_t structure into
+ * a file (file, possibly stdout).
+ * \param[in] file     File where informations are printed.
+ * \param[in] relation The relation whose type has to be printed.
+ */
+static
+void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
+
+  if (relation != NULL) {
+    switch (relation->type) {
+      case OPENSCOP_UNDEFINED: {
+        printf("\n");
+        break;
+      }
+      case OPENSCOP_TYPE_DOMAIN: {
+        printf("(domain)\n");   
+        break;
+      }
+      case OPENSCOP_TYPE_SCATTERING: {
+        printf("(scattering)\n");
+        break;
+      }
+      case OPENSCOP_TYPE_ACCESS: {
+        printf("(access)\n");
+        break;
+      }
+      default: {
+        printf("(unknown type: %d)\n", relation->type);
+        break;
+      }
+    }
+  }
+}
+
+
+/**
  * openscop_relation_print_structure function:
  * this function displays a openscop_relation_t structure (*relation) into a
  * file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
  * print_structure functions.
  * \param[in] file     File where informations are printed.
- * \param[in] relation The relation whose information have to be printed.
+ * \param[in] relation The relation whose information has to be printed.
  * \param[in] level    Number of spaces before printing, for each line.
  */
 void openscop_relation_print_structure(FILE * file,
@@ -92,17 +129,21 @@ void openscop_relation_print_structure(FILE * file,
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (relation != NULL)
-    fprintf(file, "+-- openscop_relation_t\n");
-  else
+  if (relation != NULL) {
+    fprintf(file, "+-- openscop_relation_t ");
+    openscop_relation_print_type(file, relation);
+  }
+  else {
     fprintf(file, "+-- NULL relation\n");
+  }
 
   while (relation != NULL) {
     if (! first) {
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_relation_t\n");
+      fprintf(file, "|   openscop_relation_t ");
+      openscop_relation_print_type(file, relation);
     }
     else
       first = 0;
@@ -310,7 +351,7 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     exit(1);
   }
 
-  if (relation->nb_local_dims == OPENSCOP_UNDEFINED) {
+  if (openscop_relation_is_matrix(relation)) {
     // Matrix representation case.
     if ((relation->nb_rows < 1) || (relation->nb_columns < 1)) {
       fprintf(stderr, "[OpenScop] Error: not enough rows or columns "
@@ -338,7 +379,6 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information has to be printed.
- * \param[in] type     Semantics about this relation (domain, access...).
  * \param[in] names    The textual names of the various elements. Is is
  *                     important that names->nb_parameters is exact if the
  *                     matrix representation is used. Set to NULL if printing
@@ -346,9 +386,10 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
  */
 void openscop_relation_print_openscop(FILE * file,
                                       openscop_relation_p relation,
-                                      int type, openscop_names_p names) {
+                                      openscop_names_p names) {
   int i, j, k;
   int part, nb_parts;
+  int type = relation->type;
   char * expression;
   openscop_relation_p r;
 
@@ -360,6 +401,29 @@ void openscop_relation_print_openscop(FILE * file,
 
   // TODO: check whether there are enough names or not, if not, set to NULL.
   //       (or generate them temporarily ?)
+  // Check whether there is exactly the right number of names. If not, the
+  // comments will not be printed.
+  
+  /*
+  switch (relation->type) {
+    // In the case of an undefined relation, we do not print comments.
+    case OPENSCOP_UNDEFINED: {
+      names = NULL;
+      break;
+    }
+    // In the case of a domain, check for iterator and parameter names.
+    case OPENSCOP_TYPE_DOMAIN: {
+      if (openscop_relation_is_matrix(relation)) {
+        
+
+      }
+
+
+
+  }
+  */
+
+  
   // TODO: check whether there are too many names or not, if yes, set to NULL.
   //       (or remove them temporarily ?)
   // TODO: if names are not textual, set to NULL.
@@ -590,6 +654,7 @@ openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
     exit(1);
   }
   
+  relation->type           = OPENSCOP_UNDEFINED;
   relation->nb_rows        = nb_rows;
   relation->nb_columns     = nb_columns;
   relation->nb_output_dims = OPENSCOP_UNDEFINED;
@@ -739,6 +804,7 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
     }
 
     node = openscop_relation_malloc(n, relation->nb_columns);
+    node->type           = relation->type;
     node->nb_output_dims = relation->nb_output_dims;
     node->nb_input_dims  = relation->nb_input_dims;
     node->nb_local_dims  = relation->nb_local_dims;
@@ -1028,7 +1094,8 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
     if (r1 == r2)
       return 1;
 
-    if ((r1->nb_rows        != r2->nb_rows)        ||
+    if ((r1->type           != r2->type)           ||
+        (r1->nb_rows        != r2->nb_rows)        ||
         (r1->nb_columns     != r2->nb_columns)     ||
         (r1->nb_output_dims != r2->nb_output_dims) ||
         (r1->nb_input_dims  != r2->nb_input_dims)  ||
@@ -1336,3 +1403,20 @@ openscop_relation_p openscop_relation_union(openscop_relation_p r1,
   tmp->next = copy2;
   return copy1;
 }
+
+
+/** 
+ * openscop_relation_set_type function:
+ * this function sets the type of each relation union part in the relation
+ * to the one provided as parameter.
+ * \param relation The relation to set the type.
+ * \param type     The type.
+ */
+void openscop_relation_set_type(openscop_relation_p relation, int type) {
+
+  while (relation != NULL) {
+    relation->type = type;
+    relation = relation->next;
+  }
+}
+

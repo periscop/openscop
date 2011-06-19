@@ -395,8 +395,7 @@ void openscop_scop_print_openscop(FILE * file, openscop_scop_p scop) {
   tmp_iterators = names->iterators;
   names->nb_iterators = 0;
   names->iterators = NULL;
-  openscop_relation_print_openscop(file, scop->context,
-                                   OPENSCOP_TYPE_DOMAIN, names);
+  openscop_relation_print_openscop(file, scop->context, names);
   names->nb_iterators = tmp_nb_iterators;
   names->iterators = tmp_iterators;
   fprintf(file, "\n");
@@ -576,6 +575,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
   // Read the context.
   scop->context = openscop_relation_read(file);
+  openscop_relation_set_type(scop->context, OPENSCOP_TYPE_DOMAIN);
   scop->names = openscop_names_read(file);
 
   //

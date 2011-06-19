@@ -90,14 +90,20 @@ extern "C"
  * - The coefficients of the parameters.
  * - The coefficient of the constant.
  * Thus we have the following invariant: nb_columns =
- * 1 + nb_output_dims + nb_input_dims + nb_local_dims + nb_parameters + 1.
+ * 1 + nb_output_dims + nb_input_dims + dims + nb_parameters + 1.
  * Moreover we use the following conventions:
  * - Sets (e.g., iteration domains) are the images of relations with a
  *   zero-dimensional domain, hence the number of input dimensions is 0.
  * - The first output dimension of any access relations corresponds to
  *   the name of the array.
+ * The type field may provide some semantics about the relation, it may be:
+ * - Undefined : OPENSCOP_UNDEFINED,
+ * - An iteration domain : OPENSCOP_TYPE_DOMAIN,
+ * - A scattering relation : OPENSCOP_TYPE_SCATTERING,
+ * - An access relation : OPENSCOP_TYPE_ACCESS.
  */
 struct openscop_relation {
+  int type;                        /**< Semantics about the relation */
   int nb_rows;                     /**< The number of rows */
   int nb_columns;	           /**< The number of columns */
   int nb_output_dims;              /**< The number of output dimensions */
@@ -124,7 +130,7 @@ char *              openscop_relation_expression(
                                         openscop_relation_p relation,
                                         int row, openscop_names_p names);
 void                openscop_relation_print_openscop(FILE *,
-                                        openscop_relation_p, int,
+                                        openscop_relation_p,
                                         openscop_names_p);
 
 
@@ -170,6 +176,8 @@ int                 openscop_relation_integrity_check(openscop_relation_p,
                                         int, int, int, int);
 openscop_relation_p openscop_relation_union(openscop_relation_p,
                                         openscop_relation_p);
+void                openscop_relation_set_type(openscop_relation_p, int);
+
 # if defined(__cplusplus)
   }
 # endif

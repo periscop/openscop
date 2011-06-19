@@ -220,8 +220,7 @@ void openscop_statement_print_openscop(FILE * file,
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
     fprintf(file, "# Iteration domain\n");
-    openscop_relation_print_openscop(file, statement->domain,
-                                     OPENSCOP_TYPE_DOMAIN, names);
+    openscop_relation_print_openscop(file, statement->domain, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
@@ -230,8 +229,7 @@ void openscop_statement_print_openscop(FILE * file,
       fprintf(file, "# Scattering function is provided\n");
       fprintf(file, "1\n");
       fprintf(file, "# Scattering function\n");
-      openscop_relation_print_openscop(file, statement->scattering,
-                                       OPENSCOP_TYPE_SCATTERING, names);
+      openscop_relation_print_openscop(file, statement->scattering, names);
     }
     else {
       fprintf(file, "# Scattering function is not provided\n");
@@ -245,11 +243,9 @@ void openscop_statement_print_openscop(FILE * file,
       fprintf(file, "# Access information is provided\n");
       fprintf(file, "1\n");
       fprintf(file, "\n# Read access information\n");
-      openscop_relation_list_print_openscop(file, statement->read,
-                                            OPENSCOP_TYPE_ACCESS, names);
+      openscop_relation_list_print_openscop(file, statement->read, names);
       fprintf(file, "\n# Write access information\n");
-      openscop_relation_list_print_openscop(file, statement->write,
-                                            OPENSCOP_TYPE_ACCESS, names);
+      openscop_relation_list_print_openscop(file, statement->write, names);
     }
     else {
       fprintf(file, "# Access information is not provided\n");
@@ -310,15 +306,20 @@ openscop_statement_p openscop_statement_read(FILE * file) {
   if (file) {
     // Read the domain matrices.
     stmt->domain = openscop_relation_read(file);
+    openscop_relation_set_type(stmt->domain, OPENSCOP_TYPE_DOMAIN);
 
     // Read the scattering, if any.
-    if (openscop_util_read_int(file, NULL) > 0)
+    if (openscop_util_read_int(file, NULL) > 0) {
       stmt->scattering = openscop_relation_read(file);
+      openscop_relation_set_type(stmt->scattering, OPENSCOP_TYPE_SCATTERING);
+    }
 
-    // Read the access functions, if any.
+    // Read the access relaions, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
       stmt->read = openscop_relation_list_read(file);
       stmt->write = openscop_relation_list_read(file);
+      openscop_relation_list_set_type(stmt->read,  OPENSCOP_TYPE_ACCESS);
+      openscop_relation_list_set_type(stmt->write, OPENSCOP_TYPE_ACCESS);
     }
 
     // Read the body information, if any.
