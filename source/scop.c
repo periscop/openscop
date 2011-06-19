@@ -536,6 +536,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
   int nb_statements;
+  int nb_parameters;
   int max;
   char ** tmp;
   int i;
@@ -577,6 +578,15 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   // Read the context.
   scop->context = openscop_relation_read(file);
   scop->names = openscop_names_read(file);
+  if (scop->context != NULL) {
+    if (openscop_relation_is_matrix(scop->context))
+      nb_parameters = scop->context->nb_columns - 2;
+    else
+      nb_parameters = scop->context->nb_parameters;
+  }
+  else {
+    nb_parameters = OPENSCOP_UNDEFINED;
+  }
 
   //
   // II. STATEMENT PART
@@ -587,7 +597,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
   for (i = 0; i < nb_statements; ++i) {
     // Read each statement.
-    stmt = openscop_statement_read(file);
+    stmt = openscop_statement_read(file, nb_parameters);
     if (scop->statement == NULL)
       scop->statement = stmt;
     else
