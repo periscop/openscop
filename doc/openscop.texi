@@ -1689,8 +1689,8 @@ Iteration_domain    ::= _Relation
 Scattering_relation ::= _Relation
 Read_relation       ::= _Relation
 Write_relation      ::= _Relation
-Language            ::= _string
-Body_text           ::= _String
+Language            ::= _String
+Body_text           ::= _Text_line
 Nb_Relations        ::= _Integer
 @end example
 
@@ -2727,13 +2727,26 @@ openscop_@emph{structure}_p openscop_@emph{structure}_read(FILE * input);
 @end example
 
 @noindent Each OpenScop data structure has a reading function
-as shown above. It reads the content of an OpenScop data structure
+as shown above (with one exception, see below).
+It reads the content of an OpenScop data structure
 written according to the OpenScop file format 
 (@pxref{OpenScop Core Part File Format Specification}) from 
 the @code{input} file (the file, possibly @code{stdin}, has to be open
 for reading). It returns a pointer to a freshly allocated 
 @code{openscop_@emph{structure}_t} structure containing the
 information.
+
+An exception to this base description is the
+@code{openscop_statement_malloc()} function which requires two
+parameters: the file and the number of parameters (deduced from the
+context, if there is no context, set the number of parameters 
+to @code{OPENSCOP_UNDEFINED}):
+
+@example
+@group
+openscop_statement_p openscop_statement_read(FILE * input, int nb_parms);
+@end group
+@end example
 
 @node Allocating
 @subsection Allocating: openscop_@emph{structure}_malloc

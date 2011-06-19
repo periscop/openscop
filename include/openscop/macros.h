@@ -141,6 +141,7 @@
 #  define SCOPINT_add_int(ref,val,vint)    (mpz_add_ui((ref),(val),(long)(vint)))
 #  define SCOPINT_subtract(ref,val1,val2)  (mpz_sub((ref),(val1),(val2)))
 #  define SCOPINT_oppose(ref,val)          (mpz_neg((ref),(val)))
+#  define SCOPINT_fdiv(ref,n,d)            (mpz_fdiv_q((ref),(n),(d)))
 
 /* Conditional operations on 'openscop_int_t' */
 #  define SCOPINT_pos_p(val)               (mpz_sgn(val) >  0)
@@ -149,6 +150,7 @@
 #  define SCOPINT_notzero_p(val)           (mpz_sgn(val) != 0)
 #  define SCOPINT_one_p(val)               (mpz_cmp_si(val,1)  == 0)
 #  define SCOPINT_mone_p(val)              (mpz_cmp_si(val,-1) == 0)
+#  define SCOPINT_divisible(val1,val2)     (mpz_divisible_p((val1),(val2))
 
 /*+***************************************************************************
  *                         OPENSCOP BASIC TYPES MACROS                       *
@@ -177,6 +179,7 @@
 #  define SCOPINT_add_int(ref,val,vint)    ((ref) = (val)+(openscop_int_t)(vint))
 #  define SCOPINT_subtract(ref,val1,val2)  ((ref) = (val1)-(val2))
 #  define SCOPINT_oppose(ref,val)          ((ref) = (-(val)))
+#  define SCOPINT_fdiv(ref,n,d)            ((ref) = (n)/(d))
 
 /* Conditional operations on 'openscop_int_t' */
 #  define SCOPINT_pos_p(val)               SCOPINT_gt(val,0)
@@ -185,6 +188,7 @@
 #  define SCOPINT_notzero_p(val)           SCOPINT_ne(val,0)
 #  define SCOPINT_one_p(val)               SCOPINT_eq(val,1)
 #  define SCOPINT_mone_p(val)              SCOPINT_eq(val,-1)
+#  define SCOPINT_divisible(val1,val2)     (((val1)%(val2)) == 0)
 
 # endif
 

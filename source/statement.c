@@ -295,13 +295,15 @@ void openscop_statement_print_openscop(FILE * file,
  * openscop_statement_read function:
  * This function reads a openscop_statement_t structure from an input stream
  * (possibly stdin).
- * \param file  The input stream.
+ * \param file          The input stream.
+ * \param nb_parameters The number of global parameters.
  * \return A pointer to the statement structure that has been read.
  */
-openscop_statement_p openscop_statement_read(FILE * file) {
+openscop_statement_p openscop_statement_read(FILE * file,
+                                             int nb_parameters) {
   openscop_statement_p stmt = openscop_statement_malloc();
   char buff[OPENSCOP_MAX_STRING], * start, * end;
-  int nb_iterators;
+  int expected_nb_iterators, nb_iterators;
 
   if (file) {
     // Read the domain matrices.
@@ -324,15 +326,36 @@ openscop_statement_p openscop_statement_read(FILE * file) {
 
     // Read the body information, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
+      // Is there any iterator to read ?
+      if (openscop_relation_is_matrix(stmt->domain)) {
+        if (nb_parameters == OPENSCOP_UNDEFINED) {
+          fprintf(stderr, "[OpenScop] Warning: undefined number of "
+                          "parameters (no context ?), assuming 0.\n");
+          nb_parameters = 0;
+        }
+        
+        expected_nb_iterators = stmt->domain->nb_columns -
+                                nb_parameters - 2;
+      }
+      else {
+        expected_nb_iterators = stmt->domain->nb_output_dims;
+      }
+
       // Read the original iterator names.
-      stmt->iterators = openscop_util_strings_read(file, &nb_iterators);
-      stmt->nb_iterators = nb_iterators;
+      if (expected_nb_iterators > 0) {
+        stmt->iterators = openscop_util_strings_read(file, &nb_iterators);
+        stmt->nb_iterators = nb_iterators;
+        if (expected_nb_iterators != nb_iterators) {
+          fprintf(stderr, "[OpenScop] Warning: not the right number of "
+                          "original iterators.\n");
+        }
+      }
       
       // Read the body:
-      // - Skip blank/commented lines and spaces.
+      // - Skip blank/commented lines and spaces before the body.
       start = openscop_util_skip_blank_and_comments(file, buff);
       
-      // - Remove the comments.
+      // - Remove the comments after the body.
       end = start;
       while ((*end != '#') && (*end != '\n'))
         end++;
