@@ -181,7 +181,7 @@ void openscop_relation_list_print_openscop(FILE * file,
     while (head) {
       if (head->elt != NULL) {
         fprintf(file, "# List element No.%d\n", i);
-        openscop_relation_print_openscop(file, head->elt, type, names);
+        openscop_relation_print_openscop(file, head->elt, names);
         i++;
       }
       head = head->next;
