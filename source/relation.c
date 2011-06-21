@@ -535,9 +535,18 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
   int nb_scattdims;
   int nb_localdims;
   int array_id;
-  
+ 
+  if ((relation == NULL) || (names == NULL))
+    return 0;
+
+  // TODO: remove this !!!
+  // Temporarily deactivate comments for relations, to finish OpenScop
+  // RFC first.
+  if (openscop_relation_is_matrix(relation))
+    return 0;
+
   // We cannot print comments if the names are not textual.
-  if ((names != NULL) && (names->textual != 1))
+  if (names->textual != 1)
     return 0;
 
   // We cannot print comments if the relation is not of one known type.
