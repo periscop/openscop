@@ -337,8 +337,8 @@ void openscop_scop_print_openscop(FILE * file, openscop_scop_p scop) {
   char ** tmp_iterators = NULL;
 
   if (openscop_scop_integrity_check(scop) == 0) {
-    fprintf(stderr, "[OpenScop] Error: OpenScop integrity check failed.\n");
-    exit(1);
+    fprintf(stderr, "[OpenScop] Warning: OpenScop integrity check failed. "
+                    " Something may go wrong\n");
   }
 
   // Build a name structure for pretty printing of relations.
