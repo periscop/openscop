@@ -81,7 +81,7 @@
  * \param lines The lines structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void openscop_lines_print_structure(FILE * file, openscop_lines_p lines,
+void openscop_lines_dump_structure(FILE * file, openscop_lines_p lines,
                                     int level) {
   int j;
 
@@ -117,8 +117,8 @@ void openscop_lines_print_structure(FILE * file, openscop_lines_p lines,
  * \param file    The file where the information has to be printed.
  * \param lines The lines structure whose information has to be printed.
  */
-void openscop_lines_print(FILE * file, openscop_lines_p lines) {
-  openscop_lines_print_structure(file, lines, 0);
+void openscop_lines_dump(FILE * file, openscop_lines_p lines) {
+  openscop_lines_dump_structure(file, lines, 0);
 }
 
 
@@ -129,7 +129,7 @@ void openscop_lines_print(FILE * file, openscop_lines_p lines) {
  * \param  lines The lines structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the lines structure.
  */
-char * openscop_lines_print_openscop(openscop_lines_p lines) {
+char * openscop_lines_print(openscop_lines_p lines) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;
   char * buffer;

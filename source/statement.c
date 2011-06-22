@@ -84,7 +84,7 @@
  * \param statement The statement whose information have to be printed.
  * \param level     Number of spaces before printing, for each line.
  */
-void openscop_statement_print_structure(FILE * file,
+void openscop_statement_dump_structure(FILE * file,
                                         openscop_statement_p statement,
                                         int level) {
   int i, j, first = 1, number = 1;
@@ -114,16 +114,16 @@ void openscop_statement_print_structure(FILE * file,
     fprintf(file, "\n");
 
     // Print the domain of the statement.
-    openscop_relation_print_structure(file, statement->domain, level+1);
+    openscop_relation_dump_structure(file, statement->domain, level+1);
 
     // Print the scattering of the statement.
-    openscop_relation_print_structure(file, statement->scattering, level+1);
+    openscop_relation_dump_structure(file, statement->scattering, level+1);
 
     // Print the array read access informations of the statement.
-    openscop_relation_list_print_structure(file, statement->read, level+1);
+    openscop_relation_list_dump_structure(file, statement->read, level+1);
 
     // Print the array write access informations of the statement.
-    openscop_relation_list_print_structure(file, statement->write, level+1);
+    openscop_relation_list_dump_structure(file, statement->write, level+1);
 
     // Print the original iterator names.
     for (i = 0; i <= level; i++)
@@ -180,8 +180,8 @@ void openscop_statement_print_structure(FILE * file,
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
  */
-void openscop_statement_print(FILE * file, openscop_statement_p statement) {
-  openscop_statement_print_structure(file, statement, 0);
+void openscop_statement_dump(FILE * file, openscop_statement_p statement) {
+  openscop_statement_dump_structure(file, statement, 0);
 }
 
 
@@ -196,7 +196,7 @@ void openscop_statement_print(FILE * file, openscop_statement_p statement) {
  *                  representation is used. Set to NULL if printing comments
  *                  is not needed.
  */
-void openscop_statement_print_openscop(FILE * file,
+void openscop_statement_print(FILE * file,
                                        openscop_statement_p statement,
                                        openscop_names_p names) {
   int i, switched, number = 1;
@@ -220,7 +220,7 @@ void openscop_statement_print_openscop(FILE * file,
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
     fprintf(file, "# Iteration domain\n");
-    openscop_relation_print_openscop(file, statement->domain, names);
+    openscop_relation_print(file, statement->domain, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
@@ -229,7 +229,7 @@ void openscop_statement_print_openscop(FILE * file,
       fprintf(file, "# Scattering function is provided\n");
       fprintf(file, "1\n");
       fprintf(file, "# Scattering function\n");
-      openscop_relation_print_openscop(file, statement->scattering, names);
+      openscop_relation_print(file, statement->scattering, names);
     }
     else {
       fprintf(file, "# Scattering function is not provided\n");
@@ -243,9 +243,9 @@ void openscop_statement_print_openscop(FILE * file,
       fprintf(file, "# Access information is provided\n");
       fprintf(file, "1\n");
       fprintf(file, "\n# Read access information\n");
-      openscop_relation_list_print_openscop(file, statement->read, names);
+      openscop_relation_list_print(file, statement->read, names);
       fprintf(file, "\n# Write access information\n");
-      openscop_relation_list_print_openscop(file, statement->write, names);
+      openscop_relation_list_print(file, statement->write, names);
     }
     else {
       fprintf(file, "# Access information is not provided\n");

@@ -207,7 +207,7 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
  * \param[in] relation The relation whose information has to be printed.
  * \param[in] level    Number of spaces before printing, for each line.
  */
-void openscop_relation_print_structure(FILE * file,
+void openscop_relation_dump_structure(FILE * file,
                                        openscop_relation_p relation,
                                        int level) {
   int i, j, first = 1;
@@ -251,7 +251,7 @@ void openscop_relation_print_structure(FILE * file,
       fprintf(file, "[ ");
 
       for (j = 0; j < relation->nb_columns; j++) {
-        SCOPINT_print(file, OPENSCOP_FMT, relation->m[i][j]);
+        SCOPINT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
         fprintf(file, " ");
       }
 
@@ -285,8 +285,8 @@ void openscop_relation_print_structure(FILE * file,
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information have to be printed.
  */
-void openscop_relation_print(FILE * file, openscop_relation_p relation) {
-  openscop_relation_print_structure(file, relation, 0);
+void openscop_relation_dump(FILE * file, openscop_relation_p relation) {
+  openscop_relation_dump_structure(file, relation, 0);
 }
 
 
@@ -703,7 +703,7 @@ void openscop_relation_print_comment(FILE * file,
  *                     matrix representation is used. Set to NULL if printing
  *                     comments is not needed.
  */
-void openscop_relation_print_openscop(FILE * file,
+void openscop_relation_print(FILE * file,
                                       openscop_relation_p relation,
                                       openscop_names_p names) {
   int i, j;
@@ -750,7 +750,7 @@ void openscop_relation_print_openscop(FILE * file,
 
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j < relation->nb_columns; j++) {
-        SCOPINT_print(file, OPENSCOP_FMT, relation->m[i][j]);
+        SCOPINT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
         fprintf(file, " ");
       }
 
@@ -1636,7 +1636,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
       (relation->nb_output_dims != OPENSCOP_UNDEFINED)) {
     fprintf(stderr, "[OpenScop] Warning: context without 0 "
                     "as number of output dimensions.\n");
-    openscop_relation_print(stdout, relation);
+    openscop_relation_dump(stdout, relation);
     return 0;
   }
 
@@ -1689,7 +1689,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
           if (!SCOPINT_zero_p(relation->m[i][0])) {
             fprintf(stderr, "[OpenScop] Warning: first column of a scattering "
                             "or access function not made of 0s.\n");
-            openscop_relation_print(stdout, relation);
+            openscop_relation_dump(stdout, relation);
             return 0;
           }
         }

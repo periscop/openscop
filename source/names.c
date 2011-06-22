@@ -81,7 +81,7 @@
  * \param names The names structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void openscop_names_print_structure(FILE * file, openscop_names_p names,
+void openscop_names_dump_structure(FILE * file, openscop_names_p names,
                                     int level) {
   int j;
 
@@ -106,27 +106,27 @@ void openscop_names_print_structure(FILE * file, openscop_names_p names,
     fprintf(file, "\n");
     
     // Print the original parameter names.
-    openscop_util_strings_print_structure(file, names->parameters,
+    openscop_util_strings_dump_structure(file, names->parameters,
 					  names->nb_parameters, level,
 					  "Parameter strings");
 
     // Print the iterator names.
-    openscop_util_strings_print_structure(file, names->iterators,
+    openscop_util_strings_dump_structure(file, names->iterators,
 					  names->nb_iterators, level,
 					  "Iterator strings");
     
     // Print the scattering dimension names.
-    openscop_util_strings_print_structure(file, names->scattdims,
+    openscop_util_strings_dump_structure(file, names->scattdims,
 					  names->nb_scattdims, level,
 					  "Scattering dimension strings");
     
     // Print the local dimension names.
-    openscop_util_strings_print_structure(file, names->localdims,
+    openscop_util_strings_dump_structure(file, names->localdims,
 					  names->nb_localdims, level,
 					  "Local dimension strings");
 
     // Print the array names.
-    openscop_util_strings_print_structure(file, names->arrays,
+    openscop_util_strings_dump_structure(file, names->arrays,
 					  names->nb_arrays, level,
 					  "Array strings");
   }
@@ -145,8 +145,8 @@ void openscop_names_print_structure(FILE * file, openscop_names_p names,
  * \param file  The file where the information has to be printed.
  * \param names The names structure whose information has to be printed.
  */
-void openscop_names_print(FILE * file, openscop_names_p names) {
-  openscop_names_print_structure(file, names, 0);
+void openscop_names_dump(FILE * file, openscop_names_p names) {
+  openscop_names_dump_structure(file, names, 0);
 }
 
 
@@ -157,18 +157,18 @@ void openscop_names_print(FILE * file, openscop_names_p names) {
  * \param file The file where the information has to be printed.
  * \param names The names structure whose information has to be printed.
  */
-void openscop_names_print_openscop(FILE * file, openscop_names_p names) {
+void openscop_names_print(FILE * file, openscop_names_p names) {
   int print = ((names != NULL) && (names->textual == 1));
   
-  openscop_util_strings_print_openscop(file,
+  openscop_util_strings_print(file,
                                        names->parameters, names->nb_parameters,
                                        print, "Parameter names");
   
-  openscop_util_strings_print_openscop(file,
+  openscop_util_strings_print(file,
                                        names->iterators, names->nb_iterators,
                                        print, "Iterator names");
   
-  openscop_util_strings_print_openscop(file,
+  openscop_util_strings_print(file,
                                        names->scattdims, names->nb_scattdims,
                                        print, "Scattering dimension names");
 }

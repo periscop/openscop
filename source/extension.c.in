@@ -95,7 +95,7 @@
  * \param extensions The extensions whose information have to be printed.
  * \param level      Number of spaces before printing, for each line.
  */
-void openscop_extension_print_structure(FILE * file,
+void openscop_extension_dump_structure(FILE * file,
                                         openscop_extension_p extension,
                                         int level) {
   int j, first = 1;
@@ -166,8 +166,8 @@ void openscop_extension_print_structure(FILE * file,
  * \param file  File where informations are printed.
  * \param extension The extension structure to print.
  */
-void openscop_extension_print(FILE * file, openscop_extension_p extension) {
-  openscop_extension_print_structure(file, extension, 0); 
+void openscop_extension_dump(FILE * file, openscop_extension_p extension) {
+  openscop_extension_dump_structure(file, extension, 0); 
 }
 
 
@@ -178,7 +178,7 @@ void openscop_extension_print(FILE * file, openscop_extension_p extension) {
  * \param  extension The extension structure to print.
  * \return A string containing the OpenScop dump of the extension structure.
  */
-void openscop_extension_print_openscop(FILE * file,
+void openscop_extension_print(FILE * file,
                                        openscop_extension_p extension) {
   char * string;
   int ignored;

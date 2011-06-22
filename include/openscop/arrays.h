@@ -95,9 +95,9 @@ typedef struct openscop_arrays * openscop_arrays_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_arrays_print_structure(FILE *, openscop_arrays_p, int);
-void   openscop_arrays_print(FILE *, openscop_arrays_p);
-char * openscop_arrays_print_openscop(openscop_arrays_p);
+void   openscop_arrays_dump_structure(FILE *, openscop_arrays_p, int);
+void   openscop_arrays_dump(FILE *, openscop_arrays_p);
+char * openscop_arrays_print(openscop_arrays_p);
 
 
 /*****************************************************************************

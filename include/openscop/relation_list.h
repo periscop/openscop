@@ -93,10 +93,10 @@ typedef struct openscop_relation_list * openscop_relation_list_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_relation_list_print_structure(FILE *,
+void openscop_relation_list_dump_structure(FILE *,
                                      openscop_relation_list_p, int);
-void openscop_relation_list_print(FILE *, openscop_relation_list_p);
-void openscop_relation_list_print_openscop(FILE *,
+void openscop_relation_list_dump(FILE *, openscop_relation_list_p);
+void openscop_relation_list_print(FILE *,
                                      openscop_relation_list_p,
                                      openscop_names_p);
 

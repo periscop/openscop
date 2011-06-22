@@ -82,7 +82,7 @@
  * \param scop  The scop structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void openscop_scop_print_structure(FILE * file, openscop_scop_p scop,
+void openscop_scop_dump_structure(FILE * file, openscop_scop_p scop,
                                    int level) {
   int j;
 
@@ -109,16 +109,16 @@ void openscop_scop_print_structure(FILE * file, openscop_scop_p scop,
     fprintf(file, "\n");
 
     // Print the context of the scop.
-    openscop_relation_print_structure(file, scop->context, level+1);
+    openscop_relation_dump_structure(file, scop->context, level+1);
 
     // Print the names.
-    openscop_names_print_structure(file, scop->names, level+1);
+    openscop_names_dump_structure(file, scop->names, level+1);
 
     // Print the statements.
-    openscop_statement_print_structure(file, scop->statement, level+1);
+    openscop_statement_dump_structure(file, scop->statement, level+1);
 
     // Print the extensions.
-    openscop_extension_print_structure(file, scop->extension, level+1);
+    openscop_extension_dump_structure(file, scop->extension, level+1);
 
     // A blank line.
     for (j = 0; j <= level+1; j++)
@@ -143,8 +143,8 @@ void openscop_scop_print_structure(FILE * file, openscop_scop_p scop,
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void openscop_scop_print(FILE * file, openscop_scop_p scop) {
-  openscop_scop_print_structure(file, scop, 0);
+void openscop_scop_dump(FILE * file, openscop_scop_p scop) {
+  openscop_scop_dump_structure(file, scop, 0);
 }
 
 
@@ -311,7 +311,7 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void openscop_scop_print_openscop(FILE * file, openscop_scop_p scop) {
+void openscop_scop_print(FILE * file, openscop_scop_p scop) {
   openscop_names_p names;
   int tmp_nb_iterators = 0;
   char ** tmp_iterators = NULL;
@@ -375,22 +375,22 @@ void openscop_scop_print_openscop(FILE * file, openscop_scop_p scop) {
   tmp_iterators = names->iterators;
   names->nb_iterators = 0;
   names->iterators = NULL;
-  openscop_relation_print_openscop(file, scop->context, names);
+  openscop_relation_print(file, scop->context, names);
   names->nb_iterators = tmp_nb_iterators;
   names->iterators = tmp_iterators;
   fprintf(file, "\n");
 
-  openscop_names_print_openscop(file, scop->names);
+  openscop_names_print(file, scop->names);
 
   fprintf(file, "# Number of statements\n");
   fprintf(file, "%d\n\n",openscop_statement_number(scop->statement));
 
-  openscop_statement_print_openscop(file, scop->statement, names);
+  openscop_statement_print(file, scop->statement, names);
   
   if (scop->extension) {
     fprintf(file, "# ==============================================="
                   " Extensions\n");
-    openscop_extension_print_openscop(file, scop->extension);
+    openscop_extension_print(file, scop->extension);
   }
 
   openscop_names_free(names);

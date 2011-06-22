@@ -135,7 +135,7 @@
 #  define SCOPINT_get_si(val)              (mpz_get_si((val)))
 #  define SCOPINT_init_set_si(val,i)       (mpz_init_set_si((val),(i)))
 #  define SCOPINT_clear(val)               (mpz_clear((val)))
-#  define SCOPINT_print(Dst,fmt,val)       { char *str; \
+#  define SCOPINT_dump(Dst,fmt,val)       { char *str; \
                                         str = mpz_get_str(0,10,(val)); \
                                         fprintf((Dst),(fmt),str); free(str); \
                                         }
@@ -177,7 +177,7 @@
 #  define SCOPINT_get_si(val)              ((val))
 #  define SCOPINT_init_set_si(val,i)       ((val) = (openscop_int_t)(i))
 #  define SCOPINT_clear(val)               ((val) = 0)
-#  define SCOPINT_print(Dst,fmt,val)       (fprintf((Dst),(fmt),(val)))
+#  define SCOPINT_dump(Dst,fmt,val)       (fprintf((Dst),(fmt),(val)))
 #  define SCOPINT_sprint(Dst,fmt,val)      (sprintf((Dst),(fmt),(val)))
 
 /* Boolean operators on 'openscop_int_t' */

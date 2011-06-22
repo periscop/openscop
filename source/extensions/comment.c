@@ -81,7 +81,7 @@
  * \param comment The comment structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
+void openscop_comment_dump_structure(FILE * file, openscop_comment_p comment,
                                       int level) {
   int j;
   char * tmp;
@@ -123,8 +123,8 @@ void openscop_comment_print_structure(FILE * file, openscop_comment_p comment,
  * \param file    The file where the information has to be printed.
  * \param comment The comment structure whose information has to be printed.
  */
-void openscop_comment_print(FILE * file, openscop_comment_p comment) {
-  openscop_comment_print_structure(file, comment, 0);
+void openscop_comment_dump(FILE * file, openscop_comment_p comment) {
+  openscop_comment_dump_structure(file, comment, 0);
 }
 
 
@@ -135,7 +135,7 @@ void openscop_comment_print(FILE * file, openscop_comment_p comment) {
  * \param  comment The comment structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the comment structure.
  */
-char * openscop_comment_print_openscop(openscop_comment_p comment) {
+char * openscop_comment_print(openscop_comment_p comment) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;
   char * buffer;

@@ -100,9 +100,9 @@ typedef struct openscop_extension * openscop_extension_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_extension_print_structure(FILE *, openscop_extension_p, int);
+void openscop_extension_dump_structure(FILE *, openscop_extension_p, int);
+void openscop_extension_dump(FILE *, openscop_extension_p);
 void openscop_extension_print(FILE *, openscop_extension_p);
-void openscop_extension_print_openscop(FILE *, openscop_extension_p);
 
 
 /*****************************************************************************

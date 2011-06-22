@@ -91,9 +91,9 @@ typedef struct openscop_comment * openscop_comment_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_comment_print_structure(FILE *, openscop_comment_p, int);
-void   openscop_comment_print(FILE *, openscop_comment_p);
-char * openscop_comment_print_openscop(openscop_comment_p);
+void   openscop_comment_dump_structure(FILE *, openscop_comment_p, int);
+void   openscop_comment_dump(FILE *, openscop_comment_p);
+char * openscop_comment_print(openscop_comment_p);
 
 
 /*****************************************************************************

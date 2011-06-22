@@ -83,7 +83,7 @@
  * \param vector The vector whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
+void openscop_vector_dump_structure(FILE * file, openscop_vector_p vector,
                                      int level) {
   int j;
 
@@ -104,7 +104,7 @@ void openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
     fprintf(file,"[ ");
 
     for (j = 0; j < vector->size; j++) {
-      SCOPINT_print(file,OPENSCOP_FMT,vector->v[j]);
+      SCOPINT_dump(file,OPENSCOP_FMT,vector->v[j]);
       fprintf(file," ");
     }
 
@@ -131,8 +131,8 @@ void openscop_vector_print_structure(FILE * file, openscop_vector_p vector,
  * \param file   File where informations are printed.
  * \param vector The vector whose information have to be printed.
  */
-void openscop_vector_print(FILE * file, openscop_vector_p vector) {
-  openscop_vector_print_structure(file,vector,0);
+void openscop_vector_dump(FILE * file, openscop_vector_p vector) {
+  openscop_vector_dump_structure(file,vector,0);
 }
 
 

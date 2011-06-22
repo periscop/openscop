@@ -82,7 +82,7 @@
  * \param arrays The arrays structure whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
+void openscop_arrays_dump_structure(FILE * file, openscop_arrays_p arrays,
                                      int level) {
   int i, j;
 
@@ -127,8 +127,8 @@ void openscop_arrays_print_structure(FILE * file, openscop_arrays_p arrays,
  * \param file   The file where the information has to be printed.
  * \param arrays The arrays structure whose information has to be printed.
  */
-void openscop_arrays_print(FILE * file, openscop_arrays_p arrays) {
-  openscop_arrays_print_structure(file, arrays, 0);
+void openscop_arrays_dump(FILE * file, openscop_arrays_p arrays) {
+  openscop_arrays_dump_structure(file, arrays, 0);
 }
 
 
@@ -139,7 +139,7 @@ void openscop_arrays_print(FILE * file, openscop_arrays_p arrays) {
  * \param  arrays The arrays structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the arrays structure.
  */
-char * openscop_arrays_print_openscop(openscop_arrays_p arrays) {
+char * openscop_arrays_print(openscop_arrays_p arrays) {
   int i;
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;

@@ -82,7 +82,7 @@
  * \param l	 The list of relations whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_relation_list_print_structure(FILE * file,
+void openscop_relation_list_dump_structure(FILE * file,
                                             openscop_relation_list_p l,
 				            int level) {
   int j, first = 1;
@@ -112,7 +112,7 @@ void openscop_relation_list_print_structure(FILE * file,
     fprintf(file, "\n");
 
     // Print a relation.
-    openscop_relation_print_structure(file, l->elt, level+1);
+    openscop_relation_dump_structure(file, l->elt, level+1);
 
     l = l->next;
 
@@ -138,8 +138,8 @@ void openscop_relation_list_print_structure(FILE * file,
  * \param file File where informations are printed.
  * \param list The relation whose information have to be printed.
  */
-void openscop_relation_list_print(FILE * file, openscop_relation_list_p list) {
-  openscop_relation_list_print_structure(file, list, 0);
+void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
+  openscop_relation_list_dump_structure(file, list, 0);
 }
 
 
@@ -155,7 +155,7 @@ void openscop_relation_list_print(FILE * file, openscop_relation_list_p list) {
  *              representation is used. Set to NULL if printing comments
  *              is not needed.
  */
-void openscop_relation_list_print_openscop(FILE * file,
+void openscop_relation_list_print(FILE * file,
                                            openscop_relation_list_p list,
                                            openscop_names_p names) {
   int i;
@@ -181,7 +181,7 @@ void openscop_relation_list_print_openscop(FILE * file,
     while (head) {
       if (head->elt != NULL) {
         fprintf(file, "# List element No.%d\n", i);
-        openscop_relation_print_openscop(file, head->elt, names);
+        openscop_relation_print(file, head->elt, names);
         i++;
       }
       head = head->next;

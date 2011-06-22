@@ -84,7 +84,7 @@
  * \param level      Number of spaces before printing, for each line.
  * \param title      A string to use as a title for the array of strings.
  */
-void openscop_util_strings_print_structure(FILE * file,
+void openscop_util_strings_dump_structure(FILE * file,
                                            char ** strings, int nb_strings,
 				           int level,
 				           char * title) {
@@ -119,7 +119,7 @@ void openscop_util_strings_print_structure(FILE * file,
  * \param print      Boolean not set to 0 to print the names, 0 otherwise.
  * \param title      A string to use as a title for the array of strings.
  */
-void openscop_util_strings_print_openscop(FILE * file, 
+void openscop_util_strings_print(FILE * file, 
                                           char ** strings, int nb_strings,
 		                          int print,
 				          char * title) {

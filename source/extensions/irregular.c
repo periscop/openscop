@@ -82,7 +82,7 @@
  * \param level   Number of spaces before printing, for each line.
  */
 void
-openscop_irregular_print_structure(FILE * file, openscop_irregular_p irregular,
+openscop_irregular_dump_structure(FILE * file, openscop_irregular_p irregular,
                                    int level)
 {
   int i,j;
@@ -137,9 +137,9 @@ openscop_irregular_print_structure(FILE * file, openscop_irregular_p irregular,
  * \param irregular The irregular structure whose information has to be printed.
  */
 void
-openscop_irregular_print(FILE * file, openscop_irregular_p irregular)
+openscop_irregular_dump(FILE * file, openscop_irregular_p irregular)
 {
-  openscop_irregular_print_structure(file, irregular, 0);
+  openscop_irregular_dump_structure(file, irregular, 0);
 }
 
 
@@ -151,7 +151,7 @@ openscop_irregular_print(FILE * file, openscop_irregular_p irregular)
  * \return A string containing the OpenScop dump of the irregular structure.
  */
 char *
-openscop_irregular_print_openscop(openscop_irregular_p irregular)
+openscop_irregular_print(openscop_irregular_p irregular)
 {
   int high_water_mark = OPENSCOP_MAX_STRING,i,j;
   char * string = NULL;

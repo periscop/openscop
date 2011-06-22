@@ -104,9 +104,9 @@ typedef struct openscop_names * openscop_names_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void             openscop_names_print_structure(FILE *, openscop_names_p, int);
+void             openscop_names_dump_structure(FILE *, openscop_names_p, int);
+void             openscop_names_dump(FILE *, openscop_names_p);
 void             openscop_names_print(FILE *, openscop_names_p);
-void             openscop_names_print_openscop(FILE *, openscop_names_p);
 
 
 /*****************************************************************************

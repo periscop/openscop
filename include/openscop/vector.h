@@ -92,8 +92,8 @@ typedef struct openscop_vector * openscop_vector_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_vector_print_structure(FILE *, openscop_vector_p, int);
-void openscop_vector_print(FILE *, openscop_vector_p);
+void openscop_vector_dump_structure(FILE *, openscop_vector_p, int);
+void openscop_vector_dump(FILE *, openscop_vector_p);
 
 
 /*+***************************************************************************

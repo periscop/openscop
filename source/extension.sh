@@ -83,7 +83,7 @@ TEMPLATE_STRING[1]=
 TEMPLATE_SUBSTITUTION[1]='@PRINT_STRUCTURE2@'
 TEMPLATE[1]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
-        openscop_template_print_structure(\
+        openscop_template_dump_structure(\
             file,\
             (openscop_template_p)extension->extension,\
             level + 1);\
@@ -96,7 +96,7 @@ TEMPLATE_STRING[2]=
 TEMPLATE_SUBSTITUTION[2]='@PRINT_OPENSCOP@'
 TEMPLATE[2]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
-        string = openscop_template_print_openscop(\
+        string = openscop_template_print(\
                      (openscop_template_p)extension->extension);\
         break;\
       }'
