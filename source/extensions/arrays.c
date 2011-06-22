@@ -154,7 +154,7 @@ char * openscop_arrays_print_openscop(openscop_arrays_p arrays) {
     }
     string[0] = '\0';
 
-    sprintf(buffer, OPENSCOP_TAG_ARRAY_START);
+    sprintf(buffer, OPENSCOP_TAG_ARRAYS_START);
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
 
     sprintf(buffer, "\n%d\n", arrays->nb_names);
@@ -164,7 +164,7 @@ char * openscop_arrays_print_openscop(openscop_arrays_p arrays) {
       sprintf(buffer, "%d %s\n", arrays->id[i], arrays->names[i]);
       openscop_util_safe_strcat(&string, buffer, &high_water_mark);
     }
-    sprintf(buffer, OPENSCOP_TAG_ARRAY_STOP"\n");
+    sprintf(buffer, OPENSCOP_TAG_ARRAYS_STOP"\n");
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
 
     string = (char *)realloc(string, (strlen(string) + 1) * sizeof(char));
@@ -197,11 +197,11 @@ openscop_arrays_p openscop_arrays_read(char * extensions) {
   char buff[OPENSCOP_MAX_STRING];
   openscop_arrays_p arrays;
 
-  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_ARRAY_START,
-                                                  OPENSCOP_TAG_ARRAY_STOP);
+  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_ARRAYS_START,
+                                                  OPENSCOP_TAG_ARRAYS_STOP);
 
   if (content == NULL) {
-    fprintf(stderr, "[OpenScop] Info: no array optional tag.\n");
+    fprintf(stderr, "[OpenScop] Info: no arrays optional tag.\n");
     return NULL;
   }
   content_backup = content;

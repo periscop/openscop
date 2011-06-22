@@ -5,6 +5,7 @@ OpenScop
 C
 
 # Context
+CONTEXT
 0 2
 
 # Parameter names are not provided
@@ -22,6 +23,7 @@ C
 # =============================================== Statement 1
 # ----------------------------------------------  1.1 Domain
 # Iteration domain
+DOMAIN
 0 2
 
 # ----------------------------------------------  1.2 Scattering

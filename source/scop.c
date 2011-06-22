@@ -168,7 +168,7 @@ void openscop_scop_name_limits(openscop_scop_p scop,
                               int * nb_scattdims,
                               int * nb_localdims,
                               int * nb_arrays) {
-  int i, k, tmp, coef, id;
+  int k, tmp, array_id;
   openscop_statement_p statement;
   openscop_relation_list_p list;
   
@@ -230,10 +230,6 @@ void openscop_scop_name_limits(openscop_scop_p scop,
     }
 
     // * The number of arrays are defined by accesses,
-    //   - in matrix format, array identifiers are m[0][0],
-    //   - in relation format, array identifiers are
-    //     m[i][#columns -1] / m[i][1], with i the (supposedly only) row
-    //     where m[i][1] is not 0.
     for (k = 0; k < 2; k++) {
       if (k == 0)
 	list = statement->read;
@@ -241,25 +237,9 @@ void openscop_scop_name_limits(openscop_scop_p scop,
 	list = statement->write;
       
       while (list != NULL) {
-	if (list->elt != NULL) {
-	  if (openscop_relation_is_matrix(list->elt)) {
-	    if (SCOPINT_get_si(list->elt->m[0][0]) > *nb_arrays)
-	      *nb_arrays = SCOPINT_get_si(list->elt->m[0][0]);
-	  }
-	  else {
-	    for (i = 0; i < list->elt->nb_rows; i++) {
-	      coef = SCOPINT_get_si(list->elt->m[i][1]);
-	      if (coef != 0) {
-		id = SCOPINT_get_si(list->elt->m[0][list->elt->nb_columns-1]);
-		if (abs(id / coef) > *nb_arrays)
-		  *nb_arrays = abs(id / coef);
-	      }
-	    }
-
-	    if (statement->scattering->nb_local_dims > *nb_localdims)
-	      *nb_localdims = statement->scattering->nb_local_dims;
-	  }
-	}
+        array_id = openscop_relation_get_array_id(list->elt);
+        if (array_id > *nb_arrays)
+          *nb_arrays = array_id;
 
 	list = list->next;
       }
@@ -576,7 +556,6 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
   // Read the context.
   scop->context = openscop_relation_read(file);
-  openscop_relation_set_type(scop->context, OPENSCOP_TYPE_DOMAIN);
   scop->names = openscop_names_read(file);
   if (scop->context != NULL) {
     if (openscop_relation_is_matrix(scop->context))
@@ -768,8 +747,6 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
   int max_nb_localdims;
   int max_nb_arrays;
 
-  openscop_scop_print(stdout, scop);
-
   // Check the language.
   if ((scop->language != NULL) &&
       (!strcmp(scop->language, "caml")  || !strcmp(scop->language, "Caml") ||
@@ -777,8 +754,6 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
     fprintf(stderr, "[OpenScop] Alert: What ?! Caml ?! Are you sure ?!\n");
   
   // Check the context.
-  if (openscop_relation_is_matrix(scop->context))
-
   if (!openscop_relation_integrity_check(scop->context,
                                          OPENSCOP_TYPE_CONTEXT,
                                          OPENSCOP_UNDEFINED,

@@ -308,20 +308,16 @@ openscop_statement_p openscop_statement_read(FILE * file,
   if (file) {
     // Read the domain matrices.
     stmt->domain = openscop_relation_read(file);
-    openscop_relation_set_type(stmt->domain, OPENSCOP_TYPE_DOMAIN);
 
     // Read the scattering, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
       stmt->scattering = openscop_relation_read(file);
-      openscop_relation_set_type(stmt->scattering, OPENSCOP_TYPE_SCATTERING);
     }
 
-    // Read the access relaions, if any.
+    // Read the access relations, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
       stmt->read = openscop_relation_list_read(file);
       stmt->write = openscop_relation_list_read(file);
-      openscop_relation_list_set_type(stmt->read,  OPENSCOP_TYPE_ACCESS);
-      openscop_relation_list_set_type(stmt->write, OPENSCOP_TYPE_ACCESS);
     }
 
     // Read the body information, if any.

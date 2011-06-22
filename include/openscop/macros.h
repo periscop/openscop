@@ -104,10 +104,24 @@
 # define OPENSCOP_TYPE_LOCAL_DIMS       10
 # define OPENSCOP_TYPE_ITERATOR_DEC     11
 # define OPENSCOP_TYPE_UNKNOWN	        12
+# define OPENSCOP_TYPE_READ             13
+# define OPENSCOP_TYPE_WRITE            14
+# define OPENSCOP_TYPE_RDWR             15
+# define OPENSCOP_TYPE_MAY_READ         16
+# define OPENSCOP_TYPE_MAY_WRITE        17
+# define OPENSCOP_TYPE_MAY_RDWR         18
 # define OPENSCOP_FAKE_ARRAY            "fakearray"
 
-# define OPENSCOP_TAG_ARRAY_START       "<arrays>"
-# define OPENSCOP_TAG_ARRAY_STOP        "</arrays>"
+# define OPENSCOP_STRING_UNDEFINED      "UNDEFINED"
+# define OPENSCOP_STRING_CONTEXT        "CONTEXT"
+# define OPENSCOP_STRING_DOMAIN         "DOMAIN"
+# define OPENSCOP_STRING_SCATTERING     "SCATTERING"
+# define OPENSCOP_STRING_READ           "READ"
+# define OPENSCOP_STRING_WRITE          "WRITE"
+# define OPENSCOP_STRING_RDWR           "RDWR"
+# define OPENSCOP_STRING_MAY_READ       "MAY_READ"
+# define OPENSCOP_STRING_MAY_WRITE      "MAY_WRITE"
+# define OPENSCOP_STRING_MAY_RDWR       "MAY_RDWR"
 
 
 /*+***************************************************************************

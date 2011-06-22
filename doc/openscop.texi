@@ -1340,6 +1340,7 @@ OpenScop
 C
 
 # Context
+CONTEXT
 1 3
 # e/i   N    1
    1    1   -1    ## N-1 >= 0
@@ -1363,6 +1364,7 @@ i j k
 # =============================================== Statement 1
 # ----------------------------------------------  1.1 Domain
 # Iteration domain
+DOMAIN
 4 5
 # e/i   i    j    N    1
    1    1    0    0    0    ## i >= 0
@@ -1374,6 +1376,7 @@ i j k
 # Scattering function is provided
 1
 # Scattering function
+SCATTERING
 5 5
 #  e    i    j    N    1
    0    0    0    0    0    ## 0
@@ -1394,10 +1397,12 @@ i j k
 # List of 1 element 
 1
 # List element No.0
-2 5
-# Arr   i    j    N    1
-   1    1    0    0    0    ## C[i][j]
-   0    0    1    0    0    ##
+WRITE
+3 5
+# eq    i    j    N    1
+   0    0    0    0    1    ## C
+   0    1    0    0    0    ##  [i]
+   0    0    1    0    0    ##     [j]
 
 # ----------------------------------------------  1.4 Body
 # Statement body is provided
@@ -1411,6 +1416,7 @@ c[i][j] = 0.0;
 # =============================================== Statement 2
 # ----------------------------------------------  2.1 Domain
 # Iteration domain
+DOMAIN
 6 6
 # e/i   i    j    k    N    1
    1    1    0    0    0    0    ## i >= 0
@@ -1424,6 +1430,7 @@ c[i][j] = 0.0;
 # Scattering function is provided
 1
 # Scattering function
+SCATTERING
 7 6
 #  e    i    j    k    N    1
    0    0    0    0    0    0    ## 0
@@ -1442,28 +1449,36 @@ c[i][j] = 0.0;
 # List of 3 elements
 3
 # List element No.0
-2 6
-# Arr   i    j    k    N    1
-   1    1    0    0    0    0    ## C[i]
+READ
+3 6
+# eq    i    j    k    N    1
+   0    0    0    0    0    1    ## C
+   0    1    0    0    0    0    ##  [i]
    0    0    1    0    0    0    ##     [j]
 # List element No.1
-2 6
-# Arr   i    j    k    N    1
-   2    1    0    0    0    0    ## A[i]
+READ
+3 6
+# eq    i    j    k    N    1
+   0    0    0    0    0    2    ## A
+   0    1    0    0    0    0    ##  [i]
    0    0    0    1    0    0    ##     [k]
 # List element No.2
-2 6
-# Arr   i    j    k    N    1
-   3    0    0    1    0    0    ## B[k]
+READ
+3 6
+# eq    i    j    k    N    1
+   0    0    0    0    0    3    ## B
+   0    0    0    1    0    0    ##  [k]
    0    0    1    0    0    0    ##     [j]
 
 # Write access information
 # List of 1 element 
 1
 # List element No.0
-2 6
-# Arr   i    j    k    N    1
-   1    1    0    0    0    0    ## C[i]
+WRITE
+3 6
+# eq    i    j    k    N    1
+   0    0    0    0    0    1    ## C
+   0    1    0    0    0    0    ##  [i]
    0    0    1    0    0    0    ##     [j]
 
 # ----------------------------------------------  2.4 Body
@@ -1513,6 +1528,7 @@ OpenScop
 C
 
 # Context
+CONTEXT
 1 3 0 0 0 1
    1    1   -1    ## N-1 >= 0
 
@@ -1535,6 +1551,7 @@ i j k
 # =============================================== Statement 1
 # ----------------------------------------------  1.1 Domain
 # Iteration domain
+DOMAIN
 4 5 2 0 0 1
 # e/i   i    j    N    1
    1    1    0    0    0    ## i >= 0
@@ -1546,6 +1563,7 @@ i j k
 # Scattering function is provided
 1
 # Scattering function
+SCATTERING
 5 10 5 2 0 1
 # e/i  s1   s2   s3   s4   s5    i    j    N    1 
    0   -1    0    0    0    0    0    0    0    0    ## s1 = 0
@@ -1566,6 +1584,7 @@ i j k
 # List of 1 element 
 1
 # List element No.0
+WRITE
 3 8 3 2 0 1
 # e/i  Arr  [1]  [2]   i    j    N    1
    0   -1    0    0    0    0    0    1    ## C
@@ -1584,6 +1603,7 @@ C[i][j] = 0.0;
 # =============================================== Statement 2
 # ----------------------------------------------  2.1 Domain
 # Iteration domain
+DOMAIN
 6 6 3 0 0 1
 # e/i   i    j    k    N    1
    1    1    0    0    0    0    ## i >= 0
@@ -1597,6 +1617,7 @@ C[i][j] = 0.0;
 # Scattering function is provided
 1
 # Scattering function
+SCATTERING
 7 13 7 3 0 1
 # e/i  s1   s2   s3   s4   s5   s6   s7    i    j    k    N    1
    0   -1    0    0    0    0    0    0    0    0    0    0    0   ## s1 = 0
@@ -1615,18 +1636,21 @@ C[i][j] = 0.0;
 # List of 3 elements
 3
 # List element No.0
+READ
 3 9 3 3 0 1
 # e/i  Arr  [1]  [2]   i    j    k    N    1
    0   -1    0    0    0    0    0    0    1    ## C
    0    0   -1    0    1    0    0    0    0    ##  [i]
    0    0    0   -1    0    1    0    0    0    ##     [j]
 # List element No.1
+READ
 3 9 3 3 0 1
 # e/i  Arr  [1]  [2]   i    j    k    N    1
    0   -1    0    0    0    0    0    0    2    ## A
    0    0   -1    0    1    0    0    0    0    ##  [i]
    0    0    0   -1    0    0    1    0    0    ##     [k]
 # List element No.2
+READ
 3 9 3 3 0 1
 # e/i  Arr  [1]  [2]   i    j    k    N    1
    0   -1    0    0    0    0    0    0    3    ## B
@@ -1637,6 +1661,7 @@ C[i][j] = 0.0;
 # List of 1 element 
 1
 # List element No.0
+WRITE
 3 9 3 3 0 1
 # e/i  Arr  [1]  [2]   i    j    k    N    1
    0   -1    0    0    0    0    0    0    1    ## C
@@ -1760,6 +1785,20 @@ Each element in the union has the following syntax:
 
 @enumerate
 @item Some optional comment lines beginning with @samp{#}.
+@item A line with the type of the relation, possibly followed by comments.
+      The type can be one of the following:
+      @itemize @bullet
+      @item @code{UNDEFINED}: generic relation,
+      @item @code{CONTEXT}: for context information,
+      @item @code{DOMAIN}: for iteration domains,
+      @item @code{SCATTERING}: for scattering relation,
+      @item @code{READ}: for read accesses,
+      @item @code{WRITE}: for write accesses,
+      @item @code{RDWR}: for read/write accesses,
+      @item @code{MAY_READ}: for may-read accesses,
+      @item @code{MAY_WRITE}: for may-write accesses,
+      @item @code{MAY_RDWR}: for may-read/write accesses.
+      @end itemize
 @item A line with 2 (matrix representation) or 6
       (relation representation) numbers, possibly followed by comments:
       @enumerate
@@ -1832,6 +1871,7 @@ i + j - k >= 0
 @example
 @group
 # This is an iteration domain
+DOMAIN
 1 # Number of relations in the union
 3 7                          # 3 rows, 7 cols: 3 output dims and 2 params
 # e/i  i   j   k   M   N   1
@@ -1850,6 +1890,7 @@ information:
 @example
 @group
 # This is an iteration domain
+DOMAIN
 1 # Number of relations in the union
 3 7 3 0 0 2                  # 3 rows, 7 cols: 3 output dims and 2 params
 # e/i  i   j   k   M   N   1
@@ -1865,6 +1906,7 @@ of relations in the union can be omitted if it is 1 (relation representation):
 @example
 @group
 # This is an iteration domain
+DOMAIN
 3 7 3 0 0 2                  # 3 rows, 7 cols: 3 output dims and 2 params
 # e/i  i   j   k   M   N   1
    1  -1   0   0   1   0   0 #    -i + M >= 0
@@ -1891,6 +1933,7 @@ relations and written in the OpenScop file as follows
 @example
 @group
 # This is an iteration domain
+DOMAIN
 2 # Number of relations in the union
 # Union part No.1
 3 5 1 0 0 2          # 3 rows, 5 cols: 1 output dim and 2 params
@@ -1953,6 +1996,7 @@ The first way is the following (matrix representation):
 @example
 @group
 # A scattering relation
+SCATTERING
 3 7                          # 3 dimensions and 7 columns
 # eq   i   j   k   M   N   1
    0   0   1   0   0   0   2 # j+2
@@ -1966,7 +2010,8 @@ The first way is the following (matrix representation):
 @example
 @group
 # A scattering relation
-# 3 rows, 7 columns: 3 scattering dimensions, 3 iterators, 2 parameters
+SCATTERING
+# 3 rows, 10 columns: 3 scattering dimensions, 3 iterators, 2 parameters
 3 10 3 3 0 2
 # e/i s1  s2  s3   i   j   k   M   N   1
    0  -1   0   0   0   1   0   0   0   2 # s1 = j+2
@@ -1988,9 +2033,8 @@ For the matrix representation:
 @itemize @bullet
 @item there is 0 output dimension,
 @item loop iterators correspond to input dimensions,
-@item the ith row corresponds to the ith array dimension.
-@item the first element of the first column is the array identifier, then
-      the remainder of the column is full of zeros.
+@item the first row corresponds to the array identifier,
+@item the (i+1)th row corresponds to the ith array dimension (i>1).
 @end itemize
 
 For the relation representation:
@@ -2009,17 +2053,20 @@ as the array identifier) as the output dimensions.
 As an example of a scattering relation and
 assuming that @samp{i}, @samp{j} and @samp{k} are the loop
 iterators and @samp{M} and @samp{N} are the parameters, let us consider
-the array access @code{A[2*i+j][j][i+N]} (the identifier of @code{A} is 42).
+the array access @code{A[2*i+j][j][i+N]} (the identifier of @code{A} is 42),
+and let us suppose this is a read access.
 Because it is a function, this access relation we may written in an
 OpenScop file using either the matrix or the relation representation.
 The first way is the following (matrix representation):
 
 @example
 @group
-# An access relation
-3 7                            # 7 rows and 7 columns
-# Arr  i   j   k   M   N   1
-  42   2   1   0   0   0   0   # A[2*i+j]
+# A read access relation
+READ
+4 7                            # 4 rows and 7 columns
+# eq   i   j   k   M   N   1
+   0   0   0   0   0   0  42   # A
+   0   2   1   0   0   0   0   #  [2*i+j]
    0   0   1   0   0   0   0   #         [j]
    0   1   0   0   0   1   0   #            [i+N]
 @end group
@@ -2029,7 +2076,8 @@ The first way is the following (matrix representation):
 
 @example
 @group
-# An access relation
+# A read access relation
+READ
 # 4 rows, 11 columns: 4 array dimensions, 3 iterators, 2 parameters
 4 11 4 3 0 2
 # e/i Arr [1] [2] [3]  i   j   k   M   N   1
@@ -2040,6 +2088,9 @@ The first way is the following (matrix representation):
 @end group
 @end example
 
+Unions of access relations are allowed. In this case, each union part must
+refer at the same array identifier, and the number of dimensions must be
+consistent.
 
 @c %/*************************************************************************
 @c % *                 CORE PART DATA STRUCTURE SPECIFICATION                *
@@ -2276,7 +2327,7 @@ by the @code{openscop_scop_print} function):
 |       |       
 |       Language: C
 |       |       
-|       +-- openscop_relation_t
+|       +-- openscop_relation_t (domain)
 |       |       1 3 -1 -1 -1 -1
 |       |       [    1    1   -1 ]
 |       |       
@@ -2295,14 +2346,14 @@ by the @code{openscop_scop_print} function):
 |       |       
 |       +-- openscop_statement_t (S1)
 |       |       |       
-|       |       +-- openscop_relation_t
+|       |       +-- openscop_relation_t (domain)
 |       |       |       4 5 -1 -1 -1 -1
 |       |       |       [    1    1    0    0    0 ]
 |       |       |       [    1   -1    0    1   -1 ]
 |       |       |       [    1    0    1    0    0 ]
 |       |       |       [    1    0   -1    1   -1 ]
 |       |       |       
-|       |       +-- openscop_relation_t
+|       |       +-- openscop_relation_t (scattering)
 |       |       |       5 5 -1 -1 -1 -1
 |       |       |       [    0    0    0    0    0 ]
 |       |       |       [    0    1    0    0    0 ]
@@ -2314,9 +2365,10 @@ by the @code{openscop_scop_print} function):
 |       |       |       
 |       |       +-- openscop_relation_list_t
 |       |       |       |       
-|       |       |       +-- openscop_relation_t
-|       |       |       |       2 5 -1 -1 -1 -1
-|       |       |       |       [    1    1    0    0    0 ]
+|       |       |       +-- openscop_relation_t (write)
+|       |       |       |       3 5 -1 -1 -1 -1
+|       |       |       |       [    0    0    0    0    1 ]
+|       |       |       |       [    0    1    0    0    0 ]
 |       |       |       |       [    0    0    1    0    0 ]
 |       |       |       |       
 |       |       |       
@@ -2327,7 +2379,7 @@ by the @code{openscop_scop_print} function):
 |       |       V
 |       |   openscop_statement_t (S2)
 |       |       |       
-|       |       +-- openscop_relation_t
+|       |       +-- openscop_relation_t (domain)
 |       |       |       6 6 -1 -1 -1 -1
 |       |       |       [    1    1    0    0    0    0 ]
 |       |       |       [    1   -1    0    0    1   -1 ]
@@ -2336,7 +2388,7 @@ by the @code{openscop_scop_print} function):
 |       |       |       [    1    0    0    1    0    0 ]
 |       |       |       [    1    0    0   -1    1   -1 ]
 |       |       |       
-|       |       +-- openscop_relation_t
+|       |       +-- openscop_relation_t (scattering)
 |       |       |       7 6 -1 -1 -1 -1
 |       |       |       [    0    0    0    0    0    0 ]
 |       |       |       [    0    1    0    0    0    0 ]
@@ -2348,33 +2400,37 @@ by the @code{openscop_scop_print} function):
 |       |       |       
 |       |       +-- openscop_relation_list_t
 |       |       |       |       
-|       |       |       +-- openscop_relation_t
-|       |       |       |       2 6 -1 -1 -1 -1
-|       |       |       |       [    1    1    0    0    0    0 ]
+|       |       |       +-- openscop_relation_t (read)
+|       |       |       |       3 6 -1 -1 -1 -1
+|       |       |       |       [    0    0    0    0    0    1 ]
+|       |       |       |       [    0    1    0    0    0    0 ]
 |       |       |       |       [    0    0    1    0    0    0 ]
 |       |       |       |       
 |       |       |       V
 |       |       |   openscop_relation_list_t
 |       |       |       |       
-|       |       |       +-- openscop_relation_t
-|       |       |       |       2 6 -1 -1 -1 -1
-|       |       |       |       [    2    1    0    0    0    0 ]
+|       |       |       +-- openscop_relation_t (read)
+|       |       |       |       3 6 -1 -1 -1 -1
+|       |       |       |       [    0    0    0    0    0    2 ]
+|       |       |       |       [    0    1    0    0    0    0 ]
 |       |       |       |       [    0    0    0    1    0    0 ]
 |       |       |       |       
 |       |       |       V
 |       |       |   openscop_relation_list_t
 |       |       |       |       
-|       |       |       +-- openscop_relation_t
-|       |       |       |       2 6 -1 -1 -1 -1
-|       |       |       |       [    3    0    0    1    0    0 ]
+|       |       |       +-- openscop_relation_t (read)
+|       |       |       |       3 6 -1 -1 -1 -1
+|       |       |       |       [    0    0    0    0    0    3 ]
+|       |       |       |       [    0    0    0    1    0    0 ]
 |       |       |       |       [    0    0    1    0    0    0 ]
 |       |       |       |       
 |       |       |       
 |       |       +-- openscop_relation_list_t
 |       |       |       |       
-|       |       |       +-- openscop_relation_t
-|       |       |       |       2 6 -1 -1 -1 -1
-|       |       |       |       [    1    1    0    0    0    0 ]
+|       |       |       +-- openscop_relation_t (write)
+|       |       |       |       3 6 -1 -1 -1 -1
+|       |       |       |       [    0    0    0    0    0    1 ]
+|       |       |       |       [    0    1    0    0    0    0 ]
 |       |       |       |       [    0    0    1    0    0    0 ]
 |       |       |       |       
 |       |       |       
@@ -2605,8 +2661,8 @@ string @code{names[i]} and identifier @code{id[i]}.
 @node History
 @section History
 
-OpenScop is a follow-up of Louis-No@"el Pouchet et al. ScopLib effort which
-was itself based on C@'edric Bastoul et al. Clan tool. People involved in
+OpenScop is a follow-up of Louis-No@"el Pouchet et al.'s ScopLib effort which
+was itself based on C@'edric Bastoul et al.'s Clan tool. People involved in
 OpenScop's genesis are:
 @itemize @bullet
 @item C@'edric Bastoul
