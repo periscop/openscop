@@ -66,18 +66,7 @@
 # include <openscop/extension.h>
 
 
-/*
- * For each extension called FOO that a programmer wishes to add to
- * OpenScop, the following functions must be provided in a dedicated
- * file FOO.c (follow the "comment" example):
- * - Display function (for internal use)
- * - Print function (to OpenScop's file format as a string)
- * - Read function (from OpenScop's file format as a string)
- * - Malloc function (allocate the extension part in an extension structure)
- * - Free function (free the extension part in an extension structure)
- * - Copy function
- * - Equal function
- */
+/* !!!!!!!!! TO ADD A NEW EXTENSION, PLEASE READ AT THE MANUAL !!!!!!!!!!!! */
 
 
 /*+***************************************************************************
@@ -86,7 +75,7 @@
 
 
 /**
- * openscop_extension_print_structure function:
+ * openscop_extension_idump function:
  * this function displays a openscop_extension_t structure (*extensions) into
  * a file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
@@ -95,9 +84,8 @@
  * \param extensions The extensions whose information have to be printed.
  * \param level      Number of spaces before printing, for each line.
  */
-void openscop_extension_dump_structure(FILE * file,
-                                        openscop_extension_p extension,
-                                        int level) {
+void openscop_extension_idump(FILE * file,
+                              openscop_extension_p extension, int level) {
   int j, first = 1;
   
   // Go to the right level.
@@ -127,7 +115,7 @@ void openscop_extension_dump_structure(FILE * file,
     // Go to the right level.
     for (j = 0; j < level; j++)
       fprintf(file, "|\t");
-    switch (extension->type) { @PRINT_STRUCTURE1@
+    switch (extension->type) { @IDUMP1@
       default: {
         fprintf(file, "|\ttype = unsupported (%d)\n", extension->type);
       }
@@ -138,7 +126,7 @@ void openscop_extension_dump_structure(FILE * file,
       fprintf(file, "|\t");
     fprintf(file, "\n");
     
-    switch (extension->type) { @PRINT_STRUCTURE2@
+    switch (extension->type) { @IDUMP2@
       default: {
         // A blank line.
         for (j = 0; j <= level+1; j++)
@@ -160,26 +148,25 @@ void openscop_extension_dump_structure(FILE * file,
 
 
 /**
- * openscop_extension_print function:
+ * openscop_extension_dump function:
  * this function prints the content of a openscop_extension_t structure
  * (*extension) into a file (file, possibly stdout).
  * \param file  File where informations are printed.
  * \param extension The extension structure to print.
  */
 void openscop_extension_dump(FILE * file, openscop_extension_p extension) {
-  openscop_extension_dump_structure(file, extension, 0); 
+  openscop_extension_idump(file, extension, 0); 
 }
 
 
 /**
- * openscop_extension_print_openscop function:
+ * openscop_extension_print function:
  * this function prints the content of a openscop_extension_t structure
  * (*extension) into a string (returned) in the OpenScop format.
  * \param  extension The extension structure to print.
  * \return A string containing the OpenScop dump of the extension structure.
  */
-void openscop_extension_print(FILE * file,
-                                       openscop_extension_p extension) {
+void openscop_extension_print(FILE * file, openscop_extension_p extension) {
   char * string;
   int ignored;
   
@@ -188,7 +175,7 @@ void openscop_extension_print(FILE * file,
 
   while (extension != NULL) {
     ignored = 0;
-    switch (extension->type) { @PRINT_OPENSCOP@
+    switch (extension->type) { @SPRINT@
       default: {
         ignored = 1;
         fprintf(stderr,
@@ -225,7 +212,7 @@ openscop_extension_p openscop_extension_read(FILE * file) {
   void * x;
 
   extension_string = openscop_util_read_tail(file);
-  @READ@ 
+  @SREAD@ 
   
   free(extension_string);
   return extension;

@@ -113,7 +113,7 @@ typedef struct openscop_scop * openscop_scop_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_scop_dump_structure(FILE *, openscop_scop_p, int);
+void openscop_scop_idump(FILE *, openscop_scop_p, int);
 void openscop_scop_dump(FILE *, openscop_scop_p);
 void openscop_scop_print(FILE *, openscop_scop_p);
 

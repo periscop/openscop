@@ -74,7 +74,7 @@
 
 
 /**
- * openscop_relation_list_print_structure function:
+ * openscop_relation_list_idump function:
  * Displays a openscop_relation_list_t structure (a list of relations) into a
  * file (file, possibly stdout). See openscop_relation_print_structure for
  * more details.
@@ -82,9 +82,9 @@
  * \param l	 The list of relations whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_relation_list_dump_structure(FILE * file,
-                                            openscop_relation_list_p l,
-				            int level) {
+void openscop_relation_list_idump(FILE * file,
+                                  openscop_relation_list_p l,
+			          int level) {
   int j, first = 1;
 
   // Go to the right level.
@@ -112,7 +112,7 @@ void openscop_relation_list_dump_structure(FILE * file,
     fprintf(file, "\n");
 
     // Print a relation.
-    openscop_relation_dump_structure(file, l->elt, level+1);
+    openscop_relation_idump(file, l->elt, level+1);
 
     l = l->next;
 
@@ -132,19 +132,19 @@ void openscop_relation_list_dump_structure(FILE * file,
 
 
 /**
- * openscop_relation_list_print function:
+ * openscop_relation_dump function:
  * This function prints the content of a openscop_relation_list_t into
  * a file (file, possibly stdout).
  * \param file File where informations are printed.
  * \param list The relation whose information have to be printed.
  */
 void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
-  openscop_relation_list_dump_structure(file, list, 0);
+  openscop_relation_list_idump(file, list, 0);
 }
 
 
 /**
- * openscop_relation_list_print_openscop function:
+ * openscop_relation_list_print function:
  * This function prints the content of a openscop_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. It prints
  * an element of the list only if it is not NULL.
@@ -156,8 +156,8 @@ void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
  *              is not needed.
  */
 void openscop_relation_list_print(FILE * file,
-                                           openscop_relation_list_p list,
-                                           openscop_names_p names) {
+                                  openscop_relation_list_p list,
+                                  openscop_names_p names) {
   int i;
   openscop_relation_list_p head = list;
 

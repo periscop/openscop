@@ -102,7 +102,7 @@ typedef struct openscop_statement * openscop_statement_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_statement_dump_structure(FILE *, openscop_statement_p, int);
+void openscop_statement_idump(FILE *, openscop_statement_p, int);
 void openscop_statement_dump(FILE *, openscop_statement_p);
 void openscop_statement_print(FILE *, openscop_statement_p,
                                        openscop_names_p);

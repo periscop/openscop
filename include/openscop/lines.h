@@ -93,15 +93,15 @@ typedef struct openscop_lines * openscop_lines_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_lines_dump_structure(FILE *, openscop_lines_p, int);
+void   openscop_lines_idump(FILE *, openscop_lines_p, int);
 void   openscop_lines_dump(FILE *, openscop_lines_p);
-char * openscop_lines_print(openscop_lines_p);
+char * openscop_lines_sprint(openscop_lines_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_lines_p openscop_lines_read(char *);
+openscop_lines_p openscop_lines_sread(char *);
 
 
 /*+***************************************************************************

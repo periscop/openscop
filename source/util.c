@@ -73,7 +73,7 @@
 
 
 /**
- * openscop_util_strings_print_structure function:
+ * openscop_util_strings_idump function:
  * this function displays an array of strings into a file (file, possibly
  * stdout) in a way that trends to be understandable. It includes an
  * indentation level (level) in order to work with others
@@ -84,10 +84,10 @@
  * \param level      Number of spaces before printing, for each line.
  * \param title      A string to use as a title for the array of strings.
  */
-void openscop_util_strings_dump_structure(FILE * file,
-                                           char ** strings, int nb_strings,
-				           int level,
-				           char * title) {
+void openscop_util_strings_idump(FILE * file,
+                                 char ** strings, int nb_strings,
+		                 int level,
+                                 char * title) {
   int i;
   
   // Print the original parameter names.
@@ -110,7 +110,7 @@ void openscop_util_strings_dump_structure(FILE * file,
 
 
 /**
- * openscop_util_strings_print_openscop function:
+ * openscop_util_strings_print function:
  * this function prints the content of an array of strings
  * into a file (file, possibly stdout) in the OpenScop textual format.
  * \param file       The file where the information has to be printed.
@@ -120,9 +120,9 @@ void openscop_util_strings_dump_structure(FILE * file,
  * \param title      A string to use as a title for the array of strings.
  */
 void openscop_util_strings_print(FILE * file, 
-                                          char ** strings, int nb_strings,
-		                          int print,
-				          char * title) {
+                                 char ** strings, int nb_strings,
+	                         int print,
+                                 char * title) {
   int i;
   
   if ((print != 0) && (nb_strings > 0)) {

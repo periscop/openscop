@@ -73,7 +73,7 @@
 
 
 /**
- * openscop_vector_print_structure function:
+ * openscop_vector_idump function:
  * Displays a openscop_vector_t structure (*vector) into a file (file, possibly
  * stdout) in a way that trends to be understandable without falling in a deep
  * depression or, for the lucky ones, getting a headache... It includes an
@@ -83,8 +83,7 @@
  * \param vector The vector whose information have to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_vector_dump_structure(FILE * file, openscop_vector_p vector,
-                                     int level) {
+void openscop_vector_idump(FILE * file, openscop_vector_p vector, int level) {
   int j;
 
   if (vector != NULL) {
@@ -125,14 +124,14 @@ void openscop_vector_dump_structure(FILE * file, openscop_vector_p vector,
 
 
 /**
- * openscop_vector_print function:
+ * openscop_vector_dump function:
  * This function prints the content of a openscop_vector_t structure
  * (*vector) into a file (file, possibly stdout).
  * \param file   File where informations are printed.
  * \param vector The vector whose information have to be printed.
  */
 void openscop_vector_dump(FILE * file, openscop_vector_p vector) {
-  openscop_vector_dump_structure(file,vector,0);
+  openscop_vector_idump(file,vector,0);
 }
 
 

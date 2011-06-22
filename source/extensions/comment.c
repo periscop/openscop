@@ -72,7 +72,7 @@
 
 
 /**
- * openscop_comment_print_structure function:
+ * openscop_comment_idump function:
  * this function displays an openscop_comment_t structure (*comment) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
@@ -81,8 +81,8 @@
  * \param comment The comment structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void openscop_comment_dump_structure(FILE * file, openscop_comment_p comment,
-                                      int level) {
+void openscop_comment_idump(FILE * file, openscop_comment_p comment,
+                            int level) {
   int j;
   char * tmp;
 
@@ -117,25 +117,25 @@ void openscop_comment_dump_structure(FILE * file, openscop_comment_p comment,
 
 
 /**
- * openscop_comment_print function:
+ * openscop_comment_dump function:
  * this function prints the content of an openscop_comment_t structure
  * (*comment) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
  * \param comment The comment structure whose information has to be printed.
  */
 void openscop_comment_dump(FILE * file, openscop_comment_p comment) {
-  openscop_comment_dump_structure(file, comment, 0);
+  openscop_comment_idump(file, comment, 0);
 }
 
 
 /**
- * openscop_comment_print_openscop function:
+ * openscop_comment_sprint function:
  * this function prints the content of an openscop_comment_t structure
  * (*comment) into a string (returned) in the OpenScop textual format.
  * \param  comment The comment structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the comment structure.
  */
-char * openscop_comment_print(openscop_comment_p comment) {
+char * openscop_comment_sprint(openscop_comment_p comment) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;
   char * buffer;
@@ -175,14 +175,14 @@ char * openscop_comment_print(openscop_comment_p comment) {
  *****************************************************************************/
 
 /**
- * openscop_comment_read function:
+ * openscop_comment_sread function:
  * this function reads a comment structure from a string complying to the
  * OpenScop textual format and returns a pointer to this comment structure.
  * The string should contain only one textual format of a comment structure.
  * \param  extensions The input string where to find a comment structure.
  * \return A pointer to the comment structure that has been read.
  */
-openscop_comment_p openscop_comment_read(char * extensions) {
+openscop_comment_p openscop_comment_sread(char * extensions) {
   char * content;
   openscop_comment_p comment;
 

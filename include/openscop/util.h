@@ -75,7 +75,7 @@ extern "C"
 /*+***************************************************************************
  *                       Functions on arrays of strings                      *
  *****************************************************************************/
-void    openscop_util_strings_dump_structure(FILE*, char**, int, int, char*);
+void    openscop_util_strings_idump(FILE*, char**, int, int, char*);
 void    openscop_util_strings_print(FILE*, char**, int, int, char*);
 char ** openscop_util_strings_read(FILE *, int *);
 char ** openscop_util_strings_generate(char *, int);

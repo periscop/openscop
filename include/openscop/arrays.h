@@ -95,15 +95,15 @@ typedef struct openscop_arrays * openscop_arrays_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_arrays_dump_structure(FILE *, openscop_arrays_p, int);
+void   openscop_arrays_idump(FILE *, openscop_arrays_p, int);
 void   openscop_arrays_dump(FILE *, openscop_arrays_p);
-char * openscop_arrays_print(openscop_arrays_p);
+char * openscop_arrays_sprint(openscop_arrays_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_read(char *);
+openscop_arrays_p openscop_arrays_sread(char *);
 
 
 /*+***************************************************************************

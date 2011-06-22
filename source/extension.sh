@@ -70,7 +70,7 @@ EXTENSIONS_OUT='./source/extension.c'
 # ***************************************************************************
 
 TEMPLATE_STRING[0]=
-TEMPLATE_SUBSTITUTION[0]='@PRINT_STRUCTURE1@'
+TEMPLATE_SUBSTITUTION[0]='@IDUMP1@'
 TEMPLATE[0]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
         fprintf(file, "|\\\\ttype = OPENSCOP_EXTENSION_TEMPLATE\\\\n");\
@@ -80,10 +80,10 @@ TEMPLATE[0]='\
 # ***************************************************************************
 
 TEMPLATE_STRING[1]=
-TEMPLATE_SUBSTITUTION[1]='@PRINT_STRUCTURE2@'
+TEMPLATE_SUBSTITUTION[1]='@IDUMP2@'
 TEMPLATE[1]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
-        openscop_template_dump_structure(\
+        openscop_template_idump(\
             file,\
             (openscop_template_p)extension->extension,\
             level + 1);\
@@ -93,10 +93,10 @@ TEMPLATE[1]='\
 # ***************************************************************************
 
 TEMPLATE_STRING[2]=
-TEMPLATE_SUBSTITUTION[2]='@PRINT_OPENSCOP@'
+TEMPLATE_SUBSTITUTION[2]='@SPRINT@'
 TEMPLATE[2]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
-        string = openscop_template_print(\
+        string = openscop_template_sprint(\
                      (openscop_template_p)extension->extension);\
         break;\
       }'
@@ -104,9 +104,9 @@ TEMPLATE[2]='\
 # ***************************************************************************
 
 TEMPLATE_STRING[3]=
-TEMPLATE_SUBSTITUTION[3]='@READ@'
+TEMPLATE_SUBSTITUTION[3]='@SREAD@'
 TEMPLATE[3]='\
-  x = (void *)openscop_template_read(extension_string);\
+  x = (void *)openscop_template_sread(extension_string);\
   openscop_extension_add(\&extension, OPENSCOP_EXTENSION_TEMPLATE, x);'
 
 # ***************************************************************************

@@ -123,7 +123,7 @@ typedef struct openscop_relation * openscop_relation_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void                openscop_relation_dump_structure(FILE *,
+void                openscop_relation_idump(FILE *,
                                         openscop_relation_p, int);
 void                openscop_relation_dump(FILE *, openscop_relation_p);
 char *              openscop_relation_expression(

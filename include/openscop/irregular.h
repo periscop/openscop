@@ -110,15 +110,15 @@ typedef struct openscop_irregular * openscop_irregular_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_irregular_dump_structure(FILE *, openscop_irregular_p, int);
+void   openscop_irregular_idump(FILE *, openscop_irregular_p, int);
 void   openscop_irregular_dump(FILE *, openscop_irregular_p);
-char * openscop_irregular_print(openscop_irregular_p);
+char * openscop_irregular_sprint(openscop_irregular_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_irregular_p openscop_irregular_read(char *);
+openscop_irregular_p openscop_irregular_sread(char *);
 
 
 /*+***************************************************************************

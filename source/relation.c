@@ -198,7 +198,7 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
 
 
 /**
- * openscop_relation_print_structure function:
+ * openscop_relation_idump function:
  * this function displays a openscop_relation_t structure (*relation) into a
  * file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
@@ -207,9 +207,9 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
  * \param[in] relation The relation whose information has to be printed.
  * \param[in] level    Number of spaces before printing, for each line.
  */
-void openscop_relation_dump_structure(FILE * file,
-                                       openscop_relation_p relation,
-                                       int level) {
+void openscop_relation_idump(FILE * file,
+                             openscop_relation_p relation,
+                             int level) {
   int i, j, first = 1;
 
   // Go to the right level.
@@ -279,14 +279,14 @@ void openscop_relation_dump_structure(FILE * file,
 
 
 /**
- * openscop_relation_print function:
+ * openscop_relation_dump function:
  * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout).
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information have to be printed.
  */
 void openscop_relation_dump(FILE * file, openscop_relation_p relation) {
-  openscop_relation_dump_structure(file, relation, 0);
+  openscop_relation_idump(file, relation, 0);
 }
 
 
@@ -693,7 +693,7 @@ void openscop_relation_print_comment(FILE * file,
 
 
 /**
- * openscop_relation_print_openscop function:
+ * openscop_relation_print function:
  * this function prints the content of a openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file     File where informations are printed.
@@ -704,8 +704,8 @@ void openscop_relation_print_comment(FILE * file,
  *                     comments is not needed.
  */
 void openscop_relation_print(FILE * file,
-                                      openscop_relation_p relation,
-                                      openscop_names_p names) {
+                             openscop_relation_p relation,
+                             openscop_names_p names) {
   int i, j;
   int part, nb_parts;
   int printable_comments;

@@ -72,7 +72,7 @@
 
 
 /**
- * openscop_lines_print_structure function:
+ * openscop_lines_idump function:
  * this function displays an openscop_lines_t structure (*lines) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
@@ -81,8 +81,8 @@
  * \param lines The lines structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void openscop_lines_dump_structure(FILE * file, openscop_lines_p lines,
-                                    int level) {
+void openscop_lines_idump(FILE * file, openscop_lines_p lines,
+                          int level) {
   int j;
 
   // Go to the right level.
@@ -111,25 +111,25 @@ void openscop_lines_dump_structure(FILE * file, openscop_lines_p lines,
 
 
 /**
- * openscop_lines_print function:
+ * openscop_lines_dump function:
  * this function prints the content of an openscop_lines_t structure
  * (*lines) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
  * \param lines The lines structure whose information has to be printed.
  */
 void openscop_lines_dump(FILE * file, openscop_lines_p lines) {
-  openscop_lines_dump_structure(file, lines, 0);
+  openscop_lines_idump(file, lines, 0);
 }
 
 
 /**
- * openscop_lines_print_openscop function:
+ * openscop_lines_sprint function:
  * this function prints the content of an openscop_lines_t structure
  * (*lines) into a string (returned) in the OpenScop textual format.
  * \param  lines The lines structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the lines structure.
  */
-char * openscop_lines_print(openscop_lines_p lines) {
+char * openscop_lines_sprint(openscop_lines_p lines) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   char * string = NULL;
   char * buffer;
@@ -169,14 +169,14 @@ char * openscop_lines_print(openscop_lines_p lines) {
  *****************************************************************************/
 
 /**
- * openscop_lines_read function:
+ * openscop_lines_sread function:
  * this function reads a lines structure from a string complying to the
  * OpenScop textual format and returns a pointer to this lines structure.
  * The string should contain only one textual format of a lines structure.
  * \param  extensions The input string where to find a lines structure.
  * \return A pointer to the lines structure that has been read.
  */
-openscop_lines_p openscop_lines_read(char * extensions) {
+openscop_lines_p openscop_lines_sread(char * extensions) {
   char * content, *tmp;
   openscop_lines_p lines;
 

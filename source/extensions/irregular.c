@@ -72,7 +72,7 @@
 
 
 /**
- * openscop_irregular_print_structure function:
+ * openscop_irregular_idump function:
  * this function displays an openscop_irregular_t structure (*irregular) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
@@ -82,8 +82,8 @@
  * \param level   Number of spaces before printing, for each line.
  */
 void
-openscop_irregular_dump_structure(FILE * file, openscop_irregular_p irregular,
-                                   int level)
+openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
+                         int level)
 {
   int i,j;
 
@@ -130,7 +130,7 @@ openscop_irregular_dump_structure(FILE * file, openscop_irregular_p irregular,
 
 
 /**
- * openscop_irregular_print function:
+ * openscop_irregular_dump function:
  * this function prints the content of an openscop_irregular_t structure
  * (*irregular) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
@@ -139,19 +139,19 @@ openscop_irregular_dump_structure(FILE * file, openscop_irregular_p irregular,
 void
 openscop_irregular_dump(FILE * file, openscop_irregular_p irregular)
 {
-  openscop_irregular_dump_structure(file, irregular, 0);
+  openscop_irregular_idump(file, irregular, 0);
 }
 
 
 /**
- * openscop_irregular_print_openscop function:
+ * openscop_irregular_sprint function:
  * this function prints the content of an openscop_irregular_t structure
  * (*irregular) into a string (returned) in the OpenScop textual format.
  * \param  irregular The irregular structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the irregular structure.
  */
 char *
-openscop_irregular_print(openscop_irregular_p irregular)
+openscop_irregular_sprint(openscop_irregular_p irregular)
 {
   int high_water_mark = OPENSCOP_MAX_STRING,i,j;
   char * string = NULL;
@@ -213,7 +213,7 @@ openscop_irregular_print(openscop_irregular_p irregular)
  *****************************************************************************/
 
 /**
- * openscop_irregular_read function:
+ * openscop_irregular_sread function:
  * this function reads a irregular structure from a string complying to the
  * OpenScop textual format and returns a pointer to this irregular structure.
  * The string should contain only one textual format of a irregular structure.
@@ -221,7 +221,7 @@ openscop_irregular_print(openscop_irregular_p irregular)
  * \return A pointer to the irregular structure that has been read.
  */
 openscop_irregular_p
-openscop_irregular_read(char * extensions)
+openscop_irregular_sread(char * extensions)
 {
   char * content,*tok;
   int i,j;

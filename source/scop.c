@@ -73,7 +73,7 @@
 
 
 /**
- * openscop_scop_print_structure function:
+ * openscop_scop_idump function:
  * this function displays an openscop_scop_t structure (*scop) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
@@ -82,8 +82,7 @@
  * \param scop  The scop structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void openscop_scop_dump_structure(FILE * file, openscop_scop_p scop,
-                                   int level) {
+void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
   int j;
 
   // Go to the right level.
@@ -109,16 +108,16 @@ void openscop_scop_dump_structure(FILE * file, openscop_scop_p scop,
     fprintf(file, "\n");
 
     // Print the context of the scop.
-    openscop_relation_dump_structure(file, scop->context, level+1);
+    openscop_relation_idump(file, scop->context, level+1);
 
     // Print the names.
-    openscop_names_dump_structure(file, scop->names, level+1);
+    openscop_names_idump(file, scop->names, level+1);
 
     // Print the statements.
-    openscop_statement_dump_structure(file, scop->statement, level+1);
+    openscop_statement_idump(file, scop->statement, level+1);
 
     // Print the extensions.
-    openscop_extension_dump_structure(file, scop->extension, level+1);
+    openscop_extension_idump(file, scop->extension, level+1);
 
     // A blank line.
     for (j = 0; j <= level+1; j++)
@@ -137,14 +136,14 @@ void openscop_scop_dump_structure(FILE * file, openscop_scop_p scop,
 
 
 /**
- * openscop_scop_print function:
+ * openscop_scop_dump function:
  * this function prints the content of an openscop_scop_t structure (*scop)
  * into a file (file, possibly stdout).
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
 void openscop_scop_dump(FILE * file, openscop_scop_p scop) {
-  openscop_scop_dump_structure(file, scop, 0);
+  openscop_scop_idump(file, scop, 0);
 }
 
 
@@ -305,7 +304,7 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
 
 
 /**
- * openscop_scop_print_openscop function:
+ * openscop_scop_print function:
  * this function prints the content of an openscop_scop_t structure (*scop)
  * into a file (file, possibly stdout) in the OpenScop textual format.
  * \param file The file where the information has to be printed.

@@ -74,7 +74,7 @@
 
 
 /**
- * openscop_statement_print_structure function:
+ * openscop_statement_idump function:
  * Displays a openscop_statement_t structure (*statement) into a file (file,
  * possibly stdout) in a way that trends to be understandable without falling
  * in a deep depression or, for the lucky ones, getting a headache... It
@@ -84,9 +84,9 @@
  * \param statement The statement whose information have to be printed.
  * \param level     Number of spaces before printing, for each line.
  */
-void openscop_statement_dump_structure(FILE * file,
-                                        openscop_statement_p statement,
-                                        int level) {
+void openscop_statement_idump(FILE * file,
+                              openscop_statement_p statement,
+                              int level) {
   int i, j, first = 1, number = 1;
 
   // Go to the right level.
@@ -114,16 +114,16 @@ void openscop_statement_dump_structure(FILE * file,
     fprintf(file, "\n");
 
     // Print the domain of the statement.
-    openscop_relation_dump_structure(file, statement->domain, level+1);
+    openscop_relation_idump(file, statement->domain, level+1);
 
     // Print the scattering of the statement.
-    openscop_relation_dump_structure(file, statement->scattering, level+1);
+    openscop_relation_idump(file, statement->scattering, level+1);
 
     // Print the array read access informations of the statement.
-    openscop_relation_list_dump_structure(file, statement->read, level+1);
+    openscop_relation_list_idump(file, statement->read, level+1);
 
     // Print the array write access informations of the statement.
-    openscop_relation_list_dump_structure(file, statement->write, level+1);
+    openscop_relation_list_idump(file, statement->write, level+1);
 
     // Print the original iterator names.
     for (i = 0; i <= level; i++)
@@ -174,19 +174,19 @@ void openscop_statement_dump_structure(FILE * file,
 
 
 /**
- * openscop_statement_print function:
+ * openscop_statement_dump function:
  * This function prints the content of a openscop_statement_t structure
  * (*statement) into  a file (file, possibly stdout).
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
  */
 void openscop_statement_dump(FILE * file, openscop_statement_p statement) {
-  openscop_statement_dump_structure(file, statement, 0);
+  openscop_statement_idump(file, statement, 0);
 }
 
 
 /**
- * openscop_statement_print_openscop function:
+ * openscop_statement_print function:
  * This function prints the content of a openscop_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
  * \param file      File where informations are printed.
@@ -197,8 +197,8 @@ void openscop_statement_dump(FILE * file, openscop_statement_p statement) {
  *                  is not needed.
  */
 void openscop_statement_print(FILE * file,
-                                       openscop_statement_p statement,
-                                       openscop_names_p names) {
+                              openscop_statement_p statement,
+                              openscop_names_p names) {
   int i, switched, number = 1;
   int tmp_nb_iterators = 0;
   char ** tmp_iterators = NULL;
