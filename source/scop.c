@@ -167,7 +167,7 @@ void openscop_scop_name_limits(openscop_scop_p scop,
                               int * nb_scattdims,
                               int * nb_localdims,
                               int * nb_arrays) {
-  int k, tmp, array_id;
+  int tmp, array_id;
   openscop_statement_p statement;
   openscop_relation_list_p list;
   
@@ -229,19 +229,13 @@ void openscop_scop_name_limits(openscop_scop_p scop,
     }
 
     // * The number of arrays are defined by accesses,
-    for (k = 0; k < 2; k++) {
-      if (k == 0)
-	list = statement->read;
-      else
-	list = statement->write;
-      
-      while (list != NULL) {
-        array_id = openscop_relation_get_array_id(list->elt);
-        if (array_id > *nb_arrays)
-          *nb_arrays = array_id;
+    list = statement->access;
+    while (list != NULL) {
+      array_id = openscop_relation_get_array_id(list->elt);
+      if (array_id > *nb_arrays)
+        *nb_arrays = array_id;
 
-	list = list->next;
-      }
+      list = list->next;
     }
 
     statement = statement->next;
@@ -434,7 +428,7 @@ void openscop_scop_update_properties(openscop_relation_p relation,
  */
 static
 void openscop_scop_propagate_properties(openscop_scop_p scop) {
-  int i, nb_parameters;
+  int nb_parameters;
   openscop_statement_p     statement;
   openscop_relation_p      relation;
   openscop_relation_list_p list;
@@ -473,27 +467,20 @@ void openscop_scop_propagate_properties(openscop_scop_p scop) {
     }
 
     // - Access part.
-    for (i = 0; i < 2; i++) {
-      if (i == 0)
-        list = statement->read;
-      else
-        list = statement->write;
-
-      while (list != NULL) {
-        relation = list->elt;
-        if (openscop_relation_is_matrix(relation)) {
-          while (relation != NULL) {
-            openscop_scop_update_properties(
-                relation, 0, relation->nb_columns - nb_parameters - 2,
-                nb_parameters);
-            relation = relation->next;
-          }
+    list = statement->access;
+    while (list != NULL) {
+      relation = list->elt;
+      if (openscop_relation_is_matrix(relation)) {
+        while (relation != NULL) {
+          openscop_scop_update_properties(
+              relation, 0, relation->nb_columns - nb_parameters - 2,
+              nb_parameters);
+          relation = relation->next;
         }
-
-        list = list->next;
       }
+      list = list->next;
     }
-    
+
     statement = statement->next;
   }
 }
@@ -573,7 +560,8 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   // Read the number of statements.
   nb_statements = openscop_util_read_int(file, NULL);
 
-  for (i = 0; i < nb_statements; ++i) {
+  for (i = 0; i < nb_statements; i++) {
+    printf("Coucou %d\n", i);
     // Read each statement.
     stmt = openscop_statement_read(file, nb_parameters);
     if (scop->statement == NULL)

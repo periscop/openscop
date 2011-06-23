@@ -119,11 +119,8 @@ void openscop_statement_idump(FILE * file,
     // Print the scattering of the statement.
     openscop_relation_idump(file, statement->scattering, level+1);
 
-    // Print the array read access informations of the statement.
-    openscop_relation_list_idump(file, statement->read, level+1);
-
-    // Print the array write access informations of the statement.
-    openscop_relation_list_idump(file, statement->write, level+1);
+    // Print the array access information of the statement.
+    openscop_relation_list_idump(file, statement->access, level+1);
 
     // Print the original iterator names.
     for (i = 0; i <= level; i++)
@@ -200,13 +197,14 @@ void openscop_statement_print(FILE * file,
                               openscop_statement_p statement,
                               openscop_names_p names) {
   int i, switched, number = 1;
+  int nb_relations = 0;
   int tmp_nb_iterators = 0;
   char ** tmp_iterators = NULL;
 
   while (statement != NULL) {
     // Switch iterator names to the current statement names if possible.
     switched = 0;
-    if (statement->nb_iterators > 0) {
+    if ((statement->nb_iterators > 0) && (names != NULL)) {
       tmp_nb_iterators = names->nb_iterators;
       tmp_iterators = names->iterators;
       names->nb_iterators = statement->nb_iterators;
@@ -217,40 +215,29 @@ void openscop_statement_print(FILE * file,
     fprintf(file, "# =============================================== ");
     fprintf(file, "Statement %d\n", number);
 
+    fprintf(file, "# Number of relations describing the statement:\n");
+
+    if (statement->domain != NULL)
+      nb_relations ++;
+    if (statement->scattering != NULL)
+      nb_relations ++;
+    nb_relations += openscop_relation_list_count(statement->access); 
+
+    fprintf(file, "%d\n", nb_relations);
+
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
-    fprintf(file, "# Iteration domain\n");
     openscop_relation_print(file, statement->domain, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.2 Scattering\n", number);
-    if (statement->scattering != NULL) {
-      fprintf(file, "# Scattering function is provided\n");
-      fprintf(file, "1\n");
-      fprintf(file, "# Scattering function\n");
-      openscop_relation_print(file, statement->scattering, names);
-    }
-    else {
-      fprintf(file, "# Scattering function is not provided\n");
-      fprintf(file, "0\n");
-    }
+    openscop_relation_print(file, statement->scattering, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.3 Access\n", number);
-    if ((statement->read != NULL) || (statement->write != NULL)) {
-      fprintf(file, "# Access information is provided\n");
-      fprintf(file, "1\n");
-      fprintf(file, "\n# Read access information\n");
-      openscop_relation_list_print(file, statement->read, names);
-      fprintf(file, "\n# Write access information\n");
-      openscop_relation_list_print(file, statement->write, names);
-    }
-    else {
-      fprintf(file, "# Access information is not provided\n");
-      fprintf(file, "0\n");
-    }
+    openscop_relation_list_print_elts(file, statement->access, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
@@ -292,6 +279,63 @@ void openscop_statement_print(FILE * file,
 
 
 /**
+ * openscop_statement_dispatch function:
+ * this function dispatches the relations from a relation list to the
+ * convenient fields of a statement structure: it extracts the domain,
+ * the scattering and the access list and store them accordingly in the
+ * statement structure provided as a parameter.
+ * \param stmt The statement where to dispatch the relations.
+ * \param list The "brute" relation list to sort and dispatch (freed).
+ */
+static
+void openscop_statement_dispatch(openscop_statement_p stmt,
+                                 openscop_relation_list_p list) {
+  openscop_relation_list_p domain_list; 
+  openscop_relation_list_p scattering_list; 
+  int nb_domains, nb_scattering, nb_accesses;
+
+  // Domain.
+  domain_list = openscop_relation_list_filter(list, OPENSCOP_TYPE_DOMAIN);
+  nb_domains = openscop_relation_list_count(domain_list); 
+  if (nb_domains > 1) {
+    fprintf(stderr, "[OpenScop] Error: more than one domain for a "
+                    "statement.\n");
+    exit(1);
+  }
+  if (domain_list != NULL)
+    stmt->domain = domain_list->elt;
+  else
+    stmt->domain = NULL;
+
+  // Scattering.
+  scattering_list=openscop_relation_list_filter(list,OPENSCOP_TYPE_SCATTERING);
+  nb_scattering = openscop_relation_list_count(scattering_list); 
+  if (nb_scattering > 1) {
+    fprintf(stderr, "[OpenScop] Error: more than one scattering relation "
+                    "for a statement.\n");
+    exit(1);
+  }
+  if (scattering_list != NULL)
+    stmt->scattering = scattering_list->elt;
+  else
+    stmt->scattering = NULL;
+
+  // Access.
+  stmt->access = openscop_relation_list_filter(list, OPENSCOP_TYPE_ACCESS);
+  nb_accesses = openscop_relation_list_count(stmt->access);
+
+  if ((nb_domains + nb_scattering + nb_accesses) !=
+      (openscop_relation_list_count(list))) {
+    fprintf(stderr, "[OpenScop] Error: unexpected relation type to define "
+                    "a statement.\n");
+    exit(1);
+  }
+
+  openscop_relation_list_free(list);
+}
+
+
+/**
  * openscop_statement_read function:
  * This function reads a openscop_statement_t structure from an input stream
  * (possibly stdin).
@@ -302,23 +346,16 @@ void openscop_statement_print(FILE * file,
 openscop_statement_p openscop_statement_read(FILE * file,
                                              int nb_parameters) {
   openscop_statement_p stmt = openscop_statement_malloc();
+  openscop_relation_list_p list;
   char buff[OPENSCOP_MAX_STRING], * start, * end;
   int expected_nb_iterators, nb_iterators;
 
   if (file) {
-    // Read the domain matrices.
-    stmt->domain = openscop_relation_read(file);
+    // Read all statement relations.
+    list = openscop_relation_list_read(file);
 
-    // Read the scattering, if any.
-    if (openscop_util_read_int(file, NULL) > 0) {
-      stmt->scattering = openscop_relation_read(file);
-    }
-
-    // Read the access relations, if any.
-    if (openscop_util_read_int(file, NULL) > 0) {
-      stmt->read = openscop_relation_list_read(file);
-      stmt->write = openscop_relation_list_read(file);
-    }
+    // Store relations at the right place according to their type.
+    openscop_statement_dispatch(stmt, list);
 
     // Read the body information, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
@@ -394,8 +431,7 @@ openscop_statement_p openscop_statement_malloc() {
 
   statement->domain     = NULL;
   statement->scattering = NULL;
-  statement->read       = NULL;
-  statement->write      = NULL;
+  statement->access     = NULL;
   statement->nb_iterators = 0;
   statement->iterators  = NULL;
   statement->body       = NULL;
@@ -419,8 +455,7 @@ void openscop_statement_free(openscop_statement_p statement) {
     next = statement->next;
     openscop_relation_free(statement->domain);
     openscop_relation_free(statement->scattering);
-    openscop_relation_list_free(statement->read);
-    openscop_relation_list_free(statement->write);
+    openscop_relation_list_free(statement->access);
     if (statement->iterators != NULL) {
       for (i = 0; i < statement->nb_iterators; i++)
         free(statement->iterators[i]);
@@ -489,8 +524,7 @@ openscop_statement_p openscop_statement_copy(openscop_statement_p statement) {
     node               = openscop_statement_malloc();
     node->domain       = openscop_relation_copy(statement->domain);
     node->scattering   = openscop_relation_copy(statement->scattering);
-    node->read         = openscop_relation_list_copy(statement->read);
-    node->write        = openscop_relation_list_copy(statement->write);
+    node->access       = openscop_relation_list_copy(statement->access);
     node->nb_iterators = statement->nb_iterators;
     node->iterators    = openscop_util_strings_copy(statement->iterators,
                                                     statement->nb_iterators);
@@ -538,10 +572,9 @@ int openscop_statement_equal(openscop_statement_p s1,
       return 0;
     
   if ((s1->nb_iterators != s2->nb_iterators) ||
-      (!openscop_relation_equal(s1->domain,     s2->domain))     ||
-      (!openscop_relation_equal(s1->scattering, s2->scattering)) ||
-      (!openscop_relation_list_equal(s1->read,  s2->read))       ||
-      (!openscop_relation_list_equal(s1->write, s2->write)))
+      (!openscop_relation_equal(s1->domain,      s2->domain))     ||
+      (!openscop_relation_equal(s1->scattering,  s2->scattering)) ||
+      (!openscop_relation_list_equal(s1->access, s2->access)))
     return 0;
 
   if (((s1->body == NULL) && (s2->body != NULL)) ||
@@ -611,7 +644,7 @@ int openscop_statement_integrity_check(openscop_statement_p statement,
         expected_nb_iterators = statement->domain->nb_output_dims;
     }
 
-    // Check the scattering function.
+    // Check the scattering relation.
     if ((openscop_relation_is_matrix(statement->scattering) &&
          !openscop_relation_integrity_check(statement->scattering,
                                             OPENSCOP_TYPE_SCATTERING,
@@ -627,17 +660,12 @@ int openscop_statement_integrity_check(openscop_statement_p statement,
       return 0;
     }
 
-    // Check the access functions.
-    if (!openscop_relation_list_integrity_check(statement->read,
-                                           OPENSCOP_TYPE_ACCESS,
-                                           OPENSCOP_UNDEFINED,
-                                           expected_nb_iterators,
-                                           expected_nb_parameters) ||
-        !openscop_relation_list_integrity_check(statement->write,
-                                           OPENSCOP_TYPE_ACCESS,
-                                           OPENSCOP_UNDEFINED,
-                                           expected_nb_iterators,
-                                           expected_nb_parameters)) {
+    // Check the access relations.
+    if (!openscop_relation_list_integrity_check(statement->access,
+                                            OPENSCOP_TYPE_ACCESS,
+                                            OPENSCOP_UNDEFINED,
+                                            expected_nb_iterators,
+                                            expected_nb_parameters)) {
       return 0;
     }
 

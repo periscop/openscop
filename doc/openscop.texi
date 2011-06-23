@@ -1685,7 +1685,8 @@ C[i][j] = C[i][j] + A[i][k] * B[k][j];
 @subsection OpenScop Core Part File Format Specification
 
 The following grammar describes the structure of the first part of the
-OpenScop file format where terminals are preceeded by "_". Each
+OpenScop file format where terminals are preceeded by "_". There can be
+at most one terminal per line in the file. Each
 relevant part will be explained in more details momentarily. It looks
 long but it has been artificially extended to be easily understood.
 It can be easily simplified to few rules:
@@ -1700,20 +1701,13 @@ Statements          ::= Nb_statements Statement_list
 Statement_list      ::= Statement Statement_list | (void)
 String_list         ::= _String   String_list    | (void)
 Relation_list       ::= _Relation Relation_list  | (void)
-Statement           ::= Iteration_domain Scattering Access Body
-Scattering          ::= "0" | "1" Scattering_relation
-Access              ::= "0" | "1" Read_relations Write_relations
+Statement           ::= Statement_relations Body
 Body                ::= "0" | "1" Iterator_list Body_text
 Parameter_list      ::= "0" | "1" String_list
 Iterator_list       ::= "0" | "1" String_list
 Scattdim_list       ::= "0" | "1" String_list
-Read_relations      ::= Nb_relations Relation_List 
-Write_relations     ::= Nb_relations Relation_List 
+Statement_relations ::= Nb_relations Relation_List 
 Parameter_domain    ::= _Relation
-Iteration_domain    ::= _Relation
-Scattering_relation ::= _Relation
-Read_relation       ::= _Relation
-Write_relation      ::= _Relation
 Language            ::= _String
 Body_text           ::= _Text_line
 Nb_Relations        ::= _Integer
@@ -1725,8 +1719,8 @@ Nb_Relations        ::= _Integer
        consists on the target language, the global constraints on the
        parameters and optionally the various names which may be necessary
        for the code generation process. The constraints on the parameters
-       are represented as a relation (@pxref{Relation Representation}) with
-       zero input and zero output dimensions. Three lists of names may
+       are represented as a relation (@pxref{Context Domain Representation})
+       with zero input and zero output dimensions. Three lists of names may
        be provided. The first one corresponds to parameters, the second
        one to iterators and the third one to scattering dimensions. Each
        list starts with an integer: a @samp{0} means that we don't provide
@@ -1737,18 +1731,16 @@ Nb_Relations        ::= _Integer
        @samp{Nb_statements} is the number of statements in the SCoP,
        i.e. the number of @samp{Statement} items in the @samp{Statement_list}.
        @samp{Statement} represents the information on a given statement.
-       To each statement is associated four piece of information.
-       The first one is the statement iteration domain
-       @samp{Iteration_domain} and is mandatory. Then, one can provide
-       optionnally the scattering information, the data access
-       information and the statement body, in this order.
-       Each optional information is preceeded by a boolean which precises
-       whether the optional information is provided or not.
-       The iteration domain (@pxref{Iteration Domain Representation}),
-       the scattering information (@pxref{Scattering Relation Representation}) and the
-       the access information (@pxref{Access Relation Representation})
-       are all represented as (a list of) relations
-       (@pxref{Relation Representation}). The statement body is made of two
+       To each statement is associated a list of relations and,
+       optionaly, a body. The list of relations may include
+       one iteration domain (@pxref{Iteration Domain Representation}),
+       one scattering relation (@pxref{Scattering Relation Representation})
+       and several access relations (@pxref{Access Relation Representation}).
+       There is no mandatory ordering, but for consistency reason it would
+       be much appreciated that iteration domain comes first (if present)
+       then scattering (if present), then accesses (if present).
+       The statement body is an optional information. It is preceded by a
+       boolean which precises whether it is provided or not. It is made of two
        parts: first, the list of surrounding loop counters in the original
        program and second, the text string of the statement. This
        representation allows to apply the substitution of the original
@@ -1761,6 +1753,7 @@ scattering and access information) are detailed in the next subsections.
 @menu
 * Relation Representation::
 * Iteration Domain Representation::
+* Context Domain Representation::
 * Scattering Relation Representation::
 * Access Relation Representation::
 @end menu
@@ -1841,6 +1834,7 @@ Iteration domain represents the set instances of the corresponding statement.
 OpenScop iteration domains are represented as relations
 (@pxref{Relation Representation}), with the following conventions:
 @itemize @bullet
+@item the type is @code{DOMAIN},
 @item there is 0 input dimension,
 @item loop iterators correspond to output dimensions.
 @end itemize
@@ -1950,6 +1944,20 @@ DOMAIN
 @end group
 @end example
 
+@node Context Domain Representation
+@subsubsection Context Domain Representation
+
+The context domain is a particular case of iteration domain
+(@pxref{Iteration Domain Representation}) where there are only
+constraints about parameters (no loop iterators). Hence it is the same
+as iteration domain, with the following conventions:
+@itemize @bullet
+@item the type is @code{CONTEXT},
+@item there is 0 input dimension,
+@item there is 0 output dimension.
+@end itemize
+
+
 @node Scattering Relation Representation
 @subsubsection Scattering Relation Representation
 
@@ -1961,6 +1969,7 @@ conventions depend on the representation.
 
 For the matrix representation:
 @itemize @bullet
+@item the type is @code{SCATTERING},
 @item there is 0 output dimension,
 @item loop iterators correspond to input dimensions,
 @item the ith row corresponds to the ith scattering dimension.
@@ -1969,6 +1978,7 @@ For the matrix representation:
 
 For the relation representation:
 @itemize @bullet
+@item the type is @code{SCATTERING},
 @item output dimensions correspond to scattering dimensions,
 @item loop iterators correspond to input dimensions.
 @end itemize
@@ -2031,6 +2041,15 @@ conventions depend on the representation.
 
 For the matrix representation:
 @itemize @bullet
+@item the type is one of the following:
+      @itemize @bullet
+      @item @code{READ}, for read accesses,
+      @item @code{WRITE}, for write accesses,
+      @item @code{RDWR}, for read/write accesses,
+      @item @code{MAY_READ}, for may read accesses,
+      @item @code{MAY_WRITE}, for may write accesses,
+      @item @code{MAY_RDWR}, for may read/write accesses,
+      @end itemize
 @item there is 0 output dimension,
 @item loop iterators correspond to input dimensions,
 @item the first row corresponds to the array identifier,
@@ -2039,6 +2058,15 @@ For the matrix representation:
 
 For the relation representation:
 @itemize @bullet
+@item the type is one of the following:
+      @itemize @bullet
+      @item @code{READ}, for read accesses,
+      @item @code{WRITE}, for write accesses,
+      @item @code{RDWR}, for read/write accesses,
+      @item @code{MAY_READ}, for may read accesses,
+      @item @code{MAY_WRITE}, for may write accesses,
+      @item @code{MAY_RDWR}, for may read/write accesses,
+      @end itemize
 @item output dimensions correspond to the array identifier and dimensions,
 @item the first output dimension corresponds to the array identifier,
 @item the (i+1)th output dimension corresponds to the ith array dimension (i>1),

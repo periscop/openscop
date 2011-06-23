@@ -178,6 +178,7 @@ openscop_relation_p openscop_relation_union(openscop_relation_p,
                                         openscop_relation_p);
 void                openscop_relation_set_type(openscop_relation_p, int);
 int                 openscop_relation_get_array_id(openscop_relation_p);
+int                 openscop_relation_is_access(openscop_relation_p);
 
 
 # if defined(__cplusplus)

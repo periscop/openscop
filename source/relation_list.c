@@ -143,6 +143,29 @@ void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
 }
 
 
+void openscop_relation_list_print_elts(FILE * file,
+                                       openscop_relation_list_p list,
+                                       openscop_names_p names) {
+  int i;
+  openscop_relation_list_p head = list;
+
+  // Count the number of elements in the list with non-NULL content.
+  i = openscop_relation_list_count(list);
+  
+  // Print each element of the relation list.
+  if (i > 0) {
+    i = 0;
+    while (head) {
+      if (head->elt != NULL) {
+        fprintf(file, "# List element No.%d\n", i);
+        openscop_relation_print(file, head->elt, names);
+        i++;
+      }
+      head = head->next;
+    }
+  }
+}
+
 /**
  * openscop_relation_list_print function:
  * This function prints the content of a openscop_relation_list_t structure
@@ -159,15 +182,9 @@ void openscop_relation_list_print(FILE * file,
                                   openscop_relation_list_p list,
                                   openscop_names_p names) {
   int i;
-  openscop_relation_list_p head = list;
 
   // Count the number of elements in the list with non-NULL content.
-  i = 0;
-  while (list != NULL) {
-    if (list->elt != NULL)
-      i++;
-    list = list->next;
-  }
+  i = openscop_relation_list_count(list);
   
   // Print it.
   if (i > 1)
@@ -176,17 +193,7 @@ void openscop_relation_list_print(FILE * file,
     fprintf(file,"# List of %d element \n%d\n", i, i);
 
   // Print each element of the relation list.
-  if (i > 0) {
-    i = 0;
-    while (head) {
-      if (head->elt != NULL) {
-        fprintf(file, "# List element No.%d\n", i);
-        openscop_relation_print(file, head->elt, names);
-        i++;
-      }
-      head = head->next;
-    }
-  }
+  openscop_relation_list_print_elts(file, list, names);
 }
 
 
@@ -202,24 +209,14 @@ void openscop_relation_list_print(FILE * file,
  * \param file  The input stream.
  * \return A pointer to the relation list structure that has been read.
  */
-openscop_relation_list_p openscop_relation_list_read(FILE* file) {
-  char s[OPENSCOP_MAX_STRING];
+openscop_relation_list_p openscop_relation_list_read(FILE * file) {
   int i;
   openscop_relation_list_p list;
   openscop_relation_list_p res;
   int nb_mat;
 
-  // Skip blank/commented lines.
-  while (fgets(s, OPENSCOP_MAX_STRING, file) == 0 || s[0] == '#' ||
-      isspace(s[0]))
-    continue;
-  
   // Read the number of relations to read.
-  if (sscanf(s, "%d", &nb_mat) != 1) {
-    fprintf(stderr, "[OpenScop] Error: not possible to read the "
-                    "number of relations.\n");
-    exit(1);
-  }
+  nb_mat = openscop_util_read_int(file, NULL); 
 
   if (nb_mat < 0) {
     fprintf(stderr, "[OpenScop] Error: negative number of relations.\n");
@@ -464,4 +461,70 @@ void openscop_relation_list_set_type(openscop_relation_list_p list, int type) {
   }
 }
 
+
+/** 
+ * openscop_relation_list_filter function:
+ * this function returns a copy of the input relation list, restricted to
+ * the relations of a given type. The special type OPENSCOP_TYPE_ACCESS
+ * filters any kind of access (read, write, rdwr etc.).
+ * \param list The relation list to copy/filter.
+ * \param type The filtering type.
+ * \return A copy of the input list with only relation of the given type.
+ */
+openscop_relation_list_p openscop_relation_list_filter(
+    openscop_relation_list_p list,
+    int type) {
+
+  openscop_relation_list_p copy = openscop_relation_list_copy(list);
+  openscop_relation_list_p filtered = NULL;
+  openscop_relation_list_p previous = NULL;
+  openscop_relation_list_p trash;
+  int first = 1;
+
+  while (copy != NULL) {
+    if (((type == OPENSCOP_TYPE_ACCESS) &&
+         (openscop_relation_is_access(copy->elt))) ||
+        ((type != OPENSCOP_TYPE_ACCESS) &&
+         (type == copy->elt->type))) {
+      if (first) {
+        filtered = copy;
+        first = 0;
+      }
+      
+      previous = copy;
+      copy = copy->next;
+    }
+    else {
+      trash = copy;
+      if (!first)
+        previous->next = copy->next;
+      copy = copy->next;
+      trash->next = NULL;
+      openscop_relation_list_free(trash);
+    }
+  }
+
+  return filtered;
+}
+
+
+/**
+ * openscop_relation_list_count function:
+ * this function returns the number of elements with non-NULL content
+ * in a relation list.
+ * \param list The relation list to count the number of elements.
+ * \return The number of nodes with non-NULL content in the relation list.
+ */
+int openscop_relation_list_count(openscop_relation_list_p list) {
+  int i = 0;
+  
+  while (list != NULL) {
+    if (list->elt != NULL)
+      i++;
+    list = list->next;
+  }
+
+  return i;
+}
+  
 

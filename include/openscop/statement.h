@@ -84,15 +84,14 @@ extern "C"
  * conventions (e.g. "S1" for the first statement in the list).
  */
 struct openscop_statement {
-  openscop_relation_p domain;     /**< Iteration domain of the statement */
-  openscop_relation_p scattering; /**< Scattering function for the statement */
-  openscop_relation_list_p read;  /**< Array read access informations */
-  openscop_relation_list_p write; /**< Array write access informations */
-  int nb_iterators;               /**< Number of names in 'iterators' */
-  char ** iterators;              /**< Array of iterator names */
-  char * body;                    /**< Original statement body */
-  void * usr;                     /**< A user-defined field, not touched
-				       AT ALL by the OpenScop Library. */
+  openscop_relation_p domain;      /**< Iteration domain of the statement */
+  openscop_relation_p scattering;  /**< Scattering relation of the statement */
+  openscop_relation_list_p access; /**< Access information */
+  int nb_iterators;                /**< Number of names in 'iterators' */
+  char ** iterators;               /**< Array of iterator names */
+  char * body;                     /**< Original statement body */
+  void * usr;                      /**< A user-defined field, not touched
+				        AT ALL by the OpenScop Library. */
   struct openscop_statement * next; /**< Next statement in the linked list */
 };
 typedef struct openscop_statement   openscop_statement_t;

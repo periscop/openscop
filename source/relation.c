@@ -424,29 +424,6 @@ char * openscop_relation_expression(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_is_access function:
- * this function returns 1 if the relation corresponds to an access relation,
- * whatever its precise type (read, write etc.), 0 otherwise.
- * \param relation The relation to check wheter it is an access relation or not.
- * \return 1 if the relation is an access relation, 0 otherwise.
- */
-static
-int openscop_relation_is_access(openscop_relation_p relation) {
-
-  if ((relation->type == OPENSCOP_TYPE_ACCESS)    ||
-      (relation->type == OPENSCOP_TYPE_READ)      ||
-      (relation->type == OPENSCOP_TYPE_WRITE)     ||
-      (relation->type == OPENSCOP_TYPE_RDWR)      ||
-      (relation->type == OPENSCOP_TYPE_MAY_READ)  ||
-      (relation->type == OPENSCOP_TYPE_MAY_WRITE) ||
-      (relation->type == OPENSCOP_TYPE_MAY_RDWR))
-    return 1;
-
-  return 0;
-}
-
-
-/**
  * openscop_relation_properties function:
  * this function returns, through its parameters, the values of every possible
  * "property" (nb_iterators, nb_parameters etc) of a relation, depending on
@@ -1884,4 +1861,28 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
 
   return array_id;
 }
+
+
+/**
+ * openscop_relation_is_access function:
+ * this function returns 1 if the relation corresponds to an access relation,
+ * whatever its precise type (read, write etc.), 0 otherwise.
+ * \param relation The relation to check wheter it is an access relation or not.
+ * \return 1 if the relation is an access relation, 0 otherwise.
+ */
+int openscop_relation_is_access(openscop_relation_p relation) {
+
+  if ((relation->type == OPENSCOP_TYPE_ACCESS)    ||
+      (relation->type == OPENSCOP_TYPE_READ)      ||
+      (relation->type == OPENSCOP_TYPE_WRITE)     ||
+      (relation->type == OPENSCOP_TYPE_RDWR)      ||
+      (relation->type == OPENSCOP_TYPE_MAY_READ)  ||
+      (relation->type == OPENSCOP_TYPE_MAY_WRITE) ||
+      (relation->type == OPENSCOP_TYPE_MAY_RDWR))
+    return 1;
+
+  return 0;
+}
+
+
 

@@ -405,7 +405,10 @@ int openscop_util_read_int(FILE * file, char ** str) {
   if (file != NULL) {
     // Parse from a file.
     start = openscop_util_skip_blank_and_comments(file, s);
-    sscanf(start, " %d", &res);
+    if (sscanf(start, " %d", &res) != 1) {
+      fprintf(stderr, "[OpenScop] Error: an int was expected.\n");
+      exit(1);
+    }
   }
   if (str != NULL) {
     // Parse from a string.
