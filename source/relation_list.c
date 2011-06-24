@@ -143,6 +143,19 @@ void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
 }
 
 
+/**
+ * openscop_relation_list_print_elts function:
+ * This function prints the elements of a openscop_relation_list_t structure
+ * into a file (file, possibly stdout) in the OpenScop format. I.e., it prints
+ * only the elements and not the number of elements. It prints an element of the
+ * list only if it is not NULL.
+ * \param file  File where informations are printed.
+ * \param list  The relation list whose information have to be printed.
+ * \param names The textual names of the various elements. Is is important
+ *              that names->nb_parameters is exact if the matrix
+ *              representation is used. Set to NULL if printing comments
+ *              is not needed.
+ */
 void openscop_relation_list_print_elts(FILE * file,
                                        openscop_relation_list_p list,
                                        openscop_names_p names) {
@@ -157,14 +170,19 @@ void openscop_relation_list_print_elts(FILE * file,
     i = 0;
     while (head) {
       if (head->elt != NULL) {
-        fprintf(file, "# List element No.%d\n", i);
         openscop_relation_print(file, head->elt, names);
+        if (head->next != NULL)
+          fprintf(file, "\n");
         i++;
       }
       head = head->next;
     }
   }
+  else {
+    fprintf(file, "# NULL relation list\n");
+  }
 }
+
 
 /**
  * openscop_relation_list_print function:
@@ -482,10 +500,11 @@ openscop_relation_list_p openscop_relation_list_filter(
   int first = 1;
 
   while (copy != NULL) {
-    if (((type == OPENSCOP_TYPE_ACCESS) &&
-         (openscop_relation_is_access(copy->elt))) ||
-        ((type != OPENSCOP_TYPE_ACCESS) &&
-         (type == copy->elt->type))) {
+    if ((copy->elt != NULL) &&
+        (((type == OPENSCOP_TYPE_ACCESS) &&
+          (openscop_relation_is_access(copy->elt))) ||
+         ((type != OPENSCOP_TYPE_ACCESS) &&
+          (type == copy->elt->type)))) {
       if (first) {
         filtered = copy;
         first = 0;

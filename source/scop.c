@@ -311,7 +311,7 @@ void openscop_scop_print(FILE * file, openscop_scop_p scop) {
 
   if (openscop_scop_integrity_check(scop) == 0) {
     fprintf(stderr, "[OpenScop] Warning: OpenScop integrity check failed. "
-                    " Something may go wrong\n");
+                    " Something may go wrong.\n");
   }
 
   // Build a name structure for pretty printing of relations.
@@ -561,7 +561,6 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   nb_statements = openscop_util_read_int(file, NULL);
 
   for (i = 0; i < nb_statements; i++) {
-    printf("Coucou %d\n", i);
     // Read each statement.
     stmt = openscop_statement_read(file, nb_parameters);
     if (scop->statement == NULL)

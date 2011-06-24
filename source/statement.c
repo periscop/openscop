@@ -197,11 +197,13 @@ void openscop_statement_print(FILE * file,
                               openscop_statement_p statement,
                               openscop_names_p names) {
   int i, switched, number = 1;
-  int nb_relations = 0;
+  int nb_relations;
   int tmp_nb_iterators = 0;
   char ** tmp_iterators = NULL;
 
   while (statement != NULL) {
+    nb_relations = 0;
+
     // Switch iterator names to the current statement names if possible.
     switched = 0;
     if ((statement->nb_iterators > 0) && (names != NULL)) {
@@ -223,7 +225,7 @@ void openscop_statement_print(FILE * file,
       nb_relations ++;
     nb_relations += openscop_relation_list_count(statement->access); 
 
-    fprintf(file, "%d\n", nb_relations);
+    fprintf(file, "%d\n\n", nb_relations);
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
@@ -360,18 +362,25 @@ openscop_statement_p openscop_statement_read(FILE * file,
     // Read the body information, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
       // Is there any iterator to read ?
-      if (openscop_relation_is_matrix(stmt->domain)) {
-        if (nb_parameters == OPENSCOP_UNDEFINED) {
-          fprintf(stderr, "[OpenScop] Warning: undefined number of "
-                          "parameters (no context ?), assuming 0.\n");
-          nb_parameters = 0;
+      if (stmt->domain != NULL) {
+        if (openscop_relation_is_matrix(stmt->domain)) {
+          if (nb_parameters == OPENSCOP_UNDEFINED) {
+            fprintf(stderr, "[OpenScop] Warning: undefined number of "
+                            "parameters (no context ?), assuming 0.\n");
+            nb_parameters = 0;
+          }
+
+          expected_nb_iterators = stmt->domain->nb_columns -
+            nb_parameters - 2;
         }
-        
-        expected_nb_iterators = stmt->domain->nb_columns -
-                                nb_parameters - 2;
+        else {
+          expected_nb_iterators = stmt->domain->nb_output_dims;
+        }
       }
       else {
-        expected_nb_iterators = stmt->domain->nb_output_dims;
+        fprintf(stderr, "[OpenScop] Warning: no domain, assuming 0 "
+                        "original iterator.\n");
+        expected_nb_iterators = 0;
       }
 
       // Read the original iterator names.

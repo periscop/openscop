@@ -74,67 +74,6 @@
 
 
 /**
- * openscop_relation_dump_type function:
- * this function displays the type of an openscop_relation_t structure into
- * a file (file, possibly stdout).
- * \param[in] file     File where informations are printed.
- * \param[in] relation The relation whose type has to be printed.
- */
-static
-void openscop_relation_dump_type(FILE * file, openscop_relation_p relation) {
-
-  if (relation != NULL) {
-    switch (relation->type) {
-      case OPENSCOP_UNDEFINED: {
-        fprintf(file, "(undefined)\n");
-        break;
-      }
-      case OPENSCOP_TYPE_CONTEXT: {
-        fprintf(file, "(context)\n");   
-        break;
-      }
-      case OPENSCOP_TYPE_DOMAIN: {
-        fprintf(file, "(domain)\n");   
-        break;
-      }
-      case OPENSCOP_TYPE_SCATTERING: {
-        fprintf(file, "(scattering)\n");
-        break;
-      }
-      case OPENSCOP_TYPE_READ: {
-        fprintf(file, "(read access)\n");   
-        break;
-      }
-      case OPENSCOP_TYPE_WRITE: {
-        fprintf(file, "(write access)\n");   
-        break;
-      }
-      case OPENSCOP_TYPE_RDWR: {
-        fprintf(file, "(read-write access)\n");   
-        break;
-      }
-      case OPENSCOP_TYPE_MAY_READ: {
-        fprintf(file, "(may read access)\n");
-        break;
-      }
-      case OPENSCOP_TYPE_MAY_WRITE: {
-        fprintf(file, "(may write access)\n");
-        break;
-      }
-      case OPENSCOP_TYPE_MAY_RDWR: {
-        fprintf(file, "(may read-write access)\n");
-        break;
-      }
-      default: {
-        fprintf(file, "(unknown type: %d)\n", relation->type);
-        break;
-      }
-    }
-  }
-}
-
-
-/**
  * openscop_relation_print_type function:
  * this function displays the textual type of an openscop_relation_t structure
  * into a file (file, possibly stdout), accoding to the OpenScop specification.
@@ -147,50 +86,50 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
   if (relation != NULL) {
     switch (relation->type) {
       case OPENSCOP_UNDEFINED: {
-        fprintf(file, OPENSCOP_STRING_UNDEFINED"\n");
+        fprintf(file, OPENSCOP_STRING_UNDEFINED);
         break;
       }
       case OPENSCOP_TYPE_CONTEXT: {
-        fprintf(file, OPENSCOP_STRING_CONTEXT"\n");
+        fprintf(file, OPENSCOP_STRING_CONTEXT);
         break;
       }
       case OPENSCOP_TYPE_DOMAIN: {
-        fprintf(file, OPENSCOP_STRING_DOMAIN"\n");
+        fprintf(file, OPENSCOP_STRING_DOMAIN);
         break;
       }
       case OPENSCOP_TYPE_SCATTERING: {
-        fprintf(file, OPENSCOP_STRING_SCATTERING"\n");
+        fprintf(file, OPENSCOP_STRING_SCATTERING);
         break;
       }
       case OPENSCOP_TYPE_READ: {
-        fprintf(file, OPENSCOP_STRING_READ"\n");
+        fprintf(file, OPENSCOP_STRING_READ);
         break;
       }
       case OPENSCOP_TYPE_WRITE: {
-        fprintf(file, OPENSCOP_STRING_WRITE"\n");
+        fprintf(file, OPENSCOP_STRING_WRITE);
         break;
       }
       case OPENSCOP_TYPE_RDWR: {
-        fprintf(file, OPENSCOP_STRING_RDWR"\n");
+        fprintf(file, OPENSCOP_STRING_RDWR);
         break;
       }
       case OPENSCOP_TYPE_MAY_READ: {
-        fprintf(file, OPENSCOP_STRING_MAY_READ"\n");
+        fprintf(file, OPENSCOP_STRING_MAY_READ);
         break;
       }
       case OPENSCOP_TYPE_MAY_WRITE: {
-        fprintf(file, OPENSCOP_STRING_MAY_WRITE"\n");
+        fprintf(file, OPENSCOP_STRING_MAY_WRITE);
         break;
       }
       case OPENSCOP_TYPE_MAY_RDWR: {
-        fprintf(file, OPENSCOP_STRING_MAY_RDWR"\n");
+        fprintf(file, OPENSCOP_STRING_MAY_RDWR);
         break;
       }
       default: {
         fprintf(stderr, "[OpenScop] Warning: unknown relation type (%d) "
                         "replaced with "OPENSCOP_STRING_UNDEFINED".\n",
                         relation->type);
-        fprintf(file, OPENSCOP_STRING_UNDEFINED"\n");
+        fprintf(file, OPENSCOP_STRING_UNDEFINED);
       }
     }
   }
@@ -217,8 +156,9 @@ void openscop_relation_idump(FILE * file,
     fprintf(file, "|\t");
 
   if (relation != NULL) {
-    fprintf(file, "+-- openscop_relation_t ");
-    openscop_relation_dump_type(file, relation);
+    fprintf(file, "+-- openscop_relation_t (");
+    openscop_relation_print_type(file, relation);
+    fprintf(file, ")\n");
   }
   else {
     fprintf(file, "+-- NULL relation\n");
@@ -229,8 +169,9 @@ void openscop_relation_idump(FILE * file,
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_relation_t ");
-      openscop_relation_dump_type(file, relation);
+      fprintf(file, "|   openscop_relation_t (");
+      openscop_relation_print_type(file, relation);
+      fprintf(file, ")\n");
     }
     else
       first = 0;
@@ -562,7 +503,7 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
   // TODO: remove this !!!
   // Temporarily deactivate comments for relations, to finish OpenScop
   // RFC first.
-  if (openscop_relation_is_matrix(relation))
+  if (!openscop_relation_is_matrix(relation))
     return 0;
 
   // We cannot print comments if the names are not textual.
@@ -689,7 +630,6 @@ void openscop_relation_print(FILE * file,
   openscop_relation_p r;
 
   if (relation == NULL) {
-    fprintf(stderr, "[OpenScop] Warning: asked to print a NULL relation.\n");
     fprintf(file, "# NULL relation\n");
     return;
   }
@@ -704,9 +644,11 @@ void openscop_relation_print(FILE * file,
     r = r->next;
   }
 
-  if (nb_parts > 0)
+  if (nb_parts > 0) {
     openscop_relation_print_type(file, relation);
-  
+    fprintf(file, "\n");
+  }
+
   if (nb_parts > 1)
     fprintf(file, "# Union with %d parts\n%d\n", nb_parts, nb_parts);
 
@@ -866,6 +808,9 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
       if (((read != 1) && (read != 2) && (read != 6)) ||
           ((read == 1) && (may_read_nb_union_parts != 1))) {
         fprintf(stderr, "[OpenScop] Error: badly formated relation.\n");
+        fprintf(stderr, "(%d properties while it should be either "
+                        "1 -number of union parts, 2 -matrix representation "
+                        " or 6 -relation representation)\n", read);
         exit(1);
       }
 
@@ -1872,6 +1817,9 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
  */
 int openscop_relation_is_access(openscop_relation_p relation) {
 
+  if (relation == NULL)
+    return 0;
+  
   if ((relation->type == OPENSCOP_TYPE_ACCESS)    ||
       (relation->type == OPENSCOP_TYPE_READ)      ||
       (relation->type == OPENSCOP_TYPE_WRITE)     ||

@@ -22,10 +22,10 @@ CONTEXT
 
 # =============================================== Statement 1
 # Number of relations describing the statement
-0
+1
 
 # ----------------------------------------------  1.1 Domain
-# NULL Domain
+0 2
 
 # ----------------------------------------------  1.2 Scattering
 # NULL Scattering

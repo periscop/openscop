@@ -22,7 +22,7 @@ CONTEXT
 
 # =============================================== Statement 1
 # Number of relations describing the statement
-0
+1
 
 # ----------------------------------------------  1.1 Domain
 # NULL Domain
@@ -31,7 +31,9 @@ CONTEXT
 # NULL Scattering
 
 # ----------------------------------------------  1.3 Access
-# NULL Access
+READ
+1 2
+0 1
 
 # ----------------------------------------------  1.4 Body
 # Statement body is not provided
