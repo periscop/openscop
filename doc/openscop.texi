@@ -2124,7 +2124,12 @@ may provide some information about what the relation is encoding:
 @item -1: undefined (@code{OPENSCOP_UNDEFINED}),
 @item 7: iteration domain (@code{OPENSCOP_TYPE_DOMAIN}),
 @item 8: scattering relation (@code{OPENSCOP_TYPE_SCATTERING}),
-@item 9: access relation (@code{OPENSCOP_TYPE_ACCESS}).
+@item 13: read access relation (@code{OPENSCOP_TYPE_READ}),
+@item 14: write access relation (@code{OPENSCOP_TYPE_WRITE}),
+@item 15: read/write access relation (@code{OPENSCOP_TYPE_RDWR}),
+@item 16: may read access relation (@code{OPENSCOP_TYPE_MAY_READ}),
+@item 17: may write access relation (@code{OPENSCOP_TYPE_MAY_WRITE}),
+@item 18: may read/write access relation (@code{OPENSCOP_TYPE_MAY_RDWR}).
 @end itemize
 The various numbers provide the details on the relation itself
 (@pxref{Relation Representation}) while the @code{m} field points to
@@ -2185,8 +2190,7 @@ the @code{textual} field is 0.
 struct openscop_statement @{
   openscop_relation_p domain;       /* Iteration domain */
   openscop_relation_p scattering;   /* Scattering relation */
-  openscop_relation_list_p read;    /* Array read accesses */
-  openscop_relation_list_p write;   /* Array write accesses */
+  openscop_relation_list_p access;  /* Array access relations */
   int nb_iterators;                 /* Number of names in 'iterators' */
   char ** iterators;                /* Array of iterator names */
   char * body;                      /* Original statement body */
@@ -2201,11 +2205,11 @@ typedef struct openscop_statement * openscop_statement_p;
 
 @noindent The @code{clan_statement_t} structure represents a @code{NULL}
 terminated linked list of statements. Each node contains the useful
-informations for a given statement to process it within a polyhedral
+information for a given statement to process it within a polyhedral
 framework. The order in the list may matter for naming conventions
 (e.g. "S1" for the first statement in the list). The iteration domain
-as well as the scattering are represented using an @code{openscop_relation_p}
-structure while the read and write accesses are using a list of
+and the scattering are represented using an @code{openscop_relation_p}
+structure while the accesses are using a list of
 relations: one for each array access in the statement. The
 @code{nb_iterators} field provides the depth of the statement in the
 original program. To represent the statement body, we use
@@ -2285,7 +2289,7 @@ As an example, let us consider again the matrix multiply program
 (@pxref{Preliminary Example (Matrix Representation)}).
 The next figure gives a possible representation in memory for this
 SCoP thanks to the OpenScop data structures (it has been actually printed
-by the @code{openscop_scop_print} function):
+by the @code{openscop_scop_dump} function):
 
 @c @smallexample
 @example
