@@ -132,12 +132,12 @@ The OpenScop aim is to provide a stable, unified format that offers a
 durable guarantee that a tool can use an output or provide an input to
 another tool without breaking a tool chain because of some internal
 changes in one element of the chain. The other promise of OpenScop is
-the ablility to assemble or replace the basic blocs of a polyhedral
+the ability to assemble or replace the basic blocks of a polyhedral
 compilation framework at no, or at least low engineering cost.
 
 The policy that drives OpenScop can be summarized by these three rules:
 @itemize @bullet
-@item  Embbed the @emph{minimum} information to build a complete polyhedral
+@item  Embed the @emph{minimum} information to build a complete polyhedral
        compilation framework in the so-called @emph{core part}
        (to avoid as much as possible empty or useless information
        for each tool).
@@ -155,11 +155,11 @@ The policy that drives OpenScop can be summarized by these three rules:
 @end itemize
 
 The success of OpenScop in meeting its goals totally depends on its
-acceptance by the tool developpers (that have to support it in their tools).
+acceptance by the tool developers (that have to support it in their tools).
 To help them, we provide an example implementation: the OpenScop Library.
 This library (and in particular its API) is not part of the OpenScop
 specification (which includes only the file format and the set of data
-structures). It is licensed under the 3-clause BSD license so developpers may
+structures). It is licensed under the 3-clause BSD license so developers may
 feel free to use it in their code (either by linking it or copy-pasting its
 code). This document also describes this library briefly (readers are
 invited to read at its technical documentation).
@@ -168,7 +168,7 @@ and there is no guarantee that the upward compatibility will be respected,
 even if we do think so. A lot of reports are
 necessary to freeze the library API. Thus you are very welcome and
 encouraged to send reports on bugs, wishes, critics, comments, suggestions
-or (please !) successful experiences to the OpenScop mailing list
+or (please!) successful experiences to the OpenScop mailing list
 @email{openscop-development@@googlegroups.com}.
 
 This document is organized as follows. First, we provide some
@@ -191,7 +191,7 @@ this paper by mistake. However some vicious advisor may ask their poor
 engineers/interns/students
 to work for the very first time on this exciting topic. Most papers on
 polyhedral compilation are hard to read. Despite my efforts,
-mine are no exception according to some reviewers... Hence I give there a new
+mine are no exception according to some reviewers. Hence I give there a new
 try to provide a comprehensive explanation of the polyhedral model without the
 size and style limits of a classical research paper.
 
@@ -199,7 +199,7 @@ Be aware that to be able to understand the polyhedral model, there are a few
 prerequisites. You should not read the following while you still ignore
 what is:
 @itemize @bullet
-@item  a @code{for} loop construction in C programs (@code{do} loops in FORTRAN are OK too !),
+@item  a @code{for} loop construction in C programs (@code{do} loops in FORTRAN are OK too!),
 @item  an @emph{affine expression},
 @item  a @emph{vector},
 @item  a @emph{matrix},
@@ -207,12 +207,12 @@ what is:
 @end itemize
 If you do not know those concepts, please do some search and come back
 afterwards. And if you are courageous enough, send me a few lines that
-describe them so I can insert them here !
+describe them so I can insert them here!
 
 @menu
 * Motivation::
 * Thinking in Polyhedra::
-* What's Next ?::
+* What's Next?::
 @end menu
 
 
@@ -223,14 +223,14 @@ A direct translation of high level programs written, e.g., in C, to assembly
 then to object code is likely to produce (very) inefficient applications.
 Architectures are
 quite complex, including several levels of cache memory, many cores, deep
-pipelines, various number of functionnal units, of registers etc.
+pipelines, various number of functional units, of registers etc.
 The list of such
 "architectural features" is growing with each new generation of processors.
-To achieve the best performance, the object program must do a smart use
-of these features.
+To achieve the best performance, the object program must use
+these features in a smart way.
 Programmers use high level languages for productivity and portability:
 typically they do not have to take care of the target architecture but
-to ensure they do write programs which produce the right output. Hence,
+to ensure they write programs which produce the right output. Hence,
 the problem of mapping the program to the target architecture in the most
 efficient way is left to the compiler.
 
@@ -257,7 +257,7 @@ statement writes). Because of the lack of registers, the solutions such that
 the first and the third statements are one after the other are better
 because @code{a} and @code{b} will be put in the processor registers by
 one statement and can be reused directly by the other one
-without reading to memory (this is called a @emph{data locality
+without reading from memory (this is called a @emph{data locality
 improving} transformation). Hence a better statement order is, e.g.:
 
 @example
@@ -427,8 +427,8 @@ statement @code{S2} for the iteration vector @code{(2)}.
 
 Obviously, dealing with statement instances does not mean we have to unroll all
 loops. First because there would be probably too many instances to deal with,
-and second because we probably just don't know how many instances there are.
-For instance in the following loop it is not possible to know (at compile time)
+and second because we probably just do not know how many instances there are.
+For instance in the following loop it is impossible to know (at compile time)
 how many times the statement @code{S3} will be executed:
 
 @example
@@ -502,7 +502,7 @@ constraints. When those constraints are affine and
 depend only on the outer loop counters and some parameters, the set of
 constraints defines a @emph{polyhedron} (more precisely this is a
 @emph{Z-polyhedron}, but we use @emph{polyhedron} for short).
-Hence the @emph{polyhedral model} !
+Hence the @emph{polyhedral model}!
 
 To manipulate a set of affine constraints easily, we rely on a matrix
 representation. To write it, we use the @emph{homogeneous} iteration vector:
@@ -766,7 +766,7 @@ y = c + d;   // S2
 @end group
 @end example
 
-In the case of @strong{allocation} (in the litterature we can find some
+In the case of @strong{allocation} (in the literature we can find some
 papers calling it @emph{placement}), the logical stamp is a processor
 number expressing on which processor a statement instance has to be
 executed. Typically, allocations are written in the same way as scheduling.
@@ -1168,7 +1168,7 @@ an exact analysis when all the memory accesses are made through arrays
 (note that variables are a particular case of arrays since they are simply
 arrays with only one memory location) with affine subscripts that depend
 on outer loop counters and global parameters (note that @emph{subscripts}
-are sometimes called @emph{index} or @emph{accesses} in the litterature).
+are sometimes called @emph{index} or @emph{accesses} in the literature).
 
 For instance let us consider the array access @code{A[2*i+j][j][i+N]}. It has
 three dimensions, each subscript dimension is an affine form of some outer loop
@@ -1233,13 +1233,13 @@ F_A([ j ]) = [  0  1  0  0 ] * [ j ]
 information on the access of a given statement
 (the iteration vector is in general an implicit information).}
 
-@node What's Next ?
-@section What's Next ?
+@node What's Next?
+@section What's Next?
 
 OK, now you have an idea about how we do represent a program part in the
 polyhedral model. You know the three main concepts, namely: domain, scattering
-and access. What can you do with this ?! Well, pretty much anything related
-to code restructuring ! The core idea will be to rely on the mathematical
+and access. What can you do with this?! Well, pretty much anything related
+to code restructuring! The core idea will be to rely on the mathematical
 representation to extract useful information about your
 code (data reuse, parallelism...) and to generate a scattering
 to benefit from the properties you analysed.
@@ -1937,7 +1937,7 @@ $\theta_{S}(i,j,k) = (j+2,3*i+j,k+N+1)$
 T_@{S@}(i,j,k) = (j+2,3*i+j,k+N+1)
 @end example
 @end ifnottex
-Because it is a function, this scattering relation we may written in an
+Because it is a function, this scattering relation may be written in an
 OpenScop file using either the matrix or the relation representation.
 The first way is the following (matrix representation):
 
@@ -2175,7 +2175,7 @@ typedef struct openscop_names * openscop_names_p;
 
 @noindent The @code{openscop_names_t} structure stores the various names
 (names of parameters, iterators, and scattering dimension) necessary to
-generate a code from the OpenScop data structures. The term @emph{name}
+generate code from the OpenScop data structures. The term @emph{name}
 is generic and corresponds to a pointer to the information necessary to
 generate the code. A name may be a string of characters @code{(char *)}
 or a pointer to anything else. For textual tools convenience, the default
@@ -2562,7 +2562,7 @@ extension. It corresponds to the array names of the preliminary example
 @group
 <arrays>
 # Number of array names:
-2
+3
 1 C # Identifier 1 corresponds to array name "C" 
 3 B # Identifier 3 corresponds to array name "B" 
 2 A # Identifier 2 corresponds to array name "A" 
@@ -2654,7 +2654,7 @@ It offers basic functionalities to manipulate the OpenScop data structures
 The OpenScop Library is @emph{not} a polyhedral library. OpenScop is an
 exchange format, and the OpenScop Library reflects this. 
 
-It is a Free Sotfware using the 3-clause BSD License.
+It is a Free Software using the 3-clause BSD License.
 Programmers should feel free to use
 it or copy/paste its code in any project, Open Source or not@footnote{Closed
 source projects should consider to provide some OpenScop file input
@@ -3037,7 +3037,7 @@ directory
 @section Documentation
 The OpenScop Library distribution provides several sources of documentation.
 First, the source code itself is as documented as much as possible.
-The code comments use a the Doxygen technical documentation system.
+The code comments use the Doxygen technical documentation system.
 The user may install
 Doxygen@footnote{@code{http://www.stack.nl/~dimitri/doxygen}} to automatically
 generate a technical documentation by typing @code{make doc} or
@@ -3069,7 +3069,7 @@ option to generate a single HTML file) or info format
 @subsection Copyright Issue
 
 The OpenScop Library is an Open Source project and you should feel free to
-contribute by adding functionnalities (in particular extensions), correcting
+contribute by adding functionalities (in particular extensions), correcting
 bugs or improving documentation. However, for painful administrative reasons,
 the copyright of the core part (everything except extensions) should not be
 impacted by your work. Hence, if you are doing a significant contribution to
@@ -3082,11 +3082,11 @@ may include developer's own copyright.
 @subsection Repository
 
 The main repository of the OpenScop Library is
-@url{http://repo.or.cz/w/openscop.git}. Developpers may ask the OpenScop Library
+@url{http://repo.or.cz/w/openscop.git}. Developers may ask the OpenScop Library
 maintainer to open them a write access to this repository. Only the maintainer
 should ever change the @code{master} branch. Developers should work on their
 own branches. To avoid any problem developers should use the @emph{fork}
-functionnality of the repository.
+functionality of the repository.
 
 @node Coding Style 
 @subsection Coding Style  
@@ -3182,7 +3182,7 @@ openscop_@emph{structure}_p openscop_@emph{structure}_sread(char * string);
       @code{pkginclude_HEADERS} in the @code{include/Makefile.am} file.
 @end enumerate
 
-You are done ! Prepare a single commit corresponding to the integration
+You are done! Prepare a single commit corresponding to the integration
 of your option and ask the maintainer to merge it to the master branch.
 
 @c %  ****************************** REFERENCES ********************************
