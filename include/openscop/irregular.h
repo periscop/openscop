@@ -136,6 +136,8 @@ int                  openscop_irregular_equal(openscop_irregular_p,
                                   openscop_irregular_p);
 openscop_irregular_p openscop_irregular_add_control(openscop_irregular_p,
                                   char**, int, char*);
+openscop_irregular_p openscop_irregular_add_exit(openscop_irregular_p,
+                                  char**, int, char*);
 openscop_irregular_p openscop_irregular_add_predicates(openscop_irregular_p,
                                   int*, int);
 

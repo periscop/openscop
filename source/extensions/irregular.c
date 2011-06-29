@@ -113,12 +113,21 @@ openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
       fprintf(file, "\n");
     }
     // Print predicats
+    // controls :
     for (i=0; i<irregular->nb_control; i++)
     {
       fprintf(file, "predicat%d's\niterators : ", i);
       for(j=0; j<irregular->nb_iterators[i]; j++)
         fprintf(file, "%s ", irregular->iterators[i][j]);
-      fprintf(file, "\nbody: %s\n", irregular->body[i]);
+      fprintf(file, "\ncontrol body: %s\n", irregular->body[i]);
+    }
+    // exits :
+    for(i=irregular->nb_control;i<irregular->nb_control+irregular->nb_exit;i++)
+    {
+      fprintf(file, "predicat%d's\niterators : ", i);
+      for(j=0; j<irregular->nb_iterators[i]; j++)
+        fprintf(file, "%s ", irregular->iterators[i][j]);
+      fprintf(file, "\nexit body: %s\n", irregular->body[i]);
     }
   }
 
@@ -184,13 +193,26 @@ openscop_irregular_sprint(openscop_irregular_p irregular)
       sprintf(buffer, "%s\n", buffer);
     }
     // Print the predicats.
+    // controls :
     sprintf(buffer, "%s%d\n", buffer, irregular->nb_control);
+    sprintf(buffer, "%s%d\n", buffer, irregular->nb_exit);
     for(i=0; i<irregular->nb_control; i++)
     {
       sprintf(buffer, "%s%d ", buffer, irregular->nb_iterators[i]);
       for(j=0; j<irregular->nb_iterators[i];j++)
         sprintf(buffer, "%s%s ", buffer, irregular->iterators[i][j]);
       sprintf(buffer, "%s\n%s\n", buffer, irregular->body[i]);
+    }
+    // exits : 
+    for(i=0; i<irregular->nb_exit; i++)
+    {
+      sprintf(buffer, "%s%d ", buffer, irregular->nb_iterators[
+                                        irregular->nb_control + i]);
+      for(j=0; j<irregular->nb_iterators[irregular->nb_control + i];j++)
+        sprintf(buffer, "%s%s ", buffer, irregular->iterators[
+                                          irregular->nb_control+i][j]);
+      sprintf(buffer, "%s\n%s\n", buffer, irregular->body[
+                                          irregular->nb_control + i]);
     }
 
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -274,30 +296,36 @@ openscop_irregular_sread(char * extensions)
     }
   }
   // Get nb predicat
+  // control and exits :
   tok = strtok(NULL," \n");
   irregular->nb_control=atoi(tok);
+  tok = strtok(NULL," \n");
+  irregular->nb_exit=atoi(tok);
+
+  int nb_predicates = irregular->nb_control + irregular->nb_exit;
+
   irregular->iterators = (char***) malloc(sizeof(char**) *
-                                         irregular->nb_control);
+                                          nb_predicates);
   if (irregular->iterators == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   irregular->nb_iterators = (int*) malloc(sizeof(int)    *
-                                         irregular->nb_control);
+                                          nb_predicates);
   if (irregular->nb_iterators == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   irregular->body = (char**) malloc(sizeof(char*)   * 
-                                         irregular->nb_control);
+                                          nb_predicates);
   if (irregular->body == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  for(i=0; i<irregular->nb_control; i++)
+  for(i=0; i<nb_predicates; i++)
   {
     // Get number of iterators
     tok = strtok(NULL," \n");
@@ -349,6 +377,7 @@ openscop_irregular_malloc()
   irregular->predicates = NULL;
   irregular->nb_predicates = NULL;
   irregular->nb_control = 0;
+  irregular->nb_exit = 0;
   irregular->nb_iterators = NULL;
   irregular->iterators = NULL;
   irregular->body = NULL;
@@ -366,19 +395,22 @@ openscop_irregular_malloc()
 void
 openscop_irregular_free(openscop_irregular_p irregular)
 {
-  int i,j;
+  int i,j,nb_predicates;
   if (irregular != NULL)
   {
     for(i=0; i<irregular->nb_statements; i++)
+    {
       free(irregular->predicates[i]);
-    
+    }
     if(irregular->predicates != NULL)
       free(irregular->predicates);
-    
-    for(i=0; i<irregular->nb_control; i++)
+
+    nb_predicates = irregular->nb_control+irregular->nb_exit;
+    for(i=0; i<nb_predicates; i++)
     {
       for(j=0; j<irregular->nb_iterators[i]; j++)
         free(irregular->iterators[i][j]);
+      free(irregular->iterators[i]);
       free(irregular->body[i]);
     }
     if(irregular->iterators != NULL)
@@ -448,26 +480,28 @@ openscop_irregular_copy(openscop_irregular_p irregular)
       copy->predicates[i][j] = irregular->predicates[i][j];
   }
 
-  copy->nb_control = irregular->nb_control;
-  copy->nb_iterators = (int *)malloc(sizeof(int)*copy->nb_control);
-  if (copy->nb_predicates == NULL)
+  copy->nb_control  = irregular->nb_control;
+  copy->nb_exit     = irregular->nb_exit;
+  int nb_predicates = irregular->nb_control + irregular->nb_exit;
+  copy->nb_iterators = (int *)malloc(sizeof(int)*nb_predicates);
+  if (copy->nb_iterators == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  copy->iterators = (char ***)malloc(sizeof(char**)*copy->nb_control);
+  copy->iterators = (char ***)malloc(sizeof(char**)*nb_predicates);
   if (copy->iterators == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  copy->body = (char **)malloc(sizeof(char*)*copy->nb_control);
+  copy->body = (char **)malloc(sizeof(char*)*nb_predicates);
   if (copy->body == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  for(i=0; i<copy->nb_control; i++)
+  for(i=0; i<nb_predicates; i++)
   {
     copy->nb_iterators[i] = irregular->nb_iterators[i];
     copy->iterators[i] = (char**)malloc(sizeof(char*)*copy->nb_iterators[i]);
@@ -503,7 +537,9 @@ openscop_irregular_equal(openscop_irregular_p c1, openscop_irregular_p c2)
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
     return 0;
 
-  if(c1->nb_statements != c2->nb_statements||c1->nb_control != c2->nb_control)
+  if(c1->nb_statements != c2->nb_statements ||
+     c1->nb_control    != c2->nb_control    ||
+     c1->nb_exit       != c2->nb_exit)
     return 0;
   i=0;
   while(bool == 0 && i < c1->nb_statements)
@@ -515,7 +551,7 @@ openscop_irregular_equal(openscop_irregular_p c1, openscop_irregular_p c2)
     return 0;
 
   i = 0;
-  while(bool == 0 && i < c1->nb_control)
+  while(bool == 0 && i < c1->nb_control + c1->nb_exit)
   {
     bool += c1->nb_iterators[i] != c2->nb_iterators[i] ? 1 : 0;
     bool += strcmp(c1->body[i],c2->body[i]);
@@ -541,13 +577,15 @@ openscop_irregular_p openscop_irregular_add_control(
   int i,j;
   openscop_irregular_p result=openscop_irregular_malloc();
 
-  result->nb_control = irregular->nb_control+1;
+  result->nb_control    = irregular->nb_control + 1;
+  result->nb_exit       = irregular->nb_exit;
   result->nb_statements = irregular->nb_statements;
+  int nb_predicates     = result->nb_control + result->nb_exit;
 
-  result->iterators = (char***)malloc(sizeof(char**)*result->nb_control);
-  result->nb_iterators = (int*)malloc(sizeof(int)*result->nb_control);
-  result->body = (char**)malloc(sizeof(char*)*result->nb_control);
-  //copy
+  result->iterators = (char***)malloc(sizeof(char**)*nb_predicates);
+  result->nb_iterators = (int*)malloc(sizeof(int)*nb_predicates);
+  result->body = (char**)malloc(sizeof(char*)*nb_predicates);
+  //copy controls
   for(i=0; i<irregular->nb_control; i++)
   {
     result->nb_iterators[i] = irregular->nb_iterators[i];
@@ -557,6 +595,23 @@ openscop_irregular_p openscop_irregular_add_control(
     for(j=0; j<irregular->nb_iterators[i];j++)
       result->iterators[i][j] = strdup(irregular->iterators[i][j]);
   }
+  //add controls
+  result->iterators[irregular->nb_control] = (char**)malloc(sizeof(char*)*nb_iterators);
+  for(i=0; i<nb_iterators; i++)
+    result->iterators[irregular->nb_control][i] = strdup(iterators[i]);
+  result->nb_iterators[irregular->nb_control] = nb_iterators;
+  result->body[irregular->nb_control] = strdup(body);
+  //copy exits
+  for(i=result->nb_control; i<nb_predicates; i++)
+  {
+    result->nb_iterators[i] = irregular->nb_iterators[i-1];
+    result->body[i] = strdup(irregular->body[i-1]); 
+    result->iterators[i] = (char**)malloc(sizeof(char*)  *  
+                                          irregular->nb_iterators[i-1]);
+    for(j=0; j<irregular->nb_iterators[i-1];j++)
+      result->iterators[i][j] = strdup(irregular->iterators[i-1][j]);
+  }
+  // copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*irregular->nb_statements);
   result->predicates = (int**)malloc(sizeof(int*)*irregular->nb_statements);
   for(i=0; i<irregular->nb_statements; i++)
@@ -566,41 +621,84 @@ openscop_irregular_p openscop_irregular_add_control(
     for(j=0; j<irregular->nb_predicates[i]; j++)
       result->predicates[i][j]=irregular->predicates[i][j];
   }
-  //add
-  result->iterators[irregular->nb_control] = (char**)malloc(sizeof(char*)*nb_iterators);
-  for(i=0; i<nb_iterators; i++)
-    result->iterators[irregular->nb_control][i] = strdup(iterators[i]);
-  result->nb_iterators[irregular->nb_control] = nb_iterators;
-  result->body[irregular->nb_control] = strdup(body);
-
   return result;
-
 }
 
-openscop_irregular_p openscop_irregular_add_predicates(
+
+openscop_irregular_p openscop_irregular_add_exit(
                                                openscop_irregular_p irregular,
-					       int* predicates, 
-					       int nb_predicates)
+                                               char** iterators,
+					       int nb_iterators,
+					       char* body)
 {
   int i,j;
   openscop_irregular_p result=openscop_irregular_malloc();
 
-  result->nb_control = irregular->nb_control;
-  result->nb_statements = irregular->nb_statements+1;
+  result->nb_control    = irregular->nb_control;
+  result->nb_exit       = irregular->nb_exit + 1;
+  result->nb_statements = irregular->nb_statements;
+  int nb_predicates     = result->nb_control + result->nb_exit;
 
-  result->iterators = (char***)malloc(sizeof(char**)*irregular->nb_control);
-  result->nb_iterators = (int*)malloc(sizeof(int)*irregular->nb_control);
-  result->body = (char**)malloc(sizeof(char*)*irregular->nb_control);
-  //copy
-  for(i=0; i<irregular->nb_control; i++)
+  result->iterators = (char***)malloc(sizeof(char**)*nb_predicates);
+  result->nb_iterators = (int*)malloc(sizeof(int)*nb_predicates);
+  result->body = (char**)malloc(sizeof(char*)*nb_predicates);
+  //copy controls and exits
+  for(i=0; i<nb_predicates - 1; i++)
   {
     result->nb_iterators[i] = irregular->nb_iterators[i];
     result->body[i] = strdup(irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
     for(j=0; j<irregular->nb_iterators[i];j++)
-      result->iterators[i][j] = irregular->iterators[i][j];
+      result->iterators[i][j] = strdup(irregular->iterators[i][j]);
   }
+  //add exit
+  result->iterators[nb_predicates-1] = (char**)malloc(sizeof(char*)*nb_iterators);
+  for(i=0; i<nb_iterators; i++)
+    result->iterators[nb_predicates-1][i] = strdup(iterators[i]);
+  result->nb_iterators[nb_predicates-1] = nb_iterators;
+  result->body[nb_predicates-1] = strdup(body);
+  // copy statements
+  result->nb_predicates = (int*)malloc(sizeof(int)*irregular->nb_statements);
+  result->predicates = (int**)malloc(sizeof(int*)*irregular->nb_statements);
+  for(i=0; i<irregular->nb_statements; i++)
+  { 
+    result->predicates[i] = (int*)malloc(sizeof(int)*irregular->nb_predicates[i]);
+    result->nb_predicates[i] = irregular->nb_predicates[i];
+    for(j=0; j<irregular->nb_predicates[i]; j++)
+      result->predicates[i][j]=irregular->predicates[i][j];
+  }
+  return result;
+}
+
+
+openscop_irregular_p openscop_irregular_add_predicates(
+                                               openscop_irregular_p irregular,
+					       int* predicates, 
+					       int nb_add_predicates)
+{
+  int i,j;
+  openscop_irregular_p result=openscop_irregular_malloc();
+
+  result->nb_control    = irregular->nb_control;
+  result->nb_exit       = irregular->nb_exit;
+  result->nb_statements = irregular->nb_statements+1;
+  int nb_predicates     = result->nb_control + result->nb_exit;
+
+  result->iterators = (char***)malloc(sizeof(char**)*nb_predicates);
+  result->nb_iterators = (int*)malloc(sizeof(int)*nb_predicates);
+  result->body = (char**)malloc(sizeof(char*)*nb_predicates);
+  //copy controls and exits
+  for(i=0; i<nb_predicates; i++)
+  {
+    result->nb_iterators[i] = irregular->nb_iterators[i];
+    result->body[i] = strdup(irregular->body[i]); 
+    result->iterators[i] = (char**)malloc(sizeof(char*)  *  
+                                          irregular->nb_iterators[i]);
+    for(j=0; j<irregular->nb_iterators[i];j++)
+      result->iterators[i][j] = strdup(irregular->iterators[i][j]);
+  }
+  //copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*result->nb_statements);
   result->predicates = (int**)malloc(sizeof(int*)*result->nb_statements);
   for(i=0; i<irregular->nb_statements; i++)
@@ -610,11 +708,11 @@ openscop_irregular_p openscop_irregular_add_predicates(
     for(j=0; j<irregular->nb_predicates[i]; j++)
       result->predicates[i][j]=irregular->predicates[i][j];
   }
-  //add
-  result->predicates[irregular->nb_statements] = (int*)malloc(sizeof(int)*nb_predicates);
-  for(i=0; i<nb_predicates; i++)
+  //add statement
+  result->predicates[irregular->nb_statements] = (int*)malloc(sizeof(int)*nb_add_predicates);
+  for(i=0; i<nb_add_predicates; i++)
     result->predicates[irregular->nb_statements][i] = predicates[i];
-  result->nb_predicates[irregular->nb_statements] = nb_predicates;
+  result->nb_predicates[irregular->nb_statements] = nb_add_predicates;
 
   return result;
 
