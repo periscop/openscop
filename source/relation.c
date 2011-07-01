@@ -503,7 +503,7 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
   // TODO: remove this !!!
   // Temporarily deactivate comments for relations, to finish OpenScop
   // RFC first.
-  if (!openscop_relation_is_matrix(relation))
+  //if (!openscop_relation_is_matrix(relation))
     return 0;
 
   // We cannot print comments if the names are not textual.
