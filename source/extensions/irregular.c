@@ -272,7 +272,7 @@ openscop_irregular_sread(char * extensions)
                                          irregular->nb_statements);
   irregular->nb_predicates = (int*) malloc(sizeof(int) *
                                          irregular->nb_statements);
-  if (irregular->predicates == NULL)
+  if (irregular->predicates == NULL || irregular->nb_predicates == NULL)
   {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
@@ -585,6 +585,13 @@ openscop_irregular_p openscop_irregular_add_control(
   result->iterators = (char***)malloc(sizeof(char**)*nb_predicates);
   result->nb_iterators = (int*)malloc(sizeof(int)*nb_predicates);
   result->body = (char**)malloc(sizeof(char*)*nb_predicates);
+  if (result->iterators == NULL || 
+      result->nb_iterators == NULL ||
+      result->body == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   //copy controls
   for(i=0; i<irregular->nb_control; i++)
   {
@@ -592,11 +599,21 @@ openscop_irregular_p openscop_irregular_add_control(
     result->body[i] = strdup(irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
+    if (result->iterators[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     for(j=0; j<irregular->nb_iterators[i];j++)
       result->iterators[i][j] = strdup(irregular->iterators[i][j]);
   }
   //add controls
   result->iterators[irregular->nb_control] = (char**)malloc(sizeof(char*)*nb_iterators);
+  if (result->iterators[irregular->nb_control] == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   for(i=0; i<nb_iterators; i++)
     result->iterators[irregular->nb_control][i] = strdup(iterators[i]);
   result->nb_iterators[irregular->nb_control] = nb_iterators;
@@ -608,15 +625,30 @@ openscop_irregular_p openscop_irregular_add_control(
     result->body[i] = strdup(irregular->body[i-1]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i-1]);
+    if (result->iterators[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     for(j=0; j<irregular->nb_iterators[i-1];j++)
       result->iterators[i][j] = strdup(irregular->iterators[i-1][j]);
   }
   // copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*irregular->nb_statements);
   result->predicates = (int**)malloc(sizeof(int*)*irregular->nb_statements);
+  if (result->nb_predicates == NULL || result->predicates == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   for(i=0; i<irregular->nb_statements; i++)
   { 
     result->predicates[i] = (int*)malloc(sizeof(int)*irregular->nb_predicates[i]);
+    if (result->predicates[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     result->nb_predicates[i] = irregular->nb_predicates[i];
     for(j=0; j<irregular->nb_predicates[i]; j++)
       result->predicates[i][j]=irregular->predicates[i][j];
@@ -642,6 +674,13 @@ openscop_irregular_p openscop_irregular_add_exit(
   result->iterators = (char***)malloc(sizeof(char**)*nb_predicates);
   result->nb_iterators = (int*)malloc(sizeof(int)*nb_predicates);
   result->body = (char**)malloc(sizeof(char*)*nb_predicates);
+  if (result->iterators == NULL || 
+      result->nb_iterators == NULL ||
+      result->body == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   //copy controls and exits
   for(i=0; i<nb_predicates - 1; i++)
   {
@@ -649,11 +688,22 @@ openscop_irregular_p openscop_irregular_add_exit(
     result->body[i] = strdup(irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
+    if (result->iterators[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     for(j=0; j<irregular->nb_iterators[i];j++)
       result->iterators[i][j] = strdup(irregular->iterators[i][j]);
   }
   //add exit
   result->iterators[nb_predicates-1] = (char**)malloc(sizeof(char*)*nb_iterators);
+  if (result->iterators[nb_predicates-1] == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
+
   for(i=0; i<nb_iterators; i++)
     result->iterators[nb_predicates-1][i] = strdup(iterators[i]);
   result->nb_iterators[nb_predicates-1] = nb_iterators;
@@ -661,9 +711,19 @@ openscop_irregular_p openscop_irregular_add_exit(
   // copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*irregular->nb_statements);
   result->predicates = (int**)malloc(sizeof(int*)*irregular->nb_statements);
+  if (result->nb_predicates == NULL || result->predicates == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   for(i=0; i<irregular->nb_statements; i++)
   { 
     result->predicates[i] = (int*)malloc(sizeof(int)*irregular->nb_predicates[i]);
+    if (result->predicates[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     result->nb_predicates[i] = irregular->nb_predicates[i];
     for(j=0; j<irregular->nb_predicates[i]; j++)
       result->predicates[i][j]=irregular->predicates[i][j];
@@ -688,6 +748,13 @@ openscop_irregular_p openscop_irregular_add_predicates(
   result->iterators = (char***)malloc(sizeof(char**)*nb_predicates);
   result->nb_iterators = (int*)malloc(sizeof(int)*nb_predicates);
   result->body = (char**)malloc(sizeof(char*)*nb_predicates);
+  if (result->iterators == NULL || 
+      result->nb_iterators == NULL ||
+      result->body == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   //copy controls and exits
   for(i=0; i<nb_predicates; i++)
   {
@@ -695,21 +762,42 @@ openscop_irregular_p openscop_irregular_add_predicates(
     result->body[i] = strdup(irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
+    if (result->iterators[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     for(j=0; j<irregular->nb_iterators[i];j++)
       result->iterators[i][j] = strdup(irregular->iterators[i][j]);
   }
   //copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*result->nb_statements);
   result->predicates = (int**)malloc(sizeof(int*)*result->nb_statements);
+  if (result->nb_predicates == NULL || 
+      result->predicates == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   for(i=0; i<irregular->nb_statements; i++)
   { 
     result->predicates[i] = (int*)malloc(sizeof(int)*irregular->nb_predicates[i]);
+    if (result->predicates[i] == NULL)
+    {
+      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+      exit(1);
+    }
     result->nb_predicates[i] = irregular->nb_predicates[i];
     for(j=0; j<irregular->nb_predicates[i]; j++)
       result->predicates[i][j]=irregular->predicates[i][j];
   }
   //add statement
   result->predicates[irregular->nb_statements] = (int*)malloc(sizeof(int)*nb_add_predicates);
+  if (result->predicates[irregular->nb_statements] == NULL)
+  {
+    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
+    exit(1);
+  }
   for(i=0; i<nb_add_predicates; i++)
     result->predicates[irregular->nb_statements][i] = predicates[i];
   result->nb_predicates[irregular->nb_statements] = nb_add_predicates;
