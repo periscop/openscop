@@ -253,8 +253,11 @@ void openscop_util_strings_complete(char *** strings, int * nb_strings,
 
   nb_new = nb_complete - *nb_strings;
   if (nb_new < 0) {
-    fprintf(stderr, "[OpenScop] Error: asked to complete a string array "
-                    "but it would be smaller than the original.\n");
+    fprintf(stderr, "[OpenScop] Error: asked to complete the following "
+                    "string array but it would be smaller than the original "
+                    "(desired length: %d):\n", nb_complete);
+    openscop_util_strings_idump(stderr, *strings, *nb_strings, -1,
+                                "To be completed");
     exit(1);
   }
 

@@ -188,10 +188,8 @@ void openscop_statement_dump(FILE * file, openscop_statement_p statement) {
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
  * \param file      File where informations are printed.
  * \param statement The statement whose information have to be printed.
- * \param names     The textual names of the various elements. Is is important
- *                  that names->nb_parameters is exact if the matrix
- *                  representation is used. Set to NULL if printing comments
- *                  is not needed.
+ * \param names     The textual names of the various elements.
+ *                  Set to NULL if printing comments is not needed.
  */
 void openscop_statement_print(FILE * file,
                               openscop_statement_p statement,
@@ -349,12 +347,10 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
  * openscop_statement_read function:
  * This function reads a openscop_statement_t structure from an input stream
  * (possibly stdin).
- * \param file          The input stream.
- * \param nb_parameters The number of global parameters.
+ * \param file The input stream.
  * \return A pointer to the statement structure that has been read.
  */
-openscop_statement_p openscop_statement_read(FILE * file,
-                                             int nb_parameters) {
+openscop_statement_p openscop_statement_read(FILE * file) {
   openscop_statement_p stmt = openscop_statement_malloc();
   openscop_relation_list_p list;
   char buff[OPENSCOP_MAX_STRING], * start, * end;
@@ -371,19 +367,7 @@ openscop_statement_p openscop_statement_read(FILE * file,
     if (openscop_util_read_int(file, NULL) > 0) {
       // Is there any iterator to read ?
       if (stmt->domain != NULL) {
-        if (openscop_relation_is_matrix(stmt->domain)) {
-          if (nb_parameters == OPENSCOP_UNDEFINED) {
-            fprintf(stderr, "[OpenScop] Warning: undefined number of "
-                            "parameters (no context ?), assuming 0.\n");
-            nb_parameters = 0;
-          }
-
-          expected_nb_iterators = stmt->domain->nb_columns -
-                                  nb_parameters - 2;
-        }
-        else {
-          expected_nb_iterators = stmt->domain->nb_output_dims;
-        }
+        expected_nb_iterators = stmt->domain->nb_output_dims;
       }
       else {
         fprintf(stderr, "[OpenScop] Warning: no domain, assuming 0 "
@@ -633,61 +617,38 @@ int openscop_statement_integrity_check(openscop_statement_p statement,
 
   while (statement != NULL) {
     // Check the domain.
-    if ((openscop_relation_is_matrix(statement->domain) &&
-         !openscop_relation_integrity_check(statement->domain,
-                                            OPENSCOP_TYPE_DOMAIN,
-                                            OPENSCOP_UNDEFINED,
-                                            OPENSCOP_UNDEFINED,
-                                            OPENSCOP_UNDEFINED)) ||
-        (!openscop_relation_is_matrix(statement->domain) &&
-         !openscop_relation_integrity_check(statement->domain,
-                                            OPENSCOP_TYPE_DOMAIN,
-                                            OPENSCOP_UNDEFINED,
-                                            0,
-                                            expected_nb_parameters))) {
+    if (!openscop_relation_integrity_check(statement->domain,
+                                           OPENSCOP_TYPE_DOMAIN,
+                                           OPENSCOP_UNDEFINED,
+                                           0,
+                                           expected_nb_parameters)) {
       return 0;
     }
 
     // Get the number of iterators.
-    if (statement->domain != NULL) {
-      if (openscop_relation_is_matrix(statement->domain)) {
-        if (expected_nb_parameters != OPENSCOP_UNDEFINED)
-          expected_nb_iterators = statement->domain->nb_columns -
-                                  expected_nb_parameters - 2;
-        else
-          expected_nb_iterators = OPENSCOP_UNDEFINED;
-      }
-      else
-        expected_nb_iterators = statement->domain->nb_output_dims;
-    }
+    if (statement->domain != NULL)
+      expected_nb_iterators = statement->domain->nb_output_dims;
 
     // Check the scattering relation.
-    if ((openscop_relation_is_matrix(statement->scattering) &&
-         !openscop_relation_integrity_check(statement->scattering,
-                                            OPENSCOP_TYPE_SCATTERING,
-                                            OPENSCOP_UNDEFINED,
-                                            OPENSCOP_UNDEFINED,
-                                            OPENSCOP_UNDEFINED)) ||
-        (!openscop_relation_is_matrix(statement->scattering) &&
-         !openscop_relation_integrity_check(statement->scattering,
-                                            OPENSCOP_TYPE_SCATTERING,
-                                            OPENSCOP_UNDEFINED,
-                                            expected_nb_iterators,
-                                            expected_nb_parameters))) {
+    if (!openscop_relation_integrity_check(statement->scattering,
+                                           OPENSCOP_TYPE_SCATTERING,
+                                           OPENSCOP_UNDEFINED,
+                                           expected_nb_iterators,
+                                           expected_nb_parameters)) {
       return 0;
     }
 
     // Check the access relations.
     if (!openscop_relation_list_integrity_check(statement->access,
-                                            OPENSCOP_TYPE_ACCESS,
-                                            OPENSCOP_UNDEFINED,
-                                            expected_nb_iterators,
-                                            expected_nb_parameters)) {
+                                           OPENSCOP_TYPE_ACCESS,
+                                           OPENSCOP_UNDEFINED,
+                                           expected_nb_iterators,
+                                           expected_nb_parameters)) {
       return 0;
     }
 
     if ((statement->nb_iterators > 0) &&
-        (statement->nb_iterators < statement->domain->nb_output_dims)) {
+        (statement->nb_iterators < expected_nb_iterators)) {
       fprintf(stderr, "[OpenScop] Warning: not enough original iterator "
                       "names.\n");
       return 0;

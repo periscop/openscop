@@ -109,20 +109,8 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
         fprintf(file, OPENSCOP_STRING_WRITE);
         break;
       }
-      case OPENSCOP_TYPE_RDWR: {
-        fprintf(file, OPENSCOP_STRING_RDWR);
-        break;
-      }
-      case OPENSCOP_TYPE_MAY_READ: {
-        fprintf(file, OPENSCOP_STRING_MAY_READ);
-        break;
-      }
       case OPENSCOP_TYPE_MAY_WRITE: {
         fprintf(file, OPENSCOP_STRING_MAY_WRITE);
-        break;
-      }
-      case OPENSCOP_TYPE_MAY_RDWR: {
-        fprintf(file, OPENSCOP_STRING_MAY_RDWR);
         break;
       }
       default: {
@@ -312,10 +300,8 @@ char * openscop_relation_expression_element(openscop_int_t val, int * first,
  * stored at the "row"^th row of the relation pointed by "relation".
  * \param[in] relation A set of linear expressions.
  * \param[in] row      The row corresponding to the expression.
- * \param[in] names    The textual names of the various elements. Is is
- *                     important that names->nb_parameters is exact if the
- *                     matrix representation is used. Set to NULL if
- *                     printing comments is not needed.
+ * \param[in] names    The textual names of the various elements.
+ *                     Set to NULL if printing comments is not needed.
  * \return A string that contains the printing of an affine expression.
  */
 char * openscop_relation_expression(openscop_relation_p relation,
@@ -366,19 +352,19 @@ char * openscop_relation_expression(openscop_relation_p relation,
 
 /**
  * openscop_relation_properties function:
- * this function returns, through its parameters, the values of every possible
- * "property" (nb_iterators, nb_parameters etc) of a relation, depending on
- * its value, its representation and its type. The array identifier 0 is used
- * when there is no array identifier (AND this is OK), OPENSCOP_UNDEFINED is
- * used to report it is impossible to provide the property while it should.
+ * this function returns, through its parameters, the values of the relation
+ * attributes (nb_iterators, nb_parameters etc), depending on its value and
+ * its type. The array identifier 0 is used when there is no array
+ * identifier (AND this is OK), OPENSCOP_UNDEFINED is used to report it
+ * is impossible to provide the property while it should.
  * This function is not intended for checking, the input relation should be
- * correct. The parameter nb_parameters is an input in matrix representation.
- * \param[in]     relation      The relation to extract property values.
- * \param[in,out] nb_parameters Number of parameter property.
- * \param[out]    nb_iterators  Number of iterators property.
- * \param[out]    nb_scattdims  Number of scattering dimensions property.
- * \param[out]    nb_localdims  Number of local dimensions property.
- * \param[out]    array_id      Array identifier property.
+ * correct.
+ * \param[in]  relation      The relation to extract property values.
+ * \param[out] nb_parameters Number of parameter property.
+ * \param[out] nb_iterators  Number of iterators property.
+ * \param[out] nb_scattdims  Number of scattering dimensions property.
+ * \param[out] nb_localdims  Number of local dimensions property.
+ * \param[out] array_id      Array identifier property.
  */
 static
 void openscop_relation_properties(openscop_relation_p relation,
@@ -388,15 +374,13 @@ void openscop_relation_properties(openscop_relation_p relation,
                                 int * nb_localdims,
                                 int * array_id) {
 
-  int is_matrix = openscop_relation_is_matrix(relation);
   int type;
  
-  if (!is_matrix)
-    *nb_parameters = OPENSCOP_UNDEFINED;
-  *nb_iterators = OPENSCOP_UNDEFINED;
-  *nb_scattdims = OPENSCOP_UNDEFINED;
-  *nb_localdims = OPENSCOP_UNDEFINED;
-  *array_id     = OPENSCOP_UNDEFINED;
+  *nb_parameters = OPENSCOP_UNDEFINED;
+  *nb_iterators  = OPENSCOP_UNDEFINED;
+  *nb_scattdims  = OPENSCOP_UNDEFINED;
+  *nb_localdims  = OPENSCOP_UNDEFINED;
+  *array_id      = OPENSCOP_UNDEFINED;
  
   if (relation == NULL)
     return;
@@ -409,71 +393,35 @@ void openscop_relation_properties(openscop_relation_p relation,
   // There is some redundancy but I believe the code is cleaner this way.
   switch (type) {
     case OPENSCOP_TYPE_CONTEXT: {
-      if (is_matrix) {
-        *nb_parameters = *nb_parameters;
-        *nb_iterators  = 0;
-        *nb_scattdims  = 0;
-        *nb_localdims  = 0;
-        *array_id      = 0;
-      }
-      else {
-        *nb_parameters = relation->nb_parameters;
-        *nb_iterators  = 0;
-        *nb_scattdims  = 0;
-        *nb_localdims  = relation->nb_local_dims;
-        *array_id      = 0;
-      }
+      *nb_parameters = relation->nb_parameters;
+      *nb_iterators  = 0;
+      *nb_scattdims  = 0;
+      *nb_localdims  = relation->nb_local_dims;
+      *array_id      = 0;
       break;
     }
     case OPENSCOP_TYPE_DOMAIN: {
-      if (is_matrix) {
-        *nb_parameters = *nb_parameters;
-        *nb_iterators  = relation->nb_columns - *nb_parameters - 2;
-        *nb_scattdims  = 0;
-        *nb_localdims  = 0;
-        *array_id      = 0;
-      }
-      else {
-        *nb_parameters = relation->nb_parameters;
-        *nb_iterators  = relation->nb_output_dims;
-        *nb_scattdims  = 0;
-        *nb_localdims  = relation->nb_local_dims;
-        *array_id      = 0;
-      }
+      *nb_parameters = relation->nb_parameters;
+      *nb_iterators  = relation->nb_output_dims;
+      *nb_scattdims  = 0;
+      *nb_localdims  = relation->nb_local_dims;
+      *array_id      = 0;
       break;
     }
     case OPENSCOP_TYPE_SCATTERING: {
-      if (is_matrix) {
-        *nb_parameters = *nb_parameters;
-        *nb_iterators  = relation->nb_columns - *nb_parameters - 2;
-        *nb_scattdims  = relation->nb_rows;
-        *nb_localdims  = 0;
-        *array_id      = 0;
-      }
-      else {
-        *nb_parameters = relation->nb_parameters;
-        *nb_iterators  = relation->nb_input_dims;
-        *nb_scattdims  = relation->nb_output_dims;
-        *nb_localdims  = relation->nb_local_dims;
-        *array_id      = 0;
-      }
+      *nb_parameters = relation->nb_parameters;
+      *nb_iterators  = relation->nb_input_dims;
+      *nb_scattdims  = relation->nb_output_dims;
+      *nb_localdims  = relation->nb_local_dims;
+      *array_id      = 0;
       break;
     }
     case OPENSCOP_TYPE_ACCESS: {
-      if (is_matrix) {
-        *nb_parameters = *nb_parameters;
-        *nb_iterators  = relation->nb_columns - *nb_parameters - 2;
-        *nb_scattdims  = 0;
-        *nb_localdims  = 0;
-        *array_id      = openscop_relation_get_array_id(relation);
-      }
-      else {
-        *nb_parameters = relation->nb_parameters;
-        *nb_iterators  = relation->nb_input_dims;
-        *nb_scattdims  = 0;
-        *nb_localdims  = relation->nb_local_dims;
-        *array_id      = openscop_relation_get_array_id(relation);
-      }
+      *nb_parameters = relation->nb_parameters;
+      *nb_iterators  = relation->nb_input_dims;
+      *nb_scattdims  = 0;
+      *nb_localdims  = relation->nb_local_dims;
+      *array_id      = openscop_relation_get_array_id(relation);
       break;
     }
   }
@@ -501,10 +449,8 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
     return 0;
 
   // TODO: remove this !!!
-  // Temporarily deactivate comments for relations, to finish OpenScop
-  // RFC first.
-  //if (!openscop_relation_is_matrix(relation))
-    return 0;
+  // Temporarily deactivate comments, to finish OpenScop RFC first.
+  return 0;
 
   // We cannot print comments if the names are not textual.
   if (names->textual != 1)
@@ -544,16 +490,13 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
 /**
  * openscop_relation_print_comment function:
  * this function prints a comment corresponding to a constraint of a relation,
- * according to its type and representation. This function does not check that
- * printing the comment is possible (i.e., are there enough names ?), hence it
- * is the responsibility of the user to ensure he/she can call this function
- * safely.
+ * according to its type. This function does not check that printing the
+ * comment is possible (i.e., are there enough names ?), hence it is the
+ * responsibility of the user to ensure he/she can call this function safely.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation for which a comment has to be printed.
  * \param[in] row      The constrain row for which a comment has to be printed.
- * \param[in] names    The textual names of the various elements. Is is
- *                     important that names->nb_parameters is exact if the
- *                     matrix representation is used.
+ * \param[in] names    The textual names of the various elements.
  */ 
 static
 void openscop_relation_print_comment(FILE * file,
@@ -612,14 +555,12 @@ void openscop_relation_print_comment(FILE * file,
 
 /**
  * openscop_relation_print function:
- * this function prints the content of a openscop_relation_t structure
+ * this function prints the content of an openscop_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information has to be printed.
- * \param[in] names    The textual names of the various elements. Is is
- *                     important that names->nb_parameters is exact if the
- *                     matrix representation is used. Set to NULL if printing
- *                     comments is not needed.
+ * \param[in] names    The textual names of the various elements.
+ *                     Set to NULL if printing comments is not needed.
  */
 void openscop_relation_print(FILE * file,
                              openscop_relation_p relation,
@@ -741,23 +682,8 @@ int openscop_relation_read_type(FILE * file) {
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_RDWR)) {
-    type = OPENSCOP_TYPE_RDWR; 
-    goto return_type;
-  }
-
-  if (!strcmp(strings[0], OPENSCOP_STRING_MAY_READ)) {
-    type = OPENSCOP_TYPE_MAY_READ; 
-    goto return_type;
-  }
-
   if (!strcmp(strings[0], OPENSCOP_STRING_MAY_WRITE)) {
     type = OPENSCOP_TYPE_MAY_WRITE; 
-    goto return_type;
-  }
-
-  if (!strcmp(strings[0], OPENSCOP_STRING_MAY_RDWR)) {
-    type = OPENSCOP_TYPE_CONTEXT; 
     goto return_type;
   }
 
@@ -805,12 +731,11 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
                                              &nb_output_dims, &nb_input_dims,
                                              &nb_local_dims, &nb_parameters);
     
-      if (((read != 1) && (read != 2) && (read != 6)) ||
+      if (((read != 1) && (read != 6)) ||
           ((read == 1) && (may_read_nb_union_parts != 1))) {
-        fprintf(stderr, "[OpenScop] Error: badly formated relation.\n");
-        fprintf(stderr, "(%d properties while it should be either "
-                        "1 -number of union parts, 2 -matrix representation "
-                        " or 6 -relation representation)\n", read);
+        fprintf(stderr, "[OpenScop] Error: badly formated relation "
+                        "(%d integers on the first line instead of "
+                        "1 or 6).\n", read);
         exit(1);
       }
 
@@ -823,13 +748,6 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
         }
         // Allow to read the properties of the first part of the union.
         read_properties = 1;
-      }
-
-      if (read == 2) {
-        nb_output_dims = OPENSCOP_UNDEFINED;
-        nb_input_dims  = OPENSCOP_UNDEFINED;
-        nb_local_dims  = OPENSCOP_UNDEFINED;
-        nb_parameters  = OPENSCOP_UNDEFINED;
       }
 
       may_read_nb_union_parts = 0;
@@ -1014,32 +932,6 @@ void openscop_relation_free(openscop_relation_p relation) {
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
-
-/**
- * openscop_relation_is_matrix function:
- * this function returns 1 if the relation provided as parameter corresponds
- * to a "matrix" representation (see documentation), -1 if it is NULL and
- * 0 in all other cases.
- * \param[in] relation The relation we want to know if it is a matrix or not.
- * \return 1 if the relation has "matrix" representation, -1 if it is NULL,
- *         0 in all other cases.
- */
-int openscop_relation_is_matrix(openscop_relation_p relation) {
-  if (relation == NULL)
-    return -1;
-  
-  // A relation has matrix representation if all nb_local_dims fields
-  // of all parts of the union is OPENSCOP_UNDEFINED.
-  while (relation != NULL) {
-    if (relation->nb_local_dims != OPENSCOP_UNDEFINED)
-      return 0;
-    
-    relation = relation->next;
-  }
-
-  return 1;
-}
 
 
 /**
@@ -1464,32 +1356,6 @@ int openscop_relation_check_nb_columns(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_format_consistency function:
- * this function checks that each part of an union of relations use the same
- * representation type (either matrix or relation representation). It returns
- * 1 if it is the case, 0 otherwise.
- * \param[in] r The relation to check for representation consistency.
- * \return 0 if the representation consistency check fails, 1 if it succeeds.
- */
-static
-int openscop_relation_format_consistency(openscop_relation_p r) {
-  int matrix   = 0;
-  int relation = 0;
-
-  while (r != NULL) {
-    if (r->nb_local_dims == OPENSCOP_UNDEFINED)
-      matrix = 1;
-    else
-      relation = 1;
-
-    r = r->next;
-  }
-
-  return (matrix == relation) ? 0 : 1;
-}
-
-
-/**
  * openscop_relation_integrity_check function:
  * this function checks that a relation is "well formed" according to some
  * expected properties (setting an expected value to OPENSCOP_UNDEFINED means
@@ -1508,7 +1374,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
                                       int expected_nb_output_dims,
                                       int expected_nb_input_dims,
                                       int expected_nb_parameters) {
-  int i, is_matrix;
+  int i;
 
   // Check the NULL case.
   if (relation == NULL) {
@@ -1517,7 +1383,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
         (expected_nb_parameters  != OPENSCOP_UNDEFINED)) {
       fprintf(stderr, "[OpenScop] Warning: NULL relation with "
                       "some expected properties.\n");
-      return 0;
+      //return 0;
     }
 
     return 1;
@@ -1529,46 +1395,36 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
       ((expected_type == OPENSCOP_TYPE_ACCESS) &&
        (!openscop_relation_is_access(relation)))) {
     fprintf(stderr, "[OpenScop] Warning: wrong type.\n");
+    openscop_relation_dump(stderr, relation);
     return 0;
   }
 
-  // Check the relation is using either matrix or relation representation.
-  if (!openscop_relation_format_consistency(relation)) {
-    fprintf(stderr, "[OpenScop] Warning: inconsistent representation "
-                    "(both matrix and relation).\n");
-    return 0;
-  }
-  
-  is_matrix = openscop_relation_is_matrix(relation); 
-
-  // Check that relations have no undefined properties.
-  if (!is_matrix &&
-      ((relation->nb_output_dims == OPENSCOP_UNDEFINED) ||
-       (relation->nb_input_dims  == OPENSCOP_UNDEFINED) ||
-       (relation->nb_local_dims  == OPENSCOP_UNDEFINED) ||
-       (relation->nb_parameters  == OPENSCOP_UNDEFINED))) {
-    fprintf(stderr, "[OpenScop] Warning: undefined property for a "
-                    "relation representation.\n");
+  // Check that relations have no undefined atributes.
+  if ((relation->nb_output_dims == OPENSCOP_UNDEFINED) ||
+      (relation->nb_input_dims  == OPENSCOP_UNDEFINED) ||
+      (relation->nb_local_dims  == OPENSCOP_UNDEFINED) ||
+      (relation->nb_parameters  == OPENSCOP_UNDEFINED)) {
+    fprintf(stderr, "[OpenScop] Warning: all attributes should be defined.\n");
+    openscop_relation_dump(stderr, relation);
     return 0;
   }
 
-  // Check that a context has actually 0 or an undefined #output dimensions.
+  // Check that a context has actually 0 output dimensions.
   if ((relation->type == OPENSCOP_TYPE_CONTEXT) &&
-      (relation->nb_output_dims != 0) &&
-      (relation->nb_output_dims != OPENSCOP_UNDEFINED)) {
+      (relation->nb_output_dims != 0)) {
     fprintf(stderr, "[OpenScop] Warning: context without 0 "
                     "as number of output dimensions.\n");
-    openscop_relation_dump(stdout, relation);
+    openscop_relation_dump(stderr, relation);
     return 0;
   }
 
-  // Check that a domain has actually 0 or an undefined #input dimensions.
+  // Check that a domain or a context has actually 0 input dimensions.
   if (((relation->type == OPENSCOP_TYPE_DOMAIN) ||
        (relation->type == OPENSCOP_TYPE_CONTEXT)) &&
-      (relation->nb_input_dims != 0) &&
-      (relation->nb_input_dims != OPENSCOP_UNDEFINED)) {
+      (relation->nb_input_dims != 0)) {
     fprintf(stderr, "[OpenScop] Warning: domain or context without 0 "
-                    "as number of input dimensions.\n");
+                    "input dimensions.\n");
+    openscop_relation_dump(stderr, relation);
     return 0;
   }
 
@@ -1579,17 +1435,20 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
       !openscop_relation_check_property(&expected_nb_input_dims,
                                         relation->nb_input_dims)  ||
       !openscop_relation_check_property(&expected_nb_parameters,
-                                        relation->nb_parameters))
+                                        relation->nb_parameters)) {
+    openscop_relation_dump(stderr, relation);
     return 0;
+  }
 
   while (relation != NULL) {
 
-    // Properties (except the number of local dimensions) should be the same
-    // in all parts.
+    // Attributes (except the number of local dimensions) should be the same
+    // in all parts of the union.
     if ((expected_nb_output_dims != relation->nb_output_dims) ||
         (expected_nb_input_dims  != relation->nb_input_dims)  ||
         (expected_nb_parameters  != relation->nb_parameters)) {
-      fprintf(stderr, "[OpenScop] Warning: inconsistent properties.\n");
+      fprintf(stderr, "[OpenScop] Warning: inconsistent attributes.\n");
+      openscop_relation_dump(stderr, relation);
       return 0;
     }
    
@@ -1597,39 +1456,31 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     if (!openscop_relation_check_nb_columns(relation,
                                             expected_nb_output_dims,
                                             expected_nb_input_dims,
-                                            expected_nb_parameters))
+                                            expected_nb_parameters)) {
+      openscop_relation_dump(stderr, relation);
       return 0;
+    }
 
     // Check the first column. The first column of a relation part should be
-    // made of 0 or 1 only, except for scattering and access relations in
-    // "matrix" representation, the first column is made only of 0.
+    // made of 0 or 1 only.
     if ((relation->nb_rows > 0) && (relation->nb_columns > 0)) {
       for (i = 0; i < relation->nb_rows; i++) {
-        if (is_matrix && 
-            ((openscop_relation_is_access(relation)) ||
-             (relation->type == OPENSCOP_TYPE_SCATTERING))) {
-          if (!SCOPINT_zero_p(relation->m[i][0])) {
-            fprintf(stderr, "[OpenScop] Warning: first column of a scattering "
-                            "or access function not made of 0s.\n");
-            openscop_relation_dump(stdout, relation);
-            return 0;
-          }
-        }
-        else {
-          if (!SCOPINT_zero_p(relation->m[i][0]) &&
-              !SCOPINT_one_p(relation->m[i][0])) {
-            fprintf(stderr, "[OpenScop] Warning: first column of a "
-                            "relation is not strictly made of 0 or 1.\n");
-            return 0;
-          }
+        if (!SCOPINT_zero_p(relation->m[i][0]) &&
+            !SCOPINT_one_p(relation->m[i][0])) {
+          fprintf(stderr, "[OpenScop] Warning: first column of a "
+                          "relation is not strictly made of 0 or 1.\n");
+          openscop_relation_dump(stderr, relation);
+          return 0;
         }
       }
     }
 
     // Array accesses must provide the array identifier.
     if ((openscop_relation_is_access(relation)) &&
-        (openscop_relation_get_array_id(relation) == OPENSCOP_UNDEFINED))
+        (openscop_relation_get_array_id(relation) == OPENSCOP_UNDEFINED)) {
+      openscop_relation_dump(stderr, relation);
       return 0;
+    }
 
     relation = relation->next;
   }
@@ -1699,7 +1550,6 @@ void openscop_relation_set_type(openscop_relation_p relation, int type) {
 int openscop_relation_get_array_id(openscop_relation_p relation) {
   int i;
   int first = 1;
-  int is_matrix = openscop_relation_is_matrix(relation); 
   int array_id = OPENSCOP_UNDEFINED;
   int reference_array_id = OPENSCOP_UNDEFINED;
   int nb_array_id;
@@ -1717,78 +1567,56 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
   while (relation != NULL) {
     // There should be room to store the array identifier.
     if ((relation->nb_rows < 1) ||
-        (is_matrix && (relation->nb_columns < 2)) ||
-        (!is_matrix && (relation->nb_columns < 3))) {
+        (relation->nb_columns < 3)) {
       fprintf(stderr, "[OpenScop] Warning: no array identifier in "
-          "an access function.\n");
+                      "an access function.\n");
       return OPENSCOP_UNDEFINED;
     }
 
-    if (is_matrix) {
-      // In matrix format, the array identifier is the last element of the
-      // first row (m[0][#columns -1]), it should be greater than 0 and be
-      // the only non-zero element in the row.
-      for (i = 0; i < relation->nb_columns - 1; i++) {
-        if (!SCOPINT_zero_p(relation->m[0][i])) {
-          fprintf(stderr, "[OpenScop] Warning: non integer array "
-              "identifier.\n");
-          return OPENSCOP_UNDEFINED;
-        }
+    // Array identifiers are m[i][#columns -1] / m[i][1], with i the only row
+    // where m[i][1] is not 0.
+    // - check there is exactly one row such that m[i][1] is not 0,
+    // - check the whole ith row if full of 0 except m[i][1] and the id,
+    // - check that (m[i][#columns -1] % m[i][1]) == 0,
+    // - check that (-m[i][#columns -1] / m[i][1]) > 0.
+    nb_array_id = 0;
+    for (i = 0; i < relation->nb_rows; i++) {
+      if (!SCOPINT_zero_p(relation->m[i][1])) {
+        nb_array_id ++;
+        row_id = i;
       }
-      array_id = SCOPINT_get_si(relation->m[0][relation->nb_columns - 1]);
-      if (array_id <= 0) {
-        fprintf(stderr, "[OpenScop] Warning: negative or 0 identifier "
-            "in access function.\n");
+    }
+    if (nb_array_id == 0) {
+      fprintf(stderr, "[OpenScop] Warning: no array identifier in "
+                      "an access function.\n");
+      return OPENSCOP_UNDEFINED;
+    }
+    if (nb_array_id > 1) {
+      fprintf(stderr, "[OpenScop] Warning: several array identifiers in one "
+                      "access function.\n");
+      return OPENSCOP_UNDEFINED;
+    }
+    for (i = 0; i < relation->nb_columns - 1; i++) {
+      if ((i != 1) && !SCOPINT_zero_p(relation->m[row_id][i])) {
+        fprintf(stderr, "[OpenScop] Warning: non integer array "
+                        "identifier.\n");
         return OPENSCOP_UNDEFINED;
       }
     }
-    else {
-      // In relation format, array identifiers are
-      // m[i][#columns -1] / m[i][1], with i the only row
-      // where m[i][1] is not 0.
-      // - check there is exactly one row such that m[i][1] is not 0,
-      // - check the whole ith row if full of 0 except m[i][1] and the id,
-      // - check that (m[i][#columns -1] % m[i][1]) == 0,
-      // - check that (-m[i][#columns -1] / m[i][1]) > 0.
-      nb_array_id = 0;
-      for (i = 0; i < relation->nb_rows; i++) {
-        if (!SCOPINT_zero_p(relation->m[i][1])) {
-          nb_array_id ++;
-          row_id = i;
-        }
-      }
-      if (nb_array_id == 0) {
-        fprintf(stderr, "[OpenScop] Warning: no array identifier in "
-            "an access function.\n");
-        return OPENSCOP_UNDEFINED;
-      }
-      if (nb_array_id > 1) {
-        fprintf(stderr, "[OpenScop] Warning: several array identification "
-            "rows in one access function.\n");
-        return OPENSCOP_UNDEFINED;
-      }
-      for (i = 0; i < relation->nb_columns - 1; i++) {
-        if ((i != 1) && !SCOPINT_zero_p(relation->m[row_id][i])) {
-          fprintf(stderr, "[OpenScop] Warning: non integer array "
-              "identifier.\n");
-          return OPENSCOP_UNDEFINED;
-        }
-      }
-      if (!SCOPINT_divisible(relation->m[row_id][relation->nb_columns - 1],
-            relation->m[row_id][1])) {
-        fprintf(stderr, "[OpenScop] Warning: rational array identifier.\n");
-        return OPENSCOP_UNDEFINED;
-      }
-      array_id = -SCOPINT_get_si(relation->m[row_id][relation->nb_columns-1]);
-      array_id /= SCOPINT_get_si(relation->m[row_id][1]);
-      if (array_id <= 0) {
-        fprintf(stderr, "[OpenScop] Warning: negative or 0 identifier "
-            "in access function.\n");
-        return OPENSCOP_UNDEFINED;
-      }
+    if (!SCOPINT_divisible(relation->m[row_id][relation->nb_columns - 1],
+                           relation->m[row_id][1])) {
+      fprintf(stderr, "[OpenScop] Warning: rational array identifier.\n");
+      return OPENSCOP_UNDEFINED;
+    }
+    array_id = -SCOPINT_get_si(relation->m[row_id][relation->nb_columns-1]);
+    array_id /= SCOPINT_get_si(relation->m[row_id][1]);
+    if (array_id <= 0) {
+      fprintf(stderr, "[OpenScop] Warning: negative or 0 identifier "
+                      "in access function.\n");
+      return OPENSCOP_UNDEFINED;
     }
 
-    // Unions of accesses are allowed, but they should refer the same array.
+    // Unions of accesses are allowed, but they should refer at the same array.
     if (first) {
       reference_array_id = array_id;
       first = 0;
@@ -1823,10 +1651,7 @@ int openscop_relation_is_access(openscop_relation_p relation) {
   if ((relation->type == OPENSCOP_TYPE_ACCESS)    ||
       (relation->type == OPENSCOP_TYPE_READ)      ||
       (relation->type == OPENSCOP_TYPE_WRITE)     ||
-      (relation->type == OPENSCOP_TYPE_RDWR)      ||
-      (relation->type == OPENSCOP_TYPE_MAY_READ)  ||
-      (relation->type == OPENSCOP_TYPE_MAY_WRITE) ||
-      (relation->type == OPENSCOP_TYPE_MAY_RDWR))
+      (relation->type == OPENSCOP_TYPE_MAY_WRITE))
     return 1;
 
   return 0;

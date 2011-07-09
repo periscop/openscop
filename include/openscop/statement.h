@@ -110,7 +110,7 @@ void openscop_statement_print(FILE *, openscop_statement_p,
 /*****************************************************************************
  *                              Reading function                             *
  *****************************************************************************/
-openscop_statement_p openscop_statement_read(FILE*, int);
+openscop_statement_p openscop_statement_read(FILE*);
 
 
 /*+***************************************************************************

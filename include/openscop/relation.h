@@ -152,7 +152,6 @@ void                openscop_relation_free(openscop_relation_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-int                 openscop_relation_is_matrix(openscop_relation_p);
 openscop_relation_p openscop_relation_ncopy(openscop_relation_p, int);
 openscop_relation_p openscop_relation_copy(openscop_relation_p);
 void                openscop_relation_replace_vector(openscop_relation_p,

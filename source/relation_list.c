@@ -151,10 +151,8 @@ void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
  * list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information have to be printed.
- * \param names The textual names of the various elements. Is is important
- *              that names->nb_parameters is exact if the matrix
- *              representation is used. Set to NULL if printing comments
- *              is not needed.
+ * \param names The textual names of the various elements.
+ *              Set to NULL if printing comments is not needed.
  */
 void openscop_relation_list_print_elts(FILE * file,
                                        openscop_relation_list_p list,
@@ -191,10 +189,8 @@ void openscop_relation_list_print_elts(FILE * file,
  * an element of the list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information have to be printed.
- * \param names The textual names of the various elements. Is is important
- *              that names->nb_parameters is exact if the matrix
- *              representation is used. Set to NULL if printing comments
- *              is not needed.
+ * \param names The textual names of the various elements.
+ *              Set to NULL if printing comments is not needed.
  */
 void openscop_relation_list_print(FILE * file,
                                   openscop_relation_list_p list,
@@ -440,18 +436,11 @@ int openscop_relation_list_integrity_check(openscop_relation_list_p list,
                                            int expected_nb_parameters) {
   while (list != NULL) {
     // Check the access function.
-    if (( openscop_relation_is_matrix(list->elt) &&
-         !openscop_relation_integrity_check(list->elt,
-                                            type,
-                                            OPENSCOP_UNDEFINED,
-                                            OPENSCOP_UNDEFINED,
-                                            OPENSCOP_UNDEFINED)) ||
-        (!openscop_relation_is_matrix(list->elt) &&
-         !openscop_relation_integrity_check(list->elt,
-                                            type,
-                                            expected_nb_output_dims,
-                                            expected_nb_input_dims,
-                                            expected_nb_parameters))) {
+    if (!openscop_relation_integrity_check(list->elt,
+                                           type,
+                                           expected_nb_output_dims,
+                                           expected_nb_input_dims,
+                                           expected_nb_parameters)) {
       return 0;
     }
 
