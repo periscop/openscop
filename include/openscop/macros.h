@@ -90,26 +90,19 @@
 # define OPENSCOP_BACKEND_C             0
 # define OPENSCOP_BACKEND_FORTRAN       1
 # define OPENSCOP_UNDEFINED             -1
-# define OPENSCOP_MAX_STRING		2048
-# define OPENSCOP_MAX_ARRAYS		128
-# define OPENSCOP_TYPE_BARE	        0
-# define OPENSCOP_TYPE_ITERATOR	        1
-# define OPENSCOP_TYPE_PARAMETER        2
-# define OPENSCOP_TYPE_ARRAY            3
-# define OPENSCOP_TYPE_FUNCTION	        4
-# define OPENSCOP_TYPE_CONTEXT	        6
-# define OPENSCOP_TYPE_DOMAIN           7
-# define OPENSCOP_TYPE_SCATTERING       8
-# define OPENSCOP_TYPE_ACCESS	        9
-# define OPENSCOP_TYPE_LOCAL_DIMS       10
-# define OPENSCOP_TYPE_ITERATOR_DEC     11
-# define OPENSCOP_TYPE_UNKNOWN	        12
-# define OPENSCOP_TYPE_READ             13
-# define OPENSCOP_TYPE_WRITE            14
-# define OPENSCOP_TYPE_RDWR             15
-# define OPENSCOP_TYPE_MAY_READ         16
-# define OPENSCOP_TYPE_MAY_WRITE        17
-# define OPENSCOP_TYPE_MAY_RDWR         18
+# define OPENSCOP_MAX_STRING            2048
+# define OPENSCOP_MAX_ARRAYS            128
+
+# define OPENSCOP_TYPE_GENERIC          0
+# define OPENSCOP_TYPE_STRING           1
+# define OPENSCOP_TYPE_CONTEXT	        2
+# define OPENSCOP_TYPE_DOMAIN           3
+# define OPENSCOP_TYPE_SCATTERING       4
+# define OPENSCOP_TYPE_ACCESS	        5
+# define OPENSCOP_TYPE_READ             6
+# define OPENSCOP_TYPE_WRITE            7
+# define OPENSCOP_TYPE_MAY_WRITE        8
+
 # define OPENSCOP_FAKE_ARRAY            "fakearray"
 
 # define OPENSCOP_STRING_UNDEFINED      "UNDEFINED"
@@ -118,10 +111,7 @@
 # define OPENSCOP_STRING_SCATTERING     "SCATTERING"
 # define OPENSCOP_STRING_READ           "READ"
 # define OPENSCOP_STRING_WRITE          "WRITE"
-# define OPENSCOP_STRING_RDWR           "RDWR"
-# define OPENSCOP_STRING_MAY_READ       "MAY_READ"
 # define OPENSCOP_STRING_MAY_WRITE      "MAY_WRITE"
-# define OPENSCOP_STRING_MAY_RDWR       "MAY_RDWR"
 
 
 /*+***************************************************************************
