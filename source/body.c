@@ -92,48 +92,36 @@ void openscop_body_idump(FILE * file, openscop_body_p body, int level) {
 
   if (body != NULL) {
     fprintf(file, "+-- openscop_body_t\n");
+
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
+
+    if (body->type == OPENSCOP_TYPE_STRING) {
+      // Print the original iterator names.
+      openscop_util_strings_idump(file, (char **)body->iterator,
+                                  body->nb_iterators, level,
+                                  "original iterator strings");
+
+      // Print the original body expression.
+      for (i = 0; i <= level; i++)
+        fprintf(file, "|\t");
+      if (body->expression != NULL)
+        fprintf(file, "+-- Original expression: %s\n", (char *)body->expression);
+      else
+        fprintf(file, "+-- No original body expression\n");
+    }
+    else {
+      for (i = 0; i <= level; i++)
+        fprintf(file, "|\t");
+      fprintf(file, "+-- Non textual information\n");
+    }
   }
   else {
     fprintf(file, "+-- NULL body\n");
   }
-
-  // A blank line.
-  for (j = 0; j <= level+1; j++)
-    fprintf(file, "|\t");
-  fprintf(file, "\n");
-
-  if (body->type == OPENSCOP_TYPE_STRING) {
-    // Print the original iterator names.
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    if (body->nb_iterators > 0) {
-      fprintf(file, "+-- Original iterator strings:");
-      for (i = 0; i < body->nb_iterators; i++)
-        fprintf(file, " %s", (char *)body->iterator[i]);
-      fprintf(file, "\n");
-    }
-    else
-      fprintf(file, "+-- No original iterator string\n");
-
-    // A blank line.
-    for (i = 0; i <= level+1; i++)
-      fprintf(file, "|\t");
-    fprintf(file, "\n");
-
-    // Print the original body expression.
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    if (body->expression != NULL)
-      fprintf(file, "+-- Original expression: %s\n", (char *)body->expression);
-    else
-      fprintf(file, "+-- No original body expression\n");
-  }
-  else {
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    fprintf(file, "+-- Non textual information\n");
-  }
-
+  
   // The last line.
   for (j = 0; j <= level+1; j++)
     fprintf(file, "|\t");
@@ -204,11 +192,11 @@ openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
   int nb_strings;
 
   if (file) {
-    body = openscop_body_malloc();
-    body->type = OPENSCOP_TYPE_STRING;
-    
     // Read the body information, if any.
     if (openscop_util_read_int(file, NULL) > 0) {
+      body = openscop_body_malloc();
+      body->type = OPENSCOP_TYPE_STRING;
+    
       // Read the original iterator names.
       if (nb_iterators > 0) {
         body->iterator = (void *)openscop_util_strings_read(file, &nb_strings);
@@ -231,11 +219,6 @@ openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
       
       // - Copy the body.
       body->expression = strdup(start);
-    }
-    else {
-      body->nb_iterators = 0;
-      body->iterator     = NULL;
-      body->expression   = NULL;
     }
   }
 

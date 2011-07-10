@@ -93,7 +93,7 @@ void openscop_util_strings_idump(FILE * file,
   // Print the original parameter names.
   for (i = 0; i <= level; i++)
     fprintf(file, "|\t");
-  if (nb_strings > 0) {
+  if ((strings != NULL) && (nb_strings > 0)) {
     fprintf(file, "+-- %s:", title);
     for (i = 0; i < nb_strings; i++)
       fprintf(file, " %s", strings[i]);
@@ -125,7 +125,7 @@ void openscop_util_strings_print(FILE * file,
                                  char * title) {
   int i;
   
-  if ((print != 0) && (nb_strings > 0)) {
+  if ((print != 0) && (strings != NULL) && (nb_strings > 0)) {
     fprintf(file, "# %s are provided\n", title);
     fprintf(file, "1\n");
     fprintf(file, "# %s\n", title);

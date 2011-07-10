@@ -97,6 +97,16 @@ void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
       fprintf(file, "|\t");
     fprintf(file, "\n");
 
+    // Print the version.
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "|\tVersion: %d\n", scop->version);
+
+    // A blank line.
+    for (j = 0; j <= level+1; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "\n");
+
     // Print the language.
     for (j = 0; j < level; j++)
       fprintf(file, "|\t");
@@ -110,8 +120,12 @@ void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
     // Print the context of the scop.
     openscop_relation_idump(file, scop->context, level+1);
 
-    // Print the names.
-    openscop_names_idump(file, scop->names, level+1);
+    // Print the parameters.
+    openscop_util_strings_idump(file,
+        (scop->parameter_type == OPENSCOP_TYPE_STRING) ? 
+            (char **)scop->parameter : NULL,
+        (scop->context != NULL) ? scop->context->nb_parameters : 0,
+        level, "parameters");
 
     // Print the statements.
     openscop_statement_idump(file, scop->statement, level+1);
@@ -147,6 +161,7 @@ void openscop_scop_dump(FILE * file, openscop_scop_p scop) {
 }
 
 
+#if 0
 /**
  * openscop_scop_name_limits function:
  * this function finds the (maximum) number of various elements of a scop and
@@ -273,7 +288,7 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
 
   return names;
 }
-
+#endif
 
 /**
  * openscop_scop_print function:
@@ -283,17 +298,11 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
  * \param scop The scop structure whose information has to be printed.
  */
 void openscop_scop_print(FILE * file, openscop_scop_p scop) {
-  openscop_names_p names;
-  int tmp_nb_iterators = 0;
-  char ** tmp_iterators = NULL;
 
   if (openscop_scop_integrity_check(scop) == 0) {
     fprintf(stderr, "[OpenScop] Warning: OpenScop integrity check failed. "
                     " Something may go wrong.\n");
   }
-
-  // Build a name structure for pretty printing of relations.
-  names = openscop_scop_full_names(scop);
 
   if (0) {
     fprintf(file, "#                                                     \n");
@@ -339,32 +348,25 @@ void openscop_scop_print(FILE * file, openscop_scop_p scop) {
   fprintf(file, "%s\n\n", scop->language);
 
   fprintf(file, "# Context\n");
-  // Remove the iterators from the names structure to print comments, as
-  // this information is used to know the number of iterators.
-  // TODO: do this in openscop_relation_print_openscop
-  tmp_nb_iterators = names->nb_iterators;
-  tmp_iterators = names->iterators;
-  names->nb_iterators = 0;
-  names->iterators = NULL;
-  openscop_relation_print(file, scop->context, names);
-  names->nb_iterators = tmp_nb_iterators;
-  names->iterators = tmp_iterators;
+  openscop_relation_print(file, scop->context, NULL);
   fprintf(file, "\n");
 
-  openscop_names_print(file, scop->names);
+  openscop_util_strings_print(file,
+      (char **)scop->parameter,
+      (scop->context != NULL) ? scop->context->nb_parameters : 0,
+      (scop->parameter_type == OPENSCOP_TYPE_STRING),
+      "Parameters");
 
   fprintf(file, "# Number of statements\n");
   fprintf(file, "%d\n\n",openscop_statement_number(scop->statement));
 
-  openscop_statement_print(file, scop->statement, names);
-  
+  openscop_statement_print(file, scop->statement, NULL);
+
   if (scop->extension) {
     fprintf(file, "# ==============================================="
                   " Extensions\n");
     openscop_extension_print(file, scop->extension);
   }
-
-  openscop_names_free(names);
 }
 
 
@@ -387,7 +389,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   openscop_scop_p scop      = NULL;
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
-  int nb_statements;
+  int nb_statements, nb_parameters;
   int max;
   char ** tmp;
   int i;
@@ -428,7 +430,15 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
   // Read the context.
   scop->context = openscop_relation_read(file);
-  scop->names = openscop_names_read(file);
+
+  // Read the parameters.
+  scop->parameter_type = OPENSCOP_TYPE_STRING;
+  if (openscop_util_read_int(file, NULL) > 0) {
+    scop->parameter = (void**)openscop_util_strings_read(file, &nb_parameters);
+    if ((scop->context != NULL) &&
+        (nb_parameters != scop->context->nb_parameters))
+      fprintf(stderr, "[OpenScop] Warning: bad number of parameters.\n");
+  }
 
   //
   // II. STATEMENT PART
@@ -458,7 +468,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   // VI. FINALIZE AND CHECK
   //
   if (!openscop_scop_integrity_check(scop))
-    fprintf(stderr, "[OpenScop] Warning: global integrity check failed.\n");
+    fprintf(stderr, "[OpenScop] Warning: scop integrity check failed.\n");
 
   return scop;
 }
@@ -485,13 +495,14 @@ openscop_scop_p openscop_scop_malloc() {
     exit(1);
   }
 
-  scop->version   = 1;
-  scop->language  = NULL;
-  scop->context   = NULL;
-  scop->names     = NULL;
-  scop->statement = NULL;
-  scop->extension = NULL;
-  scop->usr	  = NULL;
+  scop->version        = 1;
+  scop->language       = NULL;
+  scop->context        = NULL;
+  scop->parameter_type = OPENSCOP_UNDEFINED;
+  scop->parameter      = NULL;
+  scop->statement      = NULL;
+  scop->extension      = NULL;
+  scop->usr	       = NULL;
 
   return scop;
 }
@@ -507,8 +518,10 @@ void openscop_scop_free(openscop_scop_p scop) {
     if (scop->language != NULL)
       free(scop->language);
     
+    openscop_util_strings_free(
+        (char **)scop->parameter,
+        (scop->context != NULL) ? scop->context->nb_parameters : 0);
     openscop_relation_free(scop->context);
-    openscop_names_free(scop->names);
     openscop_statement_free(scop->statement);
     openscop_extension_free(scop->extension);
 
@@ -538,7 +551,10 @@ openscop_scop_p openscop_scop_copy(openscop_scop_p scop) {
   if (scop->language != NULL)
     copy->language         = strdup(scop->language);
   copy->context            = openscop_relation_copy(scop->context);
-  copy->names              = openscop_names_copy(scop->names);
+  copy->parameter_type     = scop->parameter_type;
+  copy->parameter          = (void **)openscop_util_strings_copy(
+      (char **)scop->parameter,
+      (scop->context != NULL) ? scop->context->nb_parameters : 0);
   copy->statement          = openscop_statement_copy(scop->statement);
   copy->extension          = openscop_extension_copy(scop->extension);
 
@@ -574,8 +590,18 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
     return 0;
   }
   
-  if (!openscop_names_equal(s1->names, s2->names)) {
-    fprintf(stderr, "[OpenScop] info: names are not the same.\n"); 
+  if (s1->parameter_type != s2->parameter_type) {
+    fprintf(stderr, "[OpenScop] info: parameter types are not the same.\n"); 
+    return 0;
+  }
+
+  if ((s1->parameter_type == OPENSCOP_TYPE_STRING) &&
+      (!openscop_util_strings_equal(
+            (char **)s1->parameter,
+            (s1->context != NULL) ? s1->context->nb_parameters : 0,
+            (char **)s2->parameter,
+            (s2->context != NULL) ? s2->context->nb_parameters : 0))) {
+    fprintf(stderr, "[OpenScop] info: parameters are not the same.\n"); 
     return 0;
   }
   
@@ -602,11 +628,6 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
  */
 int openscop_scop_integrity_check(openscop_scop_p scop) {
   int expected_nb_parameters;
-  int max_nb_parameters;
-  int max_nb_iterators;
-  int max_nb_scattdims;
-  int max_nb_localdims;
-  int max_nb_arrays;
 
   // Check the language.
   if ((scop->language != NULL) &&
@@ -632,13 +653,5 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
                                           expected_nb_parameters))
     return 0;
 
-  // Ensure we have enough names.
-  openscop_scop_name_limits(scop, &max_nb_parameters,
-                                  &max_nb_iterators,
-                                  &max_nb_scattdims,
-				  &max_nb_localdims,
-			          &max_nb_arrays);
-
-  return openscop_names_integrity_check(scop->names, expected_nb_parameters,
-                                        max_nb_iterators, max_nb_scattdims);
+  return 1;
 }

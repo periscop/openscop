@@ -95,16 +95,22 @@ extern "C"
 /**
  * The scop_t structure stores the useful information of a static
  * control part of a program to process it within a polyhedral framework.
+ * Parameter information may be strings of characters (char *) or a generic
+ * pointer to anything else (void *). The OpenScop library does not touch AT
+ * ALL generic information: printing, copy etc. must be done externally.
  */
 struct openscop_scop {
   int version;                    /**< Version of the data structure */
   char * language;                /**< Target language (backend) */
-  openscop_relation_p  context;   /**< Constraints on the SCoP parameters */
-  openscop_names_p     names;     /**< Various names for code generation */
+  openscop_relation_p context;    /**< Constraints on the SCoP parameters */
+  int parameter_type;             /**< OPENSCOP_TYPE_GENERIC if parameters are
+                                       generic (void*), OPENSCOP_TYPE_STRING if
+                                       they are strings (castable to char*) */
+  void ** parameter;              /**< Array of parameters */
   openscop_statement_p statement; /**< Statement list of the SCoP */
-  openscop_extension_p extension; /**< Extension list. */
+  openscop_extension_p extension; /**< Extension list */
   void * usr;                     /**< A user-defined field, not touched
-				       AT ALL by the OpenScop Library. */
+				       AT ALL by the OpenScop Library */
 };
 typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;

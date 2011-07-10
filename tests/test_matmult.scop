@@ -16,14 +16,6 @@ CONTEXT
 # Parameter names
 N 
 
-# Iterator names are provided
-1
-# Iterator names
-a b c 
-
-# Scattering dimension names are not provided
-0
-
 # Number of statements
 2
 
