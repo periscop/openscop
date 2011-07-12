@@ -103,7 +103,7 @@ void openscop_vector_idump(FILE * file, openscop_vector_p vector, int level) {
     fprintf(file,"[ ");
 
     for (j = 0; j < vector->size; j++) {
-      SCOPINT_dump(file,OPENSCOP_FMT,vector->v[j]);
+      OPENSCOP_INT_dump(file,OPENSCOP_FMT,vector->v[j]);
       fprintf(file," ");
     }
 
@@ -153,24 +153,16 @@ openscop_vector_p openscop_vector_malloc(unsigned size) {
   openscop_int_t * p;
   int i;
 
-  vector = (openscop_vector_p)malloc(sizeof(openscop_vector_t));
-  if (vector == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
+  OPENSCOP_malloc(vector, openscop_vector_p, sizeof(openscop_vector_t));
   vector->size = size;
   if (size == 0) {
     vector->v = NULL;
   }
   else {
-    p = (openscop_int_t *)malloc(size * sizeof(openscop_int_t));
-    if (p == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(p, openscop_int_t *, size * sizeof(openscop_int_t));
     vector->v = p;
     for (i = 0; i < size; i++)
-      SCOPINT_init_set_si(vector->v[i],0);
+      OPENSCOP_INT_init_set_si(vector->v[i],0);
   }
   return vector;
 }
@@ -188,7 +180,7 @@ void openscop_vector_free(openscop_vector_p vector) {
   if (vector != NULL) {
     p = vector->v;
     for (i = 0; i < vector->size; i++)
-      SCOPINT_clear(*p++);
+      OPENSCOP_INT_clear(*p++);
 
     free(vector->v);
     free(vector);
@@ -215,15 +207,13 @@ openscop_vector_p openscop_vector_add_scalar(openscop_vector_p vector,
   int i;
   openscop_vector_p result;
 
-  if ((vector == NULL) || (vector->size < 2)) {
-    fprintf(stderr,"[OpenScop] Error: incompatible vector for addition.\n");
-    exit(1);
-  }
+  if ((vector == NULL) || (vector->size < 2))
+    OPENSCOP_error("incompatible vector for addition");
 
   result = openscop_vector_malloc(vector->size);
   for (i = 0; i < vector->size; i++)
-    SCOPINT_assign(result->v[i],vector->v[i]);
-  SCOPINT_add_int(result->v[vector->size - 1],
+    OPENSCOP_INT_assign(result->v[i],vector->v[i]);
+  OPENSCOP_INT_add_int(result->v[vector->size - 1],
 		  vector->v[vector->size - 1],scalar);
 
   return result;
@@ -244,14 +234,12 @@ openscop_vector_p openscop_vector_add(openscop_vector_p v1,
   int i;
   openscop_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size)) {
-    fprintf(stderr,"[OpenScop] Error: incompatible vectors for addition.\n");
-    exit(1);
-  }
+  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size))
+    OPENSCOP_error("incompatible vectors for addition");
 
   v3 = openscop_vector_malloc(v1->size);
   for (i = 0; i < v1->size; i++)
-    SCOPINT_addto(v3->v[i],v1->v[i],v2->v[i]);
+    OPENSCOP_INT_addto(v3->v[i],v1->v[i],v2->v[i]);
 
   return v3;
 }
@@ -271,15 +259,12 @@ openscop_vector_p openscop_vector_sub(openscop_vector_p v1,
   int i;
   openscop_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size)) {
-    fprintf(stderr,"[OpenScop] Error: "
-                   "incompatible vectors for subtraction.\n");
-    exit(1);
-  }
+  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size))
+    OPENSCOP_error("incompatible vectors for subtraction");
 
   v3 = openscop_vector_malloc(v1->size);
   for (i = 0; i < v1->size; i++)
-    SCOPINT_subtract(v3->v[i],v1->v[i],v2->v[i]);
+    OPENSCOP_INT_subtract(v3->v[i],v1->v[i],v2->v[i]);
 
   return v3;
 }
@@ -294,11 +279,9 @@ openscop_vector_p openscop_vector_sub(openscop_vector_p v1,
  * \param vector The vector to be tagged.
  */
 void openscop_vector_tag_inequality(openscop_vector_p vector) {
-  if ((vector == NULL) || (vector->size < 1)) {
-    fprintf(stderr,"[OpenScop] Error: vector cannot be tagged.\n");
-    exit(1);
-  }
-  SCOPINT_set_si(vector->v[0],1);
+  if ((vector == NULL) || (vector->size < 1))
+    OPENSCOP_error("vector cannot be tagged");
+  OPENSCOP_INT_set_si(vector->v[0],1);
 }
 
 
@@ -311,11 +294,9 @@ void openscop_vector_tag_inequality(openscop_vector_p vector) {
  * \param vector The vector to be tagged.
  */
 void openscop_vector_tag_equality(openscop_vector_p vector) {
-  if ((vector == NULL) || (vector->size < 1)) {
-    fprintf(stderr,"[OpenScop] Error: vector cannot be tagged.\n");
-    exit(1);
-  }
-  SCOPINT_set_si(vector->v[0],0);
+  if ((vector == NULL) || (vector->size < 1))
+    OPENSCOP_error("vector cannot be tagged");
+  OPENSCOP_INT_set_si(vector->v[0],0);
 }
 
 
@@ -337,7 +318,7 @@ int openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2) {
     return 0;
 
   for (i = 0; i < v1->size; i++)
-    if (SCOPINT_ne(v1->v[i], v2->v[i]))
+    if (OPENSCOP_INT_ne(v1->v[i], v2->v[i]))
       return 0;
 
   return 1;
@@ -358,7 +339,7 @@ openscop_vector_p openscop_vector_mul_scalar(openscop_vector_p v,
   openscop_vector_p result = openscop_vector_malloc(v->size);
   
   for(i = 0; i < v->size; i++)
-    SCOPINT_multo(result->v[i], scalar, v->v[i]);
+    OPENSCOP_INT_multo(result->v[i], scalar, v->v[i]);
 
   return result;
 }

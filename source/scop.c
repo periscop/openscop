@@ -299,10 +299,9 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
  */
 void openscop_scop_print(FILE * file, openscop_scop_p scop) {
 
-  if (openscop_scop_integrity_check(scop) == 0) {
-    fprintf(stderr, "[OpenScop] Warning: OpenScop integrity check failed. "
-                    " Something may go wrong.\n");
-  }
+  if (openscop_scop_integrity_check(scop) == 0)
+    OPENSCOP_warning("OpenScop integrity check failed. "
+                     "Something may go wrong");
 
   if (0) {
     fprintf(file, "#                                                     \n");
@@ -405,26 +404,22 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
   // Ensure the file is a .scop.
   tmp = openscop_util_strings_read(file, &max);
-  if ((max == 0) || (strcmp(*tmp, "OpenScop"))) {
-    fprintf(stderr, "[OpenScop] Error: not an OpenScop file "
-                    "(type \"%s\".\n", *tmp);
-    exit (1);
-  }
+  if ((max == 0) || (strcmp(*tmp, "OpenScop")))
+    OPENSCOP_error("not an OpenScop header");
+  
   if (max > 1)
-    fprintf(stderr, "[OpenScop] Warning: uninterpreted information "
-                    "(after file type).\n");
+    OPENSCOP_warning("uninterpreted information (after file type)");
   free(*tmp);
   free(tmp);
 
   // Read the language.
   char ** language =  openscop_util_strings_read(file, &max);
-  if (max == 0) {
-    fprintf(stderr, "[OpenScop] Error: no language (backend) specified.\n");
-    exit (1);
-  }
+  if (max == 0)
+    OPENSCOP_error("no language (backend) specified");
+  
   if (max > 1)
-    fprintf(stderr, "[OpenScop] Warning: uninterpreted information "
-                    "(after language).\n");
+    OPENSCOP_warning("uninterpreted information (after language)");
+
   scop->language = *language;
   free(language);
 
@@ -437,7 +432,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
     scop->parameter = (void**)openscop_util_strings_read(file, &nb_parameters);
     if ((scop->context != NULL) &&
         (nb_parameters != scop->context->nb_parameters))
-      fprintf(stderr, "[OpenScop] Warning: bad number of parameters.\n");
+      OPENSCOP_warning("bad number of parameters");
   }
 
   //
@@ -468,7 +463,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   // VI. FINALIZE AND CHECK
   //
   if (!openscop_scop_integrity_check(scop))
-    fprintf(stderr, "[OpenScop] Warning: scop integrity check failed.\n");
+    OPENSCOP_warning("scop integrity check failed");
 
   return scop;
 }
@@ -489,12 +484,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 openscop_scop_p openscop_scop_malloc() {
   openscop_scop_p scop;
 
-  scop = (openscop_scop_p)malloc(sizeof(openscop_scop_t));
-  if (scop == NULL) {
-    fprintf(stderr, "[OpenScop] Memory Overflow.\n");
-    exit(1);
-  }
-
+  OPENSCOP_malloc(scop, openscop_scop_p, sizeof(openscop_scop_t));
   scop->version        = 1;
   scop->language       = NULL;
   scop->context        = NULL;
@@ -576,22 +566,22 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
     return 1;
 
   if (s1->version != s2->version) {
-    fprintf(stderr, "[OpenScop] info: versions are not the same.\n"); 
+    OPENSCOP_info("versions are not the same"); 
     return 0;
   }
   
   if (strcmp(s1->language, s2->language) != 0) {
-    fprintf(stderr, "[OpenScop] info: languages are not the same.\n"); 
+    OPENSCOP_info("languages are not the same"); 
     return 0;
   }
 
   if (!openscop_relation_equal(s1->context, s2->context)) {
-    fprintf(stderr, "[OpenScop] info: contexts are not the same.\n"); 
+    OPENSCOP_info("contexts are not the same"); 
     return 0;
   }
   
   if (s1->parameter_type != s2->parameter_type) {
-    fprintf(stderr, "[OpenScop] info: parameter types are not the same.\n"); 
+    OPENSCOP_info("parameter types are not the same"); 
     return 0;
   }
 
@@ -601,17 +591,17 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
             (s1->context != NULL) ? s1->context->nb_parameters : 0,
             (char **)s2->parameter,
             (s2->context != NULL) ? s2->context->nb_parameters : 0))) {
-    fprintf(stderr, "[OpenScop] info: parameters are not the same.\n"); 
+    OPENSCOP_info("parameters are not the same"); 
     return 0;
   }
   
   if (!openscop_statement_equal(s1->statement, s2->statement)) {
-    fprintf(stderr, "[OpenScop] info: statements are not the same.\n"); 
+    OPENSCOP_info("statements are not the same"); 
     return 0;
   }
   
   if (!openscop_extension_equal(s1->extension, s2->extension)) {
-    fprintf(stderr, "[OpenScop] info: extensions are not the same.\n"); 
+    OPENSCOP_info("extensions are not the same"); 
     return 0;
   }
 

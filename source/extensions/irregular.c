@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/irregular.c                        **
+     **                     extensions/irregular.c                      **
      **-----------------------------------------------------------------**
      **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
@@ -81,10 +81,8 @@
  * \param irregular The irregular structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void
-openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
-                         int level)
-{
+void openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
+                              int level) {
   int i,j;
 
   // Go to the right level.
@@ -96,8 +94,7 @@ openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
   else
     fprintf(file, "+-- NULL irregular\n");
 
-  if (irregular != NULL)
-  {
+  if (irregular != NULL) {
     // Go to the right level.
     for(j = 0; j <= level; j++)
       fprintf(file, "|\t");
@@ -105,27 +102,25 @@ openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
     // Display the irregular contents.
 
     // Print statements
-    for (i=0; i<irregular->nb_statements; i++)
-    {
+    for (i = 0; i < irregular->nb_statements; i++) {
       fprintf(file, "statement%d's predicats : ", i);
-      for(j=0; j<irregular->nb_predicates[i]; j++)
+      for(j = 0; j < irregular->nb_predicates[i]; j++)
         fprintf(file, "%d ", irregular->predicates[i][j]);
       fprintf(file, "\n");
     }
     // Print predicats
     // controls :
-    for (i=0; i<irregular->nb_control; i++)
-    {
+    for (i = 0; i < irregular->nb_control; i++) {
       fprintf(file, "predicat%d's\niterators : ", i);
-      for(j=0; j<irregular->nb_iterators[i]; j++)
+      for(j = 0; j < irregular->nb_iterators[i]; j++)
         fprintf(file, "%s ", irregular->iterators[i][j]);
       fprintf(file, "\ncontrol body: %s\n", irregular->body[i]);
     }
     // exits :
-    for(i=irregular->nb_control;i<irregular->nb_control+irregular->nb_exit;i++)
-    {
+    for(i = irregular->nb_control;
+        i < irregular->nb_control + irregular->nb_exit; i++) {
       fprintf(file, "predicat%d's\niterators : ", i);
-      for(j=0; j<irregular->nb_iterators[i]; j++)
+      for(j = 0; j < irregular->nb_iterators[i]; j++)
         fprintf(file, "%s ", irregular->iterators[i][j]);
       fprintf(file, "\nexit body: %s\n", irregular->body[i]);
     }
@@ -145,9 +140,7 @@ openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
  * \param file    The file where the information has to be printed.
  * \param irregular The irregular structure whose information has to be printed.
  */
-void
-openscop_irregular_dump(FILE * file, openscop_irregular_p irregular)
-{
+void openscop_irregular_dump(FILE * file, openscop_irregular_p irregular) {
   openscop_irregular_idump(file, irregular, 0);
 }
 
@@ -159,22 +152,14 @@ openscop_irregular_dump(FILE * file, openscop_irregular_p irregular)
  * \param  irregular The irregular structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the irregular structure.
  */
-char *
-openscop_irregular_sprint(openscop_irregular_p irregular)
-{
+char * openscop_irregular_sprint(openscop_irregular_p irregular) {
   int high_water_mark = OPENSCOP_MAX_STRING,i,j;
   char * string = NULL;
   char * buffer;
 
-  if (irregular != NULL)
-  {
-    string = (char *)malloc(high_water_mark * sizeof(char));
-    buffer = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-    if ((string == NULL) || (buffer == NULL))
-    {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+  if (irregular != NULL) {
+    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
+    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the begin tag.
@@ -183,29 +168,25 @@ openscop_irregular_sprint(openscop_irregular_p irregular)
 
     // Print the content.
     sprintf(buffer, "\n%d\n", irregular->nb_statements);
-    for(i=0; i<irregular->nb_statements; i++)
-    {
+    for(i=0; i<irregular->nb_statements; i++) {
       sprintf(buffer, "%s%d ", buffer, irregular->nb_predicates[i]);
-      for(j=0; j<irregular->nb_predicates[i]; j++)
-      {
+      for(j=0; j<irregular->nb_predicates[i]; j++) {
         sprintf(buffer, "%s%d ", buffer, irregular->predicates[i][j]);
       }
       sprintf(buffer, "%s\n", buffer);
     }
-    // Print the predicats.
-    // controls :
+    // Print the predicates.
+    // controls:
     sprintf(buffer, "%s%d\n", buffer, irregular->nb_control);
     sprintf(buffer, "%s%d\n", buffer, irregular->nb_exit);
-    for(i=0; i<irregular->nb_control; i++)
-    {
+    for(i=0; i<irregular->nb_control; i++) {
       sprintf(buffer, "%s%d ", buffer, irregular->nb_iterators[i]);
       for(j=0; j<irregular->nb_iterators[i];j++)
         sprintf(buffer, "%s%s ", buffer, irregular->iterators[i][j]);
       sprintf(buffer, "%s\n%s\n", buffer, irregular->body[i]);
     }
-    // exits : 
-    for(i=0; i<irregular->nb_exit; i++)
-    {
+    // exits: 
+    for(i=0; i<irregular->nb_exit; i++) {
       sprintf(buffer, "%s%d ", buffer, irregular->nb_iterators[
                                         irregular->nb_control + i]);
       for(j=0; j<irregular->nb_iterators[irregular->nb_control + i];j++)
@@ -222,7 +203,7 @@ openscop_irregular_sprint(openscop_irregular_p irregular)
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    string = (char *)realloc(string, (strlen(string) + 1) * sizeof(char));
+    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -242,106 +223,69 @@ openscop_irregular_sprint(openscop_irregular_p irregular)
  * \param  extensions The input string where to find a irregular structure.
  * \return A pointer to the irregular structure that has been read.
  */
-openscop_irregular_p
-openscop_irregular_sread(char * extensions)
-{
+openscop_irregular_p openscop_irregular_sread(char * extensions) {
   char * content,*tok;
   int i,j;
   openscop_irregular_p irregular;
 
   content = openscop_util_tag_content(extensions, OPENSCOP_TAG_IRREGULAR_START,
                                                   OPENSCOP_TAG_IRREGULAR_STOP);
-  if (content == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Info: no irregular optional tag.\n");
+  if (content == NULL) {
+    OPENSCOP_info("no irregular optional tag");
     return NULL;
   }
 
   if (strlen(content) > OPENSCOP_MAX_STRING)
-  { 
-    fprintf(stderr, "[OpenScop] Error: irregular too long.\n");
-    exit(1);
-  }
+    OPENSCOP_error("irregular too long");
 
   irregular = openscop_irregular_malloc();
 
   // nb statements
   tok = strtok(content," \n");
   irregular->nb_statements = atoi(tok);
-  irregular->predicates = (int**) malloc(sizeof(int*) *
-                                         irregular->nb_statements);
-  irregular->nb_predicates = (int*) malloc(sizeof(int) *
-                                         irregular->nb_statements);
-  if (irregular->predicates == NULL || irregular->nb_predicates == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
+  OPENSCOP_malloc(irregular->predicates, int **, 
+                  sizeof(int*) * irregular->nb_statements);
+  OPENSCOP_malloc(irregular->nb_predicates, int *, 
+                  sizeof(int) * irregular->nb_statements);
+  
   // get predicats
-  for(i=0; i<irregular->nb_statements; i++)
-  {
+  for(i = 0; i < irregular->nb_statements; i++) {
     // nb conditions
     tok = strtok(NULL," \n");
     irregular->nb_predicates[i] = atoi(tok);
-    irregular->predicates[i] = (int* )malloc(sizeof(int)*
-                                             irregular->nb_predicates[i]);
-    if (irregular->predicates[i] == NULL)
-    {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
-    for(j=0; j<irregular->nb_predicates[i]; j++){
-      tok = strtok(NULL," \n");
-      irregular->predicates[i][j]=atoi(tok);
+    OPENSCOP_malloc(irregular->predicates[i], int *,
+                    sizeof(int) * irregular->nb_predicates[i]);
+    for(j = 0; j < irregular->nb_predicates[i]; j++){
+      tok = strtok(NULL, " \n");
+      irregular->predicates[i][j] = atoi(tok);
     }
   }
   // Get nb predicat
   // control and exits :
-  tok = strtok(NULL," \n");
+  tok = strtok(NULL, " \n");
   irregular->nb_control=atoi(tok);
-  tok = strtok(NULL," \n");
-  irregular->nb_exit=atoi(tok);
+  tok = strtok(NULL, " \n");
+  irregular->nb_exit = atoi(tok);
 
   int nb_predicates = irregular->nb_control + irregular->nb_exit;
 
-  irregular->iterators = (char***) malloc(sizeof(char**) *
-                                          nb_predicates);
-  if (irregular->iterators == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  irregular->nb_iterators = (int*) malloc(sizeof(int)    *
-                                          nb_predicates);
-  if (irregular->nb_iterators == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  irregular->body = (char**) malloc(sizeof(char*)   * 
-                                          nb_predicates);
-  if (irregular->body == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  for(i=0; i<nb_predicates; i++)
-  {
+  OPENSCOP_malloc(irregular->iterators, char ***,
+                  sizeof(char **) * nb_predicates);
+  OPENSCOP_malloc(irregular->nb_iterators, int *, sizeof(int) * nb_predicates);
+  OPENSCOP_malloc(irregular->body, char **, sizeof(char *) * nb_predicates);
+  
+  for(i = 0; i < nb_predicates; i++) {
     // Get number of iterators
-    tok = strtok(NULL," \n");
-    irregular->nb_iterators[i]=atoi(tok);
-    irregular->iterators[i] = (char**) malloc(sizeof(char*) * 
-                                              irregular->nb_iterators[i]);
-    if (irregular->iterators[i] == NULL)
-    {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    tok = strtok(NULL, " \n");
+    irregular->nb_iterators[i] = atoi(tok);
+    OPENSCOP_malloc(irregular->iterators[i], char **,
+                    sizeof(char *) * irregular->nb_iterators[i]);
+    
     // Get iterators
-    for(j=0; j<irregular->nb_iterators[i]; j++)
-      irregular->iterators[i][j]=strdup(strtok(NULL," \n"));
+    for(j = 0; j < irregular->nb_iterators[i]; j++)
+      irregular->iterators[i][j] = strdup(strtok(NULL, " \n"));
     // Get predicat string
-    irregular->body[i] = strdup(strtok(NULL,"\n"));
+    irregular->body[i] = strdup(strtok(NULL, "\n"));
   }
   
   return irregular;
@@ -361,18 +305,11 @@ openscop_irregular_sread(char * extensions)
  * \return A pointer to an empty irregular structure with fields set to
  *         default values.
  */
-openscop_irregular_p
-openscop_irregular_malloc()
-{
+openscop_irregular_p openscop_irregular_malloc() {
   openscop_irregular_p irregular;
 
-  irregular = (openscop_irregular_p)malloc(sizeof(openscop_irregular_t));
-  if (irregular == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(irregular, openscop_irregular_p,
+                  sizeof(openscop_irregular_t));
   irregular->nb_statements = 0;
   irregular->predicates = NULL;
   irregular->nb_predicates = NULL;
@@ -392,23 +329,19 @@ openscop_irregular_malloc()
  * structure.
  * \param irregular The pointer to the irregular structure we want to free.
  */
-void
-openscop_irregular_free(openscop_irregular_p irregular)
-{
-  int i,j,nb_predicates;
-  if (irregular != NULL)
-  {
-    for(i=0; i<irregular->nb_statements; i++)
-    {
+void openscop_irregular_free(openscop_irregular_p irregular) {
+  int i, j, nb_predicates;
+
+  if (irregular != NULL) {
+    for(i = 0; i < irregular->nb_statements; i++)
       free(irregular->predicates[i]);
-    }
+    
     if(irregular->predicates != NULL)
       free(irregular->predicates);
 
-    nb_predicates = irregular->nb_control+irregular->nb_exit;
-    for(i=0; i<nb_predicates; i++)
-    {
-      for(j=0; j<irregular->nb_iterators[i]; j++)
+    nb_predicates = irregular->nb_control + irregular->nb_exit;
+    for(i = 0; i < nb_predicates; i++) {
+      for(j = 0; j < irregular->nb_iterators[i]; j++)
         free(irregular->iterators[i][j]);
       free(irregular->iterators[i]);
       free(irregular->body[i]);
@@ -438,9 +371,7 @@ openscop_irregular_free(openscop_irregular_p irregular)
  * \param irregular The pointer to the irregular structure we want to copy.
  * \return A pointer to the copy of the irregular structure.
  */
-openscop_irregular_p
-openscop_irregular_copy(openscop_irregular_p irregular)
-{
+openscop_irregular_p openscop_irregular_copy(openscop_irregular_p irregular) {
   int i,j;
   openscop_irregular_p copy;
 
@@ -448,12 +379,6 @@ openscop_irregular_copy(openscop_irregular_p irregular)
     return NULL;
 
   copy = openscop_irregular_malloc();
-  if (copy == NULL)
-  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-
   copy->nb_statements = irregular->nb_statements;
   copy->nb_predicates = (int *)malloc(sizeof(int)*copy->nb_statements);
   if (copy->nb_predicates == NULL)

@@ -178,9 +178,8 @@ void openscop_extension_print(FILE * file, openscop_extension_p extension) {
     switch (extension->type) { @SPRINT@
       default: {
         ignored = 1;
-        fprintf(stderr,
-                "[OpenScop] Warning: unsupported extension, "
-                "printing it has been ignored.\n");
+        OPENSCOP_warning("unsupported extension, "
+                         "printing it has been ignored");
       }
     }
     if (!ignored) {
@@ -259,12 +258,8 @@ void openscop_extension_add(openscop_extension_p * extension, int type,
 openscop_extension_p openscop_extension_malloc() {
   openscop_extension_p extension;
 
-  extension = (openscop_extension_p)malloc(sizeof(openscop_extension_t));
-  if (extension == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(extension, openscop_extension_p,
+                  sizeof(openscop_extension_t));
   extension->type      = OPENSCOP_EXTENSION_UNDEFINED;
   extension->extension = NULL;
   extension->next      = NULL;
@@ -285,9 +280,7 @@ void openscop_extension_free(openscop_extension_p extension) {
     next = extension->next;
     switch (extension->type) { @FREE@
       default: {
-        fprintf(stderr,
-                "[OpenScop] Warning: unsupported extension, "
-                "memory leaks are possible.\n");
+        OPENSCOP_warning("unsupported extension, memory leaks are possible");
         free(extension->extension);
       }
     }
@@ -316,9 +309,7 @@ openscop_extension_p openscop_extension_copy(openscop_extension_p extension) {
   while (extension != NULL) { 
     switch (extension->type) { @COPY@
       default: {
-        fprintf(stderr,
-                "[OpenScop] Warning: unsupported extension, "
-                "copy ignored.\n");
+        OPENSCOP_warning("unsupported extension, copy ignored");
         x = NULL;
       }
     }
@@ -383,9 +374,8 @@ int openscop_extension_equal(openscop_extension_p x1,
       if (x1->type == x2->type) {
         switch (x1->type) { @EQUAL@
           default: {
-            fprintf(stderr,
-                    "[OpenScop] Warning: unsupported extension, "
-                    "cannot state extension equality.\n");
+            OPENSCOP_warning("unsupported extension, "
+                             "cannot state extension equality");
             equal = 0;
           }
         }

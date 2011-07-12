@@ -135,12 +135,8 @@ char * openscop_lines_sprint(openscop_lines_p lines) {
   char * buffer;
 
   if (lines != NULL) {
-    string = (char *)malloc(high_water_mark * sizeof(char));
-    buffer = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-    if ((string == NULL) || (buffer == NULL)) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
+    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the begin tag.
@@ -156,7 +152,7 @@ char * openscop_lines_sprint(openscop_lines_p lines) {
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    string = (char *)realloc(string, (strlen(string) + 1) * sizeof(char));
+    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -183,27 +179,24 @@ openscop_lines_p openscop_lines_sread(char * extensions) {
   content = openscop_util_tag_content(extensions, OPENSCOP_TAG_LINES_START,
                                                   OPENSCOP_TAG_LINES_STOP);
   if (content == NULL) {
-    fprintf(stderr, "[OpenScop] Info: no lines optional tag.\n");
+    OPENSCOP_info("no lines optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING) { 
-    fprintf(stderr, "[OpenScop] Error: lines too long.\n");
-    exit(1);
-  }
+  if (strlen(content) > OPENSCOP_MAX_STRING) 
+    OPENSCOP_error("lines too long");
+  
   lines = openscop_lines_malloc();
   tmp = strtok(content," -");
   lines->start = atoi(tmp);
-  if(lines->start == -1) {
-    fprintf(stderr, "[OpenScop] Error: lines start NaN.\n");
-    exit(1);
-  }
+  if(lines->start == -1)
+    OPENSCOP_error("lines start NaN");
+  
   tmp = strtok(NULL," -");
   lines->end = atoi(tmp);
-  if(lines->end == -1) {
-    fprintf(stderr, "[OpenScop] Error: lines end NaN.\n");
-    exit(1);
-  }
+  if(lines->end == -1)
+    OPENSCOP_error("lines end NaN");
+  
   return lines;
 }
 
@@ -222,13 +215,9 @@ openscop_lines_p openscop_lines_sread(char * extensions) {
  *         default values.
  */
 openscop_lines_p openscop_lines_malloc() {
-  openscop_lines_p lines = (openscop_lines_p)malloc(sizeof(openscop_lines_t));
+  openscop_lines_p lines;
   
-  if (lines == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(lines, openscop_lines_p, sizeof(openscop_lines_t));
   lines->start = OPENSCOP_UNDEFINED;
   lines->end   = OPENSCOP_UNDEFINED;
 
@@ -268,10 +257,6 @@ openscop_lines_p openscop_lines_copy(openscop_lines_p lines) {
     return NULL;
 
   copy = openscop_lines_malloc();
-  if (copy == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
   copy->start = lines->start;
   copy->end = lines->end;
 

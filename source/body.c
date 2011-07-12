@@ -201,10 +201,8 @@ openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
       if (nb_iterators > 0) {
         body->iterator = (void *)openscop_util_strings_read(file, &nb_strings);
         body->nb_iterators = nb_strings;
-        if (nb_iterators != nb_strings) {
-          fprintf(stderr, "[OpenScop] Warning: not the expected number of "
-                          "original iterators.\n");
-        }
+        if (nb_iterators != nb_strings)
+          OPENSCOP_warning("not the expected number of original iterators");
       }
       
       // Read the body:
@@ -241,12 +239,7 @@ openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
 openscop_body_p openscop_body_malloc() {
   openscop_body_p body;
 
-  body = (openscop_body_p)malloc(sizeof(openscop_body_t));
-  if (body == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-
+  OPENSCOP_malloc(body, openscop_body_p, sizeof(openscop_body_t));
   body->type         = OPENSCOP_UNDEFINED;
   body->nb_iterators = 0;
   body->iterator     = NULL;
@@ -321,19 +314,19 @@ int openscop_body_equal(openscop_body_p b1, openscop_body_p b2) {
  
   if (((b1 != NULL) && (b2 == NULL)) ||
       ((b1 == NULL) && (b2 != NULL))) {
-    fprintf(stderr, "[OpenScop] info: bodies are not the same.\n"); 
+    OPENSCOP_info("bodies are not the same"); 
     return 0;
   }
 
   if (b1->type != b2->type) {
-    fprintf(stderr, "[OpenScop] info: body types are not the same.\n"); 
+    OPENSCOP_info("body types are not the same"); 
     return 0;
   }
 
   if (b1->type == OPENSCOP_TYPE_STRING) {
     if (!openscop_util_strings_equal((char**)b1->iterator, b1->nb_iterators,
                                      (char**)b2->iterator, b2->nb_iterators)) {
-      fprintf(stderr, "[OpenScop] info: body iterators are not the same.\n"); 
+      OPENSCOP_info("body iterators are not the same"); 
       return 0;
     }
 
@@ -344,7 +337,7 @@ int openscop_body_equal(openscop_body_p b1, openscop_body_p b2) {
          (b1->type == OPENSCOP_TYPE_STRING) &&
          (b2->type == OPENSCOP_TYPE_STRING) &&
          (strcmp(b1->expression, b2->expression) != 0))) {
-      fprintf(stderr,"[OpenScop] info: body expressions are not the same.\n"); 
+      OPENSCOP_info("body expressions are not the same"); 
       return 0;
     }
   }
@@ -369,7 +362,7 @@ int openscop_body_integrity_check(openscop_body_p body,
   if ((body != NULL) &&
       (expected_nb_iterators != OPENSCOP_UNDEFINED) &&
       (expected_nb_iterators != body->nb_iterators)) {
-    fprintf(stderr, "[OpenScop] Warning: unexpected #original iterators.\n");
+    OPENSCOP_warning("unexpected number of original iterators");
     return 0;
   }
 

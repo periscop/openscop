@@ -141,12 +141,8 @@ char * openscop_comment_sprint(openscop_comment_p comment) {
   char * buffer;
 
   if (comment != NULL) {
-    string = (char *)malloc(high_water_mark * sizeof(char));
-    buffer = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-    if ((string == NULL) || (buffer == NULL)) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
+    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the begin tag.
@@ -162,7 +158,7 @@ char * openscop_comment_sprint(openscop_comment_p comment) {
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    string = (char *)realloc(string, (strlen(string) + 1) * sizeof(char));
+    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -189,14 +185,12 @@ openscop_comment_p openscop_comment_sread(char * extensions) {
   content = openscop_util_tag_content(extensions, OPENSCOP_TAG_COMMENT_START,
                                                   OPENSCOP_TAG_COMMENT_STOP);
   if (content == NULL) {
-    fprintf(stderr, "[OpenScop] Info: no comment optional tag.\n");
+    OPENSCOP_info("no comment optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING) { 
-    fprintf(stderr, "[OpenScop] Error: comment too long.\n");
-    exit(1);
-  }
+  if (strlen(content) > OPENSCOP_MAX_STRING) 
+    OPENSCOP_error("comment too long");
 
   comment = openscop_comment_malloc();
   comment->comment = content;
@@ -221,12 +215,7 @@ openscop_comment_p openscop_comment_sread(char * extensions) {
 openscop_comment_p openscop_comment_malloc() {
   openscop_comment_p comment;
 
-  comment = (openscop_comment_p)malloc(sizeof(openscop_comment_t));
-  if (comment == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(comment, openscop_comment_p, sizeof(openscop_comment_t));
   comment->comment = NULL;
 
   return comment;
@@ -268,10 +257,8 @@ openscop_comment_p openscop_comment_copy(openscop_comment_p comment) {
 
   copy = openscop_comment_malloc();
   copy->comment = strdup(comment->comment);
-  if ((copy->comment == NULL) && (comment->comment != NULL)) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
+  if ((copy->comment == NULL) && (comment->comment != NULL))
+    OPENSCOP_error("memory overflow");
 
   return copy;
 }

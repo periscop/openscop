@@ -178,11 +178,7 @@ char ** openscop_util_strings_read(FILE * file, int * nb_strings) {
 
   if (*nb_strings > 0) {
     // Allocate the array of strings. Make it NULL-terminated.
-    strings = (char **) malloc(sizeof(char *) * ((*nb_strings) + 1));
-    if (strings == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(strings, char **, sizeof(char *) * ((*nb_strings) + 1));
     strings[*nb_strings] = NULL;
 
     // Read the desired number of strings.
@@ -192,10 +188,8 @@ char ** openscop_util_strings_read(FILE * file, int * nb_strings) {
 	tmp[count] = *(s++);
       tmp[count] = '\0';
       strings[i] = strdup(tmp);
-      if (strings[i] == NULL) {
-	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-	exit(1);
-      }
+      if (strings[i] == NULL)
+        OPENSCOP_error("memory overflow");
       if (*s != '#')
 	++s;
     }
@@ -219,18 +213,12 @@ char ** openscop_util_strings_generate(char * prefix, int nb_strings) {
   int i;
 
   if (nb_strings) {
-    strings = (char **)malloc(sizeof(char *) * nb_strings);
-    if (strings == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(strings, char **, sizeof(char *) * nb_strings);
     for (i = 0; i < nb_strings; i++) {
       sprintf(buff, "%s%d", prefix, i + 1);
       strings[i] = strdup(buff);
-      if (strings[i] == NULL) {
-	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-	exit(1);
-      }
+      if (strings[i] == NULL)
+        OPENSCOP_error("memory overflow");
     }
   }
 
@@ -305,17 +293,11 @@ char ** openscop_util_strings_copy(char ** strings, int nb_strings) {
   if ((strings == NULL) || (nb_strings == 0))
     return NULL;
 
-  copy = (char **)malloc(nb_strings * sizeof(char *));
-  if (copy == NULL)  {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
+  OPENSCOP_malloc(copy, char **, nb_strings * sizeof(char *));
   for (i = 0; i < nb_strings; i++) {
     copy[i] = strdup(strings[i]);
-    if (copy[i] == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    if (copy[i] == NULL)
+      OPENSCOP_error("memory overflow");
   }
 
   return copy;
@@ -399,19 +381,15 @@ int openscop_util_read_int(FILE * file, char ** str) {
   int i = 0;
   int read_int = 0;
 
-  if ((file != NULL && str != NULL) || (file == NULL && str == NULL)) {
-    fprintf(stderr, "[OpenScop] Error: one and only one of the two parameters"
-                    " of util_read_int can be non-NULL\n");
-    exit (1);
-  }
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
+    OPENSCOP_error("one and only one of the two parameters"
+                   " of util_read_int can be non-NULL");
 
   if (file != NULL) {
     // Parse from a file.
     start = openscop_util_skip_blank_and_comments(file, s);
-    if (sscanf(start, " %d", &res) != 1) {
-      fprintf(stderr, "[OpenScop] Error: an int was expected.\n");
-      exit(1);
-    }
+    if (sscanf(start, " %d", &res) != 1)
+      OPENSCOP_error("an int was expected");
   }
   if (str != NULL) {
     // Parse from a string.
@@ -428,10 +406,8 @@ int openscop_util_read_int(FILE * file, char ** str) {
         while (**str && !isspace(**str) && **str != '\n')
           s[i++] = *((*str)++);
         s[i] = '\0';
-        if (sscanf(s, "%d", &res) != 1)	{
-          fprintf(stderr, "[OpenScop] Error: an int was expected.\n");
-          exit(1);
-        }
+        if (sscanf(s, "%d", &res) != 1)
+          OPENSCOP_error("an int was expected");
         read_int = 1;
       }
     }
@@ -462,12 +438,7 @@ char * openscop_util_read_tail(FILE * file) {
   if (c ==  NULL)
     return NULL;
 
-  extensions = (char *)malloc(high_water_mark * sizeof(char));
-  if (extensions == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(extensions, char *, high_water_mark * sizeof(char));
   strcpy(extensions, c);
   nb_chars = strlen(c);
 
@@ -478,16 +449,12 @@ char * openscop_util_read_tail(FILE * file) {
 
     if (nb_chars >= high_water_mark) {
       high_water_mark += high_water_mark;
-      extensions = (char *)realloc(extensions, high_water_mark * sizeof(char));
-      if (extensions == NULL) {
-        fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-        exit(1);
-      }
+      OPENSCOP_realloc(extensions, char *, high_water_mark * sizeof(char));
     }
   }
 
   // - 0-terminate the string.
-  extensions = (char *)realloc(extensions, nb_chars * sizeof(char));
+  OPENSCOP_realloc(extensions, char *, nb_chars * sizeof(char));
   extensions[nb_chars - 1] = '\0';
 
   return extensions;
@@ -530,11 +497,7 @@ char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
     // the tag 'endtag' was not found.
     if (! *stop)
       return NULL;
-    res = (char *)malloc((size + 1) * sizeof(char));
-    if (res == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(res, char *, (size + 1) * sizeof(char));
     
     // Copy the chain between the two tags.
     for (++start, i = 0; start != stop; ++start, ++i)
@@ -559,18 +522,12 @@ char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
  */
 void openscop_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
-  if (strlen(src) >= OPENSCOP_MAX_STRING) {
-    fprintf(stderr, "[OpenScop] Error: string to concatenate is too long.\n");
-    exit(1);
-  }
+  if (strlen(src) >= OPENSCOP_MAX_STRING)
+    OPENSCOP_error("string to concatenate is too long");
 
   if (strlen(*dst) + strlen(src) >= *hwm) {
     *hwm += OPENSCOP_MAX_STRING;
-    *dst = (char *)realloc(*dst, *hwm * sizeof(char));
-    if (*dst == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_realloc(*dst, char *, *hwm * sizeof(char));
   }
 
   strcat(*dst, src);

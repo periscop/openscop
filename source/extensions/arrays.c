@@ -146,12 +146,8 @@ char * openscop_arrays_sprint(openscop_arrays_p arrays) {
   char * buffer;
 
   if (arrays != NULL) {
-    string = (char *)malloc(high_water_mark * sizeof(char));
-    buffer = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-    if ((string == NULL) || (buffer == NULL)) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
+    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
     string[0] = '\0';
 
     sprintf(buffer, OPENSCOP_TAG_ARRAYS_START);
@@ -167,7 +163,7 @@ char * openscop_arrays_sprint(openscop_arrays_p arrays) {
     sprintf(buffer, OPENSCOP_TAG_ARRAYS_STOP"\n");
     openscop_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    string = (char *)realloc(string, (strlen(string) + 1) * sizeof(char));
+    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -201,7 +197,7 @@ openscop_arrays_p openscop_arrays_sread(char * extensions) {
                                                   OPENSCOP_TAG_ARRAYS_STOP);
 
   if (content == NULL) {
-    fprintf(stderr, "[OpenScop] Info: no arrays optional tag.\n");
+    OPENSCOP_info("no arrays optional tag");
     return NULL;
   }
   content_backup = content;
@@ -229,10 +225,8 @@ openscop_arrays_p openscop_arrays_sread(char * extensions) {
       buff[i] = *content;
     buff[i] = '\0';
     sscanf(buff, "%d", &array_id);
-    if (array_id <= 0) {
-      fprintf(stderr, "[OpenScop] Error: array id must be > 0.\n");
-      exit(1);
-    }
+    if (array_id <= 0)
+      OPENSCOP_error("array id must be > 0");
     id[k] = array_id;
 
     // Get the array name string.
@@ -274,12 +268,7 @@ openscop_arrays_p openscop_arrays_sread(char * extensions) {
 openscop_arrays_p openscop_arrays_malloc() {
   openscop_arrays_p arrays;
 
-  arrays = (openscop_arrays_p)malloc(sizeof(openscop_arrays_t));
-  if (arrays == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(arrays, openscop_arrays_p, sizeof(openscop_arrays_t));
   arrays->nb_names = 0;
   arrays->id       = NULL;
   arrays->names    = NULL;
@@ -332,18 +321,13 @@ openscop_arrays_p openscop_arrays_copy(openscop_arrays_p arrays) {
   if (copy != NULL) {
     copy->nb_names = arrays->nb_names;
     copy->id = (int *)malloc(arrays->nb_names * sizeof(int));
-    copy->names = (char **)malloc(arrays->nb_names * sizeof(char*));
-    if ((copy->id == NULL) || (copy->names == NULL)) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(copy->names, char **, arrays->nb_names * sizeof(char*));
+    
     for (i = 0; i < arrays->nb_names; i++) {
       copy->id[i] = arrays->id[i];
       copy->names[i] = strdup(arrays->names[i]);
-      if ((copy->names[i] == NULL) && (arrays->names[i] != NULL)) {
-        fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-        exit(1);
-      }
+      if ((copy->names[i] == NULL) && (arrays->names[i] != NULL))
+        OPENSCOP_error("memory overflow");
     }
   }
 
@@ -418,17 +402,11 @@ char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
 	*nb_names = arrays->id[i];
   
     // Allocate the array of names and store the existing names.
-    names = (char **)malloc(*nb_names * sizeof(char *));
-    if (names == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(names, char **, *nb_names * sizeof(char *));
     for (i = 0; i < arrays->nb_names; i++) {
       names[arrays->id[i] - 1] = strdup(arrays->names[i]);
-      if (names[arrays->id[i] - 1] == NULL) {
-	fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-	exit(1);
-      }
+      if (names[arrays->id[i] - 1] == NULL)
+	OPENSCOP_error("memory overflow");
     }
 
     // Fill the missing names.

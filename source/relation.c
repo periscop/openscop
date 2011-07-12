@@ -114,9 +114,8 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
         break;
       }
       default: {
-        fprintf(stderr, "[OpenScop] Warning: unknown relation type (%d) "
-                        "replaced with "OPENSCOP_STRING_UNDEFINED".\n",
-                        relation->type);
+        OPENSCOP_warning("unknown relation type, "
+                         "replaced with "OPENSCOP_STRING_UNDEFINED);
         fprintf(file, OPENSCOP_STRING_UNDEFINED);
       }
     }
@@ -180,7 +179,7 @@ void openscop_relation_idump(FILE * file,
       fprintf(file, "[ ");
 
       for (j = 0; j < relation->nb_columns; j++) {
-        SCOPINT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
+        OPENSCOP_INT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
         fprintf(file, " ");
       }
 
@@ -243,17 +242,17 @@ char * openscop_relation_expression_element(openscop_int_t val, int * first,
   sval[0] = '\0';
 
   // statements for the 'normal' processing.
-  if (SCOPINT_notzero_p(val) && (!cst)) {
-    if ((*first) || SCOPINT_neg_p(val)) {
-      if (SCOPINT_one_p(val)) {         // case 1
+  if (OPENSCOP_INT_notzero_p(val) && (!cst)) {
+    if ((*first) || OPENSCOP_INT_neg_p(val)) {
+      if (OPENSCOP_INT_one_p(val)) {         // case 1
         sprintf(sval, "%s", name);
       }
       else {
-        if (SCOPINT_mone_p(val)) {      // case -1
+        if (OPENSCOP_INT_mone_p(val)) {      // case -1
           sprintf(sval, "-%s", name);
         }
 	else {                          // default case
-	  SCOPINT_sprint(sval, OPENSCOP_FMT_TXT, val);
+	  OPENSCOP_INT_sprint(sval, OPENSCOP_FMT_TXT, val);
 	  sprintf(temp, "*%s", name);
 	  strcat(sval, temp);
         }
@@ -261,12 +260,12 @@ char * openscop_relation_expression_element(openscop_int_t val, int * first,
       *first = 0;
     }
     else {
-      if (SCOPINT_one_p(val)) {
+      if (OPENSCOP_INT_one_p(val)) {
         sprintf(sval, "+%s", name);
       }
       else {
         sprintf(sval, "+");
-	SCOPINT_sprint(temp, OPENSCOP_FMT_TXT, val);
+	OPENSCOP_INT_sprint(temp, OPENSCOP_FMT_TXT, val);
 	strcat(sval, temp);
 	sprintf(temp, "*%s", name);
 	strcat(sval, temp);
@@ -275,14 +274,14 @@ char * openscop_relation_expression_element(openscop_int_t val, int * first,
   }
   else {
     if (cst) {
-      if ((SCOPINT_zero_p(val) && (*first)) || SCOPINT_neg_p(val))
-        SCOPINT_sprint(sval, OPENSCOP_FMT_TXT, val);
-      if (SCOPINT_pos_p(val)) {
+      if ((OPENSCOP_INT_zero_p(val) && (*first)) || OPENSCOP_INT_neg_p(val))
+        OPENSCOP_INT_sprint(sval, OPENSCOP_FMT_TXT, val);
+      if (OPENSCOP_INT_pos_p(val)) {
         if (!(*first)) {
-	  SCOPINT_sprint(sval, "+"OPENSCOP_FMT_TXT, val); // Block macro !
+	  OPENSCOP_INT_sprint(sval, "+"OPENSCOP_FMT_TXT, val); // Block macro !
 	}
 	else {
-          SCOPINT_sprint(sval, OPENSCOP_FMT_TXT, val);
+          OPENSCOP_INT_sprint(sval, OPENSCOP_FMT_TXT, val);
         }
       }
     }
@@ -478,8 +477,8 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
       (nb_localdims  >  names->nb_localdims)  ||
       (array_id      >  names->nb_arrays)) {
     
-    fprintf(stderr, "[OpenScop] Warning: something is wrong with the names or "
-                    "an array identifier, printing comments deactivated.\n");
+    OPENSCOP_warning("something is wrong with the names or "
+                     "an array identifier, printing comments deactivated");
     return 0;
   }
 
@@ -516,7 +515,7 @@ void openscop_relation_print_comment(FILE * file,
       expression = openscop_relation_expression(relation, row, names);
       fprintf(file, "   ## %s", expression);
       free(expression);
-      if (SCOPINT_zero_p(relation->m[row][0]))
+      if (OPENSCOP_INT_zero_p(relation->m[row][0]))
         fprintf(file, " == 0");
       else
         fprintf(file, " >= 0");
@@ -530,11 +529,11 @@ void openscop_relation_print_comment(FILE * file,
     }
     case OPENSCOP_TYPE_ACCESS: {
       //TODO: works only for matrix: use openscop_relation_get_array_id
-      if (SCOPINT_notzero_p(relation->m[row][0])) {
-        if (strncmp(names->arrays[SCOPINT_get_si(relation->m[row][0]) - 1],
+      if (OPENSCOP_INT_notzero_p(relation->m[row][0])) {
+        if (strncmp(names->arrays[OPENSCOP_INT_get_si(relation->m[row][0]) - 1],
                     OPENSCOP_FAKE_ARRAY, strlen(OPENSCOP_FAKE_ARRAY)))
           fprintf(file, "   ## %s",
-                  names->arrays[SCOPINT_get_si(relation->m[row][0]) - 1]);
+                  names->arrays[OPENSCOP_INT_get_si(relation->m[row][0]) - 1]);
         k = row;
         do {
           expression = openscop_relation_expression(relation, k, names);
@@ -543,7 +542,7 @@ void openscop_relation_print_comment(FILE * file,
           k++;
         }
         while ((k < relation->nb_rows) &&
-               SCOPINT_zero_p(relation->m[k][0]));
+               OPENSCOP_INT_zero_p(relation->m[k][0]));
       }
       else {
         fprintf(file, "   ##");
@@ -610,7 +609,7 @@ void openscop_relation_print(FILE * file,
 
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j < relation->nb_columns; j++) {
-        SCOPINT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
+        OPENSCOP_INT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
         fprintf(file, " ");
       }
 
@@ -644,13 +643,10 @@ int openscop_relation_read_type(FILE * file) {
   
   strings = openscop_util_strings_read(file, &nb_strings);
   if (nb_strings  > 1) {
-    fprintf(stderr, "[OpenScop] Warning: uninterpreted information "
-                    "(after relation type).\n");
+    OPENSCOP_warning("uninterpreted information (after the relation type)");
   }
-  if (nb_strings == 0) {
-    fprintf(stderr, "[OpenScop] Error: no relation type.\n");
-    exit(1);
-  }
+  if (nb_strings == 0)
+    OPENSCOP_error("no relation type");
  
   if (!strcmp(strings[0], OPENSCOP_STRING_UNDEFINED)) {
     type = OPENSCOP_UNDEFINED;
@@ -687,9 +683,7 @@ int openscop_relation_read_type(FILE * file) {
     goto return_type;
   }
 
-  fprintf(stderr, "[OpenScop] Error: relation type not supported "
-                  "(%s).\n", strings[0]);
-  exit(1);
+  OPENSCOP_error("relation type not supported");
 
 return_type:
   openscop_util_strings_free(strings, nb_strings);
@@ -732,20 +726,15 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
                                              &nb_local_dims, &nb_parameters);
     
       if (((read != 1) && (read != 6)) ||
-          ((read == 1) && (may_read_nb_union_parts != 1))) {
-        fprintf(stderr, "[OpenScop] Error: badly formated relation "
-                        "(%d integers on the first line instead of "
-                        "1 or 6).\n", read);
-        exit(1);
-      }
+          ((read == 1) && (may_read_nb_union_parts != 1)))
+        OPENSCOP_error("not 1 or 6 integers on the first relation line");
 
       if (read == 1) {
         // Only one number means a union and is the number of parts.
         nb_union_parts = nb_rows;
-        if (nb_union_parts < 1) {
-          fprintf(stderr, "[OpenScop] Error: negative nb of union parts.\n");
-          exit(1);
-        }
+        if (nb_union_parts < 1)
+          OPENSCOP_error("negative nb of union parts");
+        
         // Allow to read the properties of the first part of the union.
         read_properties = 1;
       }
@@ -767,32 +756,22 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
 
     for (i = 0; i < relation->nb_rows; i++) {
       c = openscop_util_skip_blank_and_comments(foo, s);
-      if (c == NULL) {
-        fprintf(stderr, "[OpenScop] Error: not enough rows.\n");
-        exit(1);
-      }
+      if (c == NULL)
+        OPENSCOP_error("not enough rows");
 
       for (j = 0; j < relation->nb_columns; j++) {
-        if (c == NULL || *c == '#' || *c == '\n') {
-          fprintf(stderr, "[OpenScop] Error: not enough columns.\n");
-          exit(1);
-        }
-        if (sscanf(c, "%s%n", str, &n) == 0) {
-          fprintf(stderr, "[OpenScop] Error: not enough rows.\n");
-          exit(1);
-        }
+        if (c == NULL || *c == '#' || *c == '\n')
+          OPENSCOP_error("not enough columns");
+        if (sscanf(c, "%s%n", str, &n) == 0)
+          OPENSCOP_error("not enough rows");
 #if defined(OPENSCOP_INT_T_IS_MP)
         long long val;
-        if (sscanf(str, "%lld", &val) == 0) {
-          fprintf(stderr, "[OpenScop] Error: failed to read an integer.\n");
-          exit(1);
-        }
+        if (sscanf(str, "%lld", &val) == 0)
+          OPENSCOP_error("failed to read an integer (in a relation)");
         mpz_set_si(*p++, val);
 #else
-        if (sscanf(str, OPENSCOP_FMT_TXT, p++) == 0) {
-          fprintf(stderr, "[OpenScop] Error: failed to read an integer.\n");
-          exit(1);
-        }
+        if (sscanf(str, OPENSCOP_FMT_TXT, p++) == 0)
+          OPENSCOP_error("failed to read an integer (in a relation)");
 #endif
         c += n;
       }
@@ -835,12 +814,7 @@ openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
   openscop_int_t ** p, * q;
   int i, j;
 
-  relation = (openscop_relation_p)malloc(sizeof(openscop_relation_t));
-  if (relation == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(relation, openscop_relation_p, sizeof(openscop_relation_t));
   relation->type           = OPENSCOP_UNDEFINED;
   relation->nb_rows        = nb_rows;
   relation->nb_columns     = nb_columns;
@@ -854,21 +828,15 @@ openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
     relation->m = NULL;
   } 
   else {
-    p = (openscop_int_t **)malloc(nb_rows * sizeof(openscop_int_t *));
-    if (p == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
-      exit(1);
-    }
-    q = (openscop_int_t *)malloc(nb_rows*nb_columns*sizeof(openscop_int_t));
-    if (q == NULL) {
-      fprintf(stderr, "[OpenScop] Error: memory Overflow.\n");
-      exit(1);
-    }
+    OPENSCOP_malloc(p, openscop_int_t **,
+                    nb_rows * sizeof(openscop_int_t *));
+    OPENSCOP_malloc(q, openscop_int_t *,
+                    nb_rows * nb_columns * sizeof(openscop_int_t));
     relation->m = p;
     for (i = 0; i < nb_rows; i++) {
       *p++ = q;
       for (j = 0; j < nb_columns; j++)
-        SCOPINT_init_set_si(*(q+j),0);
+        OPENSCOP_INT_init_set_si(*(q+j),0);
       q += nb_columns;
     }
   }
@@ -898,7 +866,7 @@ void openscop_relation_free_inside(openscop_relation_p relation) {
     p = relation->m[0];
   
   for (i = 0; i < nb_elements; i++)
-    SCOPINT_clear(*p++);
+    OPENSCOP_INT_clear(*p++);
 
   if (relation->m != NULL) {
     if (nb_elements > 0)
@@ -959,10 +927,8 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
     if (all_rows)
       n = relation->nb_rows;
 
-    if (n > relation->nb_rows) {
-      fprintf(stderr,"[OpenScop] Error: not enough rows in the relation\n");
-      exit(1);
-    }
+    if (n > relation->nb_rows)
+      OPENSCOP_error("not enough rows to copy in the relation");
 
     node = openscop_relation_malloc(n, relation->nb_columns);
     node->type           = relation->type;
@@ -973,7 +939,7 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
 
     for (i = 0; i < n; i++)
       for (j = 0; j < relation->nb_columns; j++)
-        SCOPINT_assign(node->m[i][j], relation->m[i][j]);
+        OPENSCOP_INT_assign(node->m[i][j], relation->m[i][j]);
   
     if (first) {
       first = 0;
@@ -1022,13 +988,11 @@ void openscop_relation_replace_vector(openscop_relation_p relation,
 
   if ((relation == NULL) || (vector == NULL) ||
       (relation->nb_columns != vector->size) ||
-      (row >= relation->nb_rows) || (row < 0)) {
-    fprintf(stderr,"[OpenScop] Error: vector cannot replace relation row.\n");
-    exit(1);
-  }
+      (row >= relation->nb_rows) || (row < 0))
+    OPENSCOP_error("vector cannot replace relation row");
 
   for (i = 0; i < vector->size; i++)
-    SCOPINT_assign(relation->m[row][i], vector->v[i]);
+    OPENSCOP_INT_assign(relation->m[row][i], vector->v[i]);
 }
 
 
@@ -1047,16 +1011,14 @@ void openscop_relation_add_vector(openscop_relation_p relation,
 
   if ((relation == NULL) || (vector == NULL) ||
       (relation->nb_columns != vector->size) ||
-      (row >= relation->nb_rows) || (row < 0)) {
-    fprintf(stderr,"[OpenScop] Error: vector cannot be added to relation.\n");
-    exit(1);
-  }
+      (row >= relation->nb_rows) || (row < 0))
+    OPENSCOP_error("vector cannot be added to relation");
 
-  if (SCOPINT_get_si(relation->m[row][0]) == 0)
-    SCOPINT_assign(relation->m[row][0], vector->v[0]);
+  if (OPENSCOP_INT_get_si(relation->m[row][0]) == 0)
+    OPENSCOP_INT_assign(relation->m[row][0], vector->v[0]);
 
   for (i = 1; i < vector->size; i++)
-    SCOPINT_addto(relation->m[row][i], relation->m[row][i], vector->v[i]);
+    OPENSCOP_INT_addto(relation->m[row][i], relation->m[row][i], vector->v[i]);
 }
 
 
@@ -1075,16 +1037,14 @@ void openscop_relation_sub_vector(openscop_relation_p relation,
 
   if ((relation == NULL) || (vector == NULL) ||
       (relation->nb_columns != vector->size) ||
-      (row >= relation->nb_rows) || (row < 0)) {
-    fprintf(stderr,"[OpenScop] Error: vector cannot be subtracted to row.\n");
-    exit(1);
-  }
+      (row >= relation->nb_rows) || (row < 0))
+    OPENSCOP_error("vector cannot be subtracted to row");
 
-  if (SCOPINT_get_si(relation->m[row][0]) == 0)
-    SCOPINT_assign(relation->m[row][0], vector->v[0]);
+  if (OPENSCOP_INT_get_si(relation->m[row][0]) == 0)
+    OPENSCOP_INT_assign(relation->m[row][0], vector->v[0]);
 
   for (i = 1; i < vector->size; i++)
-    SCOPINT_subtract(relation->m[row][i], relation->m[row][i], vector->v[i]);
+    OPENSCOP_INT_subtract(relation->m[row][i], relation->m[row][i], vector->v[i]);
 }
 
 
@@ -1142,14 +1102,12 @@ void openscop_relation_replace_relation(openscop_relation_p r1,
 
   if ((r1 == NULL) || (r2 == NULL) ||
       (r1->nb_columns != r1->nb_columns) ||
-      ((row + r2->nb_rows) > r1->nb_rows) || (row < 0)) {
-    fprintf(stderr,"[OpenScop] Error: relation rows could not be replaced.\n");
-    exit(1);
-  }
+      ((row + r2->nb_rows) > r1->nb_rows) || (row < 0))
+    OPENSCOP_error("relation rows could not be replaced");
 
   for (i = 0; i < r2->nb_rows; i++)
     for (j = 0; j < r2->nb_columns; j++)
-      SCOPINT_assign(r1->m[i+row][j], r2->m[i][j]);
+      OPENSCOP_INT_assign(r1->m[i+row][j], r2->m[i][j]);
 }
 
 
@@ -1172,23 +1130,21 @@ void openscop_relation_insert_relation(openscop_relation_p r1,
     return;
 
   if ((r1->nb_columns != r2->nb_columns) ||
-      (row > r1->nb_rows) || (row < 0)) {
-    fprintf(stderr,"[OpenScop] Error: constraints cannot be inserted.\n");
-    exit(1);
-  }
+      (row > r1->nb_rows) || (row < 0))
+    OPENSCOP_error("constraints cannot be inserted");
 
   // We use a temporary relation just to reuse existing functions. Cleaner.
   temp = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
 
   for (i = 0; i < row; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      SCOPINT_assign(temp->m[i][j], r1->m[i][j]);
+      OPENSCOP_INT_assign(temp->m[i][j], r1->m[i][j]);
 
   openscop_relation_replace_relation(temp, r2, row);
 
   for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      SCOPINT_assign(temp->m[i][j], r1->m[i-r2->nb_rows][j]);
+      OPENSCOP_INT_assign(temp->m[i][j], r1->m[i-r2->nb_rows][j]);
 
   openscop_relation_free_inside(r1);
 
@@ -1222,15 +1178,12 @@ openscop_relation_p openscop_relation_concat(openscop_relation_p r1,
   if (r2 == NULL)
     return openscop_relation_copy(r1);
 
-  if (r1->nb_columns != r2->nb_columns) {
-    fprintf(stderr, "[OpenScop] Error: incompatible sizes "
-                    "for concatenation.\n");
-    exit(1);
-  }
-  if (r1->next || r2->next) {
-    fprintf(stderr, "[OpenScop] Warning: relation concatenation is done "
-                    "on the first elements only.\n");
-  }
+  if (r1->nb_columns != r2->nb_columns)
+    OPENSCOP_error("incompatible sizes for concatenation");
+  
+  if (r1->next || r2->next)
+    OPENSCOP_warning("relation concatenation is done on the first elements "
+                     "of union only");
 
   new = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
   openscop_relation_replace_relation(new, r1, 0);
@@ -1266,7 +1219,7 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
 
     for (i = 0; i < r1->nb_rows; ++i)
       for (j = 0; j < r1->nb_columns; ++j)
-        if (SCOPINT_ne(r1->m[i][j], r2->m[i][j]))
+        if (OPENSCOP_INT_ne(r1->m[i][j], r2->m[i][j]))
           return 0;
 
     r1 = r1->next;
@@ -1298,7 +1251,7 @@ int openscop_relation_check_property(int * expected, int actual) {
   if (*expected != OPENSCOP_UNDEFINED) { 
     if ((actual != OPENSCOP_UNDEFINED) &&
         (actual != *expected)) {
-      fprintf(stderr, "[OpenScop] Warning: unexpected property.\n");
+      OPENSCOP_warning("unexpected atribute");
       return 0;
     }
   }
@@ -1346,7 +1299,7 @@ int openscop_relation_check_nb_columns(openscop_relation_p relation,
                           2;
     
     if (expected_nb_columns != relation->nb_columns) {
-      fprintf(stderr, "[OpenScop] Warning: unexpected number of columns.\n");
+      OPENSCOP_warning("unexpected number of columns");
       return 0;
     }
   }
@@ -1381,8 +1334,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     if ((expected_nb_output_dims != OPENSCOP_UNDEFINED) ||
         (expected_nb_input_dims  != OPENSCOP_UNDEFINED) ||
         (expected_nb_parameters  != OPENSCOP_UNDEFINED)) {
-      fprintf(stderr, "[OpenScop] Warning: NULL relation with "
-                      "some expected properties.\n");
+      OPENSCOP_warning("NULL relation with some expected attibutes");
       //return 0;
     }
 
@@ -1394,7 +1346,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
        (expected_type != relation->type)) ||
       ((expected_type == OPENSCOP_TYPE_ACCESS) &&
        (!openscop_relation_is_access(relation)))) {
-    fprintf(stderr, "[OpenScop] Warning: wrong type.\n");
+    OPENSCOP_warning("wrong type");
     openscop_relation_dump(stderr, relation);
     return 0;
   }
@@ -1404,7 +1356,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
       (relation->nb_input_dims  == OPENSCOP_UNDEFINED) ||
       (relation->nb_local_dims  == OPENSCOP_UNDEFINED) ||
       (relation->nb_parameters  == OPENSCOP_UNDEFINED)) {
-    fprintf(stderr, "[OpenScop] Warning: all attributes should be defined.\n");
+    OPENSCOP_warning("all attributes should be defined");
     openscop_relation_dump(stderr, relation);
     return 0;
   }
@@ -1412,8 +1364,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
   // Check that a context has actually 0 output dimensions.
   if ((relation->type == OPENSCOP_TYPE_CONTEXT) &&
       (relation->nb_output_dims != 0)) {
-    fprintf(stderr, "[OpenScop] Warning: context without 0 "
-                    "as number of output dimensions.\n");
+    OPENSCOP_warning("context without 0 as number of output dimensions");
     openscop_relation_dump(stderr, relation);
     return 0;
   }
@@ -1422,8 +1373,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
   if (((relation->type == OPENSCOP_TYPE_DOMAIN) ||
        (relation->type == OPENSCOP_TYPE_CONTEXT)) &&
       (relation->nb_input_dims != 0)) {
-    fprintf(stderr, "[OpenScop] Warning: domain or context without 0 "
-                    "input dimensions.\n");
+    OPENSCOP_warning("domain or context without 0 input dimensions");
     openscop_relation_dump(stderr, relation);
     return 0;
   }
@@ -1447,7 +1397,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     if ((expected_nb_output_dims != relation->nb_output_dims) ||
         (expected_nb_input_dims  != relation->nb_input_dims)  ||
         (expected_nb_parameters  != relation->nb_parameters)) {
-      fprintf(stderr, "[OpenScop] Warning: inconsistent attributes.\n");
+      OPENSCOP_warning("inconsistent attributes");
       openscop_relation_dump(stderr, relation);
       return 0;
     }
@@ -1465,10 +1415,10 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     // made of 0 or 1 only.
     if ((relation->nb_rows > 0) && (relation->nb_columns > 0)) {
       for (i = 0; i < relation->nb_rows; i++) {
-        if (!SCOPINT_zero_p(relation->m[i][0]) &&
-            !SCOPINT_one_p(relation->m[i][0])) {
-          fprintf(stderr, "[OpenScop] Warning: first column of a "
-                          "relation is not strictly made of 0 or 1.\n");
+        if (!OPENSCOP_INT_zero_p(relation->m[i][0]) &&
+            !OPENSCOP_INT_one_p(relation->m[i][0])) {
+          OPENSCOP_warning("first column of a relation is not "
+                           "strictly made of 0 or 1");
           openscop_relation_dump(stderr, relation);
           return 0;
         }
@@ -1559,8 +1509,7 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     return OPENSCOP_UNDEFINED;
   
   if (!openscop_relation_is_access(relation)) {
-    fprintf(stderr, "[OpenScop] Warning: asked array id of non-array "
-                    "relation.\n");
+    OPENSCOP_warning("asked for an array id of non-array relation");
     return OPENSCOP_UNDEFINED;
   }
   
@@ -1568,8 +1517,7 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     // There should be room to store the array identifier.
     if ((relation->nb_rows < 1) ||
         (relation->nb_columns < 3)) {
-      fprintf(stderr, "[OpenScop] Warning: no array identifier in "
-                      "an access function.\n");
+      OPENSCOP_warning("no array identifier in an access function");
       return OPENSCOP_UNDEFINED;
     }
 
@@ -1581,38 +1529,34 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     // - check that (-m[i][#columns -1] / m[i][1]) > 0.
     nb_array_id = 0;
     for (i = 0; i < relation->nb_rows; i++) {
-      if (!SCOPINT_zero_p(relation->m[i][1])) {
+      if (!OPENSCOP_INT_zero_p(relation->m[i][1])) {
         nb_array_id ++;
         row_id = i;
       }
     }
     if (nb_array_id == 0) {
-      fprintf(stderr, "[OpenScop] Warning: no array identifier in "
-                      "an access function.\n");
+      OPENSCOP_warning("no array identifier in an access function");
       return OPENSCOP_UNDEFINED;
     }
     if (nb_array_id > 1) {
-      fprintf(stderr, "[OpenScop] Warning: several array identifiers in one "
-                      "access function.\n");
+      OPENSCOP_warning("several array identifiers in one access function");
       return OPENSCOP_UNDEFINED;
     }
     for (i = 0; i < relation->nb_columns - 1; i++) {
-      if ((i != 1) && !SCOPINT_zero_p(relation->m[row_id][i])) {
-        fprintf(stderr, "[OpenScop] Warning: non integer array "
-                        "identifier.\n");
+      if ((i != 1) && !OPENSCOP_INT_zero_p(relation->m[row_id][i])) {
+        OPENSCOP_warning("non integer array identifier");
         return OPENSCOP_UNDEFINED;
       }
     }
-    if (!SCOPINT_divisible(relation->m[row_id][relation->nb_columns - 1],
+    if (!OPENSCOP_INT_divisible(relation->m[row_id][relation->nb_columns - 1],
                            relation->m[row_id][1])) {
-      fprintf(stderr, "[OpenScop] Warning: rational array identifier.\n");
+      OPENSCOP_warning("rational array identifier");
       return OPENSCOP_UNDEFINED;
     }
-    array_id = -SCOPINT_get_si(relation->m[row_id][relation->nb_columns-1]);
-    array_id /= SCOPINT_get_si(relation->m[row_id][1]);
+    array_id = -OPENSCOP_INT_get_si(relation->m[row_id][relation->nb_columns-1]);
+    array_id /= OPENSCOP_INT_get_si(relation->m[row_id][1]);
     if (array_id <= 0) {
-      fprintf(stderr, "[OpenScop] Warning: negative or 0 identifier "
-                      "in access function.\n");
+      OPENSCOP_warning("negative or 0 identifier in access function");
       return OPENSCOP_UNDEFINED;
     }
 
@@ -1623,8 +1567,8 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     }
     else {
       if (reference_array_id != array_id) {
-        fprintf(stderr, "[OpenScop] Warning: inconsistency of array "
-                        "identifiers in an union of access relations.\n");
+        OPENSCOP_warning("inconsistency of array identifiers in an "
+                         "union of access relations");
         return OPENSCOP_UNDEFINED;
       }
     }

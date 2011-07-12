@@ -240,11 +240,9 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
   // Domain.
   domain_list = openscop_relation_list_filter(list, OPENSCOP_TYPE_DOMAIN);
   nb_domains = openscop_relation_list_count(domain_list); 
-  if (nb_domains > 1) {
-    fprintf(stderr, "[OpenScop] Error: more than one domain for a "
-                    "statement.\n");
-    exit(1);
-  }
+  if (nb_domains > 1)
+    OPENSCOP_error("more than one domain for a statement");
+  
   if (domain_list != NULL) {
     stmt->domain = domain_list->elt;
     domain_list->elt = NULL;
@@ -257,11 +255,9 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
   // Scattering.
   scattering_list=openscop_relation_list_filter(list,OPENSCOP_TYPE_SCATTERING);
   nb_scattering = openscop_relation_list_count(scattering_list); 
-  if (nb_scattering > 1) {
-    fprintf(stderr, "[OpenScop] Error: more than one scattering relation "
-                    "for a statement.\n");
-    exit(1);
-  }
+  if (nb_scattering > 1)
+    OPENSCOP_error("more than one scattering relation for a statement");
+  
   if (scattering_list != NULL) {
     stmt->scattering = scattering_list->elt;
     scattering_list->elt = NULL;
@@ -276,11 +272,8 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
   nb_accesses = openscop_relation_list_count(stmt->access);
 
   if ((nb_domains + nb_scattering + nb_accesses) !=
-      (openscop_relation_list_count(list))) {
-    fprintf(stderr, "[OpenScop] Error: unexpected relation type to define "
-                    "a statement.\n");
-    exit(1);
-  }
+      (openscop_relation_list_count(list)))
+    OPENSCOP_error("unexpected relation type to define a statement");
 
   openscop_relation_list_free(list);
 }
@@ -310,8 +303,7 @@ openscop_statement_p openscop_statement_read(FILE * file) {
       expected_nb_iterators = stmt->domain->nb_output_dims;
     }
     else {
-      fprintf(stderr, "[OpenScop] Warning: no domain, assuming 0 "
-                      "original iterator.\n");
+      OPENSCOP_warning("no domain, assuming 0 original iterator");
       expected_nb_iterators = 0;
     }
     stmt->body = openscop_body_read(file, expected_nb_iterators);
@@ -336,12 +328,8 @@ openscop_statement_p openscop_statement_read(FILE * file) {
 openscop_statement_p openscop_statement_malloc() {
   openscop_statement_p statement;
 
-  statement = (openscop_statement_p)malloc(sizeof(openscop_statement_t));
-  if (statement == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-
+  OPENSCOP_malloc(statement, openscop_statement_p,
+                  sizeof(openscop_statement_t));
   statement->domain     = NULL;
   statement->scattering = NULL;
   statement->access     = NULL;

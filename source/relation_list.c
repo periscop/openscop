@@ -232,10 +232,8 @@ openscop_relation_list_p openscop_relation_list_read(FILE * file) {
   // Read the number of relations to read.
   nb_mat = openscop_util_read_int(file, NULL); 
 
-  if (nb_mat < 0) {
-    fprintf(stderr, "[OpenScop] Error: negative number of relations.\n");
-    exit(1);
-  }
+  if (nb_mat < 0)
+    OPENSCOP_error("negative number of relations");
 
   // Allocate the header of the list and start reading each element.
   res = list = openscop_relation_list_malloc();
@@ -265,13 +263,9 @@ openscop_relation_list_p openscop_relation_list_read(FILE * file) {
  */
 openscop_relation_list_p openscop_relation_list_malloc() {
   openscop_relation_list_p res;
-  res = (openscop_relation_list_p)malloc(sizeof(openscop_relation_list_t));
-
-  if (res == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-
+  
+  OPENSCOP_malloc(res, openscop_relation_list_p,
+                  sizeof(openscop_relation_list_t));
   res->elt = NULL;
   res->next = NULL;
 
