@@ -163,11 +163,11 @@ void                openscop_relation_add_vector(openscop_relation_p,
 void                openscop_relation_sub_vector(openscop_relation_p,
                                         openscop_vector_p, int);
 openscop_relation_p openscop_relation_from_vector(openscop_vector_p);
-void                openscop_relation_replace_relation(openscop_relation_p,
+void                openscop_relation_replace_constraints(openscop_relation_p,
                                         openscop_relation_p, int);
-void                openscop_relation_insert_relation(openscop_relation_p,
+void                openscop_relation_insert_constraints(openscop_relation_p,
                                         openscop_relation_p, int);
-openscop_relation_p openscop_relation_concat(openscop_relation_p,
+openscop_relation_p openscop_relation_concat_constraints(openscop_relation_p,
                                         openscop_relation_p);
 int                 openscop_relation_equal(openscop_relation_p,
                                         openscop_relation_p);    

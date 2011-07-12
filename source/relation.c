@@ -1063,7 +1063,7 @@ void openscop_relation_insert_vector(openscop_relation_p relation,
   openscop_relation_p temp;
 
   temp = openscop_relation_from_vector(vector);
-  openscop_relation_insert_relation(relation, temp, row);
+  openscop_relation_insert_constraints(relation, temp, row);
   openscop_relation_free(temp);
 }
 
@@ -1088,7 +1088,7 @@ openscop_relation_p openscop_relation_from_vector(openscop_vector_p vector) {
 
 
 /**
- * openscop_relation_replace_relation function:
+ * openscop_relation_replace_constraints function:
  * this function replaces some rows of a relation "r1" with the rows of
  * the relation "r2". It begins at the "row"^th row of "r1". It directly
  * updates the relation union part pointed by "r1" and this part only.
@@ -1096,8 +1096,8 @@ openscop_relation_p openscop_relation_from_vector(openscop_vector_p vector) {
  * \param[in]     r2  The relation containing the new rows.
  * \param[in]     row The first row of the relation r1 to be replaced.
  */
-void openscop_relation_replace_relation(openscop_relation_p r1,
-                                        openscop_relation_p r2, int row) {
+void openscop_relation_replace_constraints(openscop_relation_p r1,
+                                           openscop_relation_p r2, int row) {
   int i, j;
 
   if ((r1 == NULL) || (r2 == NULL) ||
@@ -1112,7 +1112,7 @@ void openscop_relation_replace_relation(openscop_relation_p r1,
 
 
 /**
- * openscop_relation_insert_relation function:
+ * openscop_relation_insert_constraints function:
  * this function adds new rows corresponding to the relation "r1" to
  * the relation "r2" by inserting it at the "row"^th row. It directly
  * updates the relation union part pointed by "r1" and this part only.
@@ -1121,8 +1121,8 @@ void openscop_relation_replace_relation(openscop_relation_p r1,
  * \param[in]     r2  The relation to be inserted.
  * \param[in]     row The row where to insert the relation
  */
-void openscop_relation_insert_relation(openscop_relation_p r1,
-                                       openscop_relation_p r2, int row) {
+void openscop_relation_insert_constraints(openscop_relation_p r1,
+                                          openscop_relation_p r2, int row) {
   int i, j;
   openscop_relation_p temp;
 
@@ -1140,7 +1140,7 @@ void openscop_relation_insert_relation(openscop_relation_p r1,
     for (j = 0; j < r1->nb_columns; j++)
       OPENSCOP_INT_assign(temp->m[i][j], r1->m[i][j]);
 
-  openscop_relation_replace_relation(temp, r2, row);
+  openscop_relation_replace_constraints(temp, r2, row);
 
   for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
@@ -1158,7 +1158,7 @@ void openscop_relation_insert_relation(openscop_relation_p r1,
 
 
 /**
- * openscop_relation_concat function:
+ * openscop_relation_concat_constraints function:
  * this function builds a new relation from two relations sent as
  * parameters. The new set of constraints is built as the concatenation
  * of the rows of the first elements of the two relation unions r1 and r2.
@@ -1168,8 +1168,9 @@ void openscop_relation_insert_relation(openscop_relation_p r1,
  * \return A pointer to the relation resulting from the concatenation of
  *         the first elements of r1 and r2.
  */
-openscop_relation_p openscop_relation_concat(openscop_relation_p r1,
-                                             openscop_relation_p r2) {
+openscop_relation_p openscop_relation_concat_constraints(
+    openscop_relation_p r1,
+    openscop_relation_p r2) {
   openscop_relation_p new;
 
   if (r1 == NULL)
@@ -1186,8 +1187,8 @@ openscop_relation_p openscop_relation_concat(openscop_relation_p r1,
                      "of union only");
 
   new = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
-  openscop_relation_replace_relation(new, r1, 0);
-  openscop_relation_replace_relation(new, r2, r1->nb_rows);
+  openscop_relation_replace_constraints(new, r1, 0);
+  openscop_relation_replace_constraints(new, r2, r1->nb_rows);
 
   return new;
 }
@@ -1234,7 +1235,7 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
 
 
 /**
- * openscop_relation_check_property internal function:
+ * openscop_relation_check_attribute internal function:
  * This function checks whether an "actual" value is the same as an
  * "expected" value or not. If the expected value is set to
  * OPENSCOP_UNDEFINED, this function sets it to the "actual" value
@@ -1247,7 +1248,7 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
  *         not OPENSCOP_UNDEFINED, 1 otherwise.
  */
 static
-int openscop_relation_check_property(int * expected, int actual) {
+int openscop_relation_check_attribute(int * expected, int actual) {
   if (*expected != OPENSCOP_UNDEFINED) { 
     if ((actual != OPENSCOP_UNDEFINED) &&
         (actual != *expected)) {
@@ -1380,12 +1381,12 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
 
   // Check properties according to expected values (and if expected values
   // are undefined, define them with the first relation part properties).
-  if (!openscop_relation_check_property(&expected_nb_output_dims,
-                                        relation->nb_output_dims) ||
-      !openscop_relation_check_property(&expected_nb_input_dims,
-                                        relation->nb_input_dims)  ||
-      !openscop_relation_check_property(&expected_nb_parameters,
-                                        relation->nb_parameters)) {
+  if (!openscop_relation_check_attribute(&expected_nb_output_dims,
+                                         relation->nb_output_dims) ||
+      !openscop_relation_check_attribute(&expected_nb_input_dims,
+                                         relation->nb_input_dims)  ||
+      !openscop_relation_check_attribute(&expected_nb_parameters,
+                                         relation->nb_parameters)) {
     openscop_relation_dump(stderr, relation);
     return 0;
   }
