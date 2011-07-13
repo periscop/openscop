@@ -86,6 +86,10 @@
 
 # endif
 
+
+# define OPENSCOP_TAG_START_SCOP  "<OpenScop>"
+# define OPENSCOP_TAG_END_SCOP    "</OpenScop>"
+
 # define OPENSCOP_DEBUG	                0    // 1 for debug mode, 0 otherwise.
 # define OPENSCOP_BACKEND_C             0
 # define OPENSCOP_BACKEND_FORTRAN       1

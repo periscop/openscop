@@ -75,11 +75,12 @@ extern "C"
 /*+***************************************************************************
  *                            Utility functions                              *
  *****************************************************************************/
-char *  openscop_util_skip_blank_and_comments(FILE *, char *);
-int     openscop_util_read_int(FILE *, char **);
-char *  openscop_util_read_tail(FILE *);
-char *  openscop_util_tag_content(char *, char *, char *);
-void    openscop_util_safe_strcat(char **, char *, int *);
+char * openscop_util_skip_blank_and_comments(FILE *, char *);
+int    openscop_util_read_int(FILE *, char **);
+char * openscop_util_read_tail(FILE *);
+char * openscop_util_read_uptotag(FILE *, char *);
+char * openscop_util_tag_content(char *, char *, char *);
+void   openscop_util_safe_strcat(char **, char *, int *);
 
 
 # if defined(__cplusplus)

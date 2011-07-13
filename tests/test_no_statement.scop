@@ -1,4 +1,4 @@
-OpenScop
+<OpenScop>
 
 # =============================================== Global
 # Language
@@ -13,3 +13,5 @@ CONTEXT
 
 # No statement
 0
+
+</OpenScop>

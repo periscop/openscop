@@ -1,6 +1,6 @@
 # Matmul example, relation representation
 
-OpenScop
+<OpenScop>
 
 # =============================================== Global
 # Backend Language
@@ -122,3 +122,6 @@ READ
 i j k 
 # Statement body
 C[i][j] = C[i][j] + A[i][k] * B[k][j];
+
+</OpenScop>
+

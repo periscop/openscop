@@ -340,7 +340,7 @@ void openscop_scop_print(FILE * file, openscop_scop_p scop) {
             OPENSCOP_RELEASE,OPENSCOP_VERSION);
   }
 
-  fprintf(file, "\nOpenScop\n\n");
+  fprintf(file, "\n"OPENSCOP_TAG_START_SCOP"\n\n");
   fprintf(file, "# =============================================== Global\n");
   fprintf(file, "# Language\n");
   fprintf(file, "%s\n\n", scop->language);
@@ -362,6 +362,7 @@ void openscop_scop_print(FILE * file, openscop_scop_p scop) {
                   " Extensions\n");
     openscop_extension_print(file, scop->extension);
   }
+  fprintf(file, "\n"OPENSCOP_TAG_END_SCOP"\n\n");
 }
 
 
@@ -393,19 +394,19 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
   scop = openscop_scop_malloc();
 
-  //
-  // I. CONTEXT PART
-  //
-
-  // Ensure the file is a .scop.
+  // I. START TAG
   tmp = openscop_strings_read(file);
-  if ((openscop_strings_size(tmp) == 0) || (strcmp(*tmp, "OpenScop")))
-    OPENSCOP_error("not an OpenScop header");
+  if ((openscop_strings_size(tmp) == 0) ||
+      (strcmp(*tmp, OPENSCOP_TAG_START_SCOP)))
+    OPENSCOP_error("not an OpenScop opening tag");
   
   if (openscop_strings_size(tmp) > 1)
-    OPENSCOP_warning("uninterpreted information (after file type)");
-  free(*tmp);
-  free(tmp);
+    OPENSCOP_warning("uninterpreted information (after opening tag)");
+  openscop_strings_free(tmp);
+
+  //
+  // II. CONTEXT PART
+  //
 
   // Read the language.
   language = openscop_strings_read(file);
@@ -432,7 +433,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   }
 
   //
-  // II. STATEMENT PART
+  // III. STATEMENT PART
   //
 
   // Read the number of statements.
@@ -449,15 +450,12 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   }
 
   //
-  // III. EXTENSION PART
+  // IV. EXTENSION PART (TO THE END TAG)
   //
 
-  // Read the remainder of the file, and store it in the extension field.
+  // Read up the end tag (if any), and store extensions in the extension field.
   scop->extension = openscop_extension_read(file);
   
-  //
-  // VI. FINALIZE AND CHECK
-  //
   if (!openscop_scop_integrity_check(scop))
     OPENSCOP_warning("scop integrity check failed");
 

@@ -210,7 +210,7 @@ openscop_extension_p openscop_extension_read(FILE * file) {
   openscop_extension_p extension = NULL;
   void * x;
 
-  extension_string = openscop_util_read_tail(file);
+  extension_string = openscop_util_read_uptotag(file, OPENSCOP_TAG_END_SCOP);
   @SREAD@ 
   
   free(extension_string);

@@ -25,7 +25,7 @@
 #  :' ::::8P::::::::::88aa.                   _ _- --  --_ --- __  --- __--
 #.::  :::::::::::::::::::Y88as88a...s88aa.
 
-OpenScop
+<OpenScop>
 
 # =============================================== Global
 # Language
@@ -123,3 +123,6 @@ hello, world
 
 HELLO WORLD I SAID
 </comment>
+
+</OpenScop>
+

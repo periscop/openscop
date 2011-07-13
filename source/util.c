@@ -153,45 +153,47 @@ int openscop_util_read_int(FILE * file, char ** str) {
 
 
 /**
- * openscop_util_read_tail function:
- * this function puts the remainder of a file (from the current file pointer to
- * the end of the file) to a string and returns this string. This excepts the
- * first blank or commented lines (commented according to the OpenScop textual
- * format).
- * \param  file The file where to read the tail.
- * \return The string corresponding to the tail of the input file.
+ * openscop_util_read_uptotag function:
+ * this function reads a file up to a given tag or the enf of file. It puts
+ * everything it reads in a string which is returned.
+ * \param[in] file The file where to read the tail.
+ * \param[in] tag  The tag which, when reached, stops the file reading.
+ * \return The string that has been read from the file.
  */
-char * openscop_util_read_tail(FILE * file) {
+char * openscop_util_read_uptotag(FILE * file, char * tag) {
   int high_water_mark = OPENSCOP_MAX_STRING;
   int nb_chars = 0;
-  char buff[OPENSCOP_MAX_STRING], *c;
-  char * extensions;
+  int lentag = strlen(tag);
+  int tag_found = 0;
+  char * res;
 
-  // - Skip blank/commented lines and spaces.
-  c = openscop_util_skip_blank_and_comments(file, buff);
-  if (c ==  NULL)
-    return NULL;
+  OPENSCOP_malloc(res, char *, high_water_mark * sizeof(char));
 
-  OPENSCOP_malloc(extensions, char *, high_water_mark * sizeof(char));
-  strcpy(extensions, c);
-  nb_chars = strlen(c);
-
-  // - Copy everything else to the option tags field.
+  // - Copy everything else to the res string.
   while (!feof(file)) {
-    extensions[nb_chars] = fgetc(file); 
+    res[nb_chars] = fgetc(file); 
     nb_chars++;
+
+    if ((nb_chars >= lentag) &&
+        (!strncmp(&res[nb_chars - lentag - 1], tag, lentag))) {
+      tag_found = 1;
+      break;
+    }
 
     if (nb_chars >= high_water_mark) {
       high_water_mark += high_water_mark;
-      OPENSCOP_realloc(extensions, char *, high_water_mark * sizeof(char));
+      OPENSCOP_realloc(res, char *, high_water_mark * sizeof(char));
     }
   }
 
-  // - 0-terminate the string.
-  OPENSCOP_realloc(extensions, char *, nb_chars * sizeof(char));
-  extensions[nb_chars - 1] = '\0';
+  if (!tag_found)
+    OPENSCOP_warning("end tag was not found, end of file reached");
 
-  return extensions;
+  // - 0-terminate the string.
+  OPENSCOP_realloc(res, char *, nb_chars * sizeof(char));
+  res[nb_chars - 1] = '\0';
+
+  return res;
 }
 
 

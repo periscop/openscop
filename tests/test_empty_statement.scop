@@ -1,4 +1,4 @@
-OpenScop
+<OpenScop>
 
 # =============================================== Global
 # Language
@@ -30,3 +30,6 @@ CONTEXT
 # ----------------------------------------------  1.4 Body
 # Statement body is not provided
 0
+
+</OpenScop>
+
