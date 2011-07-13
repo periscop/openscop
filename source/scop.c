@@ -121,10 +121,9 @@ void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
     openscop_relation_idump(file, scop->context, level+1);
 
     // Print the parameters.
-    openscop_util_strings_idump(file,
+    openscop_strings_idump(file,
         (scop->parameter_type == OPENSCOP_TYPE_STRING) ? 
-            (char **)scop->parameter : NULL,
-        (scop->context != NULL) ? scop->context->nb_parameters : 0,
+            (char **)scop->parameters : NULL,
         level, "parameters");
 
     // Print the statements.
@@ -258,7 +257,7 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
   names = openscop_names_clone(scop->names);
 
   // Extract array names information from extensions.
-  openscop_util_strings_free(names->arrays, names->nb_arrays);
+  openscop_strings_free(names->arrays, names->nb_arrays);
   arrays = (openscop_arrays_p)openscop_extension_lookup(scop->extension,
                                   OPENSCOP_EXTENSION_ARRAYS);
   names->arrays = openscop_arrays_generate_names(arrays,
@@ -271,19 +270,19 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
 				  &nb_localdims,
 			          &nb_arrays);
 
-  openscop_util_strings_complete(&names->parameters, &names->nb_parameters,
+  openscop_strings_complete(&names->parameters, &names->nb_parameters,
                                  "P_", nb_parameters);
   
-  openscop_util_strings_complete(&names->iterators,  &names->nb_iterators,
+  openscop_strings_complete(&names->iterators,  &names->nb_iterators,
                                  "i_", nb_iterators);
   
-  openscop_util_strings_complete(&names->scattdims,  &names->nb_scattdims,
+  openscop_strings_complete(&names->scattdims,  &names->nb_scattdims,
                                  "s_", nb_scattdims);
   
-  openscop_util_strings_complete(&names->localdims,  &names->nb_localdims,
+  openscop_strings_complete(&names->localdims,  &names->nb_localdims,
                                  "l_", nb_localdims);
   
-  openscop_util_strings_complete(&names->arrays,     &names->nb_arrays,
+  openscop_strings_complete(&names->arrays,     &names->nb_arrays,
                                  "A_", nb_arrays);
 
   return names;
@@ -350,11 +349,8 @@ void openscop_scop_print(FILE * file, openscop_scop_p scop) {
   openscop_relation_print(file, scop->context, NULL);
   fprintf(file, "\n");
 
-  openscop_util_strings_print(file,
-      (char **)scop->parameter,
-      (scop->context != NULL) ? scop->context->nb_parameters : 0,
-      (scop->parameter_type == OPENSCOP_TYPE_STRING),
-      "Parameters");
+  openscop_strings_print(file, (char **)scop->parameters, 1,
+      (scop->parameter_type == OPENSCOP_TYPE_STRING), "Parameters");
 
   fprintf(file, "# Number of statements\n");
   fprintf(file, "%d\n\n",openscop_statement_number(scop->statement));
@@ -389,8 +385,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
   int nb_statements, nb_parameters;
-  int max;
-  char ** tmp;
+  char ** tmp, ** language;
   int i;
 
   if (file == NULL)
@@ -403,33 +398,34 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   //
 
   // Ensure the file is a .scop.
-  tmp = openscop_util_strings_read(file, &max);
-  if ((max == 0) || (strcmp(*tmp, "OpenScop")))
+  tmp = openscop_strings_read(file);
+  if ((openscop_strings_size(tmp) == 0) || (strcmp(*tmp, "OpenScop")))
     OPENSCOP_error("not an OpenScop header");
   
-  if (max > 1)
+  if (openscop_strings_size(tmp) > 1)
     OPENSCOP_warning("uninterpreted information (after file type)");
   free(*tmp);
   free(tmp);
 
   // Read the language.
-  char ** language =  openscop_util_strings_read(file, &max);
-  if (max == 0)
+  language = openscop_strings_read(file);
+  if (openscop_strings_size(language) == 0)
     OPENSCOP_error("no language (backend) specified");
   
-  if (max > 1)
+  if (openscop_strings_size(language) > 1)
     OPENSCOP_warning("uninterpreted information (after language)");
 
   scop->language = *language;
   free(language);
 
-  // Read the context.
+  // Read the context domain.
   scop->context = openscop_relation_read(file);
 
   // Read the parameters.
   scop->parameter_type = OPENSCOP_TYPE_STRING;
   if (openscop_util_read_int(file, NULL) > 0) {
-    scop->parameter = (void**)openscop_util_strings_read(file, &nb_parameters);
+    scop->parameters = (void **)openscop_strings_read(file);
+    nb_parameters = openscop_strings_size((char **)scop->parameters);
     if ((scop->context != NULL) &&
         (nb_parameters != scop->context->nb_parameters))
       OPENSCOP_warning("bad number of parameters");
@@ -489,7 +485,7 @@ openscop_scop_p openscop_scop_malloc() {
   scop->language       = NULL;
   scop->context        = NULL;
   scop->parameter_type = OPENSCOP_UNDEFINED;
-  scop->parameter      = NULL;
+  scop->parameters     = NULL;
   scop->statement      = NULL;
   scop->extension      = NULL;
   scop->usr	       = NULL;
@@ -508,9 +504,7 @@ void openscop_scop_free(openscop_scop_p scop) {
     if (scop->language != NULL)
       free(scop->language);
     
-    openscop_util_strings_free(
-        (char **)scop->parameter,
-        (scop->context != NULL) ? scop->context->nb_parameters : 0);
+    openscop_strings_free((char **)scop->parameters);
     openscop_relation_free(scop->context);
     openscop_statement_free(scop->statement);
     openscop_extension_free(scop->extension);
@@ -536,17 +530,16 @@ void openscop_scop_free(openscop_scop_p scop) {
 openscop_scop_p openscop_scop_clone(openscop_scop_p scop) {
   openscop_scop_p copy;
   
-  copy                     = openscop_scop_malloc();
-  copy->version            = scop->version;
+  copy                 = openscop_scop_malloc();
+  copy->version        = scop->version;
   if (scop->language != NULL)
-    copy->language         = strdup(scop->language);
-  copy->context            = openscop_relation_clone(scop->context);
-  copy->parameter_type     = scop->parameter_type;
-  copy->parameter          = (void **)openscop_util_strings_clone(
-      (char **)scop->parameter,
-      (scop->context != NULL) ? scop->context->nb_parameters : 0);
-  copy->statement          = openscop_statement_clone(scop->statement);
-  copy->extension          = openscop_extension_clone(scop->extension);
+    copy->language     = strdup(scop->language);
+  copy->context        = openscop_relation_clone(scop->context);
+  copy->parameter_type = scop->parameter_type;
+  copy->parameters     = (void **)openscop_strings_clone(
+                             (char **)scop->parameters);
+  copy->statement      = openscop_statement_clone(scop->statement);
+  copy->extension      = openscop_extension_clone(scop->extension);
 
   return copy;
 }
@@ -586,11 +579,8 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
   }
 
   if ((s1->parameter_type == OPENSCOP_TYPE_STRING) &&
-      (!openscop_util_strings_equal(
-            (char **)s1->parameter,
-            (s1->context != NULL) ? s1->context->nb_parameters : 0,
-            (char **)s2->parameter,
-            (s2->context != NULL) ? s2->context->nb_parameters : 0))) {
+      (!openscop_strings_equal((char **)s1->parameters,
+                               (char **)s2->parameters))) {
     OPENSCOP_info("parameters are not the same"); 
     return 0;
   }

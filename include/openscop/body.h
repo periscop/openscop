@@ -67,6 +67,7 @@
 # include <stdio.h>
 # include <openscop/macros.h>
 # include <openscop/util.h>
+# include <openscop/strings.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -84,8 +85,7 @@ struct openscop_body {
   int type;          /**< OPENSCOP_TYPE_GENERIC if iterators and expression
                           are generic (void *), OPENSCOP_TYPE_STRING if they
                           are strings (they can be casted to char *) */
-  int nb_iterators;  /**< Number of elements in the 'iterators' array */
-  void ** iterator;  /**< Array of original iterators */
+  void ** iterators; /**< NULL-terminated array of original iterators */
   void * expression; /**< Original statement expression */
 };
 typedef struct openscop_body   openscop_body_t;

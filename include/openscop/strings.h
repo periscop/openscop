@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                            util.h                               **
+     **                           strings.h                             **
      **-----------------------------------------------------------------**
-     **                   First version: 08/10/2010                     **
+     **                   First version: 13/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,10 +61,11 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_UTIL_H
-# define OPENSCOP_UTIL_H
+#ifndef OPENSCOP_STRINGS_H
+# define OPENSCOP_STRINGS_H
 
 # include <openscop/macros.h>
+# include <openscop/util.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -72,18 +73,45 @@ extern "C"
 # endif
 
 
+/* The "strings" type is simply a NULL-terminated array of C character
+ * strings, i.e. a char **.
+ *
+ * Note: we did not typedef an openscop_strings_t type because it does not
+ * work exactly as other OpenScop types (base functions may be slightly
+ * different and it would be necessary to cast it to/from void *) which would
+ * not be consistent with other OpenScop types.
+ */
+
+
 /*+***************************************************************************
- *                            Utility functions                              *
+ *                          Structure display function                       *
  *****************************************************************************/
-char *  openscop_util_skip_blank_and_comments(FILE *, char *);
-int     openscop_util_read_int(FILE *, char **);
-char *  openscop_util_read_tail(FILE *);
-char *  openscop_util_tag_content(char *, char *, char *);
-void    openscop_util_safe_strcat(char **, char *, int *);
+void    openscop_strings_idump(FILE *, char **, int, char *);
+void    openscop_strings_print(FILE *, char **, int, int, char *);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+char ** openscop_strings_read(FILE *);
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+char ** openscop_strings_generate(char *, int);
+void    openscop_strings_free(char **);
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+char ** openscop_strings_clone(char **);
+int     openscop_strings_equal(char **, char **);
+void    openscop_strings_complete(char ***, char *, int);
+int     openscop_strings_size(char **);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_UTIL_H */
+#endif /* define OPENSCOP_STRINGS_H */

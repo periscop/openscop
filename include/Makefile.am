@@ -89,5 +89,6 @@ pkginclude_HEADERS 	=                  \
 	openscop/body.h                    \
 	openscop/macros.h                  \
 	openscop/names.h                   \
+	openscop/strings.h                 \
 	openscop/util.h                    \
 	openscop/scop.h

@@ -100,15 +100,14 @@ void openscop_body_idump(FILE * file, openscop_body_p body, int level) {
 
     if (body->type == OPENSCOP_TYPE_STRING) {
       // Print the original iterator names.
-      openscop_util_strings_idump(file, (char **)body->iterator,
-                                  body->nb_iterators, level,
+      openscop_strings_idump(file, (char **)body->iterators, level,
                                   "original iterator strings");
 
       // Print the original body expression.
       for (i = 0; i <= level; i++)
         fprintf(file, "|\t");
       if (body->expression != NULL)
-        fprintf(file, "+-- Original expression: %s\n", (char *)body->expression);
+        fprintf(file, "+-- Original expression: %s\n",(char*)body->expression);
       else
         fprintf(file, "+-- No original body expression\n");
     }
@@ -149,20 +148,12 @@ void openscop_body_dump(FILE * file, openscop_body_p body) {
  * \param body[in]  The body whose information has to be printed.
  */
 void openscop_body_print(FILE * file, openscop_body_p body) {
-  int i;
 
   if ((body != NULL) && (body->type == OPENSCOP_TYPE_STRING)) {
     fprintf(file, "# Statement body is provided\n");
     fprintf(file, "1\n");
-    if (body->nb_iterators > 0) {
-      fprintf(file, "# Original iterator names\n");
-      for (i = 0; i < body->nb_iterators; i++)
-        fprintf(file, "%s ", (char *)body->iterator[i]);
-      fprintf(file, "\n");
-    }
-    else {
-      fprintf(file, "# No original iterator names\n");
-    }
+    openscop_strings_print(file, (char **)body->iterators, 0, 1,
+                           "original iterators");
     fprintf(file, "# Statement body expression\n");
     fprintf(file, "%s\n", (char *)body->expression);
   }
@@ -189,7 +180,6 @@ void openscop_body_print(FILE * file, openscop_body_p body) {
 openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
   openscop_body_p body = NULL;
   char buff[OPENSCOP_MAX_STRING], * start, * end;
-  int nb_strings;
 
   if (file) {
     // Read the body information, if any.
@@ -199,9 +189,8 @@ openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
     
       // Read the original iterator names.
       if (nb_iterators > 0) {
-        body->iterator = (void *)openscop_util_strings_read(file, &nb_strings);
-        body->nb_iterators = nb_strings;
-        if (nb_iterators != nb_strings)
+        body->iterators = (void *)openscop_strings_read(file);
+        if (nb_iterators != openscop_strings_size((char **)body->iterators))
           OPENSCOP_warning("not the expected number of original iterators");
       }
       
@@ -241,8 +230,7 @@ openscop_body_p openscop_body_malloc() {
 
   OPENSCOP_malloc(body, openscop_body_p, sizeof(openscop_body_t));
   body->type         = OPENSCOP_UNDEFINED;
-  body->nb_iterators = 0;
-  body->iterator     = NULL;
+  body->iterators    = NULL;
   body->expression   = NULL;
 
   return body;
@@ -258,7 +246,7 @@ openscop_body_p openscop_body_malloc() {
 void openscop_body_free(openscop_body_p body) {
 
   if (body != NULL) {
-    openscop_util_strings_free((char**)(body->iterator), body->nb_iterators);
+    openscop_strings_free((char **)body->iterators);
     if (body->expression != NULL)
       free(body->expression);
 
@@ -286,10 +274,9 @@ openscop_body_p openscop_body_clone(openscop_body_p body) {
   if (body != NULL) {
     copy = openscop_body_malloc();
     copy->type = body->type;
-    copy->nb_iterators = body->nb_iterators;
     if (body->type == OPENSCOP_TYPE_STRING) {
-      copy->iterator = (void*)openscop_util_strings_clone(
-                           (char**)body->iterator, body->nb_iterators);
+      copy->iterators = (void *)openscop_strings_clone(
+                            (char **)body->iterators);
       copy->expression = strdup(body->expression);
     }
   }
@@ -324,8 +311,8 @@ int openscop_body_equal(openscop_body_p b1, openscop_body_p b2) {
   }
 
   if (b1->type == OPENSCOP_TYPE_STRING) {
-    if (!openscop_util_strings_equal((char**)b1->iterator, b1->nb_iterators,
-                                     (char**)b2->iterator, b2->nb_iterators)) {
+    if (!openscop_strings_equal((char **)b1->iterators,
+                                (char **)b2->iterators)) {
       OPENSCOP_info("body iterators are not the same"); 
       return 0;
     }
@@ -361,7 +348,8 @@ int openscop_body_integrity_check(openscop_body_p body,
 
   if ((body != NULL) &&
       (expected_nb_iterators != OPENSCOP_UNDEFINED) &&
-      (expected_nb_iterators != body->nb_iterators)) {
+      (expected_nb_iterators != 
+       openscop_strings_size((char **)body->iterators))) {
     OPENSCOP_warning("unexpected number of original iterators");
     return 0;
   }

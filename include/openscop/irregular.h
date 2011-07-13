@@ -65,7 +65,7 @@
 # define OPENSCOP_IRREGULAR_H
 
 # include <openscop/macros.h>
-# include <openscop/util.h>
+# include <openscop/strings.h>
 
 # if defined(__cplusplus)
 extern "C"

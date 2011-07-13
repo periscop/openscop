@@ -94,6 +94,7 @@ libopenscop_la_SOURCES 	=      \
 	relation_list.c        \
 	body.c                 \
 	vector.c               \
+	strings.c              \
 	names.c                \
 	util.c
 

@@ -1920,8 +1920,7 @@ the next element of the list.
 @group
 struct openscop_body @{
   int type;          /* Type of iterators and expressions */
-  int nb_iterators;  /* Number of elements in the 'iterators' array */
-  void ** iterator;  /* Array of original iterators */
+  void ** iterators; /* NULL-terminated array of original iterators */
   void * expression; /* Original statement expression */
 @};
 typedef struct openscop_body   openscop_body_t;
@@ -1931,13 +1930,12 @@ typedef struct openscop_body * openscop_body_p;
 
 @noindent The @code{openscop_body_t} structure stores a statement body.
 The @code{expression} field contains the information about the
-statement in the original program. The @code{iterator} field is the
-array of iterators surrounding the original statement in the original
-program. @code{nb_iterators} corresponds to the number of iterators
-in the array. The order matters: @code{iterator[0]} corresponds to
-the outermost loop iterator for the statement while
-@code{iterator[nb_iterators - 1]} corresponds to the innermost
-loop iterator. Statement body information may be strings of characters
+statement in the original program. The @code{iterators} field is a
+NULL-terminated array of iterators surrounding the original statement
+in the original program. The order matters: @code{iterators[0]} corresponds
+to the outermost loop iterator for the statement, @code{iterators[1]}
+corresponds to the second outermost loop iterator, and so on.
+Statement body information may be strings of characters
 @code{(char *)} or a generic pointer to anything else @code{(void *)}
 depending on the value of the @code{type} field: 1 (OPENSCOP_TYPE_STRING)
 means the information is textual while 0 (OPENSCOP_TYPE_GENERIC)
@@ -2019,7 +2017,7 @@ struct openscop_scop @{
   char * language;                /* Target language */
   openscop_relation_p context;    /* Constraints on the parameters */
   int parameter_type;             /* Type of the parameters */
-  void ** parameter;              /* Array of parameters */
+  void ** parameters;             /* NULL-terminated array of parameters */
   openscop_statement_p statement; /* Statement list */
   openscop_extension_p extension; /* Extension list */
   void * usr;                     /* A user-defined field */
@@ -2037,7 +2035,10 @@ now (and hopefully a very, very, long time).
 It contains the informations about the context: the target language
 in the @code{language} field, the constraints on the
 global parameters in the @code{context} field and the parameters
-in the @code{parameter} field. The parameter information can be either
+in the @code{parameters} field. The order matters: @code{parameters[0]}
+corresponds to the first parameter column in the context and the
+relation, @code{parameters[1]} corresponds to the second one, and so on.
+The parameter information can be either
 generic @code{(void *)} or textual @code{char *)} depending on the
 @code{parameter_type} field: 1 (OPENSCOP_TYPE_STRING)
 means the information is textual while 0 (OPENSCOP_TYPE_GENERIC)

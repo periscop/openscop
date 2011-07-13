@@ -83,6 +83,11 @@
  */
 void openscop_names_idump(FILE * file, openscop_names_p names, int level) {
   int j;
+  char * parm_msg = "Parameter strings";
+  char * iter_msg = "Iterator strings";
+  char * scat_msg = "Scattering dimension strings";
+  char * loca_msg = "Local dimension strings";
+  char * arra_msg = "Array strings";
 
   // Go to the right level.
   for (j = 0; j < level; j++)
@@ -104,30 +109,12 @@ void openscop_names_idump(FILE * file, openscop_names_p names, int level) {
       fprintf(file, "|\t");
     fprintf(file, "\n");
     
-    // Print the original parameter names.
-    openscop_util_strings_idump(file, names->parameters,
-                                names->nb_parameters, level,
-                                "Parameter strings");
-
-    // Print the iterator names.
-    openscop_util_strings_idump(file, names->iterators,
-                                names->nb_iterators, level,
-                                "Iterator strings");
-    
-    // Print the scattering dimension names.
-    openscop_util_strings_idump(file, names->scattdims,
-                                names->nb_scattdims, level,
-                                "Scattering dimension strings");
-    
-    // Print the local dimension names.
-    openscop_util_strings_idump(file, names->localdims,
-                                names->nb_localdims, level,
-                                "Local dimension strings");
-
-    // Print the array names.
-    openscop_util_strings_idump(file, names->arrays,
-                                names->nb_arrays, level,
-                                "Array strings");
+    // Print the various names.
+    openscop_strings_idump(file, names->parameters, level, parm_msg);
+    openscop_strings_idump(file, names->iterators,  level, iter_msg);
+    openscop_strings_idump(file, names->scattdims,  level, scat_msg);
+    openscop_strings_idump(file, names->localdims,  level, loca_msg);
+    openscop_strings_idump(file, names->arrays,     level, arra_msg);
   }
 
   // The last line.
@@ -157,19 +144,22 @@ void openscop_names_dump(FILE * file, openscop_names_p names) {
  * \param names The names structure whose information has to be printed.
  */
 void openscop_names_print(FILE * file, openscop_names_p names) {
-  int print = ((names != NULL) && (names->textual == 1));
+  int print;
+  char * parm_msg = "Parameter names";
+  char * iter_msg = "Iterator names";
+  char * scat_msg = "Scattering dimension names";
   
-  openscop_util_strings_print(file,
-                              names->parameters, names->nb_parameters,
-                              print, "Parameter names");
-  
-  openscop_util_strings_print(file,
-                              names->iterators, names->nb_iterators,
-                              print, "Iterator names");
-  
-  openscop_util_strings_print(file,
-                              names->scattdims, names->nb_scattdims,
-                              print, "Scattering dimension names");
+  if (names != NULL) {
+    print = (names->textual == 1);
+    openscop_strings_print(file, names->parameters, 1, print, parm_msg);
+    openscop_strings_print(file, names->iterators,  1, print, iter_msg);
+    openscop_strings_print(file, names->scattdims,  1, print, scat_msg);
+  }
+  else {
+    openscop_strings_print(file, NULL, 1, 0, parm_msg);
+    openscop_strings_print(file, NULL, 1, 0, iter_msg);
+    openscop_strings_print(file, NULL, 1, 0, scat_msg);
+  }
 }
 
 
@@ -190,30 +180,30 @@ openscop_names_p openscop_names_read(FILE * file) {
   openscop_names_p names = openscop_names_malloc();
 
   if (openscop_util_read_int(file, NULL) > 0) {
-    names->parameters = openscop_util_strings_read(file,
-                                                   &(names->nb_parameters));
+    names->parameters = openscop_strings_read(file);
+    names->nb_parameters = openscop_strings_size(names->parameters);
   }
   else {
-    names->nb_parameters = 0;
     names->parameters = NULL;
+    names->nb_parameters = 0;
   }
 
   if (openscop_util_read_int(file, NULL) > 0) {
-    names->iterators  = openscop_util_strings_read(file,
-                                                   &(names->nb_iterators));
+    names->iterators = openscop_strings_read(file);
+    names->nb_iterators = openscop_strings_size(names->iterators);
   }
   else {
-    names->nb_iterators = 0;
     names->iterators = NULL;
+    names->nb_iterators = 0;
   }
 
   if (openscop_util_read_int(file, NULL) > 0) {
-      names->scattdims  = openscop_util_strings_read(file,
-                                                     &(names->nb_scattdims));
+    names->scattdims = openscop_strings_read(file);
+    names->nb_scattdims = openscop_strings_size(names->scattdims);
   }
   else {
-    names->nb_scattdims = 0;
     names->scattdims = NULL;
+    names->nb_scattdims = 0;
   }
 
   return names;
@@ -234,13 +224,9 @@ openscop_names_p openscop_names_read(FILE * file) {
  *         default values.
  */
 openscop_names_p openscop_names_malloc() {
-  openscop_names_p names = (openscop_names_p)malloc(sizeof(openscop_names_t));
+  openscop_names_p names;
 
-  if (names == NULL) {
-    fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
-    exit(1);
-  }
-  
+  OPENSCOP_malloc(names, openscop_names_p, sizeof(openscop_names_t));
   names->textual       = 1;
   names->nb_parameters = 0;
   names->nb_iterators  = 0;
@@ -248,7 +234,6 @@ openscop_names_p openscop_names_malloc() {
   names->parameters    = NULL;
   names->iterators     = NULL;
   names->scattdims     = NULL;
-  
   names->nb_localdims  = 0;
   names->nb_arrays     = 0;
   names->localdims     = NULL;
@@ -269,12 +254,11 @@ openscop_names_p openscop_names_malloc() {
 void openscop_names_free(openscop_names_p names) {
   if (names != NULL) {
     if (names->textual == 1) {
-      openscop_util_strings_free(names->parameters, names->nb_parameters);
-      openscop_util_strings_free(names->iterators,  names->nb_iterators);
-      openscop_util_strings_free(names->scattdims,  names->nb_scattdims);
-      
-      openscop_util_strings_free(names->localdims,  names->nb_localdims);
-      openscop_util_strings_free(names->arrays,     names->nb_arrays);
+      openscop_strings_free(names->parameters);
+      openscop_strings_free(names->iterators);
+      openscop_strings_free(names->scattdims);
+      openscop_strings_free(names->localdims);
+      openscop_strings_free(names->arrays);
     }
 
     free(names);
@@ -291,31 +275,27 @@ void openscop_names_free(openscop_names_p names) {
  * openscop_names_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_names_t data structure provided as parameter.
- * \param names The pointer to the names structure we want to copy.
- * \return A pointer to the copy of the names structure provided as parameter.
+ * \param names The pointer to the names structure we want to clone.
+ * \return A pointer to the clone of the names structure provided as parameter.
  */
 openscop_names_p openscop_names_clone(openscop_names_p names) {
-  openscop_names_p copy = openscop_names_malloc();
-
-  copy->textual       = names->textual;
-  copy->nb_parameters = names->nb_parameters;
-  copy->nb_iterators  = names->nb_iterators;
-  copy->nb_scattdims  = names->nb_scattdims;
-  copy->parameters    = openscop_util_strings_clone(names->parameters,
-                                                   names->nb_parameters);
-  copy->iterators     = openscop_util_strings_clone(names->iterators,
-                                                   names->nb_iterators);
-  copy->scattdims     = openscop_util_strings_clone(names->scattdims,
-                                                   names->nb_scattdims);
-
-  copy->nb_localdims  = names->nb_localdims;
-  copy->nb_arrays     = names->nb_arrays;
-  copy->localdims     = openscop_util_strings_clone(names->localdims,
-                                                   names->nb_localdims);
-  copy->arrays        = openscop_util_strings_clone(names->arrays,
-                                                   names->nb_arrays);
-
-  return copy;
+  openscop_names_p clone = NULL;
+  
+  if (names != NULL) {
+    clone = openscop_names_malloc();
+    clone->textual       = names->textual;
+    clone->nb_parameters = names->nb_parameters;
+    clone->nb_iterators  = names->nb_iterators;
+    clone->nb_scattdims  = names->nb_scattdims;
+    clone->parameters    = openscop_strings_clone(names->parameters);
+    clone->iterators     = openscop_strings_clone(names->iterators);
+    clone->scattdims     = openscop_strings_clone(names->scattdims);
+    clone->nb_localdims  = names->nb_localdims;
+    clone->nb_arrays     = names->nb_arrays;
+    clone->localdims     = openscop_strings_clone(names->localdims);
+    clone->arrays        = openscop_strings_clone(names->arrays);
+  }
+  return clone;
 }
 
 
@@ -334,33 +314,28 @@ int openscop_names_equal(openscop_names_p n1, openscop_names_p n2) {
   if (((n1 == NULL) && (n2 != NULL)) || ((n1 != NULL) && (n2 == NULL)))
     return 0;
 
-  if (!openscop_util_strings_equal(n1->parameters, n1->nb_parameters,
-	                           n2->parameters, n1->nb_parameters)) {
-    fprintf(stderr, "[OpenScop] info: parameters are not the same.\n"); 
+  if (!openscop_strings_equal(n1->parameters, n2->parameters)) {
+    OPENSCOP_info("parameters are not the same"); 
     return 0;
   }
   
-  if (!openscop_util_strings_equal(n1->iterators, n1->nb_iterators,
-	                           n2->iterators, n1->nb_iterators)) {
-    fprintf(stderr, "[OpenScop] info: iterators are not the same.\n"); 
+  if (!openscop_strings_equal(n1->iterators, n2->iterators)) {
+    OPENSCOP_info("iterators are not the same"); 
     return 0;
   }
   
-  if (!openscop_util_strings_equal(n1->scattdims, n1->nb_scattdims,
-	                           n2->scattdims, n1->nb_scattdims)) {
-    fprintf(stderr, "[OpenScop] info: scattdims are not the same.\n");
+  if (!openscop_strings_equal(n1->scattdims, n2->scattdims)) {
+    OPENSCOP_info("scattdims are not the same");
     return 0;
   }
   
-  if (!openscop_util_strings_equal(n1->localdims, n1->nb_localdims,
-	                           n2->localdims, n1->nb_localdims)) {
-    fprintf(stderr, "[OpenScop] info: localdims are not the same.\n");
+  if (!openscop_strings_equal(n1->localdims, n2->localdims)) {
+    OPENSCOP_info("localdims are not the same");
     return 0;
   }
 
-  if (!openscop_util_strings_equal(n1->arrays, n1->nb_arrays,
-	                           n2->arrays, n1->nb_arrays)) {
-    fprintf(stderr, "[OpenScop] info: arrays are not the same.\n");
+  if (!openscop_strings_equal(n1->arrays, n2->arrays)) {
+    OPENSCOP_info("arrays are not the same");
     return 0;
   }
 
@@ -384,20 +359,19 @@ int openscop_names_integrity_check(openscop_names_p names,
                                    int min_nb_scattdims) {
   if ((names->nb_parameters > 0) &&
       (names->nb_parameters < min_nb_parameters)) {
-    fprintf(stderr, "[OpenScop] Warning: not enough parameter names.\n");
+    OPENSCOP_warning("not enough parameter names");
     return 0;
   }
 
   if ((names->nb_iterators > 0) &&
       (names->nb_iterators < min_nb_iterators)) {
-    fprintf(stderr, "[OpenScop] Warning: not enough iterator names.\n");
+    OPENSCOP_warning("not enough iterator names");
     return 0;
   }
   
   if ((names->nb_scattdims > 0) &&
       (names->nb_scattdims < min_nb_scattdims)) {
-    fprintf(stderr, "[OpenScop] Warning: not enough scattering "
-                    "dimension names.\n");
+    OPENSCOP_warning("not enough scattering dimension names");
     return 0;
   }
 

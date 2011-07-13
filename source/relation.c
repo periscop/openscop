@@ -637,15 +637,14 @@ void openscop_relation_print(FILE * file,
  */
 static
 int openscop_relation_read_type(FILE * file) {
-  int nb_strings;
   int type;
   char ** strings;
   
-  strings = openscop_util_strings_read(file, &nb_strings);
-  if (nb_strings  > 1) {
+  strings = openscop_strings_read(file);
+  if (openscop_strings_size(strings) > 1) {
     OPENSCOP_warning("uninterpreted information (after the relation type)");
   }
-  if (nb_strings == 0)
+  if (openscop_strings_size(strings) == 0)
     OPENSCOP_error("no relation type");
  
   if (!strcmp(strings[0], OPENSCOP_STRING_UNDEFINED)) {
@@ -686,7 +685,7 @@ int openscop_relation_read_type(FILE * file) {
   OPENSCOP_error("relation type not supported");
 
 return_type:
-  openscop_util_strings_free(strings, nb_strings);
+  openscop_strings_free(strings);
   return type;
 }
 

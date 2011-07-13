@@ -79,6 +79,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
+# include <openscop/strings.h>
 # include <openscop/names.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
@@ -106,7 +107,7 @@ struct openscop_scop {
   int parameter_type;             /**< OPENSCOP_TYPE_GENERIC if parameters are
                                        generic (void*), OPENSCOP_TYPE_STRING if
                                        they are strings (castable to char*) */
-  void ** parameter;              /**< Array of parameters */
+  void ** parameters;             /**< NULL-terminated array of parameters */
   openscop_statement_p statement; /**< Statement list of the SCoP */
   openscop_extension_p extension; /**< Extension list */
   void * usr;                     /**< A user-defined field, not touched
