@@ -365,13 +365,13 @@ void openscop_irregular_free(openscop_irregular_p irregular) {
 
 
 /**
- * openscop_irregular_copy function:
+ * openscop_irregular_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_irregular_t data structure.
  * \param irregular The pointer to the irregular structure we want to copy.
  * \return A pointer to the copy of the irregular structure.
  */
-openscop_irregular_p openscop_irregular_copy(openscop_irregular_p irregular) {
+openscop_irregular_p openscop_irregular_clone(openscop_irregular_p irregular) {
   int i,j;
   openscop_irregular_p copy;
 

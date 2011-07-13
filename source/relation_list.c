@@ -310,19 +310,19 @@ void openscop_relation_list_free(openscop_relation_list_p list) {
  */
 openscop_relation_list_p openscop_relation_list_node(openscop_relation_p r) {
   openscop_relation_list_p new = openscop_relation_list_malloc();
-  new->elt = openscop_relation_copy(r);
+  new->elt = openscop_relation_clone(r);
   return new;
 }
 
 
 /**
- * openscop_relation_list_copy function:
+ * openscop_relation_list_clone function:
  * This functions builds and returns a quasi-"hard copy" (not a pointer copy)
  * of a openscop_relation_list_t data structure provided as parameter.
  * \param list  The pointer to the relation list we want to copy.
  * \return A pointer to the full copy of the relation list in parameter.
  */
-openscop_relation_list_p openscop_relation_list_copy(
+openscop_relation_list_p openscop_relation_list_clone(
     openscop_relation_list_p list) {
   
   int first = 1;
@@ -330,7 +330,7 @@ openscop_relation_list_p openscop_relation_list_copy(
 
   while (list != NULL) {
     node      = openscop_relation_list_malloc();
-    node->elt = openscop_relation_copy(list->elt);
+    node->elt = openscop_relation_clone(list->elt);
 
     if (first) {
       first = 0;
@@ -365,16 +365,16 @@ openscop_relation_list_p openscop_relation_list_concat(
   openscop_relation_list_p new, end;
 
   if (l1 == NULL)
-    return openscop_relation_list_copy(l2);
+    return openscop_relation_list_clone(l2);
 
   if (l2 == NULL)
-    return openscop_relation_list_copy(l1);
+    return openscop_relation_list_clone(l1);
 
-  new = openscop_relation_list_copy(l1);
+  new = openscop_relation_list_clone(l1);
   end = new;
   while (end->next != NULL)
     end = end->next;
-  end->next = openscop_relation_list_copy(l2);
+  end->next = openscop_relation_list_clone(l2);
 
   return new;
 }
@@ -476,7 +476,7 @@ openscop_relation_list_p openscop_relation_list_filter(
     openscop_relation_list_p list,
     int type) {
 
-  openscop_relation_list_p copy = openscop_relation_list_copy(list);
+  openscop_relation_list_p copy = openscop_relation_list_clone(list);
   openscop_relation_list_p filtered = NULL;
   openscop_relation_list_p previous = NULL;
   openscop_relation_list_p trash;

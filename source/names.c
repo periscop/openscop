@@ -288,31 +288,31 @@ void openscop_names_free(openscop_names_p names) {
 
 
 /**
- * openscop_names_copy function:
+ * openscop_names_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_names_t data structure provided as parameter.
  * \param names The pointer to the names structure we want to copy.
  * \return A pointer to the copy of the names structure provided as parameter.
  */
-openscop_names_p openscop_names_copy(openscop_names_p names) {
+openscop_names_p openscop_names_clone(openscop_names_p names) {
   openscop_names_p copy = openscop_names_malloc();
 
   copy->textual       = names->textual;
   copy->nb_parameters = names->nb_parameters;
   copy->nb_iterators  = names->nb_iterators;
   copy->nb_scattdims  = names->nb_scattdims;
-  copy->parameters    = openscop_util_strings_copy(names->parameters,
+  copy->parameters    = openscop_util_strings_clone(names->parameters,
                                                    names->nb_parameters);
-  copy->iterators     = openscop_util_strings_copy(names->iterators,
+  copy->iterators     = openscop_util_strings_clone(names->iterators,
                                                    names->nb_iterators);
-  copy->scattdims     = openscop_util_strings_copy(names->scattdims,
+  copy->scattdims     = openscop_util_strings_clone(names->scattdims,
                                                    names->nb_scattdims);
 
   copy->nb_localdims  = names->nb_localdims;
   copy->nb_arrays     = names->nb_arrays;
-  copy->localdims     = openscop_util_strings_copy(names->localdims,
+  copy->localdims     = openscop_util_strings_clone(names->localdims,
                                                    names->nb_localdims);
-  copy->arrays        = openscop_util_strings_copy(names->arrays,
+  copy->arrays        = openscop_util_strings_clone(names->arrays,
                                                    names->nb_arrays);
 
   return copy;

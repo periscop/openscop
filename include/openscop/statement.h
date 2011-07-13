@@ -125,7 +125,7 @@ void                 openscop_statement_free(openscop_statement_p);
 void openscop_statement_add(openscop_statement_p *, openscop_statement_p);
 void openscop_statement_compact(openscop_statement_p, int);
 int  openscop_statement_number(openscop_statement_p);
-openscop_statement_p openscop_statement_copy(openscop_statement_p);
+openscop_statement_p openscop_statement_clone(openscop_statement_p);
 int  openscop_statement_equal(openscop_statement_p, openscop_statement_p);
 int  openscop_statement_integrity_check(openscop_statement_p, int);
 

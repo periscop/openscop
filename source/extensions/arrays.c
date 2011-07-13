@@ -304,13 +304,13 @@ void openscop_arrays_free(openscop_arrays_p arrays) {
 
 
 /**
- * openscop_arrays_copy function:
+ * openscop_arrays_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_arrays_t data structure.
  * \param arrays The pointer to the arrays structure we want to copy.
  * \return A pointer to the copy of the arrays structure.
  */
-openscop_arrays_p openscop_arrays_copy(openscop_arrays_p arrays) {
+openscop_arrays_p openscop_arrays_clone(openscop_arrays_p arrays) {
   openscop_arrays_p copy;
   int i;
 

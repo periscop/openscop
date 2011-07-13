@@ -296,13 +296,13 @@ void openscop_extension_free(openscop_extension_p extension) {
 
 
 /**
- * openscop_extension_copy function:
+ * openscop_extension_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_extension_t data structure.
  * \param extension The pointer to the extension structure we want to copy.
  * \return A pointer to the copy of the extension structure.
  */
-openscop_extension_p openscop_extension_copy(openscop_extension_p extension) {
+openscop_extension_p openscop_extension_clone(openscop_extension_p extension) {
   openscop_extension_p copy = NULL;
   void * x;
 

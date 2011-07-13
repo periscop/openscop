@@ -125,7 +125,7 @@ TEMPLATE_STRING[5]=
 TEMPLATE_SUBSTITUTION[5]='@COPY@'
 TEMPLATE[5]='\
       case OPENSCOP_EXTENSION_TEMPLATE: {\
-        x = (void *)openscop_template_copy(extension->extension);\
+        x = (void *)openscop_template_clone(extension->extension);\
         break;\
       }'
 

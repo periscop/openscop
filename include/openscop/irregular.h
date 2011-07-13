@@ -131,7 +131,7 @@ void                 openscop_irregular_free(openscop_irregular_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_irregular_p openscop_irregular_copy(openscop_irregular_p);
+openscop_irregular_p openscop_irregular_clone(openscop_irregular_p);
 int                  openscop_irregular_equal(openscop_irregular_p,
                                   openscop_irregular_p);
 openscop_irregular_p openscop_irregular_add_control(openscop_irregular_p,

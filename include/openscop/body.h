@@ -116,7 +116,7 @@ void            openscop_body_free(openscop_body_p);
 /*+***************************************************************************
  *                           Processing functions                            *
  *****************************************************************************/
-openscop_body_p openscop_body_copy(openscop_body_p);
+openscop_body_p openscop_body_clone(openscop_body_p);
 int             openscop_body_equal(openscop_body_p, openscop_body_p);
 int             openscop_body_integrity_check(openscop_body_p, int);
 

@@ -243,13 +243,13 @@ void openscop_comment_free(openscop_comment_p comment) {
 
 
 /**
- * openscop_comment_copy function:
+ * openscop_comment_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_comment_t data structure.
  * \param comment The pointer to the comment structure we want to copy.
  * \return A pointer to the copy of the comment structure.
  */
-openscop_comment_p openscop_comment_copy(openscop_comment_p comment) {
+openscop_comment_p openscop_comment_clone(openscop_comment_p comment) {
   openscop_comment_p copy;
 
   if (comment == NULL)

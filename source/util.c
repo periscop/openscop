@@ -279,14 +279,14 @@ void openscop_util_strings_free(char ** strings, int nb_strings) {
 
 
 /**
- * openscop_util_copy_strings internal function.
+ * openscop_util_clone_strings internal function.
  * this function builds and return a "hard copy" (not a pointer copy) of an
  * array of strings provided as parameter.
  * \param strings    The array of strings to copy.
  * \param nb_strings The number of strings in the array to copy.
  * \return The copy of the array of strings.
  */
-char ** openscop_util_strings_copy(char ** strings, int nb_strings) {
+char ** openscop_util_strings_clone(char ** strings, int nb_strings) {
   int i;
   char ** copy;
   

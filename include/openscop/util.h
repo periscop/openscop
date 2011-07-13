@@ -81,7 +81,7 @@ char ** openscop_util_strings_read(FILE *, int *);
 char ** openscop_util_strings_generate(char *, int);
 void    openscop_util_strings_complete(char ***, int *, char *, int);
 void    openscop_util_strings_free(char **, int);
-char ** openscop_util_strings_copy(char **, int);
+char ** openscop_util_strings_clone(char **, int);
 int     openscop_util_strings_equal(char **, int, char **, int);
 
 /*+***************************************************************************

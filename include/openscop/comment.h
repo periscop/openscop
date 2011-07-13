@@ -112,7 +112,7 @@ void openscop_comment_free(openscop_comment_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_comment_p openscop_comment_copy(openscop_comment_p);
+openscop_comment_p openscop_comment_clone(openscop_comment_p);
 int openscop_comment_equal(openscop_comment_p, openscop_comment_p);
 
 

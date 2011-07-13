@@ -123,7 +123,7 @@ void                 openscop_extension_free(openscop_extension_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_extension_p openscop_extension_copy(openscop_extension_p);
+openscop_extension_p openscop_extension_clone(openscop_extension_p);
 int openscop_extension_equal(openscop_extension_p, openscop_extension_p);
 void * openscop_extension_lookup(openscop_extension_p, int);
 

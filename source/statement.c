@@ -402,22 +402,22 @@ int openscop_statement_number(openscop_statement_p statement) {
 
 
 /**
- * openscop_statement_copy function:
+ * openscop_statement_clone function:
  * This functions builds and returns a "hard copy" (not a pointer copy) of a
  * openscop_statement_t data structure provided as parameter.
  * \param statement  The pointer to the statement we want to copy.
  * \return A pointer to the full copy of the statement provided as parameter.
  */
-openscop_statement_p openscop_statement_copy(openscop_statement_p statement) {
+openscop_statement_p openscop_statement_clone(openscop_statement_p statement) {
   int first = 1;
   openscop_statement_p copy = NULL, node, previous = NULL;
 
   while (statement != NULL) {
     node               = openscop_statement_malloc();
-    node->domain       = openscop_relation_copy(statement->domain);
-    node->scattering   = openscop_relation_copy(statement->scattering);
-    node->access       = openscop_relation_list_copy(statement->access);
-    node->body         = openscop_body_copy(statement->body);
+    node->domain       = openscop_relation_clone(statement->domain);
+    node->scattering   = openscop_relation_clone(statement->scattering);
+    node->access       = openscop_relation_list_clone(statement->access);
+    node->body         = openscop_body_clone(statement->body);
     node->next         = NULL;
     
     if (first) {

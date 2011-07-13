@@ -244,13 +244,13 @@ void openscop_lines_free(openscop_lines_p lines) {
 
 
 /**
- * openscop_lines_copy function:
+ * openscop_lines_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_lines_t data structure.
  * \param lines The pointer to the lines structure we want to copy.
  * \return A pointer to the copy of the lines structure.
  */
-openscop_lines_p openscop_lines_copy(openscop_lines_p lines) {
+openscop_lines_p openscop_lines_clone(openscop_lines_p lines) {
   openscop_lines_p copy;
 
   if (lines == NULL)

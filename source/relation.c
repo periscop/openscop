@@ -959,13 +959,13 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_copy function:
+ * openscop_relation_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_relation_t data structure (the full union of relation).
  * \param[in] relation The pointer to the relation we want to copy.
  * \return A pointer to the copy of the union of relations.
  */
-openscop_relation_p openscop_relation_copy(openscop_relation_p relation) {
+openscop_relation_p openscop_relation_clone(openscop_relation_p relation) {
   if (relation == NULL)
     return NULL;
 
@@ -1174,10 +1174,10 @@ openscop_relation_p openscop_relation_concat_constraints(
   openscop_relation_p new;
 
   if (r1 == NULL)
-    return openscop_relation_copy(r2);
+    return openscop_relation_clone(r2);
 
   if (r2 == NULL)
-    return openscop_relation_copy(r1);
+    return openscop_relation_clone(r1);
 
   if (r1->nb_columns != r2->nb_columns)
     OPENSCOP_error("incompatible sizes for concatenation");
@@ -1456,8 +1456,8 @@ openscop_relation_p openscop_relation_union(openscop_relation_p r1,
   if ((r1 == NULL) && (r2 == NULL))
     return NULL;
   
-  copy1 = openscop_relation_copy(r1);
-  copy2 = openscop_relation_copy(r2);
+  copy1 = openscop_relation_clone(r1);
+  copy2 = openscop_relation_clone(r2);
 
   if ((r1 != NULL) && (r2 == NULL))
     return copy1;

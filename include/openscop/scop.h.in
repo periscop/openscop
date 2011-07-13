@@ -140,7 +140,7 @@ void		openscop_scop_free(openscop_scop_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_copy(openscop_scop_p);
+openscop_scop_p	openscop_scop_clone(openscop_scop_p);
 int             openscop_scop_equal(openscop_scop_p, openscop_scop_p);
 int             openscop_scop_integrity_check(openscop_scop_p);
 

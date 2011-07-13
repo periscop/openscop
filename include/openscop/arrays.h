@@ -116,7 +116,7 @@ void              openscop_arrays_free(openscop_arrays_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_copy(openscop_arrays_p);
+openscop_arrays_p openscop_arrays_clone(openscop_arrays_p);
 int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
 char **           openscop_arrays_generate_names(openscop_arrays_p, int *);
 

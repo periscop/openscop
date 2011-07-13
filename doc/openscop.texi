@@ -2453,7 +2453,7 @@ OpenScop Library.
 * Reading::
 * Allocating::
 * Deallocating::
-* Copying::
+* Cloning::
 * Testing::
 @end menu
 
@@ -2560,19 +2560,19 @@ void openscop_@emph{structure}_free(openscop_@emph{structure}_p s);
 as shown above. It recursively frees the memory allocated for the
 structure pointed by @code{s}, i.e., internal structures are also freed.
 
-@node Copying
-@subsection Copying: openscop_@emph{structure}_copy
+@node Cloning
+@subsection Cloning: openscop_@emph{structure}_clone
 
 @example
 @group
-openscop_@emph{structure}_p openscop_@emph{structure}_copy(openscop_@emph{structure}_p s);
+openscop_@emph{structure}_p openscop_@emph{structure}_clone(openscop_@emph{structure}_p s);
 @end group
 @end example
 
-@noindent Each OpenScop data structure has a copy function
+@noindent Each OpenScop data structure has a clone function
 as shown above. It recursively copies the content of the
 structure pointed by @code{s}, i.e., internal structures are also copied.
-It returns a pointer to the copy of the structure pointed by @code{s}.
+It returns a pointer to the clone of the structure pointed by @code{s}.
 
 @node Testing
 @subsection Testing: openscop_@emph{structure}_equal
@@ -2917,7 +2917,7 @@ openscop_@emph{structure}_p openscop_@emph{structure}_sread(char * string);
            from a string (provided as a parameter) instead of a file.
       @item @code{openscop_foo_malloc} (@pxref{Allocating}) 
       @item @code{openscop_foo_free} (@pxref{Deallocating}) 
-      @item @code{openscop_foo_copy} (@pxref{Copying}) 
+      @item @code{openscop_foo_clone} (@pxref{Cloning}) 
       @item @code{openscop_foo_equal} (@pxref{Testing}) 
       @end itemize
 @item Code the other functions you need and do not forget to put their

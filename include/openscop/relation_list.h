@@ -118,7 +118,7 @@ void                     openscop_relation_list_free(openscop_relation_list_p);
  *                            Processing functions                           *
  *****************************************************************************/
 openscop_relation_list_p openscop_relation_list_node(openscop_relation_p);
-openscop_relation_list_p openscop_relation_list_copy(openscop_relation_list_p);
+openscop_relation_list_p openscop_relation_list_clone(openscop_relation_list_p);
 openscop_relation_list_p openscop_relation_list_concat(
                                              openscop_relation_list_p,
                                              openscop_relation_list_p);

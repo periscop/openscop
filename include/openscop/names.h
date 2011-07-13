@@ -125,7 +125,7 @@ void             openscop_names_free(openscop_names_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_names_p openscop_names_copy(openscop_names_p);
+openscop_names_p openscop_names_clone(openscop_names_p);
 int              openscop_names_equal(openscop_names_p, openscop_names_p);
 int              openscop_names_integrity_check(openscop_names_p,int,int,int);
 

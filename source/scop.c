@@ -255,7 +255,7 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
   openscop_arrays_p arrays;
   openscop_names_p names;
 
-  names = openscop_names_copy(scop->names);
+  names = openscop_names_clone(scop->names);
 
   // Extract array names information from extensions.
   openscop_util_strings_free(names->arrays, names->nb_arrays);
@@ -526,27 +526,27 @@ void openscop_scop_free(openscop_scop_p scop) {
 
 
 /**
- * openscop_scop_copy function:
+ * openscop_scop_clone function:
  * This functions builds and returns a "hard copy" (not a pointer copy)
  * of a openscop_statement_t data structure provided as parameter.
  * Note that the usr field is not touched by this function.
  * \param statement The pointer to the scop we want to copy.
  * \return A pointer to the full copy of the scop provided as parameter.
  */
-openscop_scop_p openscop_scop_copy(openscop_scop_p scop) {
+openscop_scop_p openscop_scop_clone(openscop_scop_p scop) {
   openscop_scop_p copy;
   
   copy                     = openscop_scop_malloc();
   copy->version            = scop->version;
   if (scop->language != NULL)
     copy->language         = strdup(scop->language);
-  copy->context            = openscop_relation_copy(scop->context);
+  copy->context            = openscop_relation_clone(scop->context);
   copy->parameter_type     = scop->parameter_type;
-  copy->parameter          = (void **)openscop_util_strings_copy(
+  copy->parameter          = (void **)openscop_util_strings_clone(
       (char **)scop->parameter,
       (scop->context != NULL) ? scop->context->nb_parameters : 0);
-  copy->statement          = openscop_statement_copy(scop->statement);
-  copy->extension          = openscop_extension_copy(scop->extension);
+  copy->statement          = openscop_statement_clone(scop->statement);
+  copy->extension          = openscop_extension_clone(scop->extension);
 
   return copy;
 }

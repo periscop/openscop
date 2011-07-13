@@ -273,14 +273,14 @@ void openscop_body_free(openscop_body_p body) {
 
 
 /**
- * openscop_body_copy function:
+ * openscop_body_clone function:
  * This functions builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_body_t data structure provided as parameter. However, let us
  * recall here that non-string elements are untouched by the OpenScop Library.
  * \param[in] body The pointer to the body we want to copy.
  * \return A pointer to the full copy of the body provided as parameter.
  */
-openscop_body_p openscop_body_copy(openscop_body_p body) {
+openscop_body_p openscop_body_clone(openscop_body_p body) {
   openscop_body_p copy = NULL;
 
   if (body != NULL) {
@@ -288,7 +288,7 @@ openscop_body_p openscop_body_copy(openscop_body_p body) {
     copy->type = body->type;
     copy->nb_iterators = body->nb_iterators;
     if (body->type == OPENSCOP_TYPE_STRING) {
-      copy->iterator = (void*)openscop_util_strings_copy(
+      copy->iterator = (void*)openscop_util_strings_clone(
                            (char**)body->iterator, body->nb_iterators);
       copy->expression = strdup(body->expression);
     }

@@ -114,7 +114,7 @@ void openscop_lines_free(openscop_lines_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_lines_p openscop_lines_copy(openscop_lines_p);
+openscop_lines_p openscop_lines_clone(openscop_lines_p);
 int openscop_lines_equal(openscop_lines_p, openscop_lines_p);
 
 
