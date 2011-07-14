@@ -84,6 +84,7 @@ lib_LTLIBRARIES 	= libopenscop.la
 
 libopenscop_la_SOURCES 	=      \
 	scop.c                 \
+	scop_list.c            \
 	statement.c            \
 	extensions/comment.c   \
 	extensions/arrays.c    \

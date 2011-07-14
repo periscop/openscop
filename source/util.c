@@ -154,8 +154,8 @@ int openscop_util_read_int(FILE * file, char ** str) {
 
 /**
  * openscop_util_read_uptotag function:
- * this function reads a file up to a given tag or the enf of file. It puts
- * everything it reads in a string which is returned.
+ * this function reads a file up to a given tag (the tag is read) or the
+ * end of file. It puts everything it reads in a string which is returned.
  * \param[in] file The file where to read the tail.
  * \param[in] tag  The tag which, when reached, stops the file reading.
  * \return The string that has been read from the file.
@@ -175,7 +175,7 @@ char * openscop_util_read_uptotag(FILE * file, char * tag) {
     nb_chars++;
 
     if ((nb_chars >= lentag) &&
-        (!strncmp(&res[nb_chars - lentag - 1], tag, lentag))) {
+        (!strncmp(&res[nb_chars - lentag], tag, lentag))) {
       tag_found = 1;
       break;
     }
@@ -187,7 +187,7 @@ char * openscop_util_read_uptotag(FILE * file, char * tag) {
   }
 
   if (!tag_found)
-    OPENSCOP_warning("end tag was not found, end of file reached");
+    OPENSCOP_info("tag was not found, end of file reached");
 
   // - 0-terminate the string.
   OPENSCOP_realloc(res, char *, nb_chars * sizeof(char));

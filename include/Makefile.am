@@ -91,4 +91,5 @@ pkginclude_HEADERS 	=                  \
 	openscop/names.h                   \
 	openscop/strings.h                 \
 	openscop/util.h                    \
-	openscop/scop.h
+	openscop/scop.h                    \
+	openscop/scop_list.h

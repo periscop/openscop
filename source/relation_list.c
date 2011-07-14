@@ -79,7 +79,7 @@
  * file (file, possibly stdout). See openscop_relation_print_structure for
  * more details.
  * \param file   File where informations are printed.
- * \param l	 The list of relations whose information have to be printed.
+ * \param l	 The list of relations whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
 void openscop_relation_list_idump(FILE * file,
@@ -136,7 +136,7 @@ void openscop_relation_list_idump(FILE * file,
  * This function prints the content of a openscop_relation_list_t into
  * a file (file, possibly stdout).
  * \param file File where informations are printed.
- * \param list The relation whose information have to be printed.
+ * \param list The relation whose information has to be printed.
  */
 void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
   openscop_relation_list_idump(file, list, 0);
@@ -150,7 +150,7 @@ void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
  * only the elements and not the number of elements. It prints an element of the
  * list only if it is not NULL.
  * \param file  File where informations are printed.
- * \param list  The relation list whose information have to be printed.
+ * \param list  The relation list whose information has to be printed.
  * \param names The textual names of the various elements.
  *              Set to NULL if printing comments is not needed.
  */
@@ -188,7 +188,7 @@ void openscop_relation_list_print_elts(FILE * file,
  * into a file (file, possibly stdout) in the OpenScop format. It prints
  * an element of the list only if it is not NULL.
  * \param file  File where informations are printed.
- * \param list  The relation list whose information have to be printed.
+ * \param list  The relation list whose information has to be printed.
  * \param names The textual names of the various elements.
  *              Set to NULL if printing comments is not needed.
  */
@@ -286,8 +286,8 @@ void openscop_relation_list_free(openscop_relation_list_p list) {
   if (list == NULL)
     return;
 
-  while (list) {
-    if (list->elt)
+  while (list != NULL) {
+    if (list->elt != NULL)
       openscop_relation_free(list->elt);
     tmp = list->next;
     free(list);
@@ -325,8 +325,8 @@ openscop_relation_list_p openscop_relation_list_node(openscop_relation_p r) {
 openscop_relation_list_p openscop_relation_list_clone(
     openscop_relation_list_p list) {
   
+  openscop_relation_list_p clone = NULL, node, previous = NULL; 
   int first = 1;
-  openscop_relation_list_p copy = NULL, node, previous = NULL; 
 
   while (list != NULL) {
     node      = openscop_relation_list_malloc();
@@ -334,7 +334,7 @@ openscop_relation_list_p openscop_relation_list_clone(
 
     if (first) {
       first = 0;
-      copy = node;
+      clone = node;
       previous = node;
     }
     else {
@@ -345,7 +345,7 @@ openscop_relation_list_p openscop_relation_list_clone(
     list = list->next;
   }
 
-  return copy;
+  return clone;
 }
 
 

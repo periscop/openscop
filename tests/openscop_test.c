@@ -64,6 +64,8 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include <openscop/openscop.h>
 
 #define TEST_DIR    "."      // Directory to scan for OpenScop files
@@ -157,6 +159,7 @@ int main(int argc, char * argv[])
   int dirtest = 1; // 1 if we check a whole directory, 0 for a single file.
   int fileidx = 0; // Index of the file to check in argv (0 if none).
   int d_namlen;
+  int report;
   int suffix_length;
   DIR * dir;
   struct dirent * dp;
@@ -193,15 +196,24 @@ int main(int argc, char * argv[])
           (!strcmp(dp->d_name+(d_namlen-suffix_length), TEST_SUFFIX)))
       {
         // Test it !
-        success += test_file(dp->d_name, verbose);
+        //if (!fork()) {
+          success += test_file(dp->d_name, verbose);
+          /*if (success)
+            exit(0);
+          else
+            exit(1);
+        }
+        wait(&report);*/
         total++;
+       /* if (WEXITSTATUS(report) == 0)
+          success++;*/
       }
     }
     closedir(dir);
   }
   else
   {
-    success += test_file(argv[fileidx], verbose);
+    success = test_file(argv[fileidx], verbose);
     total++;
   }
 

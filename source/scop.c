@@ -298,6 +298,11 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
  */
 void openscop_scop_print(FILE * file, openscop_scop_p scop) {
 
+  if (scop == NULL) {
+    fprintf(file, "# NULL scop\n");
+    return;
+  }
+
   if (openscop_scop_integrity_check(scop) == 0)
     OPENSCOP_warning("OpenScop integrity check failed. "
                      "Something may go wrong");
@@ -386,24 +391,24 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
   int nb_statements, nb_parameters;
-  char ** tmp, ** language;
+  char * tmp, ** language;
   int i;
 
   if (file == NULL)
     return NULL;
 
-  scop = openscop_scop_malloc();
-
+  //
   // I. START TAG
-  tmp = openscop_strings_read(file);
-  if ((openscop_strings_size(tmp) == 0) ||
-      (strcmp(*tmp, OPENSCOP_TAG_START_SCOP)))
-    OPENSCOP_error("not an OpenScop opening tag");
-  
-  if (openscop_strings_size(tmp) > 1)
-    OPENSCOP_warning("uninterpreted information (after opening tag)");
-  openscop_strings_free(tmp);
+  //
+  tmp = openscop_util_read_uptotag(file, OPENSCOP_TAG_START_SCOP);
+  free(tmp);
+  if (feof(file)) {
+    OPENSCOP_info("no more scop in the file");
+    return NULL;
+  }
 
+  scop = openscop_scop_malloc();
+  
   //
   // II. CONTEXT PART
   //
@@ -526,18 +531,20 @@ void openscop_scop_free(openscop_scop_p scop) {
  * \return A pointer to the full copy of the scop provided as parameter.
  */
 openscop_scop_p openscop_scop_clone(openscop_scop_p scop) {
-  openscop_scop_p copy;
+  openscop_scop_p copy = NULL;
   
-  copy                 = openscop_scop_malloc();
-  copy->version        = scop->version;
-  if (scop->language != NULL)
-    copy->language     = strdup(scop->language);
-  copy->context        = openscop_relation_clone(scop->context);
-  copy->parameter_type = scop->parameter_type;
-  copy->parameters     = (void **)openscop_strings_clone(
-                             (char **)scop->parameters);
-  copy->statement      = openscop_statement_clone(scop->statement);
-  copy->extension      = openscop_extension_clone(scop->extension);
+  if (scop != NULL) {
+    copy                 = openscop_scop_malloc();
+    copy->version        = scop->version;
+    if (scop->language != NULL)
+      copy->language     = strdup(scop->language);
+    copy->context        = openscop_relation_clone(scop->context);
+    copy->parameter_type = scop->parameter_type;
+    copy->parameters     = (void **)openscop_strings_clone(
+                               (char **)scop->parameters);
+    copy->statement      = openscop_statement_clone(scop->statement);
+    copy->extension      = openscop_extension_clone(scop->extension);
+  }
 
   return copy;
 }
@@ -606,6 +613,9 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
  */
 int openscop_scop_integrity_check(openscop_scop_p scop) {
   int expected_nb_parameters;
+
+  if (scop == NULL)
+    return 1;
 
   // Check the language.
   if ((scop->language != NULL) &&
