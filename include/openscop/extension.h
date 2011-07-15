@@ -66,22 +66,13 @@
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/comment.h>
-# include <openscop/arrays.h>
-# include <openscop/lines.h>
-# include <openscop/irregular.h>
+# include <openscop/extension_id.h>
 
 # if defined(__cplusplus)
 extern "C"
   {
 # endif
 
-#define OPENSCOP_EXTENSION_UNDEFINED   0
-#define OPENSCOP_EXTENSION_STRING      1
-#define OPENSCOP_EXTENSION_COMMENT     2
-#define OPENSCOP_EXTENSION_ARRAYS      3
-#define OPENSCOP_EXTENSION_LINES       4
-#define OPENSCOP_EXTENSION_IRREGULAR   5
 
 /**
  * The openscop_extension_t structure stores an extension to the core
@@ -89,7 +80,7 @@ extern "C"
  * extensions.
  */
 struct openscop_extension {
-  int type;                         /**< This extension's type. */
+  openscop_extension_id_p id;       /**< This extension's identity. */
   void * extension;                 /**< Pointer to the extension itself. */
   struct openscop_extension * next; /**< Pointer to the next extension. */
 };
@@ -108,16 +99,16 @@ void openscop_extension_print(FILE *, openscop_extension_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-char *               openscop_extension_read_string(FILE *);
-openscop_extension_p openscop_extension_read(FILE *);
+openscop_extension_p openscop_extension_sread(char *, openscop_extension_id_p);
+openscop_extension_p openscop_extension_read(FILE *, openscop_extension_id_p);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void                 openscop_extension_add(openscop_extension_p*, int, void*);
+void openscop_extension_add(openscop_extension_p*, openscop_extension_p);
 openscop_extension_p openscop_extension_malloc();
-void                 openscop_extension_free(openscop_extension_p);
+void openscop_extension_free(openscop_extension_p);
 
 
 /*+***************************************************************************
@@ -125,7 +116,9 @@ void                 openscop_extension_free(openscop_extension_p);
  *****************************************************************************/
 openscop_extension_p openscop_extension_clone(openscop_extension_p);
 int openscop_extension_equal(openscop_extension_p, openscop_extension_p);
-void * openscop_extension_lookup(openscop_extension_p, int);
+void * openscop_extension_lookup(openscop_extension_p, char *);
+
+
 
 
 # if defined(__cplusplus)

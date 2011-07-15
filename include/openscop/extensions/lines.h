@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                      extensions/arrays.h                        **
+     **                     extensions/lines.h                        **
      **-----------------------------------------------------------------**
      **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
@@ -61,11 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_ARRAYS_H
-# define OPENSCOP_ARRAYS_H
+#ifndef OPENSCOP_LINES_H
+# define OPENSCOP_LINES_H
+# include <openscop/extension_id.h>
 
 # include <openscop/macros.h>
-# include <openscop/strings.h>
+# include <openscop/util.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -73,55 +74,55 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_TAG_ARRAYS_START  "<arrays>"
-# define OPENSCOP_TAG_ARRAYS_STOP   "</arrays>"
+# define OPENSCOP_URI_LINES        "lines"
+# define OPENSCOP_TAG_LINES_START  "<"OPENSCOP_URI_LINES">"
+# define OPENSCOP_TAG_LINES_STOP   "</"OPENSCOP_URI_LINES">"
 
 
 /**
- * The openscop_arrays_t structure stores a set of array names in
- * the extension part of the OpenScop representation. Each name
- * has a name string and an identifier: the ith name as name
- * string names[i] and identifier id[i].
+ * The openscop_lines_t structure stores a lines extention to the core
+ * OpenScop representation. It provides information about the line
+ * numbers of the SCoP in the original source file.
  */
-struct openscop_arrays {
-  int nb_names;      /**< Number of names. */
-  int  *  id;        /**< Array of nb_names identifiers. */
-  char ** names;     /**< Array of nb_names names. */
+struct openscop_lines {
+  int start;   /**< First line of the SCoP in the original source file. */
+  int end;     /**< Last line of the SCoP in the original source file. */
 };
-typedef struct openscop_arrays   openscop_arrays_t;
-typedef struct openscop_arrays * openscop_arrays_p;
+typedef struct openscop_lines   openscop_lines_t;
+typedef struct openscop_lines * openscop_lines_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_arrays_idump(FILE *, openscop_arrays_p, int);
-void   openscop_arrays_dump(FILE *, openscop_arrays_p);
-char * openscop_arrays_sprint(openscop_arrays_p);
+void   openscop_lines_idump(FILE *, openscop_lines_p, int);
+void   openscop_lines_dump(FILE *, openscop_lines_p);
+char * openscop_lines_sprint(openscop_lines_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_sread(char *);
+openscop_lines_p openscop_lines_sread(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_malloc();
-void              openscop_arrays_free(openscop_arrays_p);
+openscop_lines_p openscop_lines_malloc();
+void openscop_lines_free(openscop_lines_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_clone(openscop_arrays_p);
-int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
-char **           openscop_arrays_generate_names(openscop_arrays_p, int *);
+openscop_lines_p openscop_lines_clone(openscop_lines_p);
+int openscop_lines_equal(openscop_lines_p, openscop_lines_p);
+openscop_extension_id_p openscop_lines_generate_id();
+
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_ARRAYS_H */
+#endif /* define OPENSCOP_LINES_H */

@@ -66,6 +66,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/strings.h>
+# include <openscop/extension_id.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -73,8 +74,9 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_TAG_IRREGULAR_START  "<irregular>"
-# define OPENSCOP_TAG_IRREGULAR_STOP   "</irregular>"
+# define OPENSCOP_URI_IRREGULAR        "irregular"
+# define OPENSCOP_TAG_IRREGULAR_START  "<"OPENSCOP_URI_IRREGULAR">"
+# define OPENSCOP_TAG_IRREGULAR_STOP   "</"OPENSCOP_URI_IRREGULAR">"
 
 
 /**
@@ -140,6 +142,7 @@ openscop_irregular_p openscop_irregular_add_exit(openscop_irregular_p,
                                   char**, int, char*);
 openscop_irregular_p openscop_irregular_add_predicates(openscop_irregular_p,
                                   int*, int);
+openscop_extension_id_p openscop_irregular_generate_id();
 
 
 # if defined(__cplusplus)

@@ -107,33 +107,15 @@ void openscop_extension_idump(FILE * file,
     else
       first = 0;
 
-    // A blank line.
-    for (j = 0; j <= level+1; j++)
+    // A blank line
+    for(j = 0; j <= level+1; j++)
       fprintf(file, "|\t");
     fprintf(file, "\n");
-    
-    // Go to the right level.
-    for (j = 0; j < level; j++)
-      fprintf(file, "|\t");
-    switch (extension->type) { @IDUMP1@
-      default: {
-        fprintf(file, "|\ttype = unsupported (%d)\n", extension->type);
-      }
-    }
 
-    // A blank line.
-    for (j = 0; j <= level+1; j++)
-      fprintf(file, "|\t");
-    fprintf(file, "\n");
-    
-    switch (extension->type) { @IDUMP2@
-      default: {
-        // A blank line.
-        for (j = 0; j <= level+1; j++)
-          fprintf(file, "|\t");
-        fprintf(file, "| Unsupported extension\n");
-      }
-    }
+    openscop_extension_id_idump(file, extension->id, level + 1);
+   
+    if (extension->id != NULL)
+      extension->id->idump(file, extension->extension, level + 1);
     
     extension = extension->next;
 
@@ -168,25 +150,18 @@ void openscop_extension_dump(FILE * file, openscop_extension_p extension) {
  */
 void openscop_extension_print(FILE * file, openscop_extension_p extension) {
   char * string;
-  int ignored;
   
   if (extension == NULL)
     return;
 
   while (extension != NULL) {
-    ignored = 0;
-    switch (extension->type) { @SPRINT@
-      default: {
-        ignored = 1;
-        OPENSCOP_warning("unsupported extension, "
-                         "printing it has been ignored");
+    if (extension->id != NULL) {
+      string = extension->id->sprint(extension->extension);
+      if (string != NULL) {
+        fprintf(file, "%s\n", string);
+        free(string);
       }
     }
-    if (!ignored) {
-      fprintf(file, "%s\n", string);
-      free(string);
-    }
-
     extension = extension->next;
   }
 }
@@ -199,22 +174,55 @@ void openscop_extension_print(FILE * file, openscop_extension_p extension) {
 
 /**
  * openscop_extension_read function:
- * this function reads a list of extensions from a file (possibly stdin)
- * complying to the OpenScop textual format and returns a pointer to an
- * extension structure which contain this list of extension.
- * \param  file The input file where to read a list of extension fields.
- * \return A pointer to the extension structure that has been read.
+ * this function reads a list of extensions from a string complying to the
+ * OpenScop textual format and a list of knows extension identities. It
+ * returns a pointer to an extension structure which contain this list of
+ * extension.
+ * \param string   The string where to read a list of extension fields.
+ * \param registry The list of knows extensions (others are ignored).
+ * \return A pointer to the extension list that has been read.
  */
-openscop_extension_p openscop_extension_read(FILE * file) {
-  char * extension_string;
-  openscop_extension_p extension = NULL;
+openscop_extension_p
+openscop_extension_sread(char * string, openscop_extension_id_p registry) {
+  openscop_extension_p extension = NULL, new;
+  openscop_extension_id_p id;
   void * x;
 
-  extension_string = openscop_util_read_uptotag(file, OPENSCOP_TAG_END_SCOP);
-  @SREAD@ 
+  while (registry != NULL) {
+    x = registry->sread(string);
+    if (x != NULL) {
+      id = openscop_extension_id_nclone(registry, 1);
+      new = openscop_extension_malloc();
+      new->id = id;
+      new->extension = x;
+      openscop_extension_add(&extension, new);
+    }
+    registry = registry->next;
+  }
   
-  free(extension_string);
   return extension;
+}
+
+
+/**
+ * openscop_extension_read function:
+ * this function reads a list of extensions from a file (possibly stdin)
+ * complying to the OpenScop textual format and a list of knows extension
+ * identities. It returns a pointer to an extension structure which contain
+ * this list of extension.
+ * \param file     The input file where to read a list of extension fields.
+ * \param registry The list of knows extensions (others are ignored).
+ * \return A pointer to the extension list that has been read.
+ */
+openscop_extension_p
+openscop_extension_read(FILE * file, openscop_extension_id_p registry) {
+  char * extension_string;
+  void * extension_list;
+
+  extension_string = openscop_util_read_uptotag(file, OPENSCOP_TAG_END_SCOP);
+  extension_list = openscop_extension_sread(extension_string, registry);
+  free(extension_string);
+  return extension_list;
 }
 
 
@@ -225,24 +233,36 @@ openscop_extension_p openscop_extension_read(FILE * file) {
 
 /**
  * openscop_extension_add function:
- * this function adds an extension node to a list of extensions provided
- * as parameter (extension). The new node is allocated in this function and
- * filled with the information provided as parameter (type and x). The new
- * node is inserted at the beginning of the list. 
- * \param extension The list of extension fields to add a node (NULL if empty).
- * \param type      The type of the new extension to add.
- * \param x         The new extension to add.
+ * this function adds an extension node (it may be a list as well) to a list
+ * of extensions provided as parameter (list). The new node is inserted at
+ * the end of the list. 
+ * \param list      The list of extensions to add a node (NULL if empty).
+ * \param extension The new extension to add to the list.
  */
-void openscop_extension_add(openscop_extension_p * extension, int type,
-                            void * x) {
-  openscop_extension_p new;
+void openscop_extension_add(openscop_extension_p * list,
+                            openscop_extension_p extension) {
+  openscop_extension_p tmp = *list, check;
+  
+  if (extension != NULL) {
+    // First, check that the extension list is OK.
+    check = extension;
+    while (check != NULL) {
+      if ((check->id == NULL) || (check->id->URI == NULL))
+        OPENSCOP_error("no id or URI in an extension to add to a list");
 
-  if (x != NULL) {
-    new = openscop_extension_malloc();
-    new->type = type;
-    new->extension = x;
-    new->next = *extension;
-    *extension = new;
+      if (openscop_extension_lookup(*list, check->id->URI) != NULL)
+        OPENSCOP_error("only one extension with a given URI is allowed");
+      check = check->next;
+    }
+
+    if (*list != NULL) {
+      while (tmp->next != NULL)
+        tmp = tmp->next;
+      tmp->next = extension;
+    }
+    else {
+      *list = extension;
+    }
   }
 }
 
@@ -260,7 +280,7 @@ openscop_extension_p openscop_extension_malloc() {
 
   OPENSCOP_malloc(extension, openscop_extension_p,
                   sizeof(openscop_extension_t));
-  extension->type      = OPENSCOP_EXTENSION_UNDEFINED;
+  extension->id        = NULL;
   extension->extension = NULL;
   extension->next      = NULL;
 
@@ -278,9 +298,13 @@ void openscop_extension_free(openscop_extension_p extension) {
 
   while (extension != NULL) {
     next = extension->next;
-    switch (extension->type) { @FREE@
-      default: {
-        OPENSCOP_warning("unsupported extension, memory leaks are possible");
+    if (extension->id != NULL) {
+      extension->id->free(extension->extension);
+      openscop_extension_id_free(extension->id);
+    }
+    else {
+      if (extension->extension != NULL) {
+        OPENSCOP_warning("unregistered extension, memory leaks are possible");
         free(extension->extension);
       }
     }
@@ -299,26 +323,30 @@ void openscop_extension_free(openscop_extension_p extension) {
  * openscop_extension_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_extension_t data structure.
- * \param extension The pointer to the extension structure we want to copy.
- * \return A pointer to the copy of the extension structure.
+ * \param extension The pointer to the extension structure we want to clone.
+ * \return A pointer to the clone of the extension structure.
  */
 openscop_extension_p openscop_extension_clone(openscop_extension_p extension) {
-  openscop_extension_p copy = NULL;
+  openscop_extension_p clone = NULL, new;
+  openscop_extension_id_p id;
   void * x;
 
   while (extension != NULL) { 
-    switch (extension->type) { @COPY@
-      default: {
-        OPENSCOP_warning("unsupported extension, copy ignored");
-        x = NULL;
-      }
+    if (extension->id != NULL) {
+      x = extension->id->clone(extension->extension);
+      id = openscop_extension_id_clone(extension->id);
+      new = openscop_extension_malloc();
+      new->id = id;
+      new->extension = x;
+      openscop_extension_add(&clone, new);
     }
-    
-    openscop_extension_add(&copy, extension->type, x);
+    else {
+      OPENSCOP_warning("unregistered extension, cloning ignored");
+    }
     extension = extension->next;
   }
 
-  return copy;
+  return clone;
 }
 
 
@@ -371,13 +399,14 @@ int openscop_extension_equal(openscop_extension_p x1,
     x2 = backup_x2;
     found = 0;
     while ((x2 != NULL) && (found != 1)) {
-      if (x1->type == x2->type) {
-        switch (x1->type) { @EQUAL@
-          default: {
-            OPENSCOP_warning("unsupported extension, "
-                             "cannot state extension equality");
-            equal = 0;
-          }
+      if (openscop_extension_id_equal(x1->id, x2->id)) {
+        if (x1->id != NULL) {
+          equal = x1->id->equal(x1->extension, x2->extension);
+        }
+        else {
+          OPENSCOP_warning("unregistered extension, "
+                           "cannot state extension equality");
+          equal = 0;
         }
 
         if (equal == 0)
@@ -401,16 +430,16 @@ int openscop_extension_equal(openscop_extension_p x1,
 
 /**
  * openscop_extension_lookup function:
- * this function returns the first extension of a given type (type) in the
- * extension list provided as parameter (x) and NULL if it doesn't find such
+ * this function returns the first extension with a given URI in the
+ * extension list provided as parameter and NULL if it doesn't find such
  * an extension.
- * \param x    The extension list where to search a given extension type.
- * \param type The type of the extension we are looking for.
- * \return The first extension of the requested type in the list.
+ * \param x    The extension list where to search a given extension URI.
+ * \param URI  The URI of the extension we are looking for.
+ * \return The first extension of the requested URI in the list.
  */
-void * openscop_extension_lookup(openscop_extension_p x, int type) {
+void * openscop_extension_lookup(openscop_extension_p x, char * URI) {
   while (x != NULL) {
-    if (x->type == type)
+    if ((x->id != NULL) && (!strcmp(x->id->URI, URI)))
       return x->extension;
 
     x = x->next;

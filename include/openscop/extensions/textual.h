@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/comment.h                        **
+     **                     extensions/textual.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 15/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,11 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_COMMENT_H
-# define OPENSCOP_COMMENT_H
+#ifndef OPENSCOP_TEXTUAL_H
+# define OPENSCOP_TEXTUAL_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
+# include <openscop/extension_id.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -73,51 +74,53 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_TAG_COMMENT_START  "<comment>"
-# define OPENSCOP_TAG_COMMENT_STOP   "</comment>"
+# define OPENSCOP_URI_TEXTUAL       "textual"
+# define OPENSCOP_TAG_TEXTUAL_START ""
+# define OPENSCOP_TAG_TEXTUAL_STOP  ""
 
 
 /**
- * The openscop_comment_t structure stores a comment extention to the core
- * OpenScop representation. It is simply a 0-terminated string.
+ * The openscop_textual_t structure stores the complete textual
+ * representation of the scop extension field. It is a special case of
+ * extension since it does not require start and end tag.
  */
-struct openscop_comment {
-  char * comment;  /**< A comment message as a 0-terminated string. */
+struct openscop_textual {
+  char * textual;  /**< Full extension string as a 0-terminated string. */
 };
-typedef struct openscop_comment   openscop_comment_t;
-typedef struct openscop_comment * openscop_comment_p;
+typedef struct openscop_textual   openscop_textual_t;
+typedef struct openscop_textual * openscop_textual_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_comment_idump(FILE *, openscop_comment_p, int);
-void   openscop_comment_dump(FILE *, openscop_comment_p);
-char * openscop_comment_sprint(openscop_comment_p);
+void   openscop_textual_idump(FILE *, openscop_textual_p, int);
+void   openscop_textual_dump(FILE *, openscop_textual_p);
+char * openscop_textual_sprint(openscop_textual_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_comment_p openscop_comment_sread(char *);
+openscop_textual_p openscop_textual_sread(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_comment_p openscop_comment_malloc();
-void openscop_comment_free(openscop_comment_p);
+openscop_textual_p openscop_textual_malloc();
+void openscop_textual_free(openscop_textual_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_comment_p openscop_comment_clone(openscop_comment_p);
-int openscop_comment_equal(openscop_comment_p, openscop_comment_p);
-
+openscop_textual_p openscop_textual_clone(openscop_textual_p);
+int openscop_textual_equal(openscop_textual_p, openscop_textual_p);
+openscop_extension_id_p openscop_textual_generate_id();
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_COMMENT_H */
+#endif /* define OPENSCOP_TEXTUAL_H */

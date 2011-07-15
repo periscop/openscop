@@ -80,9 +80,18 @@
 # include <openscop/macros.h>
 # include <openscop/util.h>
 # include <openscop/strings.h>
+# include <openscop/body.h>
 # include <openscop/names.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
+# include <openscop/extension_id.h>
+
+# include <openscop/extensions/textual.h>
+# include <openscop/extensions/comment.h>
+# include <openscop/extensions/arrays.h>
+# include <openscop/extensions/lines.h>
+# include <openscop/extensions/irregular.h>
+
 # include <openscop/extension.h>
 # include <openscop/statement.h>
 
@@ -96,22 +105,23 @@ extern "C"
 /**
  * The scop_t structure stores the useful information of a static
  * control part of a program to process it within a polyhedral framework.
- * Parameter information may be strings of characters (char *) or a generic
- * pointer to anything else (void *). The OpenScop library does not touch AT
- * ALL generic information: printing, copy etc. must be done externally.
+ * Parameter information may be strings of characters (char *) when
+ * the type field is OPENSCOP_TYPE_STRING or a generic pointer to anything
+ * else (void *) when the type field is OPENSCOP_TYPE_GENERIC. The OpenScop
+ * library does not touch AT ALL generic information: printing, copy etc. must
+ * be done externally.
  */
 struct openscop_scop {
-  int version;                    /**< Version of the data structure */
-  char * language;                /**< Target language (backend) */
-  openscop_relation_p context;    /**< Constraints on the SCoP parameters */
-  int parameter_type;             /**< OPENSCOP_TYPE_GENERIC if parameters are
-                                       generic (void*), OPENSCOP_TYPE_STRING if
-                                       they are strings (castable to char*) */
-  void ** parameters;             /**< NULL-terminated array of parameters */
-  openscop_statement_p statement; /**< Statement list of the SCoP */
-  openscop_extension_p extension; /**< Extension list */
-  void * usr;                     /**< A user-defined field, not touched
-				       AT ALL by the OpenScop Library */
+  int version;                      /**< Version of the data structure */
+  char * language;                  /**< Target language (backend) */
+  openscop_relation_p context;      /**< Constraints on the SCoP parameters */
+  int parameter_type;               /**< Parameter type */
+  void ** parameters;               /**< NULL-terminated array of parameters */
+  openscop_statement_p statement;   /**< Statement list of the SCoP */
+  openscop_extension_id_p registry; /**< List of registered extensions */
+  openscop_extension_p extension;   /**< Extension list */
+  void * usr;                       /**< A user-defined field, not touched
+				         AT ALL by the OpenScop Library */
 };
 typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;

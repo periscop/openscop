@@ -68,6 +68,11 @@
 #include <sys/wait.h>
 #include <openscop/openscop.h>
 
+#define FORK                 // Comment that if you want only one process
+                             // (best for debugging with valgrind but bad
+                             // for make check since any error will
+                             // stop the job).
+
 #define TEST_DIR    "."      // Directory to scan for OpenScop files
 #define TEST_SUFFIX ".scop"  // Suffix of OpenScop files
 
@@ -84,8 +89,7 @@
  * \param verbose    Verbose option (1 to set, 0 not to set).
  * \return 1 if the test is successful, 0 otherwise.
  */
-int test_file(char * input_name, int verbose)
-{
+int test_file(char * input_name, int verbose) {
   int success = 0;
   int failure = 0;
   int equal;
@@ -98,8 +102,7 @@ int test_file(char * input_name, int verbose)
     
   // Raise the OpenScop file format to OpenScop data structures.
   input_file = fopen(input_name, "r");
-  if (input_file == NULL)
-  {
+  if (input_file == NULL) {
     fflush(stdout);
     fprintf(stderr, "\nError: unable to open file %s\n", input_name);
     exit(2);
@@ -121,8 +124,7 @@ int test_file(char * input_name, int verbose)
   //openscop_scop_dump(stdout, output_scop);
   fclose(output_file);
 
-  if (verbose)
-  {
+  if (verbose) {
     printf("\n\n*************************************************\n\n");
     openscop_scop_dump(stdout, output_scop);
     openscop_scop_print(stdout, output_scop);
@@ -151,15 +153,13 @@ int test_file(char * input_name, int verbose)
  * Optionnally the user can provide a file name to check this file only. A
  * verbose option is also provided to output more information during tests.
  */
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]) {
   int total   = 0; // Total number of tests.
   int success = 0; // Number of successes.
   int verbose = 0; // 1 if the verbose option is set, 0 otherwise.
   int dirtest = 1; // 1 if we check a whole directory, 0 for a single file.
   int fileidx = 0; // Index of the file to check in argv (0 if none).
   int d_namlen;
-  int report;
   int suffix_length;
   DIR * dir;
   struct dirent * dp;
@@ -169,50 +169,44 @@ int main(int argc, char * argv[])
       ((argc > 2) && (!strcmp(argv[2], "-v"))))
     verbose = 1;
 
-  if ((argc > 3) || ((argc == 3) && (!verbose)))
-  {
+  if ((argc > 3) || ((argc == 3) && (!verbose))) {
     fprintf(stderr, "usage: openscop_test [-v] [openscop_file]\n");
     exit(1); 
   }
 
-  if ((argc - verbose) > 1)
-  {
+  if ((argc - verbose) > 1) {
     dirtest = 0;
     fileidx = (!strcmp(argv[1], "-v")) ? 2 : 1;
   }
 
   // Proceed with the test(s), either directory or single file
-  if (dirtest)
-  {
+  if (dirtest) {
     suffix_length = strlen(TEST_SUFFIX);
     
     // For each file in the directory to check...
     dir = opendir(TEST_DIR);
-    while ((dp = readdir(dir)) != NULL)
-    {
+    while ((dp = readdir(dir)) != NULL) {
       d_namlen = strlen(dp->d_name);
       // If the file has the convenient suffix...
       if ((d_namlen > suffix_length) &&
-          (!strcmp(dp->d_name+(d_namlen-suffix_length), TEST_SUFFIX)))
-      {
+          (!strcmp(dp->d_name+(d_namlen-suffix_length), TEST_SUFFIX))) {
         // Test it !
-        //if (!fork()) {
-          success += test_file(dp->d_name, verbose);
-          /*if (success)
-            exit(0);
-          else
-            exit(1);
-        }
-        wait(&report);*/
+#ifdef FORK
+        int report;
+        if (!fork())
+          exit(test_file(dp->d_name, verbose) ? 0 : 1);
+        wait(&report);
+        if (!WEXITSTATUS(report))
+          success++;
+#else
+        success += test_file(dp->d_name, verbose);
+#endif
         total++;
-       /* if (WEXITSTATUS(report) == 0)
-          success++;*/
       }
     }
     closedir(dir);
   }
-  else
-  {
+  else {
     success = test_file(argv[fileidx], verbose);
     total++;
   }

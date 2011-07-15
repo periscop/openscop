@@ -190,8 +190,8 @@ char * openscop_util_read_uptotag(FILE * file, char * tag) {
     OPENSCOP_info("tag was not found, end of file reached");
 
   // - 0-terminate the string.
-  OPENSCOP_realloc(res, char *, nb_chars * sizeof(char));
-  res[nb_chars - 1] = '\0';
+  OPENSCOP_realloc(res, char *, (nb_chars + 1) * sizeof(char));
+  res[nb_chars] = '\0';
 
   return res;
 }

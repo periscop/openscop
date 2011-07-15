@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                      extensions/arrays.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,28 +61,70 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
-
+#ifndef OPENSCOP_ARRAYS_H
+# define OPENSCOP_ARRAYS_H
 
 # include <openscop/macros.h>
-# include <openscop/util.h>
 # include <openscop/strings.h>
-# include <openscop/body.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
 # include <openscop/extension_id.h>
 
-# include <openscop/extensions/textual.h>
-# include <openscop/extensions/comment.h>
-# include <openscop/extensions/arrays.h>
-# include <openscop/extensions/lines.h>
-# include <openscop/extensions/irregular.h>
-
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+# define OPENSCOP_URI_ARRAYS        "arrays"
+# define OPENSCOP_TAG_ARRAYS_START  "<"OPENSCOP_URI_ARRAYS">"
+# define OPENSCOP_TAG_ARRAYS_STOP   "</"OPENSCOP_URI_ARRAYS">"
+
+
+/**
+ * The openscop_arrays_t structure stores a set of array names in
+ * the extension part of the OpenScop representation. Each name
+ * has a name string and an identifier: the ith name as name
+ * string names[i] and identifier id[i].
+ */
+struct openscop_arrays {
+  int nb_names;      /**< Number of names. */
+  int  *  id;        /**< Array of nb_names identifiers. */
+  char ** names;     /**< Array of nb_names names. */
+};
+typedef struct openscop_arrays   openscop_arrays_t;
+typedef struct openscop_arrays * openscop_arrays_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void   openscop_arrays_idump(FILE *, openscop_arrays_p, int);
+void   openscop_arrays_dump(FILE *, openscop_arrays_p);
+char * openscop_arrays_sprint(openscop_arrays_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+openscop_arrays_p openscop_arrays_sread(char *);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+openscop_arrays_p openscop_arrays_malloc();
+void              openscop_arrays_free(openscop_arrays_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+openscop_arrays_p openscop_arrays_clone(openscop_arrays_p);
+int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
+char **           openscop_arrays_generate_names(openscop_arrays_p, int *);
+openscop_extension_id_p openscop_arrays_generate_id();
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OPENSCOP_ARRAYS_H */

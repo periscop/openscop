@@ -877,7 +877,7 @@ void openscop_relation_free_inside(openscop_relation_p relation) {
 
 /**
  * openscop_relation_free function:
- * this function frees the allocated memory for a openscop_relation_t
+ * this function frees the allocated memory for an openscop_relation_t
  * structure.
  * \param[in] relation The pointer to the relation we want to free.
  */

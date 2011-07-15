@@ -64,7 +64,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <ctype.h>
-# include <openscop/extension.h>
+# include <openscop/extensions/arrays.h>
 
 
 /*+***************************************************************************
@@ -421,6 +421,29 @@ char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
   }
 
   return names;
+}
+
+
+/**
+ * openscop_arrays_generate_id function:
+ * this function creates an identity structure corresponding to the arrays
+ * extension and returns it).
+ * \return An identity structure corresponding to the arrays extension.
+ */
+openscop_extension_id_p openscop_arrays_generate_id() {
+  openscop_extension_id_p id = openscop_extension_id_malloc();
+  
+  id->URI    = strdup(OPENSCOP_URI_ARRAYS);
+  id->idump  = (openscop_idump_f)openscop_arrays_idump;
+  id->dump   = (openscop_dump_f)openscop_arrays_dump;
+  id->sprint = (openscop_sprint_f)openscop_arrays_sprint;
+  id->sread  = (openscop_sread_f)openscop_arrays_sread;
+  id->malloc = (openscop_malloc_f)openscop_arrays_malloc;
+  id->free   = (openscop_free_f)openscop_arrays_free;
+  id->clone  = (openscop_clone_f)openscop_arrays_clone;
+  id->equal  = (openscop_equal_f)openscop_arrays_equal;
+
+  return id;
 }
 
 

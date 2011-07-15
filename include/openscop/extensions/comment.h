@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                     extensions/comment.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,28 +61,66 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
-
+#ifndef OPENSCOP_COMMENT_H
+# define OPENSCOP_COMMENT_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/strings.h>
-# include <openscop/body.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
 # include <openscop/extension_id.h>
 
-# include <openscop/extensions/textual.h>
-# include <openscop/extensions/comment.h>
-# include <openscop/extensions/arrays.h>
-# include <openscop/extensions/lines.h>
-# include <openscop/extensions/irregular.h>
-
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+# define OPENSCOP_URI_COMMENT        "comment"
+# define OPENSCOP_TAG_COMMENT_START  "<"OPENSCOP_URI_COMMENT">"
+# define OPENSCOP_TAG_COMMENT_STOP   "</"OPENSCOP_URI_COMMENT">"
+
+
+/**
+ * The openscop_comment_t structure stores a comment extention to the core
+ * OpenScop representation. It is simply a 0-terminated string.
+ */
+struct openscop_comment {
+  char * comment;  /**< A comment message as a 0-terminated string. */
+};
+typedef struct openscop_comment   openscop_comment_t;
+typedef struct openscop_comment * openscop_comment_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void   openscop_comment_idump(FILE *, openscop_comment_p, int);
+void   openscop_comment_dump(FILE *, openscop_comment_p);
+char * openscop_comment_sprint(openscop_comment_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+openscop_comment_p openscop_comment_sread(char *);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+openscop_comment_p openscop_comment_malloc();
+void openscop_comment_free(openscop_comment_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+openscop_comment_p openscop_comment_clone(openscop_comment_p);
+int openscop_comment_equal(openscop_comment_p, openscop_comment_p);
+openscop_extension_id_p openscop_comment_generate_id();
+
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OPENSCOP_COMMENT_H */

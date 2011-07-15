@@ -74,14 +74,17 @@ SUBDIRS			=
 MAINTAINERCLEANFILES	= Makefile.in
 
 #############################################################################
+nobase_pkginclude_HEADERS =                \
+	openscop/extensions/textual.h      \
+	openscop/extensions/comment.h      \
+	openscop/extensions/arrays.h       \
+	openscop/extensions/lines.h        \
+	openscop/extensions/irregular.h
 
 pkginclude_HEADERS 	=                  \
 	openscop/openscop.h                \
 	openscop/statement.h               \
-	openscop/comment.h                 \
-	openscop/arrays.h                  \
-	openscop/lines.h                   \
-	openscop/irregular.h               \
+	openscop/extension_id.h            \
 	openscop/extension.h               \
 	openscop/vector.h                  \
 	openscop/relation.h                \

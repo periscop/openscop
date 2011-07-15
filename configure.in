@@ -254,9 +254,6 @@ AC_CONFIG_FILES([
 
 AC_OUTPUT
 
-echo -n "Generating the source/extension.c... "
-./source/extension.sh
-echo "OK"
 
 echo "             /*-----------------------------------------------*"
 echo "              *      OpenScop Library configuration is OK     *"

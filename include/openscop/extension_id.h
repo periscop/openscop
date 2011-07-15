@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/lines.h                        **
+     **                        extension_id.h                           **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 15/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,11 +61,10 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_LINES_H
-# define OPENSCOP_LINES_H
+#ifndef OPENSCOP_EXTENSION_ID_H
+# define OPENSCOP_EXTENSION_ID_H
 
 # include <openscop/macros.h>
-# include <openscop/util.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -73,53 +72,71 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_TAG_LINES_START  "<lines>"
-# define OPENSCOP_TAG_LINES_STOP   "</lines>"
+typedef void   (*openscop_idump_f) (FILE *, void *, int);
+typedef void   (*openscop_dump_f)  (FILE *, void *);
+typedef char * (*openscop_sprint_f)(void *);
+typedef void * (*openscop_sread_f) (char *);
+typedef void * (*openscop_malloc_f)();
+typedef void   (*openscop_free_f)  (void *);
+typedef void * (*openscop_clone_f) (void *);
+typedef int    (*openscop_equal_f) (void *, void *);
 
 
 /**
- * The openscop_lines_t structure stores a lines extention to the core
- * OpenScop representation. It provides information about the line
- * numbers of the SCoP in the original source file.
+ * The openscop_extension_id structure stores the URI and base
+ * functions pointers an extension implementation has to offer. It
+ * is a node in a NULL-terminated list of extension ids.
  */
-struct openscop_lines {
-  int start;   /**< First line of the SCoP in the original source file. */
-  int end;     /**< Last line of the SCoP in the original source file. */
+struct openscop_extension_id {
+  char * URI;               /**< Unique extension identifier string */
+  openscop_idump_f  idump;  /**< Pointer to extension idump function */
+  openscop_dump_f   dump;   /**< Pointer to extension dump function */
+  openscop_sprint_f sprint; /**< Pointer to extension sprint function */
+  openscop_sread_f  sread;  /**< Pointer to extension sread function */
+  openscop_malloc_f malloc; /**< Pointer to extension malloc function */
+  openscop_free_f   free;   /**< Pointer to extension free function */
+  openscop_clone_f  clone;  /**< Pointer to extension clone function */
+  openscop_equal_f  equal;  /**< Pointer to extension equal function */
+  struct openscop_extension_id * next; /**< Next id in the list */
 };
-typedef struct openscop_lines   openscop_lines_t;
-typedef struct openscop_lines * openscop_lines_p;
+typedef struct openscop_extension_id   openscop_extension_id_t;
+typedef struct openscop_extension_id * openscop_extension_id_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_lines_idump(FILE *, openscop_lines_p, int);
-void   openscop_lines_dump(FILE *, openscop_lines_p);
-char * openscop_lines_sprint(openscop_lines_p);
+void openscop_extension_id_idump(FILE *, openscop_extension_id_p, int);
+void openscop_extension_id_dump(FILE *, openscop_extension_id_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_lines_p openscop_lines_sread(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_lines_p openscop_lines_malloc();
-void openscop_lines_free(openscop_lines_p);
+void                    openscop_extension_id_add(openscop_extension_id_p *,
+                                                 openscop_extension_id_p);
+openscop_extension_id_p openscop_extension_id_malloc();
+void                    openscop_extension_id_free(openscop_extension_id_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_lines_p openscop_lines_clone(openscop_lines_p);
-int openscop_lines_equal(openscop_lines_p, openscop_lines_p);
-
+openscop_extension_id_p openscop_extension_id_nclone(openscop_extension_id_p,
+                                                     int);
+openscop_extension_id_p openscop_extension_id_clone(openscop_extension_id_p);
+int                     openscop_extension_id_equal(openscop_extension_id_p,
+                                                    openscop_extension_id_p);
+openscop_extension_id_p openscop_extension_id_lookup(openscop_extension_id_p,
+                                                     char *);
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_LINES_H */
+#endif /* define OPENSCOP_EXTENSION_ID_H */

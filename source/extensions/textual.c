@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/comment.c                        **
+     **                     extensions/textual.c                        **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 15/17/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -63,7 +63,10 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/extensions/comment.h>
+# include <openscop/extensions/textual.h>
+
+
+/* CAUTION : TEXTUAL IS A VERY SPECIAL CASE: DO NOT USE IT AS AN EXAMPLE !!! */
 
 
 /*+***************************************************************************
@@ -72,17 +75,17 @@
 
 
 /**
- * openscop_comment_idump function:
- * this function displays an openscop_comment_t structure (*comment) into a
+ * openscop_textual_idump function:
+ * this function displays an openscop_textual_t structure (*textual) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
  * \param file    The file where the information has to be printed.
- * \param comment The comment structure whose information has to be printed.
+ * \param textual The textual structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void openscop_comment_idump(FILE * file, openscop_comment_p comment,
-                            int level) {
+void openscop_textual_idump(FILE * file, openscop_textual_p textual,
+                             int level) {
   int j;
   char * tmp;
 
@@ -90,23 +93,30 @@ void openscop_comment_idump(FILE * file, openscop_comment_p comment,
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (comment != NULL)
-    fprintf(file, "+-- openscop_comment_t\n");
-  else
-    fprintf(file, "+-- NULL comment\n");
-
-  if (comment != NULL) {
-    // Go to the right level.
-    for(j = 0; j <= level; j++)
-      fprintf(file, "|\t");
-  
-    // Display the comment message (without any carriage return).
-    tmp = strdup(comment->comment);
+  if (textual != NULL) {
+    fprintf(file, "+-- openscop_textual_t: ");
+    
+    // Display the textual message (without any carriage return).
+    tmp = strdup(textual->textual);
     for (j = 0; j < strlen(tmp); j++)
       if (tmp[j] == '\n')
 	tmp[j] = ' ';
-    fprintf(file, "comment: %s\n", tmp);
+
+    if (strlen(tmp) > 40) {
+      for (j = 0; j < 20; j++)
+        fprintf(file, "%c", tmp[j]);
+      fprintf(file, "   ...   ");
+      for (j = strlen(tmp) - 20; j < strlen(tmp); j++)
+        fprintf(file, "%c", tmp[j]);
+      fprintf(file, "\n");
+    }
+    else {
+      fprintf(file,"%s\n", tmp);
+    }
     free(tmp);
+  }
+  else {
+    fprintf(file, "+-- NULL textual\n");
   }
 
   // The last line.
@@ -117,53 +127,54 @@ void openscop_comment_idump(FILE * file, openscop_comment_p comment,
 
 
 /**
- * openscop_comment_dump function:
- * this function prints the content of an openscop_comment_t structure
- * (*comment) into a file (file, possibly stdout).
+ * openscop_textual_dump function:
+ * this function prints the content of an openscop_textual_t structure
+ * (*textual) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
- * \param comment The comment structure whose information has to be printed.
+ * \param textual The textual structure whose information has to be printed.
  */
-void openscop_comment_dump(FILE * file, openscop_comment_p comment) {
-  openscop_comment_idump(file, comment, 0);
+void openscop_textual_dump(FILE * file, openscop_textual_p textual) {
+  openscop_textual_idump(file, textual, 0);
 }
 
 
+
+#if 0
 /**
- * openscop_comment_sprint function:
- * this function prints the content of an openscop_comment_t structure
- * (*comment) into a string (returned) in the OpenScop textual format.
- * \param  comment The comment structure whose information has to be printed.
- * \return A string containing the OpenScop dump of the comment structure.
+ * openscop_textual_sprint function:
+ * this function prints the content of an openscop_textual_t structure
+ * (*textual) into a string (returned) in the OpenScop textual format.
+ * \param  textual The textual structure whose information has to be printed.
+ * \return A string containing the OpenScop dump of the textual structure.
  */
-char * openscop_comment_sprint(openscop_comment_p comment) {
-  int high_water_mark = OPENSCOP_MAX_STRING;
+char * openscop_textual_sprint(openscop_textual_p textual) {
   char * string = NULL;
-  char * buffer;
 
-  if (comment != NULL) {
-    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
-    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
-    string[0] = '\0';
-   
-    // Print the begin tag.
-    sprintf(buffer, OPENSCOP_TAG_COMMENT_START);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
-
-    // Print the comment.
-    sprintf(buffer, "\n%s", comment->comment);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
-
-    // Print the end tag.
-    sprintf(buffer, OPENSCOP_TAG_COMMENT_STOP"\n");
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
-  
-    // Keep only the memory space we need.
-    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
-    free(buffer);
+  if ((textual != NULL) && (textual->textual != NULL)) {
+    if (strlen(textual->textual) > OPENSCOP_MAX_STRING) 
+      OPENSCOP_error("textual too long");
+    
+    string = strdup(textual->textual);
+    if (string == NULL)
+      OPENSCOP_error("memory overflow");
   }
 
   return string;
 }
+#else
+/**
+ * openscop_textual_sprint function:
+ * this function returns NULL. This is part of the special behavior of
+ * the textual option (printing it along with other options would double
+ * the options...).
+ * \param  textual The textual structure whose information has to be printed.
+ * \return NULL.
+ */
+char * openscop_textual_sprint(openscop_textual_p textual) {
+
+  return NULL;
+}
+#endif
 
 
 /*****************************************************************************
@@ -171,31 +182,27 @@ char * openscop_comment_sprint(openscop_comment_p comment) {
  *****************************************************************************/
 
 /**
- * openscop_comment_sread function:
- * this function reads a comment structure from a string complying to the
- * OpenScop textual format and returns a pointer to this comment structure.
- * The string should contain only one textual format of a comment structure.
- * \param  extensions The input string where to find a comment structure.
- * \return A pointer to the comment structure that has been read.
+ * openscop_textual_sread function:
+ * this function reads a textual structure from a string complying to the
+ * OpenScop textual format and returns a pointer to this textual structure.
+ * The string should contain only one textual format of a textual structure.
+ * \param  extensions The input string where to find a textual structure.
+ * \return A pointer to the textual structure that has been read.
  */
-openscop_comment_p openscop_comment_sread(char * extensions) {
-  char * content;
-  openscop_comment_p comment;
+openscop_textual_p openscop_textual_sread(char * extensions) {
+  openscop_textual_p textual = NULL;
 
-  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_COMMENT_START,
-                                                  OPENSCOP_TAG_COMMENT_STOP);
-  if (content == NULL) {
-    OPENSCOP_info("no comment optional tag");
-    return NULL;
+  if (extensions != NULL) {
+    if (strlen(extensions) > OPENSCOP_MAX_STRING) 
+      OPENSCOP_error("textual too long");
+
+    textual = openscop_textual_malloc();
+    textual->textual = strdup(extensions);
+    if (textual->textual == NULL)
+      OPENSCOP_error("memory overflow");
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING) 
-    OPENSCOP_error("comment too long");
-
-  comment = openscop_comment_malloc();
-  comment->comment = content;
-
-  return comment;
+  return textual;
 }
 
 
@@ -205,34 +212,34 @@ openscop_comment_p openscop_comment_sread(char * extensions) {
 
 
 /**
- * openscop_comment_malloc function:
- * This function allocates the memory space for an openscop_comment_t
+ * openscop_textual_malloc function:
+ * This function allocates the memory space for an openscop_textual_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
- * \return A pointer to an empty comment structure with fields set to
+ * \return A pointer to an empty textual structure with fields set to
  *         default values.
  */
-openscop_comment_p openscop_comment_malloc() {
-  openscop_comment_p comment;
+openscop_textual_p openscop_textual_malloc() {
+  openscop_textual_p textual;
 
-  OPENSCOP_malloc(comment, openscop_comment_p, sizeof(openscop_comment_t));
-  comment->comment = NULL;
+  OPENSCOP_malloc(textual, openscop_textual_p, sizeof(openscop_textual_t));
+  textual->textual = NULL;
 
-  return comment;
+  return textual;
 }
 
 
 /**
- * openscop_comment_free function:
- * This function frees the allocated memory for an openscop_comment_t
+ * openscop_textual_free function:
+ * This function frees the allocated memory for an openscop_textual_t
  * structure.
- * \param comment The pointer to the comment structure we want to free.
+ * \param textual The pointer to the textual structure we want to free.
  */
-void openscop_comment_free(openscop_comment_p comment) {
-  if (comment != NULL) {
-    if(comment->comment != NULL)
-      free(comment->comment);
-    free(comment);
+void openscop_textual_free(openscop_textual_p textual) {
+  if (textual != NULL) {
+    if(textual->textual != NULL)
+      free(textual->textual);
+    free(textual);
   }
 }
 
@@ -243,68 +250,84 @@ void openscop_comment_free(openscop_comment_p comment) {
 
 
 /**
- * openscop_comment_clone function:
+ * openscop_textual_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_comment_t data structure.
- * \param comment The pointer to the comment structure we want to copy.
- * \return A pointer to the copy of the comment structure.
+ * openscop_textual_t data structure.
+ * \param textual The pointer to the textual structure we want to copy.
+ * \return A pointer to the copy of the textual structure.
  */
-openscop_comment_p openscop_comment_clone(openscop_comment_p comment) {
-  openscop_comment_p copy;
+openscop_textual_p openscop_textual_clone(openscop_textual_p textual) {
+  openscop_textual_p copy;
 
-  if (comment == NULL)
+  if (textual == NULL)
     return NULL;
 
-  copy = openscop_comment_malloc();
-  copy->comment = strdup(comment->comment);
-  if ((copy->comment == NULL) && (comment->comment != NULL))
+  copy = openscop_textual_malloc();
+  copy->textual = strdup(textual->textual);
+  if ((copy->textual == NULL) && (textual->textual != NULL))
     OPENSCOP_error("memory overflow");
 
   return copy;
 }
 
 
+#if 0
 /**
- * openscop_comment_equal function:
- * this function returns true if the two comment structures are the same
+ * openscop_textual_equal function:
+ * this function returns true if the two textual structures are the same
  * (content-wise), false otherwise.
- * \param c1  The first comment structure.
- * \param c2  The second comment structure.
- * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
+ * \param f1  The first textual structure.
+ * \param ff  The second textual structure.
+ * \return 1 if f1 and f2 are the same (content-wise), 0 otherwise.
  */
-int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2) {
-  
-  if (c1 == c2)
+int openscop_textual_equal(openscop_textual_p f1, openscop_textual_p f2) {
+ 
+  if (f1 == f2)
     return 1;
 
-  if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
+  if (((f1 == NULL) && (f2 != NULL)) || ((f1 != NULL) && (f2 == NULL)))
     return 0;
 
-  if (strcmp(c1->comment, c2->comment))
+  if (strcmp(f1->textual, f2->textual))
     return 0;
 
   return 1;
 }
+#else
+/**
+ * openscop_textual_equal function:
+ * this function returns 1. This is part of the special behavior of
+ * the textual option (the text string can be easily different while the
+ * options are actually identical.
+ * \param f1  The first textual structure.
+ * \param ff  The second textual structure. 
+ * \return 1.
+ */
+int openscop_textual_equal(openscop_textual_p f1, openscop_textual_p f2) {
+
+  return 1;
+}
+#endif
 
 
 /**
- * openscop_comment_generate_id function:
- * this function creates an identity structure corresponding to the comment
+ * openscop_textual_generate_id function:
+ * this function creates an identity structure corresponding to the textual
  * extension and returns it).
- * \return An identity structure corresponding to the comment extension.
+ * \return An identity structure corresponding to the textual extension.
  */
-openscop_extension_id_p openscop_comment_generate_id() {
+openscop_extension_id_p openscop_textual_generate_id() {
   openscop_extension_id_p id = openscop_extension_id_malloc();
   
-  id->URI    = strdup(OPENSCOP_URI_COMMENT);
-  id->idump  = (openscop_idump_f)openscop_comment_idump;
-  id->dump   = (openscop_dump_f)openscop_comment_dump;
-  id->sprint = (openscop_sprint_f)openscop_comment_sprint;
-  id->sread  = (openscop_sread_f)openscop_comment_sread;
-  id->malloc = (openscop_malloc_f)openscop_comment_malloc;
-  id->free   = (openscop_free_f)openscop_comment_free;
-  id->clone  = (openscop_clone_f)openscop_comment_clone;
-  id->equal  = (openscop_equal_f)openscop_comment_equal;
+  id->URI    = strdup(OPENSCOP_URI_TEXTUAL);
+  id->idump  = (openscop_idump_f)openscop_textual_idump;
+  id->dump   = (openscop_dump_f)openscop_textual_dump;
+  id->sprint = (openscop_sprint_f)openscop_textual_sprint;
+  id->sread  = (openscop_sread_f)openscop_textual_sread;
+  id->malloc = (openscop_malloc_f)openscop_textual_malloc;
+  id->free   = (openscop_free_f)openscop_textual_free;
+  id->clone  = (openscop_clone_f)openscop_textual_clone;
+  id->equal  = (openscop_equal_f)openscop_textual_equal;
 
   return id;
 }

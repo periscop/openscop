@@ -86,10 +86,12 @@ libopenscop_la_SOURCES 	=      \
 	scop.c                 \
 	scop_list.c            \
 	statement.c            \
+	extensions/textual.c   \
 	extensions/comment.c   \
 	extensions/arrays.c    \
 	extensions/lines.c     \
 	extensions/irregular.c \
+	extension_id.c         \
 	extension.c            \
 	relation.c             \
 	relation_list.c        \

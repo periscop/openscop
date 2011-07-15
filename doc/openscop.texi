@@ -1853,6 +1853,7 @@ representation (@pxref{OpenScop Core Part File Format Specification}).
 * openscop_relation_list_t::
 * openscop_body_t::
 * openscop_statement_t::
+* openscop_extension_id_t::
 * openscop_extension_t::
 * openscop_scop_t::
 @end menu
@@ -1960,7 +1961,7 @@ typedef struct openscop_statement * openscop_statement_p;
 @end group
 @end example
 
-@noindent The @code{clan_statement_t} structure represents a @code{NULL}
+@noindent The @code{openscop_statement_t} structure represents a @code{NULL}
 terminated linked list of statements. Each node contains the useful
 information for a given statement to process it within a polyhedral
 framework. The order in the list may matter for naming conventions
@@ -1972,13 +1973,53 @@ relations: one for each memory access in the statement. The
 possible to use the @code{usr} field, but it has to be totally managed
 by the user.
 
+@node openscop_extension_id_t
+@subsubsection openscop_extension_id_t
+
+@example
+@group
+typedef void   (*openscop_idump_f) (FILE *, void *, int);
+typedef void   (*openscop_dump_f)  (FILE *, void *);
+typedef char * (*openscop_sprint_f)(void *);
+typedef void * (*openscop_sread_f) (char *);
+typedef void * (*openscop_malloc_f)();
+typedef void   (*openscop_free_f)  (void *);
+typedef void * (*openscop_clone_f) (void *);
+typedef int    (*openscop_equal_f) (void *, void *);
+
+struct openscop_extension_id @{
+  char * URI;               /* Unique extension identifier string */
+  openscop_idump_f  idump;  /* Pointer to extension idump function */
+  openscop_dump_f   dump;   /* Pointer to extension dump function */
+  openscop_sprint_f sprint; /* Pointer to extension sprint function */
+  openscop_sread_f  sread;  /* Pointer to extension sread function */
+  openscop_malloc_f malloc; /* Pointer to extension malloc function */
+  openscop_free_f   free;   /* Pointer to extension free function */
+  openscop_clone_f  clone;  /* Pointer to extension clone function */
+  openscop_equal_f  equal;  /* Pointer to extension equal function */
+  struct openscop_extension_id * next; /**< Next id in the list */
+@};
+typedef struct openscop_extension_id   openscop_extension_id_t;
+typedef struct openscop_extension_id * openscop_extension_id_p;
+@end group
+@end example
+
+@noindent The @code{openscop_extension_id_t} structure stores the
+@emph{identity} of an extension, i.e., its unique name (@code{URI}) and
+the function pointers to all the base functions it has to provide.
+Extension providers will find information relative to those functions
+in the OpenScop Library description (@pxref{Base Functions})
+and the section dedicated to writing extensions
+(@pxref{Extension Development}). The @code{openscop_extension_id_t}
+structure is a node in a NULL-terminated list of extension ids.
+
 @node openscop_extension_t
 @subsubsection openscop_extension_t
 
 @example
 @group
 struct openscop_extension @{
-  int type;                         /* This extension's type */
+  openscop_extension_id_p id;       /* This extension's identity */
   void * extension;                 /* Pointer to the extension itself */
   struct openscop_extension * next; /* Next extension in the list */
 @};
@@ -1989,39 +2030,25 @@ typedef struct openscop_extension * openscop_extension_p;
 
 @noindent The @code{openscop_extension_t} structure stores an extension to the core
 OpenScop representation. It is a node of a @code{NULL}-terminated linked list of
-extensions. The @code{type} field gives the type of what is pointed by the
+extensions. The @code{id} field gives the identity of what is pointed by the
 @code{extension} field. An OpenScop implementation is not required to support
-any extension. It must warn the user that a given extension type number is not
-supported and ignore it during the processing. To ensure the type number
-is unique for each extension, the OpenScop maintainer is in charge of collecting
-them. To add an extension in any OpenScop implementation, it is necessary to
-ask first for a type number to the OpenScop mailing list
-@email{openscop-development@@googlegroups.com}. The following types are
-already "registrered":
-@itemize @bullet
-@item -1: undefined (@code{OPENSCOP_UNDEFINED}),
-@item 0: reserved,
-@item 1: string (@code{OPENSCOP_EXTENSION_STRING}),
-@item 2: comment (@code{OPENSCOP_EXTENSION_COMMENT}),
-@item 3: arrays (@code{OPENSCOP_EXTENSION_ARRAYS}),
-@item 4: lines (@code{OPENSCOP_EXTENSION_LINES}),
-@item 5: irregular (@code{OPENSCOP_EXTENSION_IRREGULAR}).
-@end itemize
-
+any extension. It must warn the user that a given identity is not
+supported and ignore it during the processing.
 
 @node openscop_scop_t
 @subsubsection openscop_scop_t
 @example
 @group
 struct openscop_scop @{
-  int version;                    /* Version of the data structure */
-  char * language;                /* Target language */
-  openscop_relation_p context;    /* Constraints on the parameters */
-  int parameter_type;             /* Type of the parameters */
-  void ** parameters;             /* NULL-terminated array of parameters */
-  openscop_statement_p statement; /* Statement list */
-  openscop_extension_p extension; /* Extension list */
-  void * usr;                     /* A user-defined field */
+  int version;                      /* Version of the data structure */
+  char * language;                  /* Target language */
+  openscop_relation_p context;      /* Constraints on the parameters */
+  int parameter_type;               /* Type of the parameters */
+  void ** parameters;               /* NULL-terminated array of parameters*/
+  openscop_statement_p statement;   /* Statement list */
+  openscop_extension_id_p registry; /* List of registered extensions */
+  openscop_extension_p extension;   /* Extension list */
+  void * usr;                       /* A user-defined field */
 @};
 typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;
@@ -2044,7 +2071,8 @@ generic @code{(void *)} or textual @code{char *)} depending on the
 @code{parameter_type} field: 1 (OPENSCOP_TYPE_STRING)
 means the information is textual while 0 (OPENSCOP_TYPE_GENERIC)
 means the information is generic. Finally, it contains the list of
-statements @code{statement} and the various exentions @code{extension}.
+statements @code{statement}, the list of registered extensions
+@code{registry} and the list of extentions @code{extension}.
 
 As an example, let us consider again the matrix multiply program
 (@pxref{Preliminary Example}).
@@ -2161,9 +2189,11 @@ by the @code{openscop_scop_dump} function):
 |    |    |    |    
 |    |    |    +-- original iterator strings: i j k
 |    |    |    |    
-|    |    |    +-- Original expression: C[i][j] = C[i][j] + A[i][k] * B[k][j];
+|    |    |    +-- Original expression: C[i][j] = C[i][j] + A[i][k]*B[k][j];
 |    |    |    |    
 |    |    |    
+|    |    
+|    +-- NULL extension_id
 |    |    
 |    +-- NULL extension
 |    |    
@@ -2183,7 +2213,7 @@ The core part of the OpenScop representation embeds what is strictly
 necessary to build a complete source-to-source polyhedral framework.
 However it may not be enough. Hence, OpenScop offers a very flexible
 extension part. Actually, the only constraint to build an extension is
-to request the OpenScop maintainer for a unique extension number and name
+to request the OpenScop maintainer for a unique extension name: its URI
 (ask the maintainer through the OpenScop mailing list
 @email{openscop-development@@googlegroups.com}).
 
@@ -2191,22 +2221,22 @@ The policy to support extensions is the following and is pretty simple: an
 OpenScop implementation is not required to support any extension. If it
 is processing an OpenScop file or data structure which contains an
 extension which is not supported, it must (1) warn the user with the 
-mention of the number or the name of the non-supported extension
+mention of the URI of the non-supported extension
 and (2) ignore this extension.
 
 Extensions in an OpenScop file are provided after the core part, without
 any specific order. Each extension is delimited using
-XML-like tags corresponding to its name (e.g., if the extension is called
+XML-like tags corresponding to its URI (e.g., if the extension has the URI
 @code{foo}, the begin tag is @code{<foo>} and the end tag is @code{</foo>}).
 There is no specification or preferred way to write the extension body.
 Extensions in an OpenScop data structure must be accessible through one
 pointer. This pointer will be stored in the @code{extension}
-field of an @code{openscop_extension_t} container. There should be only
-one extension with the same number or name in an OpenScop file or data
+field of an @code{openscop_extension_t} container. There must be only
+one extension with the same URI in an OpenScop file or data
 structure.
 
 Extension writers may write a short documentation about their extension to
-be added to this document. For consistency reasons, this
+be added to this document. For consistency reason, this
 documentation should comply to the documentation of the
 @code{comment} option (@pxref{Comment Extension}). To describe the
 file format, it is allowed to reuse the existing rules and terminals
@@ -2419,7 +2449,7 @@ source projects should consider to provide some OpenScop file input
 and output, so they can be incorporated to any OpenScop-based tool chain.}.
 
 @menu
-* Functionalities (Selection)::
+* Base Functions::
 * Example of OpenScop Library Utilization::
 * Installation::
 * Documentation::
@@ -2427,8 +2457,8 @@ and output, so they can be incorporated to any OpenScop-based tool chain.}.
 @end menu
 
 
-@node Functionalities (Selection)
-@section Functionalities (Selection)
+@node Base Functions
+@section Base Functions
 
 The OpenScop library provides, for each OpenScop data structure,
 a set of functions devoted to basic manipulation, conversion
@@ -2509,17 +2539,21 @@ openscop_@emph{structure}_p openscop_@emph{structure}_read(FILE * input);
 @end example
 
 @noindent Each OpenScop data structure has a reading function
-as shown above. It reads the content of an OpenScop data structure
-written according to the OpenScop file format 
+as shown above (except one, see below). It reads the content of an OpenScop
+data structure written according to the OpenScop file format 
 (@pxref{OpenScop Core Part File Format Specification}) from 
 the @code{input} file (the file, possibly @code{stdin}, has to be open
 for reading). It returns a pointer to a freshly allocated 
 @code{openscop_@emph{structure}_t} structure containing the
 information.
 
+The reading function corresponding to the
+@code{openscop_body_t} has an additional parameter corresponding to
+the number of loops surrounding the statement @code{nb_iterators}:
+
 @example
 @group
-openscop_statement_p openscop_statement_read(FILE * input, int nb_parms);
+openscop_body_p openscop_body_read(FILE * input, int nb_iterators);
 @end group
 @end example
 
@@ -2533,10 +2567,10 @@ openscop_@emph{structure}_p openscop_@emph{structure}_malloc();
 @end example
 
 @noindent Each OpenScop data structure has a memory allocation function
-as shown above. It allocates the memory to store the corresponding
-data structure, it initializes the pointer fields to @code{NULL}
-and the integer fields to @code{OPENSCOP_UNDEFINED} (@code{-1}) and
-it returns a pointer to the allocated space.
+as shown above (except one see below). It allocates the memory to store
+the corresponding data structure, it initializes the pointer fields to
+@code{NULL} and the integer fields to @code{OPENSCOP_UNDEFINED}
+(@code{-1}) and it returns a pointer to the allocated space.
 
 An exception to this base description is the
 @code{openscop_relation_malloc()} function which requires two
@@ -2867,33 +2901,33 @@ coding style is much appreciated.
 @subsection Extension Development
 
 It's fairly easy to integrate a new extension to OpenScop and the OpenScop
-Library. Developing a new extension is very much like adding a new "object".
-Here is how developers should proceed to add an extension called @code{bar}
-(beware that the naming convention is strict):
+Library. Developing a new extension is very much like adding a new "object":
+it requires writing a data structure for the extension data and the base
+functions to manage this extension. Here is how developers should proceed
+to add an extension called @code{foo} (beware that the naming convention is
+strict):
 
 @enumerate
-@item Send the name @code{bar} to the maintainer to get a unique extension
-      number. Extension developers must ask the
-      OpenScop maintainer for a unique name and number. The name (one single
+@item Send the name @code{foo} to the maintainer to ensure it is unique and
+      hence can be used as an URI. The name (one single
       word, or words separated with underscores "_") should be
       suggested by the extension developers to the OpenScop development
       mailing list @email{openscop-development@@googlegroups.com}). It
       should not correspond to an existing extension
-      (see @code{include/openscop/extension.h} for the list). The
-      maintainer will answer the unique number and update
-      @code{include/openscop/extension.h} in the development version
-      accordingly.
+      (see @code{include/openscop/scop.h} for the list).The
+      maintainer will update @code{include/openscop/scop.h} in the development
+      version accordingly.
 @item Look at the @code{comment} extension. The @code{comment} extension
       (@pxref{Comment Extension}) has been written to be used as a basic
       example for extension developers. Having a look at
-      @code{include/openscop/comment.h} and
+      @code{include/openscop/extensions/comment.h} and
       @code{source/extensions/comment.c} will be a great help to do it right.
-@item Create the extension header @code{include/openscop/foo.h} and the
-      extension source file @code{source/extensions/foo.c}. There must be
-      only one source file (a script ensures the integration of all
-      extensions based on the names of the files in @code{source/extensions}).
-@item Code the core functions of the extension. Any extension must provide
-      a small set of functions:
+@item Create the extension data structure: it is necessary that the
+      extension data can be accessible through only one pointer.
+@item Code the base functions for the extension. Any extension must provide
+      a small set of functions (naming convention apply only if the
+      extension is planed to be integrated to the OpenScop Library
+      default extensions):
       @itemize @bullet
       @item @code{openscop_foo_idump} (@pxref{Dumping}) 
       @item @code{openscop_foo_dump} (@pxref{Dumping}) 
@@ -2903,8 +2937,8 @@ Here is how developers should proceed to add an extension called @code{bar}
 char * openscop_@emph{structure}_sprint(openscop_@emph{structure}_p s);
 @end group
 @end example
-            It corresponds to the pretty printing functions of the core
-            data structures (@pxref{Printing}) with the
+           It corresponds to the pretty printing functions of the core
+           data structures (@pxref{Printing}) with the
            difference that the OpenScop textual representation is written
            to a string (returned by the function) instead of a file.
       @item @code{openscop_foo_sread} has the following prototype:
@@ -2913,8 +2947,8 @@ char * openscop_@emph{structure}_sprint(openscop_@emph{structure}_p s);
 openscop_@emph{structure}_p openscop_@emph{structure}_sread(char * string);
 @end group
 @end example
-            It corresponds to the reading functions of the core
-            data structures (@pxref{Reading}) with the
+           It corresponds to the reading functions of the core
+           data structures (@pxref{Reading}) with the
            difference that the OpenScop textual representation is read
            from a string (provided as a parameter) instead of a file.
       @item @code{openscop_foo_malloc} (@pxref{Allocating}) 
@@ -2922,19 +2956,44 @@ openscop_@emph{structure}_p openscop_@emph{structure}_sread(char * string);
       @item @code{openscop_foo_clone} (@pxref{Cloning}) 
       @item @code{openscop_foo_equal} (@pxref{Testing}) 
       @end itemize
-@item Code the other functions you need and do not forget to put their
-      prototype in the header file.
+@item Code the other functions you need!
+@end enumerate
+
+Now let us consider two scenarios.
+
+First scenario, the extension is external and is
+not planned to be integrated to the OpenScop Library. In this case you are
+all set. Simply generate an @code{openscop_extension_id_t} for your
+extension and have a look at the function
+@code{openscop_scop_register_extension()} which is devoted to register
+a new extension to an existing @code{openscop_scop_t}.
+
+Second scenario, the extension will integrate the set of default
+OpenScop Library extensions (this would be cool so it will be easier
+for users to use it). In this case, a few additional
+things have to be done:
+@enumerate
+@item Create the extension header
+      @code{include/openscop/extensions/foo.h} to store the extension
+      structure and function prototypes and the
+      extension source file @code{source/extensions/foo.c} for the code
+      of the functions.
 @item Add the documentation for the extension to the texinfo source of
       this document (in @code{doc/openscop.texi}), following the example
       of the @code{comment} documentation (@pxref{Comment Extension}).
-@item Finish the integration by adding the @code{extensions/foo.c} entry
+@item Integrate the extension by adding the @code{extensions/foo.c} entry
       to the @code{libopenscop_la_SOURCES} in the @code{source/Makefile.am}
-      file, and the @code{openscop/foo.h} entry to the
-      @code{pkginclude_HEADERS} in the @code{include/Makefile.am} file.
+      file, the @code{openscop/foo.h} entry to the
+      @code{nobase_pkginclude_HEADERS} and add the corresponding
+      @code{#include <openscop/extensions/foo.h>} in the
+      @code{include/scop.h.in} file.
+@item Add the new extension in the
+      @code{openscop_scop_register_default_extensions()} function.
+@item You are done! Prepare a single commit or patch corresponding to the
+      integration of the new extension and ask the maintainer to merge it
+      to the master branch.
 @end enumerate
 
-You are done! Prepare a single commit corresponding to the integration
-of your option and ask the maintainer to merge it to the master branch.
 
 @c %  ****************************** REFERENCES ********************************
 @node References
