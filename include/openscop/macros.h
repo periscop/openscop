@@ -121,32 +121,32 @@
  *                               UTILITY MACROS                              *
  *****************************************************************************/
 
-# define OPENSCOP_info(msg)                                 \
-         do {                                               \
-           fprintf(stderr,"[OpenScop] Info: "msg".\n");     \
+# define OPENSCOP_info(msg)                                                \
+         do {                                                              \
+           fprintf(stderr,"[OpenScop] Info: "msg" (%s).\n", __func__);     \
          } while (0)
 
-# define OPENSCOP_warning(msg)                              \
-         do {                                               \
-           fprintf(stderr,"[OpenScop] Warning: "msg".\n");  \
+# define OPENSCOP_warning(msg)                                             \
+         do {                                                              \
+           fprintf(stderr,"[OpenScop] Warning: "msg" (%s).\n", __func__);  \
          } while (0)
 
-# define OPENSCOP_error(msg)                                \
-         do {                                               \
-           fprintf(stderr,"[OpenScop] Error: "msg".\n");    \
-           exit(1);                                         \
+# define OPENSCOP_error(msg)                                               \
+         do {                                                              \
+           fprintf(stderr,"[OpenScop] Error: "msg" (%s).\n", __func__);    \
+           exit(1);                                                        \
          } while (0)
 
-# define OPENSCOP_malloc(ptr,type,size)                     \
-         do {                                               \
-           if (((ptr) = (type)malloc(size)) == NULL)        \
-             OPENSCOP_error("memory overflow");             \
+# define OPENSCOP_malloc(ptr,type,size)                                    \
+         do {                                                              \
+           if (((ptr) = (type)malloc(size)) == NULL)                       \
+             OPENSCOP_error("memory overflow");                            \
          } while (0)
 
-# define OPENSCOP_realloc(ptr,type,size)                    \
-         do {                                               \
-           if (((ptr) = (type)realloc(ptr,size)) == NULL)   \
-             OPENSCOP_error("memory overflow");             \
+# define OPENSCOP_realloc(ptr,type,size)                                   \
+         do {                                                              \
+           if (((ptr) = (type)realloc(ptr,size)) == NULL)                  \
+             OPENSCOP_error("memory overflow");                            \
          } while (0)
 
 
