@@ -65,30 +65,24 @@
 # define OPENSCOP_MACROS_H
 
 
-# if defined(OPENSCOP_INT_T_IS_LONGLONG)
-#  define OPENSCOP_FMT     "%4lld"
-#  define OPENSCOP_FMT_TXT "%lld"
-#  define openscop_int_t long long
+# define OPENSCOP_TAG_START_SCOP        "<OpenScop>"
+# define OPENSCOP_TAG_END_SCOP          "</OpenScop>"
 
-# elif defined(OPENSCOP_INT_T_IS_LONG)
-#  define OPENSCOP_FMT     "%4ld"
-#  define OPENSCOP_FMT_TXT "%ld"
-#  define openscop_int_t long int
+# define OPENSCOP_PRECISION_ENV         "OPENSCOP_PRECISION"
+# define OPENSCOP_PRECISION_ENV_SP      "32"
+# define OPENSCOP_PRECISION_ENV_DP      "64"
+# define OPENSCOP_PRECISION_ENV_MP      "0"
+# define OPENSCOP_PRECISION_SP          32
+# define OPENSCOP_PRECISION_DP          64
+# define OPENSCOP_PRECISION_MP          0
 
-# elif defined(OPENSCOP_INT_T_IS_MP)  /* GNUMP */
-#include <gmp.h>
-#  define OPENSCOP_FMT     "%4s"
-#  define OPENSCOP_FMT_TXT "%s"
-#  define openscop_int_t mpz_t
+# define OPENSCOP_FMT_SP                "%4ld"
+# define OPENSCOP_FMT_DP                "%4lld"
+# define OPENSCOP_FMT_MP                "%4s"
+# define OPENSCOP_FMT_TXT_SP            "%ld"
+# define OPENSCOP_FMT_TXT_DP            "%lld"
+# define OPENSCOP_FMT_TXT_MP            "%s"
 
-# else
-#  error Define OPENSCOP_INT_T_IS_xxx to use this file.
-
-# endif
-
-
-# define OPENSCOP_TAG_START_SCOP  "<OpenScop>"
-# define OPENSCOP_TAG_END_SCOP    "</OpenScop>"
 
 # define OPENSCOP_DEBUG	                0    // 1 for debug mode, 0 otherwise.
 # define OPENSCOP_BACKEND_C             0
@@ -137,105 +131,17 @@
            exit(1);                                                        \
          } while (0)
 
-# define OPENSCOP_malloc(ptr,type,size)                                    \
+# define OPENSCOP_malloc(ptr, type, size)                                  \
          do {                                                              \
            if (((ptr) = (type)malloc(size)) == NULL)                       \
              OPENSCOP_error("memory overflow");                            \
          } while (0)
 
-# define OPENSCOP_realloc(ptr,type,size)                                   \
+# define OPENSCOP_realloc(ptr, type, size)                                 \
          do {                                                              \
-           if (((ptr) = (type)realloc(ptr,size)) == NULL)                  \
+           if (((ptr) = (type)realloc(ptr, size)) == NULL)                 \
              OPENSCOP_error("memory overflow");                            \
          } while (0)
 
-
-/*+***************************************************************************
- *                            OPENSCOP GMP MACROS                            *
- *****************************************************************************/
-# ifdef OPENSCOP_INT_T_IS_MP
-/* Basic Macros */
-#  define OPENSCOP_INT_init(val)                mpz_init(val)
-#  define OPENSCOP_INT_assign(v1,v2)            mpz_set(v1,v2)
-#  define OPENSCOP_INT_set_si(val,i)            mpz_set_si(val,i)
-#  define OPENSCOP_INT_get_si(val)              mpz_get_si(val)
-#  define OPENSCOP_INT_init_set_si(val,i)       mpz_init_set_si(val,i)
-#  define OPENSCOP_INT_clear(val)               mpz_clear(val)
-#  define OPENSCOP_INT_dump(Dst,fmt,val)        \
-          do {                                  \
-            char *str;                          \
-            str = mpz_get_str(0,10,val);        \
-            fprintf(Dst,fmt,str);               \
-            free(str);                          \
-          } while (0)
-#  define OPENSCOP_INT_sprint(Dst,fmt,val)      \
-          do {                                  \
-            char * str;                         \
-            str = mpz_get_str(0,10,val);        \
-            sprintf(Dst,fmt,str);               \
-            free(str);                          \
-          } while (0)
-
-/* Boolean operators on 'openscop_int_t' */
-#  define OPENSCOP_INT_eq(v1,v2)                (mpz_cmp(v1,v2) == 0)
-#  define OPENSCOP_INT_ne(v1,v2)                (mpz_cmp(v1,v2) != 0)
-
-/* Binary operators on 'openscop_int_t' */
-#  define OPENSCOP_INT_increment(ref,val)       mpz_add_ui(ref,val,1)
-#  define OPENSCOP_INT_addto(ref,val1,val2)     mpz_add(ref,val1,val2)
-#  define OPENSCOP_INT_multo(ref,val1,val2)     mpz_mul(ref,val1,val2)
-#  define OPENSCOP_INT_add_int(ref,val,vint)    mpz_add_ui(ref,val,(long)vint)
-#  define OPENSCOP_INT_subtract(ref,val1,val2)  mpz_sub(ref,val1,val2)
-#  define OPENSCOP_INT_oppose(ref,val)          mpz_neg(ref,val)
-#  define OPENSCOP_INT_fdiv(ref,n,d)            mpz_fdiv_q(ref,n,d)
-
-/* Conditional operations on 'openscop_int_t' */
-#  define OPENSCOP_INT_pos_p(val)               (mpz_sgn(val) >  0)
-#  define OPENSCOP_INT_neg_p(val)               (mpz_sgn(val) <  0)
-#  define OPENSCOP_INT_zero_p(val)              (mpz_sgn(val) == 0)
-#  define OPENSCOP_INT_notzero_p(val)           (mpz_sgn(val) != 0)
-#  define OPENSCOP_INT_one_p(val)               (mpz_cmp_si(val,1)  == 0)
-#  define OPENSCOP_INT_mone_p(val)              (mpz_cmp_si(val,-1) == 0)
-#  define OPENSCOP_INT_divisible(val1,val2)     mpz_divisible_p(val1,val2)
-
-/*+***************************************************************************
- *                         OPENSCOP BASIC TYPES MACROS                       *
- *****************************************************************************/
-# else
-/* Basic Macros */
-#  define OPENSCOP_INT_init(val)                val = 0
-#  define OPENSCOP_INT_assign(v1,v2)            v1  = v2
-#  define OPENSCOP_INT_set_si(val,i)            val = (openscop_int_t)i
-#  define OPENSCOP_INT_get_si(val)              val
-#  define OPENSCOP_INT_init_set_si(val,i)       val = (openscop_int_t)i
-#  define OPENSCOP_INT_clear(val)               val = 0
-#  define OPENSCOP_INT_dump(Dst,fmt,val)        fprintf(Dst,fmt,val)
-#  define OPENSCOP_INT_sprint(Dst,fmt,val)      sprintf(Dst,fmt,val)
-
-/* Boolean operators on 'openscop_int_t' */
-#  define OPENSCOP_INT_eq(v1,v2)                (v1 == v2)
-#  define OPENSCOP_INT_ne(v1,v2)                (v1 != v2)
-#  define OPENSCOP_INT_lt(v1,v2)                (v1 < v2)
-#  define OPENSCOP_INT_gt(v1,v2)                (v1 > v2)
-
-/* Binary operators on 'openscop_int_t' */
-#  define OPENSCOP_INT_increment(ref,val)       ref = val + (openscop_int_t)1
-#  define OPENSCOP_INT_addto(ref,val1,val2)     ref = val1 + val2
-#  define OPENSCOP_INT_multo(ref,val1,val2)     ref = val1 * val2
-#  define OPENSCOP_INT_add_int(ref,val,vint)    ref = val+(openscop_int_t)vint
-#  define OPENSCOP_INT_subtract(ref,val1,val2)  ref = val1 - val2
-#  define OPENSCOP_INT_oppose(ref,val)          ref = -val
-#  define OPENSCOP_INT_fdiv(ref,n,d)            ref = n / d
-
-/* Conditional operations on 'openscop_int_t' */
-#  define OPENSCOP_INT_pos_p(val)               OPENSCOP_INT_gt(val,0)
-#  define OPENSCOP_INT_neg_p(val)               OPENSCOP_INT_lt(val,0)
-#  define OPENSCOP_INT_zero_p(val)              OPENSCOP_INT_eq(val,0)
-#  define OPENSCOP_INT_notzero_p(val)           OPENSCOP_INT_ne(val,0)
-#  define OPENSCOP_INT_one_p(val)               OPENSCOP_INT_eq(val,1)
-#  define OPENSCOP_INT_mone_p(val)              OPENSCOP_INT_eq(val,-1)
-#  define OPENSCOP_INT_divisible(val1,val2)     ((val1 % val2) == 0)
-
-# endif
 
 #endif /* define OPENSCOP_MACROS_H */

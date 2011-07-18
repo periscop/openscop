@@ -66,6 +66,7 @@
 
 # include <stdio.h>
 # include <openscop/macros.h>
+# include <openscop/int.h>
 # include <openscop/util.h>
 # include <openscop/names.h>
 # include <openscop/vector.h>
@@ -104,14 +105,15 @@ extern "C"
  */
 struct openscop_relation {
   int type;                        /**< Semantics about the relation */
-  int nb_rows;                     /**< The number of rows */
-  int nb_columns;	           /**< The number of columns */
-  int nb_output_dims;              /**< The number of output dimensions */
-  int nb_input_dims;               /**< The number of input dimensions */
-  int nb_local_dims;               /**< The number of local (existentially
+  int precision;                   /**< Precision of relation matrix elements*/
+  int nb_rows;                     /**< Number of rows */
+  int nb_columns;	           /**< Number of columns */
+  int nb_output_dims;              /**< Number of output dimensions */
+  int nb_input_dims;               /**< Number of input dimensions */
+  int nb_local_dims;               /**< Number of local (existentially
                                         quantified) dimensions */
-  int nb_parameters;               /**< The number of parameters */
-  openscop_int_t ** m;             /**< An array of pointers to the beginning
+  int nb_parameters;               /**< Number of parameters */
+  void ** m;                       /**< An array of pointers to the beginning
 			                of each row of the relation matrix */
   struct openscop_relation * next; /**< Pointer to the next relation in the
                                         union of relations (NULL if none) */
@@ -144,6 +146,7 @@ openscop_relation_p openscop_relation_read_arrays(FILE *, char ***, int *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
+openscop_relation_p openscop_relation_pmalloc(int, int, int);
 openscop_relation_p openscop_relation_malloc(int, int);
 void                openscop_relation_free_inside(openscop_relation_p);
 void                openscop_relation_free(openscop_relation_p);

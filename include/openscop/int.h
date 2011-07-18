@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                             int.h                               **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 18/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,29 +61,62 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
-
+#ifndef OPENSCOP_INT_H
+# define OPENSCOP_INT_H
 
 # include <openscop/macros.h>
-# include <openscop/int.h>
-# include <openscop/util.h>
-# include <openscop/strings.h>
-# include <openscop/body.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
-# include <openscop/extension_id.h>
-
-# include <openscop/extensions/textual.h>
-# include <openscop/extensions/comment.h>
-# include <openscop/extensions/arrays.h>
-# include <openscop/extensions/lines.h>
-# include <openscop/extensions/irregular.h>
-
-# include <openscop/extension.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
+# ifdef OPENSCOP_GMP_IS_HERE
+#  include <gmp.h>
+# endif
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+/*+***************************************************************************
+ *                                Basic Functions                            *
+ *****************************************************************************/
+
+
+void   openscop_int_dump_precision(FILE *, int);
+int    openscop_int_sizeof(int);
+void * openscop_int_address(int, void *, int);
+void   openscop_int_init(int, void *, int);
+void   openscop_int_assign(int, void *, int, void *, int);
+void   openscop_int_set_si(int, void *, int, int);
+int    openscop_int_get_si(int, void *, int);
+void   openscop_int_init_set_si(int, void *, int, int);
+void   openscop_int_clear(int, void *, int);
+void   openscop_int_print(FILE *, int, void *, int);
+void   openscop_int_sprint(char *, int, void *, int);
+void   openscop_int_sread(char *, int, void *, int);
+
+
+/*+***************************************************************************
+ *                            Arithmetic Operations                          *
+ *****************************************************************************/
+
+
+void   openscop_int_increment(int, void *, int, void *, int);
+void   openscop_int_add(int, void *, int, void *, int, void *, int);
+void   openscop_int_add_ui(int, void *, int, void *, int, int);
+void   openscop_int_mul(int, void *, int, void *, int, void *, int);
+void   openscop_int_mul_si(int, void *, int, void *, int, int);
+void   openscop_int_sub(int, void *, int, void *, int, void *, int);
+void   openscop_int_oppose(int, void *, int, void *, int);
+
+
+/*+***************************************************************************
+ *                            Conditional Operations                         *
+ *****************************************************************************/
+
+
+int    openscop_int_eq(int, void *, int, void *, int);
+int    openscop_int_ne(int, void *, int, void *, int);
+int    openscop_int_pos(int, void *, int);
+int    openscop_int_neg(int, void *, int);
+int    openscop_int_zero(int, void *, int);
+int    openscop_int_notzero(int, void *, int);
+int    openscop_int_one(int, void *, int);
+int    openscop_int_mone(int, void *, int);
+int    openscop_int_divisible(int, void *, int, void *, int);
+
+
+#endif /* define OPENSCOP_INT_H */

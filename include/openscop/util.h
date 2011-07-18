@@ -81,6 +81,7 @@ char * openscop_util_read_tail(FILE *);
 char * openscop_util_read_uptotag(FILE *, char *);
 char * openscop_util_tag_content(char *, char *, char *);
 void   openscop_util_safe_strcat(char **, char *, int *);
+int    openscop_util_get_precision();
 
 
 # if defined(__cplusplus)

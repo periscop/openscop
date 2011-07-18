@@ -268,3 +268,35 @@ void openscop_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
   strcat(*dst, src);
 }
+
+
+/**
+ * openscop_util_get_precision function:
+ * this function returns the precision defined by the precision environment
+ * variable or the highest available precision if it is not defined.
+ * \return environment precision if defined or highest available precision.
+ */
+int openscop_util_get_precision() {
+  int precision = OPENSCOP_PRECISION_DP;
+  char * precision_env;
+
+#ifdef OPENSCOP_GMP_IS_HERE
+  precision = OPENSCOP_PRECISION_MP;
+#endif
+
+  precision_env = getenv(OPENSCOP_PRECISION_ENV);
+  if (precision_env != NULL) {
+    if (!strcmp(precision_env, OPENSCOP_PRECISION_ENV_SP))
+      precision = OPENSCOP_PRECISION_SP;
+    else if (!strcmp(precision_env, OPENSCOP_PRECISION_ENV_DP))
+      precision = OPENSCOP_PRECISION_DP;
+    else if (!strcmp(precision_env, OPENSCOP_PRECISION_ENV_MP))
+      precision = OPENSCOP_PRECISION_MP;
+    else
+      OPENSCOP_warning("bad precision environment value");
+  }
+
+  return precision;
+}
+
+

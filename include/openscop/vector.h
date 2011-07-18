@@ -66,6 +66,8 @@
 
 # include <stdio.h>
 # include <openscop/macros.h>
+# include <openscop/int.h>
+# include <openscop/util.h>
 
 
 # if defined(__cplusplus)
@@ -82,8 +84,9 @@ extern "C"
  * different than 0 is the array identifier.
  */
 struct openscop_vector {
-  unsigned size;      /**< The number of vector entries */
-  openscop_int_t * v; /**< An array of values */
+  int size;      /**< Number of vector entries */
+  int precision; /**< Precision of the integer elements. */
+  void * v;      /**< An array of values */
 };
 typedef struct openscop_vector   openscop_vector_t;
 typedef struct openscop_vector * openscop_vector_p;
@@ -99,7 +102,8 @@ void openscop_vector_dump(FILE *, openscop_vector_p);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_vector_p openscop_vector_malloc(unsigned);
+openscop_vector_p openscop_vector_pmalloc(int, int);
+openscop_vector_p openscop_vector_malloc(int);
 void              openscop_vector_free(openscop_vector_p);
 
 

@@ -1865,13 +1865,14 @@ representation (@pxref{OpenScop Core Part File Format Specification}).
 @group
 struct openscop_relation @{
   int type;                        /* What this relation is encoding */ 
+  int precision;                   /* Precision of the matrix elements */ 
   int nb_rows;                     /* Number of rows */
   int nb_columns;                  /* Number of columns */
   int nb_output_dims;              /* Number of output dimensions */
   int nb_input_dims;               /* Number of input dimensions */
   int nb_local_dims;               /* Number of local dimensions */
   int nb_parameters;               /* Number of parameters */
-  openscop_int_t ** m;             /* Matrix of constraints */
+  void ** m;                       /* Matrix of constraints */
   struct openscop_relation * next; /* Next relation in the union */
 @};
 typedef struct openscop_relation   openscop_relation_t;
@@ -1894,7 +1895,17 @@ may provide some information about what the relation is encoding:
 @end itemize
 The various numbers provide the details on the relation itself
 (@pxref{Relation Representation}) while the @code{m} field points to
-the constraint matrix.
+the constraint matrix. The precision of the constraint matrix elements is
+provided by the @code{precision} field. It can take the following
+values:
+@itemize @bullet
+@item 32: 32 bits precision, elements are @code{long int}
+      (@code{OPENSCOP_PRECISION_SP}),
+@item 64: 64 bits precision, elements are @code{long long int}
+      (@code{OPENSCOP_PRECISION_DP}),
+@item 0: multiple precision, elements are GNU GMP Library's
+      @code{mpz_t} (@code{OPENSCOP_PRECISION_MP}).
+@end itemize
 
 @node openscop_relation_list_t
 @subsubsection openscop_relation_list_t
@@ -2069,7 +2080,7 @@ in the @code{parameters} field. The order matters: @code{parameters[0]}
 corresponds to the first parameter column in the context and the
 relation, @code{parameters[1]} corresponds to the second one, and so on.
 The parameter information can be either
-generic @code{(void *)} or textual @code{char *)} depending on the
+generic (@code{void *}) or textual (@code{char *}) depending on the
 @code{parameter_type} field: 1 (OPENSCOP_TYPE_STRING)
 means the information is textual while 0 (OPENSCOP_TYPE_GENERIC)
 means the information is generic. Finally, it contains the list of
@@ -2090,7 +2101,7 @@ by the @code{openscop_scop_dump} function):
 |    |    
 |    Language: C
 |    |    
-|    +-- openscop_relation_t (CONTEXT)
+|    +-- openscop_relation_t (CONTEXT, 64 bits)
 |    |    1 3 0 0 0 1
 |    |    [   1   1  -1 ]
 |    |    
@@ -2098,14 +2109,14 @@ by the @code{openscop_scop_dump} function):
 |    |    
 |    +-- openscop_statement_t (S1)
 |    |    |    
-|    |    +-- openscop_relation_t (DOMAIN)
+|    |    +-- openscop_relation_t (DOMAIN, 64 bits)
 |    |    |    4 5 2 0 0 1
 |    |    |    [   1   1   0   0   0 ]
 |    |    |    [   1  -1   0   1  -1 ]
 |    |    |    [   1   0   1   0   0 ]
 |    |    |    [   1   0  -1   1  -1 ]
 |    |    |    
-|    |    +-- openscop_relation_t (SCATTERING)
+|    |    +-- openscop_relation_t (SCATTERING, 64 bits)
 |    |    |    5 10 5 2 0 1
 |    |    |    [   0  -1   0   0   0   0   0   0   0   0 ]
 |    |    |    [   0   0  -1   0   0   0   1   0   0   0 ]
@@ -2115,7 +2126,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    
 |    |    +-- openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (WRITE)
+|    |    |    +-- openscop_relation_t (WRITE, 64 bits)
 |    |    |    |    3 8 3 2 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0 ]
@@ -2132,7 +2143,7 @@ by the @code{openscop_scop_dump} function):
 |    |    V
 |    |  openscop_statement_t (S2)
 |    |    |    
-|    |    +-- openscop_relation_t (DOMAIN)
+|    |    +-- openscop_relation_t (DOMAIN, 64 bits)
 |    |    |    6 6 3 0 0 1
 |    |    |    [   1   1   0   0   0   0 ]
 |    |    |    [   1  -1   0   0   1  -1 ]
@@ -2141,7 +2152,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    [   1   0   0   1   0   0 ]
 |    |    |    [   1   0   0  -1   1  -1 ]
 |    |    |    
-|    |    +-- openscop_relation_t (SCATTERING)
+|    |    +-- openscop_relation_t (SCATTERING, 64 bits)
 |    |    |    7 13 7 3 0 1
 |    |    |    [   0  -1   0   0   0   0   0   0   0   0   0   0   0 ]
 |    |    |    [   0   0  -1   0   0   0   0   0   1   0   0   0   0 ]
@@ -2153,7 +2164,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    
 |    |    +-- openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (WRITE)
+|    |    |    +-- openscop_relation_t (WRITE, 64 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
@@ -2162,7 +2173,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    V
 |    |    |  openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ)
+|    |    |    +-- openscop_relation_t (READ, 64 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
@@ -2171,7 +2182,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    V
 |    |    |  openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ)
+|    |    |    +-- openscop_relation_t (READ, 64 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   2 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
@@ -2180,7 +2191,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    V
 |    |    |  openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ)
+|    |    |    +-- openscop_relation_t (READ, 64 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   3 ]
 |    |    |    |    [   0   0  -1   0   0   0   1   0   0 ]
@@ -2451,6 +2462,7 @@ source projects should consider to provide some OpenScop file input
 and output, so they can be incorporated to any OpenScop-based tool chain.}.
 
 @menu
+* Precision::
 * Base Functions::
 * Example of OpenScop Library Utilization::
 * Installation::
@@ -2458,6 +2470,31 @@ and output, so they can be incorporated to any OpenScop-based tool chain.}.
 * Development::
 @end menu
 
+@node Precision
+@section Precision
+
+The OpenScop specification does not impose a specific type for the
+constraint matrix elements. For a maximum flexibility, the OpenScop library
+offers an hybrid precision implementation. It supports 32 bits, 64 bits and
+multiple precision (relying on GNU GMP) relations transparently. At relation
+allocation time, users have two ways to set the precision. The first way is
+to call an allocation function with a precision parameter. The second way is
+to rely on the environment variable @code{OPENSCOP_PRECISION}.
+The accepted values for this variable are @code{32} for 32 bits precision,
+@code{64} for 64 bits precision and @code{0} for multiple precision. When this
+variable is set, its value becomes the default precision for relation elements.
+For instance, to ensure the OpenScop library will use 64 bits precision
+by default, the user may set: 
+@example
+export OPENSCOP_PRECISION=64
+@end example
+@noindent if his shell is, e.g., bash or
+@example
+setenv OPENSCOP_PRECISION 64
+@end example
+@noindent if his shell is, e.g., tcsh. The user should ad this line to
+his .bashrc or .tcshrc (or whatever convenient file) to make this
+setting permanent. 
 
 @node Base Functions
 @section Base Functions
@@ -2585,6 +2622,25 @@ openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns);
 @end group
 @end example
 
+@noindent The precision of the relation elements will depend on the
+@code{OPENSCOP_PRECISION} environment variable (@pxref{Precision}) if it is set,
+or the maximum available precision if it is not set. Another allocation
+function is provided to explicitly set a given precision:
+
+@example
+@group
+openscop_relation_p openscop_relation_pmalloc(int precision,
+                                              int nb_rows, int nb_columns);
+@end group
+@end example
+
+@noindent The @code{precision} field may take the following values:
+@itemize @bullet
+@item @code{OPENSCOP_PRECISION_SP} for 32 bits precision,
+@item @code{OPENSCOP_PRECISION_DP} for 64 bits precision,
+@item @code{OPENSCOP_PRECISION_MP} for multiple precision,
+@end itemize
+
 @node Deallocating
 @subsection Deallocating: openscop_@emph{structure}_free
 
@@ -2685,7 +2741,7 @@ more test.scop | ./example
 @node License
 @subsection License
 First of all, it would be very kind to refer the present document in any
-publication that result from the use of the OpenScop specification or library,
+publication that results from the use of the OpenScop specification or library,
 @pxref{Bas11} (a bibtex entry is provided behind the title page of this
 manual, along with the copyright notice).
 The OpenScop Library is provided under the 3-clause BSD license:

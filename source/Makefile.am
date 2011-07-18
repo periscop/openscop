@@ -97,6 +97,7 @@ libopenscop_la_SOURCES 	=      \
 	body.c                 \
 	vector.c               \
 	strings.c              \
+	int.c                  \
 	names.c                \
 	util.c
 

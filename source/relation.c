@@ -145,6 +145,8 @@ void openscop_relation_idump(FILE * file,
   if (relation != NULL) {
     fprintf(file, "+-- openscop_relation_t (");
     openscop_relation_print_type(file, relation);
+    fprintf(file, ", ");
+    openscop_int_dump_precision(file, relation->precision);
     fprintf(file, ")\n");
   }
   else {
@@ -158,6 +160,8 @@ void openscop_relation_idump(FILE * file,
         fprintf(file, "|\t");
       fprintf(file, "|   openscop_relation_t (");
       openscop_relation_print_type(file, relation);
+      fprintf(file, ", ");
+      openscop_int_dump_precision(file, relation->precision);
       fprintf(file, ")\n");
     }
     else
@@ -179,7 +183,7 @@ void openscop_relation_idump(FILE * file,
       fprintf(file, "[ ");
 
       for (j = 0; j < relation->nb_columns; j++) {
-        OPENSCOP_INT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
+        openscop_int_print(file, relation->precision, relation->m[i], j);
         fprintf(file, " ");
       }
 
@@ -218,21 +222,24 @@ void openscop_relation_dump(FILE * file, openscop_relation_p relation) {
 }
 
 
-
+#if 0
 /**
  * openscop_relation_expression_element function:
  * this function returns a string containing the printing of a value (possibly
  * an iterator or a parameter with its coefficient or a constant).
- * \param[in]     val   The coefficient or constant value.
- * \param[in,out] first Pointer to a boolean set to 1 if the current value is
- *                      the first of an expresion, 0 otherwise (maybe updated).
- * \param[in]     cst   A boolean set to 1 if the value is a constant,
- *                      0 otherwise.
- * \param[in]     name  String containing the name of the element.
+ * \param[in]     val       Address of the coefficient or constant value.
+ * \param[in]     precision The precision of the value.
+ * \param[in,out] first     Pointer to a boolean set to 1 if the current value
+ *                          is the first of an expresion, 0 otherwise (maybe
+ *                          updated).
+ * \param[in]     cst       A boolean set to 1 if the value is a constant,
+ *                          0 otherwise.
+ * \param[in]     name      String containing the name of the element.
  * \return A string that contains the printing of a value.
  */
 static
-char * openscop_relation_expression_element(openscop_int_t val, int * first,
+char * openscop_relation_expression_element(void * val,
+                                            int precision, int * first,
                                             int cst, char * name) {
   char * temp = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
   char * body = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
@@ -242,8 +249,8 @@ char * openscop_relation_expression_element(openscop_int_t val, int * first,
   sval[0] = '\0';
 
   // statements for the 'normal' processing.
-  if (OPENSCOP_INT_notzero_p(val) && (!cst)) {
-    if ((*first) || OPENSCOP_INT_neg_p(val)) {
+  if (openscop_int_notzero(val) && (!cst)) {
+    if ((*first) || openscop_int_neg(val)) {
       if (OPENSCOP_INT_one_p(val)) {         // case 1
         sprintf(sval, "%s", name);
       }
@@ -313,7 +320,8 @@ char * openscop_relation_expression(openscop_relation_p relation,
   // First the iterator part.
   for (i = 1; i <= names->nb_iterators; i++) {
     sval = openscop_relation_expression_element(
-        relation->m[row][i], &first, 0, names->iterators[i-1]);
+        &(relation->m[row][i]), relation->precision, &first, 0,
+        names->iterators[i-1]);
     strcat(sline, sval);
     free(sval);
   }
@@ -322,7 +330,7 @@ char * openscop_relation_expression(openscop_relation_p relation,
   for (i = names->nb_iterators + 1;
        i <= names->nb_iterators + names->nb_localdims; i++) {
     sval = openscop_relation_expression_element(
-        relation->m[row][i], &first, 0,
+        &(relation->m[row][i]), relation->precision, &first, 0,
 	names->localdims[i - names->nb_iterators - 1]);
     strcat(sline, sval);
     free(sval);
@@ -333,15 +341,15 @@ char * openscop_relation_expression(openscop_relation_p relation,
        i <= names->nb_iterators + names->nb_localdims + names->nb_parameters;
        i++) {
     sval = openscop_relation_expression_element(
-        relation->m[row][i], &first, 0,
+        &(relation->m[row][i]), relation->precision, &first, 0,
 	names->parameters[i - names->nb_iterators - names->nb_localdims - 1]);
     strcat(sline, sval);
     free(sval);
   }
 
   // Finally the constant part (yes, I reused it).
-  sval = openscop_relation_expression_element(relation->m[row][i],
-                                              &first, 1, NULL);
+  sval = openscop_relation_expression_element(
+      &(relation->m[row][i]), relation->precision, &first, 1, NULL);
   strcat(sline, sval);
   free(sval);
 
@@ -550,7 +558,7 @@ void openscop_relation_print_comment(FILE * file,
     }
   }
 }
-
+#endif
 
 /**
  * openscop_relation_print function:
@@ -574,7 +582,8 @@ void openscop_relation_print(FILE * file,
     return;
   }
 
-  printable_comments = openscop_relation_printable_comments(relation, names); 
+  //printable_comments = openscop_relation_printable_comments(relation, names); 
+  printable_comments = 0;
 
   // Count the number of parts in the union and print it if it is not 1.
   r = relation;
@@ -609,12 +618,12 @@ void openscop_relation_print(FILE * file,
 
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j < relation->nb_columns; j++) {
-        OPENSCOP_INT_dump(file, OPENSCOP_FMT, relation->m[i][j]);
+        openscop_int_print(file, relation->precision, relation->m[i], j);
         fprintf(file, " ");
       }
 
-      if (printable_comments)
-        openscop_relation_print_comment(file, relation, i, names);
+      //if (printable_comments)
+      //  openscop_relation_print_comment(file, relation, i, names);
 
       fprintf(file, "\n");
     }
@@ -693,7 +702,8 @@ return_type:
 /**
  * openscop_relation_read function:
  * this function reads a relation into a file (foo, posibly stdin) and
- * returns a pointer this relation.
+ * returns a pointer this relation. The relation is set to the maximum
+ * available precision.
  * \param[in] file The input stream.
  * \return A pointer to the relation structure that has been read.
  */
@@ -706,9 +716,9 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
   int read_properties = 1;
   int first = 1;
   int type;
+  int precision = openscop_util_get_precision();
   char * c, s[OPENSCOP_MAX_STRING], str[OPENSCOP_MAX_STRING];
   openscop_relation_p relation, relation_union = NULL, previous = NULL;
-  openscop_int_t * p = NULL;
 
   type = openscop_relation_read_type(foo);
 
@@ -742,7 +752,7 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
     }
 
     // Allocate the union part and fill its properties.
-    relation = openscop_relation_malloc(nb_rows, nb_columns);
+    relation = openscop_relation_pmalloc(precision, nb_rows, nb_columns);
     relation->type           = type;
     relation->nb_output_dims = nb_output_dims;
     relation->nb_input_dims  = nb_input_dims;
@@ -750,9 +760,6 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
     relation->nb_parameters  = nb_parameters;
 
     // Read the matrix of constraints.
-    if ((relation->nb_rows != 0) && (relation->nb_columns != 0))
-      p = relation->m[0];
-
     for (i = 0; i < relation->nb_rows; i++) {
       c = openscop_util_skip_blank_and_comments(foo, s);
       if (c == NULL)
@@ -763,15 +770,8 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
           OPENSCOP_error("not enough columns");
         if (sscanf(c, "%s%n", str, &n) == 0)
           OPENSCOP_error("not enough rows");
-#if defined(OPENSCOP_INT_T_IS_MP)
-        long long val;
-        if (sscanf(str, "%lld", &val) == 0)
-          OPENSCOP_error("failed to read an integer (in a relation)");
-        mpz_set_si(*p++, val);
-#else
-        if (sscanf(str, OPENSCOP_FMT_TXT, p++) == 0)
-          OPENSCOP_error("failed to read an integer (in a relation)");
-#endif
+
+        openscop_int_sread(str, precision, relation->m[i], j);
         c += n;
       }
     }
@@ -799,18 +799,20 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
 
 
 /**
- * openscop_relation_malloc function:
- * this function allocates the memory space for a openscop_relation_t
- * structure and sets its fields with default values. Then it returns a
- * pointer to the allocated space.
+ * openscop_relation_pmalloc function:
+ * (precision malloc) this function allocates the memory space for an
+ * openscop_relation_t structure and sets its fields with default values.
+ * Then it returns a pointer to the allocated space.
+ * \param[in] precision  The precision of the constraint matrix.
  * \param[in] nb_rows    The number of row of the relation to allocate.
  * \param[in] nb_columns The number of columns of the relation to allocate.
  * \return A pointer to an empty relation with fields set to default values
  *         and a ready-to-use constraint matrix.
  */
-openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
+openscop_relation_p openscop_relation_pmalloc(int precision,
+                                              int nb_rows, int nb_columns) {
   openscop_relation_p relation;
-  openscop_int_t ** p, * q;
+  void ** p, * q;
   int i, j;
 
   OPENSCOP_malloc(relation, openscop_relation_p, sizeof(openscop_relation_t));
@@ -821,28 +823,45 @@ openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
   relation->nb_input_dims  = OPENSCOP_UNDEFINED;
   relation->nb_parameters  = OPENSCOP_UNDEFINED;
   relation->nb_local_dims  = OPENSCOP_UNDEFINED;
+  relation->precision      = precision;
   
   if ((nb_rows == 0) || (nb_columns == 0) ||
       (nb_rows == OPENSCOP_UNDEFINED) || (nb_columns == OPENSCOP_UNDEFINED)) {
     relation->m = NULL;
   } 
   else {
-    OPENSCOP_malloc(p, openscop_int_t **,
-                    nb_rows * sizeof(openscop_int_t *));
-    OPENSCOP_malloc(q, openscop_int_t *,
-                    nb_rows * nb_columns * sizeof(openscop_int_t));
+    OPENSCOP_malloc(p, void **, nb_rows * sizeof(void *));
+    OPENSCOP_malloc(q, void *,
+                    nb_rows * nb_columns * openscop_int_sizeof(precision));
     relation->m = p;
     for (i = 0; i < nb_rows; i++) {
-      *p++ = q;
+      relation->m[i] = openscop_int_address(precision, q, i * nb_columns);
       for (j = 0; j < nb_columns; j++)
-        OPENSCOP_INT_init_set_si(*(q+j),0);
-      q += nb_columns;
+        openscop_int_init_set_si(precision, relation->m[i], j, 0);
     }
   }
-  
+ 
   relation->next = NULL;
-  
+
   return relation;
+}
+
+
+/**
+ * openscop_relation_malloc function:
+ * this function allocates the memory space for an openscop_relation_t
+ * structure and sets its fields with default values. Then it returns a
+ * pointer to the allocated space. The precision of the constraint matrix
+ * elements corresponds to the precision environment variable or to the
+ * highest available precision if it is not defined.
+ * \param[in] nb_rows    The number of row of the relation to allocate.
+ * \param[in] nb_columns The number of columns of the relation to allocate.
+ * \return A pointer to an empty relation with fields set to default values
+ *         and a ready-to-use constraint matrix.
+ */
+openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
+  int precision = openscop_util_get_precision();
+  return openscop_relation_pmalloc(precision, nb_rows, nb_columns);
 }
 
 
@@ -854,7 +873,7 @@ openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
  */
 void openscop_relation_free_inside(openscop_relation_p relation) {
   int i, nb_elements;
-  openscop_int_t * p;
+  void * p;
 
   if (relation == NULL)
     return;
@@ -865,7 +884,7 @@ void openscop_relation_free_inside(openscop_relation_p relation) {
     p = relation->m[0];
   
   for (i = 0; i < nb_elements; i++)
-    OPENSCOP_INT_clear(*p++);
+    openscop_int_clear(relation->precision, p, i);
 
   if (relation->m != NULL) {
     if (nb_elements > 0)
@@ -929,7 +948,8 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
     if (n > relation->nb_rows)
       OPENSCOP_error("not enough rows to copy in the relation");
 
-    node = openscop_relation_malloc(n, relation->nb_columns);
+    node = openscop_relation_pmalloc(relation->precision,
+                                     n, relation->nb_columns);
     node->type           = relation->type;
     node->nb_output_dims = relation->nb_output_dims;
     node->nb_input_dims  = relation->nb_input_dims;
@@ -938,7 +958,9 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
 
     for (i = 0; i < n; i++)
       for (j = 0; j < relation->nb_columns; j++)
-        OPENSCOP_INT_assign(node->m[i][j], relation->m[i][j]);
+        openscop_int_assign(relation->precision,
+                            node->m[i], j,
+                            relation->m[i], j);
   
     if (first) {
       first = 0;
@@ -985,13 +1007,16 @@ void openscop_relation_replace_vector(openscop_relation_p relation,
                                       openscop_vector_p vector, int row) {
   int i;
 
-  if ((relation == NULL) || (vector == NULL) ||
-      (relation->nb_columns != vector->size) ||
+  if ((relation == NULL) || (vector == NULL)     ||
+      (relation->precision != vector->precision) ||
+      (relation->nb_columns != vector->size)     ||
       (row >= relation->nb_rows) || (row < 0))
     OPENSCOP_error("vector cannot replace relation row");
 
   for (i = 0; i < vector->size; i++)
-    OPENSCOP_INT_assign(relation->m[row][i], vector->v[i]);
+    openscop_int_assign(relation->precision,
+                        relation->m[row], i,
+                        vector->v, i);
 }
 
 
@@ -1008,16 +1033,22 @@ void openscop_relation_add_vector(openscop_relation_p relation,
                                   openscop_vector_p vector, int row) {
   int i;
 
-  if ((relation == NULL) || (vector == NULL) ||
-      (relation->nb_columns != vector->size) ||
+  if ((relation == NULL) || (vector == NULL)     ||
+      (relation->precision != vector->precision) ||
+      (relation->nb_columns != vector->size)     ||
       (row >= relation->nb_rows) || (row < 0))
     OPENSCOP_error("vector cannot be added to relation");
 
-  if (OPENSCOP_INT_get_si(relation->m[row][0]) == 0)
-    OPENSCOP_INT_assign(relation->m[row][0], vector->v[0]);
+  if (openscop_int_get_si(relation->precision, relation->m[row], 0) == 0)
+    openscop_int_assign(relation->precision,
+                        relation->m[row], 0,
+                        vector->v, 0);
 
   for (i = 1; i < vector->size; i++)
-    OPENSCOP_INT_addto(relation->m[row][i], relation->m[row][i], vector->v[i]);
+    openscop_int_add(relation->precision,
+                     relation->m[row], i,
+                     relation->m[row], i,
+                     vector->v, i);
 }
 
 
@@ -1034,16 +1065,22 @@ void openscop_relation_sub_vector(openscop_relation_p relation,
                                   openscop_vector_p vector, int row) {
   int i;
 
-  if ((relation == NULL) || (vector == NULL) ||
-      (relation->nb_columns != vector->size) ||
+  if ((relation == NULL) || (vector == NULL)     ||
+      (relation->precision != vector->precision) ||
+      (relation->nb_columns != vector->size)     ||
       (row >= relation->nb_rows) || (row < 0))
     OPENSCOP_error("vector cannot be subtracted to row");
 
-  if (OPENSCOP_INT_get_si(relation->m[row][0]) == 0)
-    OPENSCOP_INT_assign(relation->m[row][0], vector->v[0]);
+  if (openscop_int_get_si(relation->precision, relation->m[row], 0) == 0)
+    openscop_int_assign(relation->precision,
+                        relation->m[row], 0,
+                        vector->v, 0);
 
   for (i = 1; i < vector->size; i++)
-    OPENSCOP_INT_subtract(relation->m[row][i], relation->m[row][i], vector->v[i]);
+    openscop_int_sub(relation->precision,
+                     relation->m[row], i,
+                     relation->m[row], i,
+                     vector->v, i);
 }
 
 
@@ -1080,7 +1117,7 @@ openscop_relation_p openscop_relation_from_vector(openscop_vector_p vector) {
   if (vector == NULL)
     return NULL;
 
-  relation = openscop_relation_malloc(1, vector->size);
+  relation = openscop_relation_pmalloc(vector->precision, 1, vector->size);
   openscop_relation_replace_vector(relation, vector, 0);
   return relation;
 }
@@ -1099,14 +1136,15 @@ void openscop_relation_replace_constraints(openscop_relation_p r1,
                                            openscop_relation_p r2, int row) {
   int i, j;
 
-  if ((r1 == NULL) || (r2 == NULL) ||
+  if ((r1 == NULL) || (r2 == NULL)       ||
+      (r1->precision != r2->precision)   ||
       (r1->nb_columns != r1->nb_columns) ||
       ((row + r2->nb_rows) > r1->nb_rows) || (row < 0))
     OPENSCOP_error("relation rows could not be replaced");
 
   for (i = 0; i < r2->nb_rows; i++)
     for (j = 0; j < r2->nb_columns; j++)
-      OPENSCOP_INT_assign(r1->m[i+row][j], r2->m[i][j]);
+      openscop_int_assign(r1->precision, r1->m[i+row], j, r2->m[i], j);
 }
 
 
@@ -1129,21 +1167,26 @@ void openscop_relation_insert_constraints(openscop_relation_p r1,
     return;
 
   if ((r1->nb_columns != r2->nb_columns) ||
+      (r1->precision != r2->precision)   ||
       (row > r1->nb_rows) || (row < 0))
     OPENSCOP_error("constraints cannot be inserted");
 
   // We use a temporary relation just to reuse existing functions. Cleaner.
-  temp = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
+  temp = openscop_relation_pmalloc(r1->precision,
+                                   r1->nb_rows + r2->nb_rows,
+                                   r1->nb_columns);
 
   for (i = 0; i < row; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      OPENSCOP_INT_assign(temp->m[i][j], r1->m[i][j]);
+      openscop_int_assign(r1->precision, temp->m[i], j, r1->m[i], j);
 
   openscop_relation_replace_constraints(temp, r2, row);
 
   for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      OPENSCOP_INT_assign(temp->m[i][j], r1->m[i-r2->nb_rows][j]);
+      openscop_int_assign(r1->precision,
+                          temp->m[i], j,
+                          r1->m[i-r2->nb_rows], j);
 
   openscop_relation_free_inside(r1);
 
@@ -1185,7 +1228,9 @@ openscop_relation_p openscop_relation_concat_constraints(
     OPENSCOP_warning("relation concatenation is done on the first elements "
                      "of union only");
 
-  new = openscop_relation_malloc(r1->nb_rows+r2->nb_rows, r1->nb_columns);
+  new = openscop_relation_pmalloc(r1->precision,
+                                  r1->nb_rows + r2->nb_rows,
+                                  r1->nb_columns);
   openscop_relation_replace_constraints(new, r1, 0);
   openscop_relation_replace_constraints(new, r2, r1->nb_rows);
 
@@ -1209,6 +1254,7 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
       return 1;
 
     if ((r1->type           != r2->type)           ||
+        (r1->precision      != r2->precision)      ||
         (r1->nb_rows        != r2->nb_rows)        ||
         (r1->nb_columns     != r2->nb_columns)     ||
         (r1->nb_output_dims != r2->nb_output_dims) ||
@@ -1219,7 +1265,7 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
 
     for (i = 0; i < r1->nb_rows; ++i)
       for (j = 0; j < r1->nb_columns; ++j)
-        if (OPENSCOP_INT_ne(r1->m[i][j], r2->m[i][j]))
+        if (openscop_int_ne(r1->precision, r1->m[i], j, r2->m[i], j))
           return 0;
 
     r1 = r1->next;
@@ -1415,8 +1461,8 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     // made of 0 or 1 only.
     if ((relation->nb_rows > 0) && (relation->nb_columns > 0)) {
       for (i = 0; i < relation->nb_rows; i++) {
-        if (!OPENSCOP_INT_zero_p(relation->m[i][0]) &&
-            !OPENSCOP_INT_one_p(relation->m[i][0])) {
+        if (!openscop_int_zero(relation->precision, relation->m[i], 0) &&
+            !openscop_int_one(relation->precision, relation->m[i], 0)) {
           OPENSCOP_warning("first column of a relation is not "
                            "strictly made of 0 or 1");
           openscop_relation_dump(stderr, relation);
@@ -1504,6 +1550,7 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
   int reference_array_id = OPENSCOP_UNDEFINED;
   int nb_array_id;
   int row_id = 0;
+  int precision;
 
   if (relation == NULL)
     return OPENSCOP_UNDEFINED;
@@ -1514,6 +1561,8 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
   }
   
   while (relation != NULL) {
+    precision = relation->precision;
+
     // There should be room to store the array identifier.
     if ((relation->nb_rows < 1) ||
         (relation->nb_columns < 3)) {
@@ -1529,7 +1578,7 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     // - check that (-m[i][#columns -1] / m[i][1]) > 0.
     nb_array_id = 0;
     for (i = 0; i < relation->nb_rows; i++) {
-      if (!OPENSCOP_INT_zero_p(relation->m[i][1])) {
+      if (!openscop_int_zero(precision, relation->m[i], 1)) {
         nb_array_id ++;
         row_id = i;
       }
@@ -1543,18 +1592,21 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
       return OPENSCOP_UNDEFINED;
     }
     for (i = 0; i < relation->nb_columns - 1; i++) {
-      if ((i != 1) && !OPENSCOP_INT_zero_p(relation->m[row_id][i])) {
+      if ((i != 1) && !openscop_int_zero(precision, relation->m[row_id], i)) {
         OPENSCOP_warning("non integer array identifier");
         return OPENSCOP_UNDEFINED;
       }
     }
-    if (!OPENSCOP_INT_divisible(relation->m[row_id][relation->nb_columns - 1],
-                           relation->m[row_id][1])) {
+    if (!openscop_int_divisible(precision,
+                                relation->m[row_id], relation->nb_columns - 1,
+                                relation->m[row_id], 1)) {
       OPENSCOP_warning("rational array identifier");
       return OPENSCOP_UNDEFINED;
     }
-    array_id = -OPENSCOP_INT_get_si(relation->m[row_id][relation->nb_columns-1]);
-    array_id /= OPENSCOP_INT_get_si(relation->m[row_id][1]);
+    array_id = -openscop_int_get_si(precision,
+                                    relation->m[row_id],
+                                    relation->nb_columns - 1);
+    array_id /= openscop_int_get_si(precision, relation->m[row_id], 1);
     if (array_id <= 0) {
       OPENSCOP_warning("negative or 0 identifier in access function");
       return OPENSCOP_UNDEFINED;

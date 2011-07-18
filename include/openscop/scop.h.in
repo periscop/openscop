@@ -73,9 +73,6 @@
 
 # define OPENSCOP_RELEASE "@PACKAGE_VERSION@"
 # define OPENSCOP_VERSION "@BITS@"
-# ifndef @OPENSCOP_INT_T@
-#  define @OPENSCOP_INT_T@
-# endif
 
 # include <openscop/macros.h>
 # include <openscop/util.h>

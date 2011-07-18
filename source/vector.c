@@ -79,9 +79,9 @@
  * depression or, for the lucky ones, getting a headache... It includes an
  * indentation level (level) in order to work with others print_structure
  * functions.
- * \param file   File where informations are printed.
- * \param vector The vector whose information have to be printed.
- * \param level  Number of spaces before printing, for each line.
+ * \param[in] file   File where informations are printed.
+ * \param[in] vector The vector whose information have to be printed.
+ * \param[in] level  Number of spaces before printing, for each line.
  */
 void openscop_vector_idump(FILE * file, openscop_vector_p vector, int level) {
   int j;
@@ -90,36 +90,38 @@ void openscop_vector_idump(FILE * file, openscop_vector_p vector, int level) {
     // Go to the right level.
     for (j = 0; j < level; j++)
       fprintf(file,"|\t");
-    fprintf(file,"+-- openscop_vector_t\n");
+    fprintf(file,"+-- openscop_vector_t (");
+    openscop_int_dump_precision(file, vector->precision);
+    fprintf(file, ")\n");
 
     for (j = 0; j <= level; j++)
       fprintf(file,"|\t");
-    fprintf(file,"%d\n",vector->size);
+    fprintf(file,"%d\n", vector->size);
 
     // Display the vector.
     for (j = 0; j <= level; j++)
-      fprintf(file,"|\t");
+      fprintf(file, "|\t");
 
-    fprintf(file,"[ ");
+    fprintf(file, "[ ");
 
     for (j = 0; j < vector->size; j++) {
-      OPENSCOP_INT_dump(file,OPENSCOP_FMT,vector->v[j]);
-      fprintf(file," ");
+      openscop_int_print(file, vector->precision, vector->v, j);
+      fprintf(file, " ");
     }
 
-    fprintf(file,"]\n");
+    fprintf(file, "]\n");
   }
   else {
     // Go to the right level.
     for (j = 0; j < level; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"+-- NULL vector\n");
+      fprintf(file, "|\t");
+    fprintf(file, "+-- NULL vector\n");
   }
 
   // The last line.
   for (j = 0; j <= level; j++)
-    fprintf(file,"|\t");
-  fprintf(file,"\n");
+    fprintf(file, "|\t");
+  fprintf(file, "\n");
 }
 
 
@@ -127,11 +129,11 @@ void openscop_vector_idump(FILE * file, openscop_vector_p vector, int level) {
  * openscop_vector_dump function:
  * This function prints the content of a openscop_vector_t structure
  * (*vector) into a file (file, possibly stdout).
- * \param file   File where informations are printed.
- * \param vector The vector whose information have to be printed.
+ * \param[in] file   File where informations are printed.
+ * \param[in] vector The vector whose information have to be printed.
  */
 void openscop_vector_dump(FILE * file, openscop_vector_p vector) {
-  openscop_vector_idump(file,vector,0);
+  openscop_vector_idump(file, vector, 0);
 }
 
 
@@ -141,46 +143,60 @@ void openscop_vector_dump(FILE * file, openscop_vector_p vector) {
 
 
 /**
- * openscop_vector_malloc function:
- * This function allocates the memory space for a openscop_vector_t structure
- * and sets its fields with default values. Then it returns a pointer to the
- * allocated space.
- * \param size The number of entries of the vector to allocate.
+ * openscop_vector_pmalloc function:
+ * (precision malloc) this function allocates the memory space for an
+ * openscop_vector_t structure and sets its fields with default values. Then
+ * it returns a pointer to the allocated space.
+ * \param[in] precision The precision of the vector entries.
+ * \param[in] size      The number of entries of the vector to allocate.
  * \return A pointer to the newly allocated openscop_vector_t structure.
  */
-openscop_vector_p openscop_vector_malloc(unsigned size) {
+openscop_vector_p openscop_vector_pmalloc(int precision, int size) {
   openscop_vector_p vector;
-  openscop_int_t * p;
   int i;
 
   OPENSCOP_malloc(vector, openscop_vector_p, sizeof(openscop_vector_t));
   vector->size = size;
+  vector->precision = precision;
   if (size == 0) {
     vector->v = NULL;
   }
   else {
-    OPENSCOP_malloc(p, openscop_int_t *, size * sizeof(openscop_int_t));
-    vector->v = p;
+    OPENSCOP_malloc(vector->v, void *, size * openscop_int_sizeof(precision));
     for (i = 0; i < size; i++)
-      OPENSCOP_INT_init_set_si(vector->v[i],0);
+      openscop_int_init_set_si(precision, vector->v, i, 0);
   }
   return vector;
 }
 
 
 /**
+ * openscop_vector_malloc function:
+ * This function allocates the memory space for a openscop_vector_t structure
+ * and sets its fields with default values. Then it returns a pointer to the
+ * allocated space. The precision of the vector elements corresponds to the 
+ * precision environment variable or to the highest available precision if it
+ * is not defined.
+ * \param[in] size      The number of entries of the vector to allocate.
+ * \return A pointer to the newly allocated openscop_vector_t structure.
+ */
+openscop_vector_p openscop_vector_malloc(int size) {
+  int precision = openscop_util_get_precision();
+  return openscop_vector_pmalloc(precision, size);
+}
+
+
+/**
  * openscop_vector_free function:
  * This function frees the allocated memory for a openscop_vector_t structure.
- * \param vector The pointer to the vector we want to free.
+ * \param[in] vector The pointer to the vector we want to free.
  */
 void openscop_vector_free(openscop_vector_p vector) {
   int i;
-  openscop_int_t * p;
 
   if (vector != NULL) {
-    p = vector->v;
     for (i = 0; i < vector->size; i++)
-      OPENSCOP_INT_clear(*p++);
+      openscop_int_clear(vector->precision, vector->v, i);
 
     free(vector->v);
     free(vector);
@@ -198,23 +214,25 @@ void openscop_vector_free(openscop_vector_p vector) {
  * This function adds a scalar to the vector representation of an affine
  * expression (this means we add the scalar only to the very last entry of the
  * vector). It returns a new vector resulting from this addition.
- * \param vector The basis vector.
- * \param scalar The scalar to add to the vector.
+ * \param[in] vector The basis vector.
+ * \param[in] scalar The scalar to add to the vector.
  * \return A pointer to a new vector, copy of the basis one plus the scalar.
  */
 openscop_vector_p openscop_vector_add_scalar(openscop_vector_p vector,
                                              int scalar) {
-  int i;
+  int i, precision, last;
   openscop_vector_p result;
 
   if ((vector == NULL) || (vector->size < 2))
     OPENSCOP_error("incompatible vector for addition");
 
-  result = openscop_vector_malloc(vector->size);
+  precision = vector->precision;
+  last = vector->size - 1;
+
+  result = openscop_vector_pmalloc(precision, vector->size);
   for (i = 0; i < vector->size; i++)
-    OPENSCOP_INT_assign(result->v[i],vector->v[i]);
-  OPENSCOP_INT_add_int(result->v[vector->size - 1],
-		  vector->v[vector->size - 1],scalar);
+    openscop_int_assign(precision, result->v, i, vector->v, i);
+  openscop_int_add_ui(precision, result->v, last, vector->v, last, scalar);
 
   return result;
 }
@@ -234,12 +252,13 @@ openscop_vector_p openscop_vector_add(openscop_vector_p v1,
   int i;
   openscop_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size))
+  if ((v1 == NULL) || (v2 == NULL) ||
+      (v1->size != v2->size) || (v1->precision != v2->precision))
     OPENSCOP_error("incompatible vectors for addition");
 
-  v3 = openscop_vector_malloc(v1->size);
+  v3 = openscop_vector_pmalloc(v1->precision, v1->size);
   for (i = 0; i < v1->size; i++)
-    OPENSCOP_INT_addto(v3->v[i],v1->v[i],v2->v[i]);
+    openscop_int_add(v1->precision, v3->v, i, v1->v, i, v2->v, i);
 
   return v3;
 }
@@ -259,12 +278,13 @@ openscop_vector_p openscop_vector_sub(openscop_vector_p v1,
   int i;
   openscop_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size))
+  if ((v1 == NULL) || (v2 == NULL) ||
+      (v1->size != v2->size) || (v1->precision != v2->precision))
     OPENSCOP_error("incompatible vectors for subtraction");
 
-  v3 = openscop_vector_malloc(v1->size);
+  v3 = openscop_vector_pmalloc(v1->precision, v1->size);
   for (i = 0; i < v1->size; i++)
-    OPENSCOP_INT_subtract(v3->v[i],v1->v[i],v2->v[i]);
+    openscop_int_sub(v1->precision, v3->v, i, v1->v, i, v2->v, i);
 
   return v3;
 }
@@ -281,7 +301,7 @@ openscop_vector_p openscop_vector_sub(openscop_vector_p v1,
 void openscop_vector_tag_inequality(openscop_vector_p vector) {
   if ((vector == NULL) || (vector->size < 1))
     OPENSCOP_error("vector cannot be tagged");
-  OPENSCOP_INT_set_si(vector->v[0],1);
+  openscop_int_set_si(vector->precision, vector->v, 0, 1);
 }
 
 
@@ -296,7 +316,7 @@ void openscop_vector_tag_inequality(openscop_vector_p vector) {
 void openscop_vector_tag_equality(openscop_vector_p vector) {
   if ((vector == NULL) || (vector->size < 1))
     OPENSCOP_error("vector cannot be tagged");
-  OPENSCOP_INT_set_si(vector->v[0],0);
+  openscop_int_set_si(vector->precision, vector->v, 0, 0);
 }
 
 
@@ -314,11 +334,11 @@ int openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2) {
   if (v1 == v2)
     return 1;
 
-  if (v1->size != v2->size)
+  if ((v1->size != v2->size) || (v1->precision != v2->precision))
     return 0;
 
   for (i = 0; i < v1->size; i++)
-    if (OPENSCOP_INT_ne(v1->v[i], v2->v[i]))
+    if (openscop_int_ne(v1->precision, v1->v, i, v2->v, i))
       return 0;
 
   return 1;
@@ -336,10 +356,10 @@ int openscop_vector_equal(openscop_vector_p v1, openscop_vector_p v2) {
 openscop_vector_p openscop_vector_mul_scalar(openscop_vector_p v,
                                              int scalar) {
   int i;
-  openscop_vector_p result = openscop_vector_malloc(v->size);
+  openscop_vector_p result = openscop_vector_pmalloc(v->precision, v->size);
   
   for(i = 0; i < v->size; i++)
-    OPENSCOP_INT_multo(result->v[i], scalar, v->v[i]);
+    openscop_int_mul_si(v->precision, result->v, i, v->v, i, scalar);
 
   return result;
 }

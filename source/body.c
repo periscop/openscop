@@ -130,7 +130,7 @@ void openscop_body_idump(FILE * file, openscop_body_p body, int level) {
 
 /**
  * openscop_body_dump function:
- * This function prints the content of a openscop_body_t structure
+ * this function prints the content of an openscop_body_t structure
  * (*body) into  a file (file, possibly stdout).
  * \param file[in] File where informations are printed.
  * \param body[in] The body whose information has to be printed.
@@ -142,7 +142,7 @@ void openscop_body_dump(FILE * file, openscop_body_p body) {
 
 /**
  * openscop_body_print function:
- * This function prints the content of a openscop_body_t structure
+ * this function prints the content of an openscop_body_t structure
  * (*body) into a file (file, possibly stdout) in the OpenScop format.
  * \param file[in]  File where informations are printed.
  * \param body[in]  The body whose information has to be printed.
@@ -171,7 +171,7 @@ void openscop_body_print(FILE * file, openscop_body_p body) {
 
 /**
  * openscop_body_read function:
- * This function reads a openscop_body_t structure from an input stream
+ * this function reads an openscop_body_t structure from an input stream
  * (possibly stdin).
  * \param[in] file         The input stream.
  * \param[in] nb_iterators The number of iterators.
@@ -220,7 +220,7 @@ openscop_body_p openscop_body_read(FILE * file, int nb_iterators) {
 
 /**
  * openscop_body_malloc function:
- * This function allocates the memory space for a openscop_body_t
+ * this function allocates the memory space for an openscop_body_t
  * structure and sets its fields with default values. Then it returns a pointer
  * to the allocated space.
  * \return A pointer to an empty body with fields set to default values.
@@ -239,7 +239,7 @@ openscop_body_p openscop_body_malloc() {
 
 /**
  * openscop_body_free function:
- * This function frees the allocated memory for a openscop_body_t
+ * this function frees the allocated memory for an openscop_body_t
  * structure.
  * \param[in,out] body The pointer to the body we want to free.
  */
@@ -262,7 +262,7 @@ void openscop_body_free(openscop_body_p body) {
 
 /**
  * openscop_body_clone function:
- * This functions builds and returns a "hard copy" (not a pointer copy) of an
+ * this functions builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_body_t data structure provided as parameter. However, let us
  * recall here that non-string elements are untouched by the OpenScop Library.
  * \param[in] body The pointer to the body we want to copy.
@@ -287,7 +287,7 @@ openscop_body_p openscop_body_clone(openscop_body_p body) {
 
 /**
  * openscop_body_equal function:
- * This function returns true if the two bodies are the same, false
+ * this function returns true if the two bodies are the same, false
  * otherwise (the usr field is not tested). However, let us
  * recall here that non-string elements are untouched by the OpenScop Library.
  * \param b1 The first body.
@@ -335,7 +335,7 @@ int openscop_body_equal(openscop_body_p b1, openscop_body_p b2) {
 
 /**
  * openscop_body_integrity_check function:
- * This function checks that a body is "well formed" according to some
+ * this function checks that a body is "well formed" according to some
  * expected properties (setting an expected value to OPENSCOP_UNDEFINED means
  * that we do not expect a specific value). It returns 0 if the check failed
  * or 1 if no problem has been detected.
