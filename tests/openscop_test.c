@@ -68,7 +68,7 @@
 #include <sys/wait.h>
 #include <openscop/openscop.h>
 
-#define FORK                 // Comment that if you want only one process
+//#define FORK                 // Comment that if you want only one process
                              // (best for debugging with valgrind but bad
                              // for make check since any error will
                              // stop the job).

@@ -1961,9 +1961,9 @@ typedef struct openscop_statement * openscop_statement_p;
 @end group
 @end example
 
-@noindent The @code{openscop_statement_t} structure represents a @code{NULL}
-terminated linked list of statements. Each node contains the useful
-information for a given statement to process it within a polyhedral
+@noindent The @code{openscop_statement_t} structure represents a node
+in a @code{NULL}-terminated linked list of statements. Each node contains the
+useful information for a given statement to process it within a polyhedral
 framework. The order in the list may matter for naming conventions
 (e.g. "S1" for the first statement in the list). The iteration domain
 and the scattering are represented using an @code{openscop_relation_p}
@@ -2004,14 +2004,14 @@ typedef struct openscop_extension_id * openscop_extension_id_p;
 @end group
 @end example
 
-@noindent The @code{openscop_extension_id_t} structure stores the
+@noindent The @code{openscop_extension_id_t} structure represents a
+node in a @code{NULL}-terminated list of extension ids. Each node stores the
 @emph{identity} of an extension, i.e., its unique name (@code{URI}) and
 the function pointers to all the base functions it has to provide.
 Extension providers will find information relative to those functions
 in the OpenScop Library description (@pxref{Base Functions})
 and the section dedicated to writing extensions
-(@pxref{Extension Development}). The @code{openscop_extension_id_t}
-structure is a node in a NULL-terminated list of extension ids.
+(@pxref{Extension Development}).
 
 @node openscop_extension_t
 @subsubsection openscop_extension_t
@@ -2028,12 +2028,12 @@ typedef struct openscop_extension * openscop_extension_p;
 @end group
 @end example
 
-@noindent The @code{openscop_extension_t} structure stores an extension to the core
-OpenScop representation. It is a node of a @code{NULL}-terminated linked list of
-extensions. The @code{id} field gives the identity of what is pointed by the
-@code{extension} field. An OpenScop implementation is not required to support
-any extension. It must warn the user that a given identity is not
-supported and ignore it during the processing.
+@noindent The @code{openscop_extension_t} structure represents a node in a
+@code{NULL}-terminated list of extensions. It stores an extension to the core
+OpenScop representation. The @code{id} field gives the identity of what is
+pointed by the @code{extension} field. An OpenScop implementation is not
+required to support any extension. It must warn the user that a given identity
+is not supported and ignore it during the processing.
 
 @node openscop_scop_t
 @subsubsection openscop_scop_t
@@ -2049,16 +2049,18 @@ struct openscop_scop @{
   openscop_extension_id_p registry; /* List of registered extensions */
   openscop_extension_p extension;   /* Extension list */
   void * usr;                       /* A user-defined field */
+  struct openscop_scop * next;      /* Next scop in the list */
 @};
 typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;
 @end group
 @end example
 
-@noindent @code{openscop_scop_t} stores the useful informations of a static
-control part of a program to process it within a polyhedral framework.
-To prepare OpenScop specification evolution, the @code{version} field
-tells the version of the data structure. It should be set to 1 for
+@noindent @code{openscop_scop_t} represents a node in a
+@code{NULL}-terminated list of scops. It stores the useful informations
+of a static control part of a program to process it within a polyhedral
+framework. To prepare OpenScop specification evolution, the @code{version}
+field tells the version of the data structure. It should be set to 1 for
 now (and hopefully a very, very, long time).
 It contains the informations about the context: the target language
 in the @code{language} field, the constraints on the
@@ -2881,15 +2883,16 @@ important data structure (e.g., @code{struct foo}) has its own header file
 (@code{include/openscop/foo.h}) where lies the definition of
 the data structure, the two typedefs for the data structure (one for the
 structure, @code{openscop_foo_t}, and one for a pointer
-to the structure, @code{openscop_foo_p}) and the prototypes of the various
-functions related to this data structure (all named using the
-prefix "@code{openscop_foo_"}. The source code of the functions is provided in a
+to the structure, @code{openscop_foo_p}), the prototypes of the various
+functions related to this data structure, all named using the
+prefix "@code{openscop_foo_}". The source code of the functions is provided in a
 separated C file (@code{source/foo.c}).
   
 Utility functions independent from the main data structures may be placed in
 separate source files (e.g., definition in @code{include/openscop/util.h}
 and code in @code{source/util.c}). Tool-wide preprocessor directives are
-placed in @code{include/openscop/macros.h}.
+placed in @code{include/openscop/macros.h}, macros are prefixed with
+"@code{OPENSCOP_}".
 
 The core code itself has to be written according to the Google C++ Coding Style:
 @url{http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml} (for
