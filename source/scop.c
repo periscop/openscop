@@ -141,8 +141,8 @@ void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
     // Print the statements.
     openscop_statement_idump(file, scop->statement, level+1);
 
-    // Print the registered extension ids.
-    openscop_extension_id_idump(file, scop->registry, level+1);
+    // Print the registered extension interfaces.
+    openscop_interface_idump(file, scop->registry, level+1);
 
     // Print the extensions.
     openscop_extension_idump(file, scop->extension, level+1);
@@ -452,7 +452,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
     // IV. EXTENSION PART (TO THE END TAG)
     //
 
-    // Read up the end tag (if any), and store extensions in the extension field.
+    // Read up the end tag (if any), and store extensions.
     scop->extension = openscop_extension_read(file, scop->registry);
 
     // Add the new scop to the list.
@@ -487,11 +487,11 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 static
 void openscop_scop_register_default_extensions(openscop_scop_p scop) {
   
-  openscop_extension_id_add(&scop->registry, openscop_textual_generate_id());
-  openscop_extension_id_add(&scop->registry, openscop_comment_generate_id());
-  openscop_extension_id_add(&scop->registry, openscop_arrays_generate_id());
-  openscop_extension_id_add(&scop->registry, openscop_lines_generate_id());
-  openscop_extension_id_add(&scop->registry, openscop_irregular_generate_id());
+  openscop_interface_add(&scop->registry, openscop_textual_interface());
+  openscop_interface_add(&scop->registry, openscop_comment_interface());
+  openscop_interface_add(&scop->registry, openscop_arrays_interface());
+  openscop_interface_add(&scop->registry, openscop_lines_interface());
+  openscop_interface_add(&scop->registry, openscop_irregular_interface());
 }
 
 
@@ -537,7 +537,7 @@ void openscop_scop_free(openscop_scop_p scop) {
       openscop_strings_free((char **)scop->parameters);
     openscop_relation_free(scop->context);
     openscop_statement_free(scop->statement);
-    openscop_extension_id_free(scop->registry);
+    openscop_interface_free(scop->registry);
     openscop_extension_free(scop->extension);
 
     tmp = scop->next;
@@ -575,7 +575,7 @@ openscop_scop_p openscop_scop_clone(openscop_scop_p scop) {
       node->parameters   = (void **)openscop_strings_clone(
                                (char **)scop->parameters);
     node->statement      = openscop_statement_clone(scop->statement);
-    node->registry       = openscop_extension_id_clone(scop->registry);
+    node->registry       = openscop_interface_clone(scop->registry);
     node->extension      = openscop_extension_clone(scop->extension);
     
     if (first) {
@@ -641,7 +641,7 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
       return 0;
     }
 
-    if (!openscop_extension_id_equal(s1->registry, s2->registry)) {
+    if (!openscop_interface_equal(s1->registry, s2->registry)) {
       OPENSCOP_info("registries are not the same"); 
       return 0;
     }
@@ -707,25 +707,25 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
 
 /**
  * openscop_scop_register_extension function:
- * this function registers a list of extension identities to a scop, i.e., it
+ * this function registers a list of extension interfaces to a scop, i.e., it
  * adds them to the scop registry. In addition, it will extract extensions
- * corresponding to those identities from the textual form of the extensions
+ * corresponding to those interfaces from the textual form of the extensions
  * (if any) and add them to the scop extension list.
- * \param scop The scop for which an extension id has to be registered.
- * \param id   The extension id to register within the scop.
+ * \param scop      The scop for which an extension has to be registered.
+ * \param interface The extension interface to register within the scop.
  */
 void openscop_scop_register_extension(openscop_scop_p scop,
-                                      openscop_extension_id_p id) {
+                                      openscop_interface_p interface) {
   openscop_extension_p textual, new;
   char * extension_string;
 
-  if ((id != NULL) && (scop != NULL)) {
-    openscop_extension_id_add(&scop->registry, id);
+  if ((interface != NULL) && (scop != NULL)) {
+    openscop_interface_add(&scop->registry, interface);
 
-    textual = openscop_extension_lookup(scop->extension, id->URI);
+    textual = openscop_extension_lookup(scop->extension, interface->URI);
     if (textual != NULL) {
       extension_string = ((openscop_textual_p)textual->extension)->textual;
-      new = openscop_extension_sread(extension_string, id);
+      new = openscop_extension_sread(extension_string, interface);
       openscop_extension_add(&scop->extension, new);
     }
   }

@@ -81,7 +81,7 @@
 # include <openscop/names.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # include <openscop/extensions/textual.h>
 # include <openscop/extensions/comment.h>
@@ -115,8 +115,8 @@ struct openscop_scop {
   int parameter_type;               /**< Parameter type */
   void ** parameters;               /**< NULL-terminated array of parameters */
   openscop_statement_p statement;   /**< Statement list of the SCoP */
-  openscop_extension_id_p registry; /**< List of registered extensions */
-  openscop_extension_p extension;   /**< Extension list */
+  openscop_interface_p registry;    /**< Registered extensions interfaces */
+  openscop_extension_p extension;   /**< List of extensions */
   void * usr;                       /**< A user-defined field, not touched
 				         AT ALL by the OpenScop Library */
   struct openscop_scop * next;      /**< Next statement in the linked list */
@@ -153,7 +153,7 @@ openscop_scop_p	openscop_scop_clone(openscop_scop_p);
 int             openscop_scop_equal(openscop_scop_p, openscop_scop_p);
 int             openscop_scop_integrity_check(openscop_scop_p);
 void            openscop_scop_register_extension(openscop_scop_p,
-                                                 openscop_extension_id_p);
+                                                 openscop_interface_p);
 
 
 # if defined(__cplusplus)

@@ -63,7 +63,7 @@
 
 #ifndef OPENSCOP_LINES_H
 # define OPENSCOP_LINES_H
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
@@ -118,7 +118,7 @@ void openscop_lines_free(openscop_lines_p);
  *****************************************************************************/
 openscop_lines_p openscop_lines_clone(openscop_lines_p);
 int openscop_lines_equal(openscop_lines_p, openscop_lines_p);
-openscop_extension_id_p openscop_lines_generate_id();
+openscop_interface_p openscop_lines_interface();
 
 
 # if defined(__cplusplus)

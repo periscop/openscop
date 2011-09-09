@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                        extension_id.h                           **
+     **                          interface.h                            **
      **-----------------------------------------------------------------**
      **                   First version: 15/07/2011                     **
      **-----------------------------------------------------------------**
@@ -61,8 +61,8 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_EXTENSION_ID_H
-# define OPENSCOP_EXTENSION_ID_H
+#ifndef OPENSCOP_INTERFACE_H
+# define OPENSCOP_INTERFACE_H
 
 # include <openscop/macros.h>
 
@@ -83,31 +83,31 @@ typedef int    (*openscop_equal_f) (void *, void *);
 
 
 /**
- * The openscop_extension_id structure stores the URI and base
- * functions pointers an extension implementation has to offer. It
- * is a node in a NULL-terminated list of extension ids.
+ * The openscop_interface structure stores the URI and base
+ * functions pointers an openscop object implementation has to offer. It
+ * is a node in a NULL-terminated list of interfaces.
  */
-struct openscop_extension_id {
-  char * URI;               /**< Unique extension identifier string */
-  openscop_idump_f  idump;  /**< Pointer to extension idump function */
-  openscop_dump_f   dump;   /**< Pointer to extension dump function */
-  openscop_sprint_f sprint; /**< Pointer to extension sprint function */
-  openscop_sread_f  sread;  /**< Pointer to extension sread function */
-  openscop_malloc_f malloc; /**< Pointer to extension malloc function */
-  openscop_free_f   free;   /**< Pointer to extension free function */
-  openscop_clone_f  clone;  /**< Pointer to extension clone function */
-  openscop_equal_f  equal;  /**< Pointer to extension equal function */
-  struct openscop_extension_id * next; /**< Next id in the list */
+struct openscop_interface {
+  char * URI;               /**< Unique identifier string */
+  openscop_idump_f  idump;  /**< Pointer to idump function */
+  openscop_dump_f   dump;   /**< Pointer to dump function */
+  openscop_sprint_f sprint; /**< Pointer to sprint function */
+  openscop_sread_f  sread;  /**< Pointer to sread function */
+  openscop_malloc_f malloc; /**< Pointer to malloc function */
+  openscop_free_f   free;   /**< Pointer to free function */
+  openscop_clone_f  clone;  /**< Pointer to clone function */
+  openscop_equal_f  equal;  /**< Pointer to equal function */
+  struct openscop_interface * next; /**< Next interface in the list */
 };
-typedef struct openscop_extension_id   openscop_extension_id_t;
-typedef struct openscop_extension_id * openscop_extension_id_p;
+typedef struct openscop_interface   openscop_interface_t;
+typedef struct openscop_interface * openscop_interface_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_extension_id_idump(FILE *, openscop_extension_id_p, int);
-void openscop_extension_id_dump(FILE *, openscop_extension_id_p);
+void openscop_interface_idump(FILE *, openscop_interface_p, int);
+void openscop_interface_dump(FILE *, openscop_interface_p);
 
 
 /*****************************************************************************
@@ -118,25 +118,23 @@ void openscop_extension_id_dump(FILE *, openscop_extension_id_p);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void                    openscop_extension_id_add(openscop_extension_id_p *,
-                                                 openscop_extension_id_p);
-openscop_extension_id_p openscop_extension_id_malloc();
-void                    openscop_extension_id_free(openscop_extension_id_p);
+void                 openscop_interface_add(openscop_interface_p *,
+                                                 openscop_interface_p);
+openscop_interface_p openscop_interface_malloc();
+void                 openscop_interface_free(openscop_interface_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_extension_id_p openscop_extension_id_nclone(openscop_extension_id_p,
-                                                     int);
-openscop_extension_id_p openscop_extension_id_clone(openscop_extension_id_p);
-int                     openscop_extension_id_equal(openscop_extension_id_p,
-                                                    openscop_extension_id_p);
-openscop_extension_id_p openscop_extension_id_lookup(openscop_extension_id_p,
-                                                     char *);
+openscop_interface_p openscop_interface_nclone(openscop_interface_p, int);
+openscop_interface_p openscop_interface_clone(openscop_interface_p);
+int                  openscop_interface_equal(openscop_interface_p,
+                                              openscop_interface_p);
+openscop_interface_p openscop_interface_lookup(openscop_interface_p, char *);
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_EXTENSION_ID_H */
+#endif /* define OPENSCOP_INTERFACE_H */

@@ -84,7 +84,7 @@ nobase_pkginclude_HEADERS =                \
 pkginclude_HEADERS 	=                  \
 	openscop/openscop.h                \
 	openscop/statement.h               \
-	openscop/extension_id.h            \
+	openscop/interface.h               \
 	openscop/extension.h               \
 	openscop/vector.h                  \
 	openscop/relation.h                \

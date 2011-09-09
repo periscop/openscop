@@ -66,7 +66,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -117,7 +117,7 @@ void openscop_textual_free(openscop_textual_p);
  *****************************************************************************/
 openscop_textual_p openscop_textual_clone(openscop_textual_p);
 int openscop_textual_equal(openscop_textual_p, openscop_textual_p);
-openscop_extension_id_p openscop_textual_generate_id();
+openscop_interface_p openscop_textual_interface();
 
 # if defined(__cplusplus)
   }

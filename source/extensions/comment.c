@@ -288,24 +288,24 @@ int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2) {
 
 
 /**
- * openscop_comment_generate_id function:
- * this function creates an identity structure corresponding to the comment
+ * openscop_comment_interface function:
+ * this function creates an interface structure corresponding to the comment
  * extension and returns it).
- * \return An identity structure corresponding to the comment extension.
+ * \return An interface structure for the comment extension.
  */
-openscop_extension_id_p openscop_comment_generate_id() {
-  openscop_extension_id_p id = openscop_extension_id_malloc();
+openscop_interface_p openscop_comment_interface() {
+  openscop_interface_p interface = openscop_interface_malloc();
   
-  id->URI    = strdup(OPENSCOP_URI_COMMENT);
-  id->idump  = (openscop_idump_f)openscop_comment_idump;
-  id->dump   = (openscop_dump_f)openscop_comment_dump;
-  id->sprint = (openscop_sprint_f)openscop_comment_sprint;
-  id->sread  = (openscop_sread_f)openscop_comment_sread;
-  id->malloc = (openscop_malloc_f)openscop_comment_malloc;
-  id->free   = (openscop_free_f)openscop_comment_free;
-  id->clone  = (openscop_clone_f)openscop_comment_clone;
-  id->equal  = (openscop_equal_f)openscop_comment_equal;
+  interface->URI    = strdup(OPENSCOP_URI_COMMENT);
+  interface->idump  = (openscop_idump_f)openscop_comment_idump;
+  interface->dump   = (openscop_dump_f)openscop_comment_dump;
+  interface->sprint = (openscop_sprint_f)openscop_comment_sprint;
+  interface->sread  = (openscop_sread_f)openscop_comment_sread;
+  interface->malloc = (openscop_malloc_f)openscop_comment_malloc;
+  interface->free   = (openscop_free_f)openscop_comment_free;
+  interface->clone  = (openscop_clone_f)openscop_comment_clone;
+  interface->equal  = (openscop_equal_f)openscop_comment_equal;
 
-  return id;
+  return interface;
 }
 

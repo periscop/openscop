@@ -66,7 +66,7 @@
 # include <openscop/extension.h>
 
 
-/* !!!!!!!!! TO ADD A NEW EXTENSION, PLEASE READ AT THE MANUAL !!!!!!!!!!!! */
+/* !!!!!!!! TO ADD A NEW EXTENSION, PLEASE READ THE MANUAL FIRST !!!!!!!!!!! */
 
 
 /*+***************************************************************************
@@ -112,10 +112,10 @@ void openscop_extension_idump(FILE * file,
       fprintf(file, "|\t");
     fprintf(file, "\n");
 
-    openscop_extension_id_idump(file, extension->id, level + 1);
+    openscop_interface_idump(file, extension->interface, level + 1);
    
-    if (extension->id != NULL)
-      extension->id->idump(file, extension->extension, level + 1);
+    if (extension->interface != NULL)
+      extension->interface->idump(file, extension->extension, level + 1);
     
     extension = extension->next;
 
@@ -155,8 +155,8 @@ void openscop_extension_print(FILE * file, openscop_extension_p extension) {
     return;
 
   while (extension != NULL) {
-    if (extension->id != NULL) {
-      string = extension->id->sprint(extension->extension);
+    if (extension->interface != NULL) {
+      string = extension->interface->sprint(extension->extension);
       if (string != NULL) {
         fprintf(file, "%s\n", string);
         free(string);
@@ -183,17 +183,17 @@ void openscop_extension_print(FILE * file, openscop_extension_p extension) {
  * \return A pointer to the extension list that has been read.
  */
 openscop_extension_p
-openscop_extension_sread(char * string, openscop_extension_id_p registry) {
+openscop_extension_sread(char * string, openscop_interface_p registry) {
   openscop_extension_p extension = NULL, new;
-  openscop_extension_id_p id;
+  openscop_interface_p interface;
   void * x;
 
   while (registry != NULL) {
     x = registry->sread(string);
     if (x != NULL) {
-      id = openscop_extension_id_nclone(registry, 1);
+      interface = openscop_interface_nclone(registry, 1);
       new = openscop_extension_malloc();
-      new->id = id;
+      new->interface = interface;
       new->extension = x;
       openscop_extension_add(&extension, new);
     }
@@ -215,7 +215,7 @@ openscop_extension_sread(char * string, openscop_extension_id_p registry) {
  * \return A pointer to the extension list that has been read.
  */
 openscop_extension_p
-openscop_extension_read(FILE * file, openscop_extension_id_p registry) {
+openscop_extension_read(FILE * file, openscop_interface_p registry) {
   char * extension_string;
   void * extension_list;
 
@@ -247,10 +247,10 @@ void openscop_extension_add(openscop_extension_p * list,
     // First, check that the extension list is OK.
     check = extension;
     while (check != NULL) {
-      if ((check->id == NULL) || (check->id->URI == NULL))
-        OPENSCOP_error("no id or URI in an extension to add to a list");
+      if ((check->interface == NULL) || (check->interface->URI == NULL))
+        OPENSCOP_error("no interface or URI in an extension to add to a list");
 
-      if (openscop_extension_lookup(*list, check->id->URI) != NULL)
+      if (openscop_extension_lookup(*list, check->interface->URI) != NULL)
         OPENSCOP_error("only one extension with a given URI is allowed");
       check = check->next;
     }
@@ -280,7 +280,7 @@ openscop_extension_p openscop_extension_malloc() {
 
   OPENSCOP_malloc(extension, openscop_extension_p,
                   sizeof(openscop_extension_t));
-  extension->id        = NULL;
+  extension->interface = NULL;
   extension->extension = NULL;
   extension->next      = NULL;
 
@@ -298,9 +298,9 @@ void openscop_extension_free(openscop_extension_p extension) {
 
   while (extension != NULL) {
     next = extension->next;
-    if (extension->id != NULL) {
-      extension->id->free(extension->extension);
-      openscop_extension_id_free(extension->id);
+    if (extension->interface != NULL) {
+      extension->interface->free(extension->extension);
+      openscop_interface_free(extension->interface);
     }
     else {
       if (extension->extension != NULL) {
@@ -328,15 +328,15 @@ void openscop_extension_free(openscop_extension_p extension) {
  */
 openscop_extension_p openscop_extension_clone(openscop_extension_p extension) {
   openscop_extension_p clone = NULL, new;
-  openscop_extension_id_p id;
+  openscop_interface_p interface;
   void * x;
 
   while (extension != NULL) { 
-    if (extension->id != NULL) {
-      x = extension->id->clone(extension->extension);
-      id = openscop_extension_id_clone(extension->id);
+    if (extension->interface != NULL) {
+      x = extension->interface->clone(extension->extension);
+      interface = openscop_interface_clone(extension->interface);
       new = openscop_extension_malloc();
-      new->id = id;
+      new->interface = interface;
       new->extension = x;
       openscop_extension_add(&clone, new);
     }
@@ -399,9 +399,9 @@ int openscop_extension_equal(openscop_extension_p x1,
     x2 = backup_x2;
     found = 0;
     while ((x2 != NULL) && (found != 1)) {
-      if (openscop_extension_id_equal(x1->id, x2->id)) {
-        if (x1->id != NULL) {
-          equal = x1->id->equal(x1->extension, x2->extension);
+      if (openscop_interface_equal(x1->interface, x2->interface)) {
+        if (x1->interface != NULL) {
+          equal = x1->interface->equal(x1->extension, x2->extension);
         }
         else {
           OPENSCOP_warning("unregistered extension, "
@@ -439,7 +439,7 @@ int openscop_extension_equal(openscop_extension_p x1,
  */
 void * openscop_extension_lookup(openscop_extension_p x, char * URI) {
   while (x != NULL) {
-    if ((x->id != NULL) && (!strcmp(x->id->URI, URI)))
+    if ((x->interface != NULL) && (!strcmp(x->interface->URI, URI)))
       return x->extension;
 
     x = x->next;

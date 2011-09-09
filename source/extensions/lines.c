@@ -287,24 +287,24 @@ int openscop_lines_equal(openscop_lines_p c1, openscop_lines_p c2) {
 
 
 /**
- * openscop_lines_generate_id function:
- * this function creates an identity structure corresponding to the lines
+ * openscop_lines_interface function:
+ * this function creates an interface structure corresponding to the lines
  * extension and returns it).
- * \return An identity structure corresponding to the lines extension.
+ * \return An interface structure for the lines extension.
  */
-openscop_extension_id_p openscop_lines_generate_id() {
-  openscop_extension_id_p id = openscop_extension_id_malloc();
+openscop_interface_p openscop_lines_interface() {
+  openscop_interface_p interface = openscop_interface_malloc();
   
-  id->URI    = strdup(OPENSCOP_URI_LINES);
-  id->idump  = (openscop_idump_f)openscop_lines_idump;
-  id->dump   = (openscop_dump_f)openscop_lines_dump;
-  id->sprint = (openscop_sprint_f)openscop_lines_sprint;
-  id->sread  = (openscop_sread_f)openscop_lines_sread;
-  id->malloc = (openscop_malloc_f)openscop_lines_malloc;
-  id->free   = (openscop_free_f)openscop_lines_free;
-  id->clone  = (openscop_clone_f)openscop_lines_clone;
-  id->equal  = (openscop_equal_f)openscop_lines_equal;
+  interface->URI    = strdup(OPENSCOP_URI_LINES);
+  interface->idump  = (openscop_idump_f)openscop_lines_idump;
+  interface->dump   = (openscop_dump_f)openscop_lines_dump;
+  interface->sprint = (openscop_sprint_f)openscop_lines_sprint;
+  interface->sread  = (openscop_sread_f)openscop_lines_sread;
+  interface->malloc = (openscop_malloc_f)openscop_lines_malloc;
+  interface->free   = (openscop_free_f)openscop_lines_free;
+  interface->clone  = (openscop_clone_f)openscop_lines_clone;
+  interface->equal  = (openscop_equal_f)openscop_lines_equal;
 
-  return id;
+  return interface;
 }
 

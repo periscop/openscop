@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                        extension_id.c                           **
+     **                          interface.c                            **
      **-----------------------------------------------------------------**
      **                   First version: 15/07/2011                     **
      **-----------------------------------------------------------------**
@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 
 /*+***************************************************************************
@@ -72,44 +72,44 @@
 
 
 /**
- * openscop_extension_id_idump function:
- * this function displays an openscop_extension_id_t structure (*id) into a
- * file (file, possibly stdout) in a way that trends to be understandable. It
- * includes an indentation level (level) in order to work with others
+ * openscop_interface_idump function:
+ * this function displays an openscop_interface_t structure (*interface) into
+ * a file (file, possibly stdout) in a way that trends to be understandable.
+ * It includes an indentation level (level) in order to work with others
  * print_structure functions.
- * \param file         The file where the information has to be printed.
- * \param extension_id The extension_id structure which has to be printed.
- * \param level        Number of spaces before printing, for each line.
+ * \param file      The file where the information has to be printed.
+ * \param interface The interface structure which has to be printed.
+ * \param level     Number of spaces before printing, for each line.
  */
-void openscop_extension_id_idump(FILE * file, openscop_extension_id_p id,
-                                 int level) {
+void openscop_interface_idump(FILE * file, openscop_interface_p interface,
+                              int level) {
   int j, first = 1;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (id != NULL)
-    fprintf(file, "+-- openscop_extension_id_t: URI = %s\n", id->URI);
+  if (interface != NULL)
+    fprintf(file, "+-- openscop_interface_t: URI = %s\n", interface->URI);
   else
-    fprintf(file, "+-- NULL extension_id\n");
+    fprintf(file, "+-- NULL interface\n");
 
   
-  while (id != NULL) {
+  while (interface != NULL) {
     if (!first) {
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_extension_id_t: URI = %s\n", id->URI);
+      fprintf(file, "|   openscop_interface_t: URI = %s\n", interface->URI);
     }
     else
       first = 0;
 
-    id = id->next;
+    interface = interface->next;
 
     // Next line.
-    if (id != NULL) {
-      for (j = 0; j <= level+1; j++)
+    if (interface != NULL) {
+      for (j = 0; j <= level + 1; j++)
         fprintf(file, "|\t");
       fprintf(file, "\n");
       for (j = 0; j <= level; j++)
@@ -126,14 +126,14 @@ void openscop_extension_id_idump(FILE * file, openscop_extension_id_p id,
 
 
 /**
- * openscop_extension_id_dump function:
- * this function prints the content of a openscop_extension_id_t structure
- * (*id) into a file (file, possibly stdout).
+ * openscop_interface_dump function:
+ * this function prints the content of a openscop_interface_t structure
+ * (*interface) into a file (file, possibly stdout).
  * \param file  File where informations are printed.
  * \param extension The extension idstructure to print.
  */
-void openscop_extension_id_dump(FILE * file, openscop_extension_id_p id) {
-  openscop_extension_id_idump(file, id, 0); 
+void openscop_interface_dump(FILE * file, openscop_interface_p interface) {
+  openscop_interface_idump(file, interface, 0); 
 }
 
 
@@ -148,87 +148,87 @@ void openscop_extension_id_dump(FILE * file, openscop_extension_id_p id) {
 
 
 /**
- * openscop_extension_id_add function:
- * this function adds an extension id node (it may be a list as well) to a
- * list of extension ids provided as parameter (list). The new node
+ * openscop_interface_add function:
+ * this function adds an interface node (it may be a list as well) to a
+ * list of interfaces provided as parameter (list). The new node
  * is inserted at the end of the list. 
- * \param list The list of extension ids to add a node (NULL if empty).
- * \param id   The extension id to add to the list.
+ * \param list      The list of interfaces to add a node (NULL if empty).
+ * \param interface The interface to add to the list.
  */
-void openscop_extension_id_add(openscop_extension_id_p * list,
-                               openscop_extension_id_p id) {
-  openscop_extension_id_p tmp = *list, check_id;
+void openscop_interface_add(openscop_interface_p * list,
+                            openscop_interface_p interface) {
+  openscop_interface_p tmp = *list, check_interface;
 
-  if (id != NULL) {
-    // First, check that the id list is OK.
-    check_id = id;
-    while (check_id != NULL) {
-      if (check_id->URI == NULL)
-        OPENSCOP_error("no URI in an extension id to add to a list");
+  if (interface != NULL) {
+    // First, check that the interface list is OK.
+    check_interface = interface;
+    while (check_interface != NULL) {
+      if (check_interface->URI == NULL)
+        OPENSCOP_error("no URI in an interface to add to a list");
 
-      if (openscop_extension_id_lookup(*list, check_id->URI) != NULL)
-        OPENSCOP_error("only one extension with a given URI is allowed");
-      check_id = check_id->next;
+      if (openscop_interface_lookup(*list, check_interface->URI) != NULL)
+        OPENSCOP_error("only one interface with a given URI is allowed");
+      check_interface = check_interface->next;
     }
 
     if (*list != NULL) {
       while (tmp->next != NULL)
         tmp = tmp->next;
-      tmp->next = id;
+      tmp->next = interface;
     }
     else {
-      *list = id;
+      *list = interface;
     }
   }
 }
 
 
 /**
- * openscop_extension_id_malloc function:
- * This function allocates the memory space for a openscop_extension_id_t
+ * openscop_interface_malloc function:
+ * This function allocates the memory space for a openscop_interface_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
- * \return A pointer to an empty extension id structure with fields set to
+ * \return A pointer to an empty interface structure with fields set to
  *         default values.
  */
-openscop_extension_id_p openscop_extension_id_malloc() {
-  openscop_extension_id_p id;
+openscop_interface_p openscop_interface_malloc() {
+  openscop_interface_p interface;
 
-  OPENSCOP_malloc(id, openscop_extension_id_p,
-                  sizeof(openscop_extension_id_t));
-  id->URI    = NULL;
-  id->idump  = NULL; 
-  id->dump   = NULL; 
-  id->sprint = NULL; 
-  id->sread  = NULL; 
-  id->malloc = NULL; 
-  id->free   = NULL; 
-  id->clone  = NULL; 
-  id->equal  = NULL;
-  id->next   = NULL;
+  OPENSCOP_malloc(interface, openscop_interface_p,
+                  sizeof(openscop_interface_t));
+  interface->URI    = NULL;
+  interface->idump  = NULL; 
+  interface->dump   = NULL; 
+  interface->sprint = NULL; 
+  interface->sread  = NULL; 
+  interface->malloc = NULL; 
+  interface->free   = NULL; 
+  interface->clone  = NULL; 
+  interface->equal  = NULL;
+  interface->next   = NULL;
 
-  return id;
+  return interface;
 }
 
 
 /**
- * openscop_extension_id_free function:
- * this function frees the allocated memory for an openscop_extension_id_t
- * structure, and all the ids stored in the list.
- * \param[in] id The pointer to the extension id we want to free.
+ * openscop_interface_free function:
+ * this function frees the allocated memory for an openscop_interface_t
+ * structure, and all the interfaces stored in the list.
+ * \param[in] id The pointer to the interface we want to free.
  */
-void openscop_extension_id_free(openscop_extension_id_p id) {
-  openscop_extension_id_p tmp;
+void openscop_interface_free(openscop_interface_p interface) {
+  openscop_interface_p tmp;
   
-  if (id == NULL)
+  if (interface == NULL)
     return;
 
-  while (id != NULL) {
-    tmp = id->next;
-    if (id->URI != NULL)
-      free(id->URI);
-    free(id);
-    id = tmp;
+  while (interface != NULL) {
+    tmp = interface->next;
+    if (interface->URI != NULL)
+      free(interface->URI);
+    free(interface);
+    interface = tmp;
   }
 }
 
@@ -239,31 +239,31 @@ void openscop_extension_id_free(openscop_extension_id_p id) {
 
 
 /**
- * openscop_extension_id_nclone function:
+ * openscop_interface_nclone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of the
- * n first elements of an openscop_extension_id_t list.
- * \param id The pointer to the extension id structure we want to clone.
- * \param n  The number of nodes of the list we want to copy (-1 for infinity).
- * \return The clone of the n first nodes of the extension id list.
+ * n first elements of an openscop_interface_t list.
+ * \param interface The pointer to the interface structure we want to clone.
+ * \param n         The number of nodes we want to copy (-1 for infinity).
+ * \return The clone of the n first nodes of the interface list.
  */
-openscop_extension_id_p
-openscop_extension_id_nclone(openscop_extension_id_p id, int n) {
-  openscop_extension_id_p clone = NULL, new;
+openscop_interface_p openscop_interface_nclone(openscop_interface_p interface,
+                                               int n) {
+  openscop_interface_p clone = NULL, new;
   int i = 0;
 
-  while ((id != NULL) && ((n == -1) || (i < n))) {
-    new = openscop_extension_id_malloc();
-    new->URI    = strdup(id->URI);
-    new->idump  = id->idump;
-    new->dump   = id->dump;
-    new->sprint = id->sprint;
-    new->sread  = id->sread;
-    new->malloc = id->malloc;
-    new->free   = id->free;
-    new->clone  = id->clone;
-    new->equal  = id->equal;
-    openscop_extension_id_add(&clone, new);
-    id = id->next;
+  while ((interface != NULL) && ((n == -1) || (i < n))) {
+    new = openscop_interface_malloc();
+    new->URI    = strdup(interface->URI);
+    new->idump  = interface->idump;
+    new->dump   = interface->dump;
+    new->sprint = interface->sprint;
+    new->sread  = interface->sread;
+    new->malloc = interface->malloc;
+    new->free   = interface->free;
+    new->clone  = interface->clone;
+    new->equal  = interface->equal;
+    openscop_interface_add(&clone, new);
+    interface = interface->next;
     i++;
   }
 
@@ -272,45 +272,46 @@ openscop_extension_id_nclone(openscop_extension_id_p id, int n) {
 
 
 /**
- * openscop_extension_id_clone function:
+ * openscop_interface_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_extension_id_t data structure.
- * \param extension The pointer to the extension id structure we want to copy.
- * \return A pointer to the copy of the extension id structure.
+ * openscop_interface_t data structure.
+ * \param interface The pointer to the interface structure we want to copy.
+ * \return A pointer to the copy of the interface structure.
  */
-openscop_extension_id_p
-openscop_extension_id_clone(openscop_extension_id_p id) {
+openscop_interface_p
+openscop_interface_clone(openscop_interface_p interface) {
 
-  return openscop_extension_id_nclone(id, -1);
+  return openscop_interface_nclone(interface, -1);
 }
 
 
 /**
- * openscop_extension_id_equal function:
- * this function returns true if the two extension id structures are the same,
- * false otherwise. 
- * \param id1  The first extension id structure.
- * \param id2  The second extension id structure.
- * \return 1 if id1 and id2 are the same (content-wise), 0 otherwise.
+ * openscop_interface_equal function:
+ * this function returns true if the two interface structures are the same,
+ * (content-wise) false otherwise. 
+ * \param interface1 The first interface structure.
+ * \param interface2 The second interface structure.
+ * \return 1 if interface1 and interface2 are the same, 0 otherwise.
  */
-int openscop_extension_id_equal(openscop_extension_id_p id1,
-                                openscop_extension_id_p id2) {
+int openscop_interface_equal(openscop_interface_p interface1,
+                             openscop_interface_p interface2) {
 
-  if (id1 == id2)
+  if (interface1 == interface2)
     return 1;
   
-  if (((id1 == NULL) && (id2 != NULL)) || ((id1 != NULL) && (id2 == NULL)))
+  if (((interface1 == NULL) && (interface2 != NULL)) ||
+      ((interface1 != NULL) && (interface2 == NULL)))
     return 0;
 
-  if (strcmp(id1->URI, id2->URI) ||
-      (id1->idump  != id2->idump)  ||
-      (id1->dump   != id2->dump)   ||
-      (id1->sprint != id2->sprint) ||
-      (id1->sread  != id2->sread)  ||
-      (id1->malloc != id2->malloc) ||
-      (id1->free   != id2->free)   ||
-      (id1->clone  != id2->clone)  ||
-      (id1->equal  != id2->equal))
+  if (strcmp(interface1->URI, interface2->URI)   ||
+      (interface1->idump  != interface2->idump)  ||
+      (interface1->dump   != interface2->dump)   ||
+      (interface1->sprint != interface2->sprint) ||
+      (interface1->sread  != interface2->sread)  ||
+      (interface1->malloc != interface2->malloc) ||
+      (interface1->free   != interface2->free)   ||
+      (interface1->clone  != interface2->clone)  ||
+      (interface1->equal  != interface2->equal))
     return 0;
 
   return 1;
@@ -318,16 +319,16 @@ int openscop_extension_id_equal(openscop_extension_id_p id1,
 
 
 /**
- * openscop_extension_id_lookup function:
- * this function returns the first extension id with a given URI in the
- * extension list provided as parameter and NULL if it doesn't find such
- * an extension id.
- * \param list The extension id list where to search a given extension URI.
- * \param URI  The URI of the extension id we are looking for.
- * \return The first extension id of the requested URI in the list.
+ * openscop_interface_lookup function:
+ * this function returns the first interface with a given URI in the
+ * interface list provided as parameter and NULL if it doesn't find such
+ * an interface.
+ * \param list The interface list where to search a given interface URI.
+ * \param URI  The URI of the interface we are looking for.
+ * \return The first interface of the requested URI in the list.
  */
-openscop_extension_id_p
-openscop_extension_id_lookup(openscop_extension_id_p list, char * URI) {
+openscop_interface_p
+openscop_interface_lookup(openscop_interface_p list, char * URI) {
   while (list != NULL) {
     if ((list->URI != NULL) && (!strcmp(list->URI, URI)))
       return list;

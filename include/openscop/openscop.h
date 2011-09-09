@@ -73,7 +73,7 @@
 # include <openscop/vector.h>
 # include <openscop/relation.h>
 # include <openscop/relation_list.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # include <openscop/extensions/textual.h>
 # include <openscop/extensions/comment.h>

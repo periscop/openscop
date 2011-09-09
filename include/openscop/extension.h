@@ -66,7 +66,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -80,7 +80,7 @@ extern "C"
  * extensions.
  */
 struct openscop_extension {
-  openscop_extension_id_p id;       /**< This extension's identity. */
+  openscop_interface_p interface;   /**< This extension's interface. */
   void * extension;                 /**< Pointer to the extension itself. */
   struct openscop_extension * next; /**< Pointer to the next extension. */
 };
@@ -99,8 +99,8 @@ void openscop_extension_print(FILE *, openscop_extension_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_extension_p openscop_extension_sread(char *, openscop_extension_id_p);
-openscop_extension_p openscop_extension_read(FILE *, openscop_extension_id_p);
+openscop_extension_p openscop_extension_sread(char *, openscop_interface_p);
+openscop_extension_p openscop_extension_read(FILE *, openscop_interface_p);
 
 
 /*+***************************************************************************

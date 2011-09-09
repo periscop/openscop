@@ -66,7 +66,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -116,7 +116,7 @@ void openscop_comment_free(openscop_comment_p);
  *****************************************************************************/
 openscop_comment_p openscop_comment_clone(openscop_comment_p);
 int openscop_comment_equal(openscop_comment_p, openscop_comment_p);
-openscop_extension_id_p openscop_comment_generate_id();
+openscop_interface_p openscop_comment_interface();
 
 
 # if defined(__cplusplus)

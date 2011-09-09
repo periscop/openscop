@@ -90,7 +90,7 @@ libopenscop_la_SOURCES 	=      \
 	extensions/arrays.c    \
 	extensions/lines.c     \
 	extensions/irregular.c \
-	extension_id.c         \
+	interface.c            \
 	extension.c            \
 	relation.c             \
 	relation_list.c        \

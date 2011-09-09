@@ -66,7 +66,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/strings.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -142,7 +142,7 @@ openscop_irregular_p openscop_irregular_add_exit(openscop_irregular_p,
                                   char**, int, char*);
 openscop_irregular_p openscop_irregular_add_predicates(openscop_irregular_p,
                                   int*, int);
-openscop_extension_id_p openscop_irregular_generate_id();
+openscop_interface_p openscop_irregular_interface();
 
 
 # if defined(__cplusplus)

@@ -66,7 +66,7 @@
 
 # include <openscop/macros.h>
 # include <openscop/strings.h>
-# include <openscop/extension_id.h>
+# include <openscop/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -121,7 +121,7 @@ void              openscop_arrays_free(openscop_arrays_p);
 openscop_arrays_p openscop_arrays_clone(openscop_arrays_p);
 int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
 char **           openscop_arrays_generate_names(openscop_arrays_p, int *);
-openscop_extension_id_p openscop_arrays_generate_id();
+openscop_interface_p openscop_arrays_interface();
 
 # if defined(__cplusplus)
   }
