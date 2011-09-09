@@ -410,6 +410,8 @@ char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
     }
 
     // Fill the missing names.
+    // TODO : update this with the new openscop_strings_t
+    /*
     tmpnames = openscop_strings_generate("A_", *nb_names);
     for (i = 0; i < *nb_names; i++) {
       if (names[i] == NULL || names[i][0] == '\0')
@@ -418,6 +420,7 @@ char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
 	free(tmpnames[i]);      // Use a read name.
     }
     free(tmpnames);
+    */
   }
 
   return names;

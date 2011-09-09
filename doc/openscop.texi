@@ -20,8 +20,8 @@
 
 @set EDITION 1.0
 @set SPEC_VERSION 1.0
-@set LIB_VERSION 0.5.0
-@set UPDATED June 24 2011
+@set LIB_VERSION 0.6.0
+@set UPDATED September 13 2011
 @setchapternewpage odd
 
 @c % This is to ask for A4 instead of Letter size document.
@@ -1851,10 +1851,9 @@ representation (@pxref{OpenScop Core Part File Format Specification}).
 @menu
 * openscop_relation_t::
 * openscop_relation_list_t::
-* openscop_body_t::
-* openscop_statement_t::
 * openscop_interface_t::
-* openscop_extension_t::
+* openscop_generic_t::
+* openscop_statement_t::
 * openscop_scop_t::
 @end menu
 
@@ -1926,64 +1925,6 @@ linked list of @code{openscop_relation_t} data structures.
 @code{elt} is a relation element of the list and @code{next} is the pointer to
 the next element of the list.
 
-@node openscop_body_t
-@subsubsection openscop_body_t
-
-@example
-@group
-struct openscop_body @{
-  int type;          /* Type of iterators and expressions */
-  void ** iterators; /* NULL-terminated array of original iterators */
-  void * expression; /* Original statement expression */
-@};
-typedef struct openscop_body   openscop_body_t;
-typedef struct openscop_body * openscop_body_p;
-@end group
-@end example
-
-@noindent The @code{openscop_body_t} structure stores a statement body.
-The @code{expression} field contains the information about the
-statement in the original program. The @code{iterators} field is a
-NULL-terminated array of iterators surrounding the original statement
-in the original program. The order matters: @code{iterators[0]} corresponds
-to the outermost loop iterator for the statement, @code{iterators[1]}
-corresponds to the second outermost loop iterator, and so on.
-Statement body information may be strings of characters
-@code{(char *)} or a generic pointer to anything else @code{(void *)}
-depending on the value of the @code{type} field: 1 (OPENSCOP_TYPE_STRING)
-means the information is textual while 0 (OPENSCOP_TYPE_GENERIC)
-means the information is generic.
-
-@node openscop_statement_t
-@subsubsection openscop_statement_t
-
-@example
-@group
-struct openscop_statement @{
-  openscop_relation_p domain;       /* Iteration domain */
-  openscop_relation_p scattering;   /* Scattering relation */
-  openscop_relation_list_p access;  /* Array access relations */
-  openscop_body_p body;             /* Statement body information */
-  void * usr;                       /* A user-defined field */
-  struct openscop_statement * next; /* Next statement in the list */
-@};
-typedef struct openscop_statement   openscop_statement_t;
-typedef struct openscop_statement * openscop_statement_p;
-@end group
-@end example
-
-@noindent The @code{openscop_statement_t} structure represents a node
-in a @code{NULL}-terminated linked list of statements. Each node contains the
-useful information for a given statement to process it within a polyhedral
-framework. The order in the list may matter for naming conventions
-(e.g. "S1" for the first statement in the list). The iteration domain
-and the scattering are represented using an @code{openscop_relation_p}
-structure while the accesses are using a list of
-relations: one for each memory access in the statement. The
-@code{body} field provides information about the statement body. It is
-possible to use the @code{usr} field, but it has to be totally managed
-by the user.
-
 @node openscop_interface_t
 @subsubsection openscop_interface_t
 
@@ -2024,27 +1965,64 @@ functions in the OpenScop Library description (@pxref{Base Functions})
 and the section dedicated to writing extensions
 (@pxref{Extension Development}).
 
-@node openscop_extension_t
-@subsubsection openscop_extension_t
+@node openscop_generic_t
+@subsubsection openscop_generic_t
 
 @example
 @group
-struct openscop_extension @{
-  openscop_interface_p interface;   /* This extension's interface */
-  void * extension;                 /* Pointer to the extension itself */
-  struct openscop_extension * next; /* Next extension in the list */
+struct openscop_generic @{
+  void * data;                    /* Pointer to some data. */
+  openscop_interface_p interface; /* Interface to work with the data. */
+  struct openscop_generic * next; /* Pointer to the next generic. */
 @};
-typedef struct openscop_extension   openscop_extension_t;
-typedef struct openscop_extension * openscop_extension_p;
+typedef struct openscop_generic   openscop_generic_t;
+typedef struct openscop_generic * openscop_generic_p;
 @end group
 @end example
 
-@noindent The @code{openscop_extension_t} structure represents a node in a
-@code{NULL}-terminated list of extensions. It stores an extension to the core
-OpenScop representation. The @code{interface} field gives the interface of what
-is pointed by the @code{extension} field. An OpenScop implementation is not
-required to support any extension. It must warn the user that a given identity
-is not supported and ignore it during the processing.
+@noindent The @code{openscop_generic_t} structure represents a node in a
+@code{NULL}-terminated list of generic elements. It stores some data
+and operations with no pre-defined type. The information is accessible
+through the @code{data} pointer while the type and operations are
+accessible through the @code{interface} pointer. It is used to represent
+data that are allowed to differ in implementations, such as symbols and
+extensions.
+
+@node openscop_statement_t
+@subsubsection openscop_statement_t
+
+@example
+@group
+struct openscop_statement @{
+  openscop_relation_p domain;       /* Iteration domain */
+  openscop_relation_p scattering;   /* Scattering relation */
+  openscop_relation_list_p access;  /* List of array access relations */
+  openscop_generic_p iterators;     /* Original iterators */
+  openscop_generic_p expression;    /* Original statement expression */
+  void * usr;                       /* A user-defined field */
+  struct openscop_statement * next; /* Next statement in the list */
+@};
+typedef struct openscop_statement   openscop_statement_t;
+typedef struct openscop_statement * openscop_statement_p;
+@end group
+@end example
+
+@noindent The @code{openscop_statement_t} structure represents a node
+in a @code{NULL}-terminated linked list of statements. Each node contains the
+useful information for a given statement to process it within a polyhedral
+framework. The order in the list may matter for naming conventions
+(e.g. "S1" for the first statement in the list). The iteration domain
+and the scattering are represented using an @code{openscop_relation_p}
+structure while the accesses are using a list of
+relations: one for each memory access in the statement.
+The @code{expression} and @code{iterators} provide information about
+the statement body. The @code{expression} field contains the information
+about the statement expression in the original program. The @code{iterators}
+field contains the information about the iterators surrounding the original
+statement in the original program (at the code generation step, they should be
+replaced from the original statement expression with the generated iterators).
+It is also possible to use the @code{usr} field, but it has to be totally managed
+by the user.
 
 @node openscop_scop_t
 @subsubsection openscop_scop_t
@@ -2054,11 +2032,10 @@ struct openscop_scop @{
   int version;                      /* Version of the data structure */
   char * language;                  /* Target language */
   openscop_relation_p context;      /* Constraints on the parameters */
-  int parameter_type;               /* Type of the parameters */
-  void ** parameters;               /* NULL-terminated array of parameters*/
+  openscop_generic_p parameters;    /* Information about parameters */
   openscop_statement_p statement;   /* Statement list */
   openscop_interface_p registry;    /* Registered extension interfaces */
-  openscop_extension_p extension;   /* Extension list */
+  openscop_generic_p extension;     /* Extension list */
   void * usr;                       /* A user-defined field */
   struct openscop_scop * next;      /* Next scop in the list */
 @};
@@ -2076,22 +2053,22 @@ now (and hopefully a very, very, long time).
 It contains the informations about the context: the target language
 in the @code{language} field, the constraints on the
 global parameters in the @code{context} field and the parameters
-in the @code{parameters} field. The order matters: @code{parameters[0]}
-corresponds to the first parameter column in the context and the
-relation, @code{parameters[1]} corresponds to the second one, and so on.
-The parameter information can be either
-generic (@code{void *}) or textual (@code{char *}) depending on the
-@code{parameter_type} field: 1 (OPENSCOP_TYPE_STRING)
-means the information is textual while 0 (OPENSCOP_TYPE_GENERIC)
-means the information is generic. Finally, it contains the list of
-statements @code{statement}, the list of registered extension interfaces
-@code{registry} and the list of extentions @code{extension}.
+in the @code{parameters} field. The parameter information is generic
+and may be manipulated during the code generation step. 
+Finally, it contains the list of statements @code{statement}, the list
+of registered extension interfaces @code{registry} and the list of
+extentions @code{extension}.
+It is also possible to use the @code{usr} field, but it has to be
+totally managed by the user.
 
 As an example, let us consider again the matrix multiply program
 (@pxref{Preliminary Example}).
 The next figure gives a possible representation in memory for this
 SCoP thanks to the OpenScop data structures (it has been actually printed
-by the @code{openscop_scop_dump} function):
+by the @code{openscop_scop_dump} function), note that symbols like
+parameters, original iterators and statement expression are represented
+with an @code{openscop_strings_t} which does not belong to the
+specification but to the OpenScop Library implementation:
 
 @c @smallexample
 @example
@@ -2101,22 +2078,27 @@ by the @code{openscop_scop_dump} function):
 |    |    
 |    Language: C
 |    |    
-|    +-- openscop_relation_t (CONTEXT, 64 bits)
+|    +-- openscop_relation_t (CONTEXT, 32 bits)
 |    |    1 3 0 0 0 1
 |    |    [   1   1  -1 ]
 |    |    
-|    +-- parameters: N
+|    +-- openscop_generic_t
+|    |    |    
+|    |    +-- openscop_interface_t: URI = strings
+|    |    |    
+|    |    +-- openscop_strings_t: N
+|    |    |    
 |    |    
 |    +-- openscop_statement_t (S1)
 |    |    |    
-|    |    +-- openscop_relation_t (DOMAIN, 64 bits)
+|    |    +-- openscop_relation_t (DOMAIN, 32 bits)
 |    |    |    4 5 2 0 0 1
 |    |    |    [   1   1   0   0   0 ]
 |    |    |    [   1  -1   0   1  -1 ]
 |    |    |    [   1   0   1   0   0 ]
 |    |    |    [   1   0  -1   1  -1 ]
 |    |    |    
-|    |    +-- openscop_relation_t (SCATTERING, 64 bits)
+|    |    +-- openscop_relation_t (SCATTERING, 32 bits)
 |    |    |    5 10 5 2 0 1
 |    |    |    [   0  -1   0   0   0   0   0   0   0   0 ]
 |    |    |    [   0   0  -1   0   0   0   1   0   0   0 ]
@@ -2126,24 +2108,31 @@ by the @code{openscop_scop_dump} function):
 |    |    |    
 |    |    +-- openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (WRITE, 64 bits)
+|    |    |    +-- openscop_relation_t (WRITE, 32 bits)
 |    |    |    |    3 8 3 2 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   1   0   0 ]
 |    |    |    |    
 |    |    |    
-|    |    +-- openscop_body_t
+|    |    +-- openscop_generic_t
 |    |    |    |    
-|    |    |    +-- original iterator strings: i j
+|    |    |    +-- openscop_interface_t: URI = strings
 |    |    |    |    
-|    |    |    +-- Original expression: C[i][j] = 0.0;
+|    |    |    +-- openscop_strings_t: i j
+|    |    |    |    
+|    |    |    
+|    |    +-- openscop_generic_t
+|    |    |    |    
+|    |    |    +-- openscop_interface_t: URI = strings
+|    |    |    |    
+|    |    |    +-- openscop_strings_t: C[i][j] = 0.0;
 |    |    |    |    
 |    |    |    
 |    |    V
 |    |  openscop_statement_t (S2)
 |    |    |    
-|    |    +-- openscop_relation_t (DOMAIN, 64 bits)
+|    |    +-- openscop_relation_t (DOMAIN, 32 bits)
 |    |    |    6 6 3 0 0 1
 |    |    |    [   1   1   0   0   0   0 ]
 |    |    |    [   1  -1   0   0   1  -1 ]
@@ -2152,7 +2141,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    [   1   0   0   1   0   0 ]
 |    |    |    [   1   0   0  -1   1  -1 ]
 |    |    |    
-|    |    +-- openscop_relation_t (SCATTERING, 64 bits)
+|    |    +-- openscop_relation_t (SCATTERING, 32 bits)
 |    |    |    7 13 7 3 0 1
 |    |    |    [   0  -1   0   0   0   0   0   0   0   0   0   0   0 ]
 |    |    |    [   0   0  -1   0   0   0   0   0   1   0   0   0   0 ]
@@ -2164,7 +2153,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    
 |    |    +-- openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (WRITE, 64 bits)
+|    |    |    +-- openscop_relation_t (WRITE, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
@@ -2173,7 +2162,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    V
 |    |    |  openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ, 64 bits)
+|    |    |    +-- openscop_relation_t (READ, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
@@ -2182,7 +2171,7 @@ by the @code{openscop_scop_dump} function):
 |    |    |    V
 |    |    |  openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ, 64 bits)
+|    |    |    +-- openscop_relation_t (READ, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   2 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
@@ -2191,24 +2180,31 @@ by the @code{openscop_scop_dump} function):
 |    |    |    V
 |    |    |  openscop_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ, 64 bits)
+|    |    |    +-- openscop_relation_t (READ, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   3 ]
 |    |    |    |    [   0   0  -1   0   0   0   1   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   1   0   0   0 ]
 |    |    |    |    
 |    |    |    
-|    |    +-- openscop_body_t
+|    |    +-- openscop_generic_t
 |    |    |    |    
-|    |    |    +-- original iterator strings: i j k
+|    |    |    +-- openscop_interface_t: URI = strings
 |    |    |    |    
-|    |    |    +-- Original expression: C[i][j] = C[i][j] + A[i][k]*B[k][j];
+|    |    |    +-- openscop_strings_t: i j k
+|    |    |    |    
+|    |    |    
+|    |    +-- openscop_generic_t
+|    |    |    |    
+|    |    |    +-- openscop_interface_t: URI = strings
+|    |    |    |    
+|    |    |    +-- openscop_strings_t: C[i][j] = C[i][j] + A[i][k]*B[k][j];
 |    |    |    |    
 |    |    |    
 |    |    
 |    +-- NULL interface
 |    |    
-|    +-- NULL extension
+|    +-- NULL generic
 |    |    
 |    
 @end example
@@ -2243,10 +2239,9 @@ XML-like tags corresponding to its URI (e.g., if the extension has the URI
 @code{foo}, the begin tag is @code{<foo>} and the end tag is @code{</foo>}).
 There is no specification or preferred way to write the extension body.
 Extensions in an OpenScop data structure must be accessible through one
-pointer. This pointer will be stored in the @code{extension}
-field of an @code{openscop_extension_t} container. There must be only
-one extension with the same URI in an OpenScop file or data
-structure.
+pointer. This pointer will be stored in the @code{data}
+field of an @code{openscop_generic_t} container. There must be only
+one extension with the same URI in an OpenScop file or data structure.
 
 Extension writers may write a short documentation about their extension to
 be added to this document. For consistency reason, this
@@ -2271,8 +2266,7 @@ particular, the sender fully accepts the license and copyright notice.
 @subsection Comment Extension
 
 @itemize @bullet
-@item Number: @code{2}.
-@item Name: @code{comment}.
+@item URI: @code{comment}.
 @item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
 @item Purpose: the @code{comment} extension stores a textual string.
 @end itemize
@@ -2324,8 +2318,7 @@ typedef struct openscop_comment * openscop_comment_p;
 @subsection Arrays Extension
 
 @itemize @bullet
-@item Number: @code{3}.
-@item Name: @code{arrays}.
+@item URI: @code{arrays}.
 @item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
 @item Purpose: the @code{arrays} extension provides a set of textual array
 names corresponding to the array identifiers used in the access relations.
@@ -2578,23 +2571,13 @@ openscop_@emph{structure}_p openscop_@emph{structure}_read(FILE * input);
 @end example
 
 @noindent Each OpenScop data structure has a reading function
-as shown above (except one, see below). It reads the content of an OpenScop
+as shown above. It reads the content of an OpenScop
 data structure written according to the OpenScop file format 
 (@pxref{OpenScop Core Part File Format Specification}) from 
 the @code{input} file (the file, possibly @code{stdin}, has to be open
 for reading). It returns a pointer to a freshly allocated 
 @code{openscop_@emph{structure}_t} structure containing the
 information.
-
-The reading function corresponding to the
-@code{openscop_body_t} has an additional parameter corresponding to
-the number of loops surrounding the statement @code{nb_iterators}:
-
-@example
-@group
-openscop_body_p openscop_body_read(FILE * input, int nb_iterators);
-@end group
-@end example
 
 @node Allocating
 @subsection Allocating: openscop_@emph{structure}_malloc

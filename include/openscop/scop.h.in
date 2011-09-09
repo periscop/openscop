@@ -77,8 +77,6 @@
 # include <openscop/macros.h>
 # include <openscop/util.h>
 # include <openscop/strings.h>
-# include <openscop/body.h>
-# include <openscop/names.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
 # include <openscop/interface.h>
@@ -89,7 +87,7 @@
 # include <openscop/extensions/lines.h>
 # include <openscop/extensions/irregular.h>
 
-# include <openscop/extension.h>
+# include <openscop/generic.h>
 # include <openscop/statement.h>
 
 
@@ -109,17 +107,17 @@ extern "C"
  * copy etc. must be done externally.
  */
 struct openscop_scop {
-  int version;                      /**< Version of the data structure */
-  char * language;                  /**< Target language (backend) */
-  openscop_relation_p context;      /**< Constraints on the SCoP parameters */
-  int parameter_type;               /**< Parameter type */
-  void ** parameters;               /**< NULL-terminated array of parameters */
-  openscop_statement_p statement;   /**< Statement list of the SCoP */
-  openscop_interface_p registry;    /**< Registered extensions interfaces */
-  openscop_extension_p extension;   /**< List of extensions */
-  void * usr;                       /**< A user-defined field, not touched
-				         AT ALL by the OpenScop Library */
-  struct openscop_scop * next;      /**< Next statement in the linked list */
+  int version;                    /**< Version of the data structure */
+  char * language;                /**< Target language (backend) */
+  openscop_relation_p context;    /**< Constraints on the SCoP parameters */
+  int parameter_type;             /**< Parameter type */
+  openscop_generic_p parameters;  /**< NULL-terminated array of parameters */
+  openscop_statement_p statement; /**< Statement list of the SCoP */
+  openscop_interface_p registry;  /**< Registered extensions interfaces */
+  openscop_generic_p extension;   /**< List of extensions */
+  void * usr;                     /**< A user-defined field, not touched
+				       AT ALL by the OpenScop Library */
+  struct openscop_scop * next;    /**< Next statement in the linked list */
 };
 typedef struct openscop_scop   openscop_scop_t;
 typedef struct openscop_scop * openscop_scop_p;

@@ -75,19 +75,18 @@
 
 /**
  * openscop_statement_idump function:
- * Displays a openscop_statement_t structure (*statement) into a file (file,
- * possibly stdout) in a way that trends to be understandable without falling
- * in a deep depression or, for the lucky ones, getting a headache... It
- * includes an indentation level (level) in order to work with others
- * print_structure functions.
- * \param file      File where informations are printed.
- * \param statement The statement whose information have to be printed.
- * \param level     Number of spaces before printing, for each line.
+ * this function displays an openscop_statement_t structure (*statement) into
+ * a file (file, possibly stdout) in a way that trends to be understandable.
+ * It includes an indentation level (level) in order to work with others
+ * dumping functions.
+ * \param[in] file      File where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
+ * \param[in] level     Number of spaces before printing, for each line.
  */
 void openscop_statement_idump(FILE * file,
                               openscop_statement_p statement,
                               int level) {
-  int i, j, first = 1, number = 1;
+  int j, first = 1, number = 1;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
@@ -109,26 +108,24 @@ void openscop_statement_idump(FILE * file,
       first = 0;
 
     // A blank line.
-    for (j = 0; j <= level+1; j++)
+    for (j = 0; j <= level + 1; j++)
       fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print the domain of the statement.
-    openscop_relation_idump(file, statement->domain, level+1);
+    openscop_relation_idump(file, statement->domain, level + 1);
 
     // Print the scattering of the statement.
-    openscop_relation_idump(file, statement->scattering, level+1);
+    openscop_relation_idump(file, statement->scattering, level + 1);
 
     // Print the array access information of the statement.
-    openscop_relation_list_idump(file, statement->access, level+1);
+    openscop_relation_list_idump(file, statement->access, level + 1);
 
-    // Print the statement body information.
-    openscop_body_idump(file, statement->body, level+1);
+    // Print the original iterator names.
+    openscop_generic_idump(file, statement->iterators, level + 1);
 
-    // A blank line.
-    for (i = 0; i <= level+1; i++)
-      fprintf(file, "|\t");
-    fprintf(file, "\n");
+    // Print the original body expression.
+    openscop_generic_idump(file, statement->expression, level + 1);
 
     statement = statement->next;
     number++;
@@ -150,10 +147,10 @@ void openscop_statement_idump(FILE * file,
 
 /**
  * openscop_statement_dump function:
- * This function prints the content of a openscop_statement_t structure
+ * this function prints the content of an openscop_statement_t structure
  * (*statement) into  a file (file, possibly stdout).
- * \param file      File where informations are printed.
- * \param statement The statement whose information have to be printed.
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
  */
 void openscop_statement_dump(FILE * file, openscop_statement_p statement) {
   openscop_statement_idump(file, statement, 0);
@@ -162,16 +159,13 @@ void openscop_statement_dump(FILE * file, openscop_statement_p statement) {
 
 /**
  * openscop_statement_print function:
- * This function prints the content of a openscop_statement_t structure
+ * this function prints the content of an openscop_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
- * \param file      File where informations are printed.
- * \param statement The statement whose information have to be printed.
- * \param names     The textual names of the various elements.
- *                  Set to NULL if printing comments is not needed.
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
  */
 void openscop_statement_print(FILE * file,
-                              openscop_statement_p statement,
-                              openscop_names_p names) {
+                              openscop_statement_p statement) {
   int nb_relations, number = 1;
 
   while (statement != NULL) {
@@ -192,22 +186,35 @@ void openscop_statement_print(FILE * file,
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
-    openscop_relation_print(file, statement->domain, names);
+    openscop_relation_print(file, statement->domain);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.2 Scattering\n", number);
-    openscop_relation_print(file, statement->scattering, names);
+    openscop_relation_print(file, statement->scattering);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.3 Access\n", number);
-    openscop_relation_list_print_elts(file, statement->access, names);
+    openscop_relation_list_print_elts(file, statement->access);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
-    openscop_body_print(file, statement->body);
+    if (openscop_generic_hasURI(statement->expression, OPENSCOP_URI_STRINGS)) {
+      fprintf(file, "# Statement body is provided\n");
+      fprintf(file, "1\n");
+      if (openscop_generic_hasURI(statement->iterators,OPENSCOP_URI_STRINGS)) {
+        fprintf(file, "# Original iterators\n");
+        openscop_generic_print(file, statement->iterators);
+      }
+      fprintf(file, "# Body expression\n");
+      openscop_generic_print(file, statement->expression);
+    }
+    else {
+      fprintf(file, "# Statement body is not provided\n");
+      fprintf(file, "0\n");
+    }
 
     fprintf(file, "\n\n");
     statement = statement->next;
@@ -227,8 +234,8 @@ void openscop_statement_print(FILE * file,
  * convenient fields of a statement structure: it extracts the domain,
  * the scattering and the access list and store them accordingly in the
  * statement structure provided as a parameter.
- * \param stmt The statement where to dispatch the relations.
- * \param list The "brute" relation list to sort and dispatch (freed).
+ * \param[in,out] stmt The statement where to dispatch the relations.
+ * \param[in,out] list The "brute" relation list to sort and dispatch (freed).
  */
 static
 void openscop_statement_dispatch(openscop_statement_p stmt,
@@ -281,15 +288,17 @@ void openscop_statement_dispatch(openscop_statement_p stmt,
 
 /**
  * openscop_statement_read function:
- * This function reads a openscop_statement_t structure from an input stream
+ * this function reads an openscop_statement_t structure from an input stream
  * (possibly stdin).
- * \param file The input stream.
+ * \param[in] file The input stream.
  * \return A pointer to the statement structure that has been read.
  */
 openscop_statement_p openscop_statement_read(FILE * file) {
+  int nb_iterators;
+  char buffer[OPENSCOP_MAX_STRING], * start, * end;
   openscop_statement_p stmt = openscop_statement_malloc();
   openscop_relation_list_p list;
-  int expected_nb_iterators;
+  openscop_interface_p interface;
 
   if (file) {
     // Read all statement relations.
@@ -300,13 +309,37 @@ openscop_statement_p openscop_statement_read(FILE * file) {
 
     // Read the body information.
     if (stmt->domain != NULL) {
-      expected_nb_iterators = stmt->domain->nb_output_dims;
+      nb_iterators = stmt->domain->nb_output_dims;
     }
     else {
       OPENSCOP_warning("no domain, assuming 0 original iterator");
-      expected_nb_iterators = 0;
+      nb_iterators = 0;
     }
-    stmt->body = openscop_body_read(file, expected_nb_iterators);
+
+    if (openscop_util_read_int(file, NULL) > 0) {
+      // Read the original iterator names.
+      if (nb_iterators > 0) {
+        interface = openscop_strings_interface();
+        start = openscop_util_skip_blank_and_comments(file, buffer);
+        stmt->iterators = openscop_generic_sread(start, interface);
+        openscop_interface_free(interface);
+      }
+      
+      // Read the body:
+      // - Skip blank/commented lines and spaces before the body.
+      start = openscop_util_skip_blank_and_comments(file, buffer);
+      
+      // - Remove the comments after the body.
+      end = start;
+      while ((*end != '#') && (*end != '\n'))
+        end++;
+      *end = '\0';
+      
+      // - Build the body.
+      stmt->expression = openscop_generic_malloc();
+      stmt->expression->interface = openscop_strings_interface();
+      stmt->expression->data = openscop_strings_encapsulate(strdup(start));
+    }
   }
 
   return stmt;
@@ -320,7 +353,7 @@ openscop_statement_p openscop_statement_read(FILE * file) {
 
 /**
  * openscop_statement_malloc function:
- * This function allocates the memory space for a openscop_statement_t
+ * this function allocates the memory space for an openscop_statement_t
  * structure and sets its fields with default values. Then it returns a pointer
  * to the allocated space.
  * \return A pointer to an empty statement with fields set to default values.
@@ -333,7 +366,8 @@ openscop_statement_p openscop_statement_malloc() {
   statement->domain     = NULL;
   statement->scattering = NULL;
   statement->access     = NULL;
-  statement->body       = NULL;
+  statement->iterators  = NULL;
+  statement->expression = NULL;
   statement->next       = NULL;
 
   return statement;
@@ -342,9 +376,9 @@ openscop_statement_p openscop_statement_malloc() {
 
 /**
  * openscop_statement_free function:
- * This function frees the allocated memory for a openscop_statement_t
+ * this function frees the allocated memory for an openscop_statement_t
  * structure.
- * \param statement The pointer to the statement we want to free.
+ * \param[in,out] statement The pointer to the statement we want to free.
  */
 void openscop_statement_free(openscop_statement_p statement) {
   openscop_statement_p next;
@@ -354,7 +388,8 @@ void openscop_statement_free(openscop_statement_p statement) {
     openscop_relation_free(statement->domain);
     openscop_relation_free(statement->scattering);
     openscop_relation_list_free(statement->access);
-    openscop_body_free(statement->body);
+    openscop_generic_free(statement->iterators);
+    openscop_generic_free(statement->expression);
 
     free(statement);
     statement = next;
@@ -369,10 +404,10 @@ void openscop_statement_free(openscop_statement_p statement) {
 
 /**
  * openscop_statement_add function:
- * This function adds a statement "statement" at the end of the statement
+ * this function adds a statement "statement" at the end of the statement
  * list pointed by "location".
- * \param location  Address of the first element of the statement list.
- * \param statement The statement to add to the list.
+ * \param[in,out] location  Address of the first element of the statement list.
+ * \param[in]     statement The statement to add to the list.
  */
 void openscop_statement_add(openscop_statement_p * location,
                             openscop_statement_p   statement) {
@@ -385,9 +420,9 @@ void openscop_statement_add(openscop_statement_p * location,
 
 /**
  * openscop_statement_number function:
- * This function returns the number of statements in the statement list
+ * this function returns the number of statements in the statement list
  * provided as parameter.
- * \param statement The first element of the statement list.
+ * \param[in] statement The first element of the statement list.
  * \return The number of statements in the statement list.
  */
 int openscop_statement_number(openscop_statement_p statement) {
@@ -403,26 +438,27 @@ int openscop_statement_number(openscop_statement_p statement) {
 
 /**
  * openscop_statement_clone function:
- * This functions builds and returns a "hard copy" (not a pointer copy) of a
+ * This functions builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_statement_t data structure provided as parameter.
- * \param statement  The pointer to the statement we want to copy.
- * \return A pointer to the full copy of the statement provided as parameter.
+ * \param[in] statement The pointer to the statement we want to clone.
+ * \return A pointer to the clone of the statement provided as parameter.
  */
 openscop_statement_p openscop_statement_clone(openscop_statement_p statement) {
   int first = 1;
-  openscop_statement_p copy = NULL, node, previous = NULL;
+  openscop_statement_p clone = NULL, node, previous = NULL;
 
   while (statement != NULL) {
-    node               = openscop_statement_malloc();
-    node->domain       = openscop_relation_clone(statement->domain);
-    node->scattering   = openscop_relation_clone(statement->scattering);
-    node->access       = openscop_relation_list_clone(statement->access);
-    node->body         = openscop_body_clone(statement->body);
-    node->next         = NULL;
+    node             = openscop_statement_malloc();
+    node->domain     = openscop_relation_clone(statement->domain);
+    node->scattering = openscop_relation_clone(statement->scattering);
+    node->access     = openscop_relation_list_clone(statement->access);
+    node->iterators  = openscop_generic_clone(statement->iterators);
+    node->expression = openscop_generic_clone(statement->expression);
+    node->next       = NULL;
     
     if (first) {
       first = 0;
-      copy = node;
+      clone = node;
       previous = node;
     }
     else {
@@ -433,16 +469,16 @@ openscop_statement_p openscop_statement_clone(openscop_statement_p statement) {
     statement = statement->next;
   }
 
-  return copy;
+  return clone;
 }
 
 
 /**
  * openscop_statement_equal function:
- * This function returns true if the two statements are the same, false
- * otherwise (the usr field is not tested).
- * \param s1 The first statement.
- * \param s2 The second statement.
+ * this function returns true if the two statements provided as parameters
+ * are the same, false otherwise (the usr field is not tested).
+ * \param[in] s1 The first statement.
+ * \param[in] s2 The second statement.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
 int openscop_statement_equal(openscop_statement_p s1,
@@ -452,18 +488,42 @@ int openscop_statement_equal(openscop_statement_p s1,
     return 1;
   
   if (((s1->next != NULL) && (s2->next == NULL)) ||
-      ((s1->next == NULL) && (s2->next != NULL)))
+      ((s1->next == NULL) && (s2->next != NULL))) {
+    OPENSCOP_info("statements are not the same"); 
     return 0;
+  }
 
-  if ((s1->next != NULL) && (s2->next != NULL))
-    if (!openscop_statement_equal(s1->next, s2->next))
+  if ((s1->next != NULL) && (s2->next != NULL)) {
+    if (!openscop_statement_equal(s1->next, s2->next)) {
+      OPENSCOP_info("number of statements is not the same"); 
       return 0;
+    }
+  }
     
-  if ((!openscop_relation_equal(s1->domain,      s2->domain))     ||
-      (!openscop_relation_equal(s1->scattering,  s2->scattering)) ||
-      (!openscop_relation_list_equal(s1->access, s2->access))     ||
-      (!openscop_body_equal(s1->body, s2->body)))
+  if (!openscop_relation_equal(s1->domain, s2->domain)) {
+    OPENSCOP_info("statement domains are not the same"); 
     return 0;
+  }
+
+  if (!openscop_relation_equal(s1->scattering, s2->scattering)) {
+    OPENSCOP_info("statement scatterings are not the same"); 
+    return 0;
+  }
+
+  if (!openscop_relation_list_equal(s1->access, s2->access)) {
+    OPENSCOP_info("statement accesses are not the same"); 
+    return 0;
+  }
+
+  if (!openscop_generic_equal(s1->iterators, s2->iterators)) {
+    OPENSCOP_info("statement original iterators are not the same"); 
+    return 0;
+  }
+
+  if (!openscop_generic_equal(s1->expression, s2->expression)) {
+    OPENSCOP_info("statement expressions are not the same"); 
+    return 0;
+  }
 
   return 1;
 }
@@ -471,12 +531,12 @@ int openscop_statement_equal(openscop_statement_p s1,
 
 /**
  * openscop_statement_integrity_check function:
- * This function checks that a statement is "well formed" according to some
+ * this function checks that a statement is "well formed" according to some
  * expected properties (setting an expected value to OPENSCOP_UNDEFINED means
  * that we do not expect a specific value). It returns 0 if the check failed
  * or 1 if no problem has been detected.
- * \param statement               The statement we want to check.
- * \param expected_nb_parameters  Expected number of parameters.
+ * \param[in] statement              The statement we want to check.
+ * \param[in] expected_nb_parameters Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
 int openscop_statement_integrity_check(openscop_statement_p statement,
@@ -518,8 +578,15 @@ int openscop_statement_integrity_check(openscop_statement_p statement,
     }
 
     // Check the statement body.
-    if (!openscop_body_integrity_check(statement->body,
-                                           expected_nb_iterators)) {
+    if ((expected_nb_iterators != OPENSCOP_UNDEFINED) &&
+        (statement->iterators != NULL) &&
+        (statement->iterators->interface != NULL) &&
+        (statement->iterators->interface->URI != NULL) &&
+        (strcmp(statement->iterators->interface->URI,
+                OPENSCOP_URI_STRINGS) == 0) &&
+        (expected_nb_iterators !=
+         openscop_strings_size(statement->iterators->data))) {
+      OPENSCOP_warning("unexpected number of original iterators");
       return 0;
     }
 

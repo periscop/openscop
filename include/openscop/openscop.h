@@ -69,7 +69,6 @@
 # include <openscop/int.h>
 # include <openscop/util.h>
 # include <openscop/strings.h>
-# include <openscop/body.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
 # include <openscop/relation_list.h>
@@ -81,7 +80,7 @@
 # include <openscop/extensions/lines.h>
 # include <openscop/extensions/irregular.h>
 
-# include <openscop/extension.h>
+# include <openscop/generic.h>
 # include <openscop/statement.h>
 # include <openscop/scop.h>
 

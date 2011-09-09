@@ -66,7 +66,6 @@
 
 # include <stdio.h>
 # include <openscop/macros.h>
-# include <openscop/names.h>
 # include <openscop/vector.h>
 # include <openscop/relation.h>
 
@@ -95,10 +94,8 @@ typedef struct openscop_relation_list * openscop_relation_list_p;
  *****************************************************************************/
 void openscop_relation_list_idump(FILE *, openscop_relation_list_p, int);
 void openscop_relation_list_dump(FILE *, openscop_relation_list_p);
-void openscop_relation_list_print_elts(FILE *, openscop_relation_list_p,
-                                  openscop_names_p);
-void openscop_relation_list_print(FILE *, openscop_relation_list_p,
-                                  openscop_names_p);
+void openscop_relation_list_print_elts(FILE *, openscop_relation_list_p);
+void openscop_relation_list_print(FILE *, openscop_relation_list_p);
 
 
 /*****************************************************************************

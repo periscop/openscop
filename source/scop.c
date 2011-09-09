@@ -133,10 +133,7 @@ void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
     openscop_relation_idump(file, scop->context, level+1);
 
     // Print the parameters.
-    openscop_strings_idump(file,
-        (scop->parameter_type == OPENSCOP_TYPE_STRING) ? 
-            (char **)scop->parameters : NULL,
-        level, "parameters");
+    openscop_generic_idump(file, scop->parameters, level+1);
 
     // Print the statements.
     openscop_statement_idump(file, scop->statement, level+1);
@@ -145,14 +142,9 @@ void openscop_scop_idump(FILE * file, openscop_scop_p scop, int level) {
     openscop_interface_idump(file, scop->registry, level+1);
 
     // Print the extensions.
-    openscop_extension_idump(file, scop->extension, level+1);
+    openscop_generic_idump(file, scop->extension, level+1);
 
     scop = scop->next;
-
-    // A blank line.
-    for (j = 0; j <= level+1; j++)
-      fprintf(file, "|\t");
-    fprintf(file, "\n");
 
     // Next line.
     if (scop != NULL) {
@@ -310,6 +302,7 @@ openscop_names_p openscop_scop_full_names(openscop_scop_p scop) {
 }
 #endif
 
+
 /**
  * openscop_scop_print function:
  * this function prints the content of an openscop_scop_t structure (*scop)
@@ -340,21 +333,23 @@ void openscop_scop_print(FILE * file, openscop_scop_p scop) {
     fprintf(file, "%s\n\n", scop->language);
 
     fprintf(file, "# Context\n");
-    openscop_relation_print(file, scop->context, NULL);
+    openscop_relation_print(file, scop->context);
     fprintf(file, "\n");
 
-    openscop_strings_print(file, (char **)scop->parameters, 1,
-        (scop->parameter_type == OPENSCOP_TYPE_STRING), "Parameters");
+    openscop_util_print_provided(file,
+        openscop_generic_hasURI(scop->parameters, OPENSCOP_URI_STRINGS),
+        "Parameters are");
+    openscop_generic_print(file, scop->parameters);
 
     fprintf(file, "# Number of statements\n");
     fprintf(file, "%d\n\n",openscop_statement_number(scop->statement));
 
-    openscop_statement_print(file, scop->statement, NULL);
+    openscop_statement_print(file, scop->statement);
 
     if (scop->extension) {
       fprintf(file, "# =============================================== "
                     "Extensions\n");
-      openscop_extension_print(file, scop->extension);
+      openscop_generic_print(file, scop->extension);
     }
     fprintf(file, "\n"OPENSCOP_TAG_END_SCOP"\n\n");
     
@@ -382,8 +377,11 @@ openscop_scop_p openscop_scop_read(FILE * file) {
   openscop_scop_p list = NULL, current = NULL, scop;
   openscop_statement_p stmt = NULL;
   openscop_statement_p prev = NULL;
-  int nb_statements, nb_parameters;
-  char * tmp, ** language;
+  openscop_interface_p interface;
+  openscop_strings_p language;
+  int nb_statements;
+  char buffer[OPENSCOP_MAX_STRING];
+  char * tmp, * start;
   int first = 1;
   int i;
 
@@ -415,8 +413,10 @@ openscop_scop_p openscop_scop_read(FILE * file) {
     if (openscop_strings_size(language) > 1)
       OPENSCOP_warning("uninterpreted information (after language)");
 
-    scop->language = *language;
-    free(language);
+    if (language != NULL) {
+      scop->language = strdup(language->string[0]);
+      openscop_strings_free(language);
+    }
 
     // Read the context domain.
     scop->context = openscop_relation_read(file);
@@ -424,11 +424,10 @@ openscop_scop_p openscop_scop_read(FILE * file) {
     // Read the parameters.
     scop->parameter_type = OPENSCOP_TYPE_STRING;
     if (openscop_util_read_int(file, NULL) > 0) {
-      scop->parameters = (void **)openscop_strings_read(file);
-      nb_parameters = openscop_strings_size((char **)scop->parameters);
-      if ((scop->context != NULL) &&
-          (nb_parameters != scop->context->nb_parameters))
-        OPENSCOP_warning("bad number of parameters");
+      interface = openscop_strings_interface();
+      start = openscop_util_skip_blank_and_comments(file, buffer);
+      scop->parameters = openscop_generic_sread(start, interface);
+      openscop_interface_free(interface);
     }
 
     //
@@ -453,7 +452,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
     //
 
     // Read up the end tag (if any), and store extensions.
-    scop->extension = openscop_extension_read(file, scop->registry);
+    scop->extension = openscop_generic_read(file, scop->registry);
 
     // Add the new scop to the list.
     if (first) {
@@ -533,12 +532,11 @@ void openscop_scop_free(openscop_scop_p scop) {
   while (scop != NULL) {
     if (scop->language != NULL)
       free(scop->language);
-    if (scop->parameter_type == OPENSCOP_TYPE_STRING)
-      openscop_strings_free((char **)scop->parameters);
+    openscop_generic_free(scop->parameters);
     openscop_relation_free(scop->context);
     openscop_statement_free(scop->statement);
     openscop_interface_free(scop->registry);
-    openscop_extension_free(scop->extension);
+    openscop_generic_free(scop->extension);
 
     tmp = scop->next;
     free(scop);
@@ -571,12 +569,10 @@ openscop_scop_p openscop_scop_clone(openscop_scop_p scop) {
       node->language     = strdup(scop->language);
     node->context        = openscop_relation_clone(scop->context);
     node->parameter_type = scop->parameter_type;
-    if (node->parameter_type == OPENSCOP_TYPE_STRING)
-      node->parameters   = (void **)openscop_strings_clone(
-                               (char **)scop->parameters);
+    node->parameters     = openscop_generic_clone(scop->parameters);
     node->statement      = openscop_statement_clone(scop->statement);
     node->registry       = openscop_interface_clone(scop->registry);
-    node->extension      = openscop_extension_clone(scop->extension);
+    node->extension      = openscop_generic_clone(scop->extension);
     
     if (first) {
       first = 0;
@@ -629,9 +625,7 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
       return 0;
     }
 
-    if ((s1->parameter_type == OPENSCOP_TYPE_STRING) &&
-        (!openscop_strings_equal((char **)s1->parameters,
-                                 (char **)s2->parameters))) {
+    if (!openscop_generic_equal(s1->parameters, s2->parameters)) {
       OPENSCOP_info("parameters are not the same"); 
       return 0;
     }
@@ -646,7 +640,7 @@ int openscop_scop_equal(openscop_scop_p s1, openscop_scop_p s2) {
       return 0;
     }
 
-    if (!openscop_extension_equal(s1->extension, s2->extension)) {
+    if (!openscop_generic_equal(s1->extension, s2->extension)) {
       OPENSCOP_info("extensions are not the same"); 
       return 0;
     }
@@ -693,6 +687,8 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
       expected_nb_parameters = scop->context->nb_parameters;
     else
       expected_nb_parameters = OPENSCOP_UNDEFINED;
+    
+    // TODO : check the number of parameter strings.
 
     if (!openscop_statement_integrity_check(scop->statement,
                                             expected_nb_parameters))
@@ -716,17 +712,17 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
  */
 void openscop_scop_register_extension(openscop_scop_p scop,
                                       openscop_interface_p interface) {
-  openscop_extension_p textual, new;
+  openscop_generic_p textual, new;
   char * extension_string;
 
   if ((interface != NULL) && (scop != NULL)) {
     openscop_interface_add(&scop->registry, interface);
 
-    textual = openscop_extension_lookup(scop->extension, interface->URI);
+    textual = openscop_generic_lookup(scop->extension, interface->URI);
     if (textual != NULL) {
-      extension_string = ((openscop_textual_p)textual->extension)->textual;
-      new = openscop_extension_sread(extension_string, interface);
-      openscop_extension_add(&scop->extension, new);
+      extension_string = ((openscop_textual_p)textual->data)->textual;
+      new = openscop_generic_sread(extension_string, interface);
+      openscop_generic_add(&scop->extension, new);
     }
   }
 }

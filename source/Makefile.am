@@ -91,14 +91,12 @@ libopenscop_la_SOURCES 	=      \
 	extensions/lines.c     \
 	extensions/irregular.c \
 	interface.c            \
-	extension.c            \
+	generic.c              \
 	relation.c             \
 	relation_list.c        \
-	body.c                 \
 	vector.c               \
 	strings.c              \
 	int.c                  \
-	names.c                \
 	util.c
 
 AM_CFLAGS = -Wall -fomit-frame-pointer -g

@@ -300,3 +300,22 @@ int openscop_util_get_precision() {
 }
 
 
+/**
+ * openscop_util_print_provided function:
+ * this function prints a "provided" boolean in a file (file, possibly stdout),
+ * with a comment title according to the OpenScop specification.
+ * \param[in] file     File where the information has to be printed.
+ * \param[in] provided The provided boolean to print.
+ * \param[in] title    A string to use as a title for the provided booblean.
+ */
+void openscop_util_print_provided(FILE * file, int provided, char * title) {
+  if (provided) {
+    fprintf(file, "# %s provided\n", title);
+    fprintf(file, "1\n");
+  }
+  else {
+    fprintf(file, "# %s not provided\n", title);
+    fprintf(file, "0\n\n");
+  }
+}
+

@@ -66,48 +66,57 @@
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
+# include <openscop/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
   {
 # endif
 
+# define OPENSCOP_URI_STRINGS "strings"
 
 /* The "strings" type is simply a NULL-terminated array of C character
- * strings, i.e. a char **.
- *
- * Note: we did not typedef an openscop_strings_t type because it does not
- * work exactly as other OpenScop types (base functions may be slightly
- * different and it would be necessary to cast it to/from void *) which would
- * not be consistent with other OpenScop types.
+ * strings, i.e. a char **. It is encapsulated into a structure to allow
+ * it manipulation through a generic type.
  */
+struct openscop_strings {
+  char ** string; /**< NULL-terminated array of character strings */
+};
+typedef struct openscop_strings   openscop_strings_t;
+typedef struct openscop_strings * openscop_strings_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void    openscop_strings_idump(FILE *, char **, int, char *);
-void    openscop_strings_print(FILE *, char **, int, int, char *);
+void openscop_strings_idump(FILE *, openscop_strings_p, int);
+void openscop_strings_dump(FILE *, openscop_strings_p);
+char * openscop_strings_sprint(openscop_strings_p);
+void openscop_strings_print(FILE *, openscop_strings_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-char ** openscop_strings_read(FILE *);
+openscop_strings_p openscop_strings_sread(char *);
+openscop_strings_p openscop_strings_read(FILE *);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-char ** openscop_strings_generate(char *, int);
-void    openscop_strings_free(char **);
+openscop_strings_p openscop_strings_malloc();
+void openscop_strings_free(openscop_strings_p);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-char ** openscop_strings_clone(char **);
-int     openscop_strings_equal(char **, char **);
-void    openscop_strings_complete(char ***, char *, int);
-int     openscop_strings_size(char **);
+openscop_strings_p openscop_strings_clone(openscop_strings_p);
+int openscop_strings_equal(openscop_strings_p, openscop_strings_p);
+openscop_strings_p openscop_strings_encapsulate(char *);
+openscop_interface_p openscop_strings_interface();
+openscop_strings_p openscop_strings_generate(char *, int);
+void  openscop_strings_complete(openscop_strings_p *, char *, int);
+int openscop_strings_size(openscop_strings_p);
 
 
 # if defined(__cplusplus)

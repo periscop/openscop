@@ -151,12 +151,9 @@ void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
  * list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
- * \param names The textual names of the various elements.
- *              Set to NULL if printing comments is not needed.
  */
 void openscop_relation_list_print_elts(FILE * file,
-                                       openscop_relation_list_p list,
-                                       openscop_names_p names) {
+                                       openscop_relation_list_p list) {
   int i;
   openscop_relation_list_p head = list;
 
@@ -168,7 +165,7 @@ void openscop_relation_list_print_elts(FILE * file,
     i = 0;
     while (head) {
       if (head->elt != NULL) {
-        openscop_relation_print(file, head->elt, names);
+        openscop_relation_print(file, head->elt);
         if (head->next != NULL)
           fprintf(file, "\n");
         i++;
@@ -189,12 +186,9 @@ void openscop_relation_list_print_elts(FILE * file,
  * an element of the list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
- * \param names The textual names of the various elements.
- *              Set to NULL if printing comments is not needed.
  */
 void openscop_relation_list_print(FILE * file,
-                                  openscop_relation_list_p list,
-                                  openscop_names_p names) {
+                                  openscop_relation_list_p list) {
   int i;
 
   // Count the number of elements in the list with non-NULL content.
@@ -207,7 +201,7 @@ void openscop_relation_list_print(FILE * file,
     fprintf(file,"# List of %d element \n%d\n", i, i);
 
   // Print each element of the relation list.
-  openscop_relation_list_print_elts(file, list, names);
+  openscop_relation_list_print_elts(file, list);
 }
 
 

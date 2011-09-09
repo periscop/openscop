@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          extension.h                            **
+     **                           generic.h                             **
      **-----------------------------------------------------------------**
      **                   First version: 26/11/2010                     **
      **-----------------------------------------------------------------**
@@ -61,8 +61,8 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_EXTENSION_H
-# define OPENSCOP_EXTENSION_H
+#ifndef OPENSCOP_generic_H
+# define OPENSCOP_generic_H
 
 # include <openscop/macros.h>
 # include <openscop/util.h>
@@ -75,54 +75,54 @@ extern "C"
 
 
 /**
- * The openscop_extension_t structure stores an extension to the core
- * OpenScop representation. It is a node of a NULL-terminated linked list of
- * extensions.
+ * The openscop_generic_t structure stores OpenScop data and operations with
+ * no pre-defined type. The information is accessible through the data pointer
+ * while the type and operations are accessible through the interface pointer.
+ * A generic is a also a node of a NULL-terminated linked list of generics.
  */
-struct openscop_extension {
-  openscop_interface_p interface;   /**< This extension's interface. */
-  void * extension;                 /**< Pointer to the extension itself. */
-  struct openscop_extension * next; /**< Pointer to the next extension. */
+struct openscop_generic {
+  void * data;                    /**< Pointer to the data. */
+  openscop_interface_p interface; /**< Interface to work with the data. */
+  struct openscop_generic * next; /**< Pointer to the next generic. */
 };
-typedef struct openscop_extension   openscop_extension_t;
-typedef struct openscop_extension * openscop_extension_p;
+typedef struct openscop_generic   openscop_generic_t;
+typedef struct openscop_generic * openscop_generic_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_extension_idump(FILE *, openscop_extension_p, int);
-void openscop_extension_dump(FILE *, openscop_extension_p);
-void openscop_extension_print(FILE *, openscop_extension_p);
+void openscop_generic_idump(FILE *, openscop_generic_p, int);
+void openscop_generic_dump(FILE *, openscop_generic_p);
+void openscop_generic_print(FILE *, openscop_generic_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_extension_p openscop_extension_sread(char *, openscop_interface_p);
-openscop_extension_p openscop_extension_read(FILE *, openscop_interface_p);
+openscop_generic_p openscop_generic_sread(char *, openscop_interface_p);
+openscop_generic_p openscop_generic_read(FILE *, openscop_interface_p);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void openscop_extension_add(openscop_extension_p*, openscop_extension_p);
-openscop_extension_p openscop_extension_malloc();
-void openscop_extension_free(openscop_extension_p);
+void openscop_generic_add(openscop_generic_p*, openscop_generic_p);
+openscop_generic_p openscop_generic_malloc();
+void openscop_generic_free(openscop_generic_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_extension_p openscop_extension_clone(openscop_extension_p);
-int openscop_extension_equal(openscop_extension_p, openscop_extension_p);
-void * openscop_extension_lookup(openscop_extension_p, char *);
-
-
+openscop_generic_p openscop_generic_clone(openscop_generic_p);
+int openscop_generic_equal(openscop_generic_p, openscop_generic_p);
+int openscop_generic_hasURI(openscop_generic_p, char *);
+void * openscop_generic_lookup(openscop_generic_p, char *);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_EXTENSION_H */
+#endif /* define OPENSCOP_generic_H */

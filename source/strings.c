@@ -78,35 +78,352 @@
  * stdout) in a way that trends to be understandable. It includes an
  * indentation level (level) in order to work with others
  * print_structure functions.
- * \param[in] file       The file where the information has to be printed.
- * \param[in] strings    The array of strings that has to be printed.
- * \param[in] level      Number of spaces before printing, for each line.
- * \param[in] title      A string to use as a title for the array of strings.
+ * \param[in] file    The file where the information has to be printed.
+ * \param[in] strings The array of strings that has to be printed.
+ * \param[in] level   Number of spaces before printing, for each line.
  */
-void openscop_strings_idump(FILE * file, char ** strings, int level,
-                            char * title) {
+void openscop_strings_idump(FILE * file, openscop_strings_p strings,
+                            int level) {
   int i, nb_strings;
   
-  for (i = 0; i <= level; i++)
+  for (i = 0; i < level; i++)
     fprintf(file, "|\t");
   
-  if ((strings != NULL) &&
-      ((nb_strings = openscop_strings_size(strings)) > 0)) {
-    fprintf(file, "+-- %s:", title);
+  if (strings != NULL) {
+    nb_strings = openscop_strings_size(strings);
+    fprintf(file, "+-- openscop_strings_t:");
     for (i = 0; i < nb_strings; i++)
-      fprintf(file, " %s", strings[i]);
+      fprintf(file, " %s", strings->string[i]);
     fprintf(file, "\n");
   }
   else
-    fprintf(file, "+-- No %s\n", title);
+    fprintf(file, "+-- NULL strings\n");
 
   // A blank line.
-  for (i = 0; i <= level+1; i++)
+  for (i = 0; i <= level; i++)
     fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
 
+/**
+ * openscop_strings_dump function:
+ * this function prints the content of an openscop_strings_t structure
+ * (*strings) into a file (file, possibly stdout).
+ * \param[in] file    The file where the information has to be printed.
+ * \param[in] strings The strings structure which has to be printed.
+ */
+void openscop_strings_dump(FILE * file, openscop_strings_p strings) {
+  openscop_strings_idump(file, strings, 0);
+}
+
+
+/**
+ * openscop_strings_sprint function:
+ * this function prints the content of an openscop_strings_t structure
+ * (*strings) into a string (returned) in the OpenScop textual format.
+ * \param[in] strings The strings structure which has to be printed.
+ * \return A string containing the OpenScop dump of the strings structure.
+ */
+char * openscop_strings_sprint(openscop_strings_p strings) {
+  int i;
+  int high_water_mark = OPENSCOP_MAX_STRING;
+  char * string = NULL;
+  char * buffer;
+
+  if (strings != NULL) {
+    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
+    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
+    string[0] = '\0';
+   
+    // Print the begin tag.
+    for (i = 0; i < openscop_strings_size(strings); i++) {
+      sprintf(buffer, "%s", strings->string[i]);
+      openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+      if (i < openscop_strings_size(strings) - 1)
+        openscop_util_safe_strcat(&string, " ", &high_water_mark);
+    }
+    sprintf(buffer, "\n");
+    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    free(buffer);
+  }
+
+  return string;
+}
+
+
+/**
+ * openscop_strings_print function:
+ * this function prints the content of an openscop_strings_t structure
+ * (*body) into a file (file, possibly stdout) in the OpenScop format.
+ * \param file[in]    File where informations are printed.
+ * \param strings[in] The strings whose information has to be printed.
+ */
+void openscop_strings_print(FILE * file, openscop_strings_p strings) {
+  char * string;
+  
+  string = openscop_strings_sprint(strings);
+  if (string != NULL) {
+    fprintf(file, "%s", string);
+    free(string);
+  }
+}
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+
+
+/**
+ * openscop_strings_sread function:
+ * this function reads a strings structure from a string complying to the
+ * OpenScop textual format and returns a pointer to this strings structure.
+ * The input string should only contain the list of strings this function
+ * has to read (comments at the end of the line are accepted).
+ * \param[in] input The input string where to find a strings structure.
+ * \return A pointer to the strings structure that has been read.
+ */
+openscop_strings_p openscop_strings_sread(char * input) {
+  char tmp[OPENSCOP_MAX_STRING];
+  char * s;
+  char ** string = NULL;
+  int nb_strings;
+  int i, count;
+  openscop_strings_p strings = NULL;
+
+  // Count the actual number of strings.
+  nb_strings = 0;
+  s = input;
+  while (1) {
+    for (count = 0; *s && ! isspace(*s) && *s != '#'; count++)
+      s++;
+    
+    if (count != 0)
+      nb_strings++;
+
+    if ((*s == '#') || (*s == '\n'))
+      break;
+    else
+      ++s;
+  }
+
+  if (nb_strings > 0) {
+    // Allocate the array of strings. Make it NULL-terminated.
+    OPENSCOP_malloc(string, char **, sizeof(char *) * (nb_strings + 1));
+    string[nb_strings] = NULL;
+
+    // Read the desired number of strings.
+    s = input;
+    for (i = 0; i < nb_strings; i++) {
+      for (count = 0; *s && ! isspace(*s) && *s != '#'; count++)
+	tmp[count] = *(s++);
+      tmp[count] = '\0';
+      string[i] = strdup(tmp);
+      if (string[i] == NULL)
+        OPENSCOP_error("memory overflow");
+      if (*s != '#')
+	++s;
+    }
+
+    // Build the strings structure
+    strings = openscop_strings_malloc();
+    strings->string = string;
+  }
+
+  return strings;
+}
+
+
+/**
+ * openscop_strings_read function.
+ * this function reads a strings structure from a file (possibly stdin)
+ * complying to the OpenScop textual format and returns a pointer to this
+ * structure.
+ * parameter nb_strings).
+ * \param[in] file The file where to read the strings structure.
+ * \return The strings structure that has been read.
+ */
+openscop_strings_p openscop_strings_read(FILE * file) {
+  char buffer[OPENSCOP_MAX_STRING], * start;
+  openscop_strings_p strings;
+
+  start = openscop_util_skip_blank_and_comments(file, buffer);
+  strings = openscop_strings_sread(start);
+
+  return strings;
+}
+  
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+
+
+/**
+ * openscop_strings_malloc function:
+ * This function allocates the memory space for an openscop_strings_t
+ * structure and sets its fields with default values. Then it returns a
+ * pointer to the allocated space.
+ * \return A pointer to an empty strings structure with fields set to
+ *         default values.
+ */
+openscop_strings_p openscop_strings_malloc() {
+  openscop_strings_p strings;
+
+  OPENSCOP_malloc(strings, openscop_strings_p, sizeof(openscop_strings_t));
+  strings->string = NULL;
+
+  return strings;
+}
+
+
+/**
+ * openscop_strings_free function:
+ * this function frees the allocated memory for a strings data structure.
+ * \param[in] strings The strings structure we want to free.
+ */
+void openscop_strings_free(openscop_strings_p strings) {
+  int i;
+
+  if (strings != NULL) {
+    if (strings->string != NULL) {
+      i = 0;
+      while(strings->string[i] != NULL) {
+        free(strings->string[i]);
+        i++;
+      }
+      free(strings->string);
+    }
+    free(strings);
+  }
+}
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+
+
+/**
+ * openscop_strings_clone internal function.
+ * this function builds and return a "hard copy" (not a pointer copy) of an
+ * strings structure provided as parameter.
+ * \param[in] strings The strings structure to clone.
+ * \return The clone of the strings structure.
+ */
+openscop_strings_p openscop_strings_clone(openscop_strings_p strings) {
+  int i, nb_strings;
+  openscop_strings_p clone = NULL;
+  
+  if (strings == NULL)
+    return NULL;
+
+  clone = openscop_strings_malloc();
+  if ((nb_strings = openscop_strings_size(strings)) == 0)
+    return clone;
+
+  OPENSCOP_malloc(clone->string, char **, (nb_strings + 1) * sizeof(char *));
+  clone->string[nb_strings] = NULL;
+  for (i = 0; i < nb_strings; i++) {
+    clone->string[i] = strdup(strings->string[i]);
+    if (clone->string[i] == NULL)
+      OPENSCOP_error("memory overflow");
+  }
+
+  return clone;
+}
+
+
+/**
+ * openscop_strings_equal function:
+ * this function returns true if the two strings structures are the same
+ * (content-wise), false otherwise.
+ * \param[in] s1 The first strings structure.
+ * \param[in] s2 The second strings structure.
+ * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
+ */
+int openscop_strings_equal(openscop_strings_p s1, openscop_strings_p s2) {
+  int i, nb_s1;
+  
+  if (s1 == s2)
+    return 1;
+
+  if (((s1 == NULL) && (s2 != NULL)) ||
+      ((s1 != NULL) && (s2 == NULL)) ||
+      ((nb_s1 = openscop_strings_size(s1)) != openscop_strings_size(s2)))
+    return 0;
+
+  for (i = 0; i < nb_s1; i++)
+    if (strcmp(s1->string[i], s2->string[i]) != 0)
+      return 0;
+
+  return 1;
+}
+
+
+/**
+ * openscop_strings_size function:
+ * this function returns the number of elements in the NULL-terminated
+ * strings array of the strings structure.
+ * \param[in] strings The strings structure we need to know the size.
+ * \return The number of strings in the strings structure.
+ */
+int openscop_strings_size(openscop_strings_p strings) {
+  int size = 0;
+
+  if ((strings != NULL) && (strings->string != NULL)) {
+    while (strings->string[size] != NULL) {
+      size++;
+    }
+  }
+
+  return size;
+}
+
+
+/**
+ * openscop_strings_encapsulate function:
+ * this function builds a new strings structure to encapsulate the string
+ * provided as a parameter (the reference to this string is used directly).
+ * \param[in] string The string to encapsulate in a strings structure.
+ * \return A new strings structure containing only the provided string.
+ */
+openscop_strings_p openscop_strings_encapsulate(char * string) {
+  openscop_strings_p capsule = openscop_strings_malloc();
+  
+  OPENSCOP_malloc(capsule->string, char **, 2 * sizeof(char *));
+  capsule->string[0] = string;
+  capsule->string[1] = NULL;
+  
+  return capsule;
+}
+
+
+/**
+ * openscop_strings_interface function:
+ * this function creates an interface structure corresponding to the strings
+ * structure and returns it).
+ * \return An interface structure for the strings structure.
+ */
+openscop_interface_p openscop_strings_interface() {
+  openscop_interface_p interface = openscop_interface_malloc();
+  
+  interface->URI    = strdup(OPENSCOP_URI_STRINGS);
+  interface->idump  = (openscop_idump_f)openscop_strings_idump;
+  interface->dump   = (openscop_dump_f)openscop_strings_dump;
+  interface->sprint = (openscop_sprint_f)openscop_strings_sprint;
+  interface->sread  = (openscop_sread_f)openscop_strings_sread;
+  interface->malloc = (openscop_malloc_f)openscop_strings_malloc;
+  interface->free   = (openscop_free_f)openscop_strings_free;
+  interface->clone  = (openscop_clone_f)openscop_strings_clone;
+  interface->equal  = (openscop_equal_f)openscop_strings_equal;
+
+  return interface;
+}
+
+
+#if 0
 /**
  * openscop_strings_print function:
  * this function prints the content of an array of strings
@@ -142,75 +459,6 @@ void openscop_strings_print(FILE * file, char ** strings,
 }
 
 
-/*+***************************************************************************
- *                          Structure display function                       *
- *****************************************************************************/
-
-
-/**
- * openscop_strings_read function.
- * this function reads an array of strings from a file (possibly stdin)
- * complying to the OpenScop textual format and returns a pointer to this
- * array as well as the number of elements of this array (through the
- * parameter nb_strings).
- * \param[in] file       The file where to read the array of strings.
- * \return The array of strings that has been read.
- */
-char ** openscop_strings_read(FILE * file) {
-  char str[OPENSCOP_MAX_STRING];
-  char tmp[OPENSCOP_MAX_STRING];
-  char * s, * start;
-  char ** strings = NULL;
-  int nb_strings;
-  int i, count;
-
-  // Skip blank/commented lines and spaces.
-  start = openscop_util_skip_blank_and_comments(file, str);
-
-  // Count the actual number of strings.
-  nb_strings = 0;
-  s = start;
-  while (1) {
-    for (count = 0; *s && ! isspace(*s) && *s != '#'; count++)
-      s++;
-    
-    if (count != 0)
-      nb_strings++;
-
-    if ((*s == '#') || (*s == '\n'))
-      break;
-    else
-      ++s;
-  }
-
-  if (nb_strings > 0) {
-    // Allocate the array of strings. Make it NULL-terminated.
-    OPENSCOP_malloc(strings, char **, sizeof(char *) * (nb_strings + 1));
-    strings[nb_strings] = NULL;
-
-    // Read the desired number of strings.
-    s = start;
-    for (i = 0; i < nb_strings; i++) {
-      for (count = 0; *s && ! isspace(*s) && *s != '#'; count++)
-	tmp[count] = *(s++);
-      tmp[count] = '\0';
-      strings[i] = strdup(tmp);
-      if (strings[i] == NULL)
-        OPENSCOP_error("memory overflow");
-      if (*s != '#')
-	++s;
-    }
-  }
-
-  return strings;
-}
-
-
-/*+***************************************************************************
- *                    Memory allocation/deallocation function                *
- *****************************************************************************/
-
-
 /**
  * openscop_strings_generate function:
  * This function generates an array of size 'nb_strings' of strings of the
@@ -238,104 +486,6 @@ char ** openscop_strings_generate(char * prefix, int nb_strings) {
   return strings;
 }
 
-
-/**
- * openscop_strings_free function:
- * this function frees the allocated memory for an array of strings.
- * \param[in] strings The array of strings we want to free.
- */
-void openscop_strings_free(char ** strings) {
-  int i;
-
-  if (strings != NULL) {
-    i = 0;
-    while(strings[i] != NULL) {
-      free(strings[i]);
-      i++;
-    }
-    free(strings);
-  }
-}
-
-
-/*+***************************************************************************
- *                            Processing functions                           *
- *****************************************************************************/
-
-
-/**
- * openscop_strings_clone internal function.
- * this function builds and return a "hard copy" (not a pointer copy) of an
- * array of strings provided as parameter.
- * \param[in] strings    The array of strings to clone.
- * \return The clone of the array of strings.
- */
-char ** openscop_strings_clone(char ** strings) {
-  int i, nb_strings;
-  char ** clone;
-  
-  if ((strings == NULL) ||
-      ((nb_strings = openscop_strings_size(strings)) == 0))
-    return NULL;
-
-  OPENSCOP_malloc(clone, char **, (nb_strings + 1) * sizeof(char *));
-  clone[nb_strings] = NULL;
-  for (i = 0; i < nb_strings; i++) {
-    clone[i] = strdup(strings[i]);
-    if (clone[i] == NULL)
-      OPENSCOP_error("memory overflow");
-  }
-
-  return clone;
-}
-
-
-/**
- * openscop_strings_equal function:
- * this function returns true if the two arrays of strings are the same
- * (content-wise), false otherwise.
- * \param[in] s1 The first array of strings.
- * \param[in] s2 The second array of strings.
- * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
- */
-int openscop_strings_equal(char ** s1, char ** s2) {
-  int i, nb_s1;
-  
-  if (s1 == s2)
-    return 1;
-
-  if (((s1 == NULL) && (s2 != NULL)) ||
-      ((s1 != NULL) && (s2 == NULL)) ||
-      ((nb_s1 = openscop_strings_size(s1)) !=
-       openscop_strings_size(s2)))
-    return 0;
-
-  for (i = 0; i < nb_s1; i++)
-    if (strcmp(s1[i], s2[i]) != 0)
-      return 0;
-
-  return 1;
-}
-
-
-/**
- * openscop_strings_size function:
- * this function returns the number of elements in the NULL-terminated
- * strings array.
- * \param[in] strings The array of strings we need to know the size.
- * \return The number of elements in the array of strings.
- */
-int openscop_strings_size(char ** strings) {
-  int size = 0;
-
-  if (strings != NULL) {
-    while(strings[size] != NULL) {
-      size++;
-    }
-  }
-
-  return size;
-}
 
 
 /**
@@ -368,3 +518,4 @@ void openscop_strings_complete(char *** strings, char * prefix,
     free(completion);
   }
 }
+#endif

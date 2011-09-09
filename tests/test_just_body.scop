@@ -28,7 +28,7 @@ CONTEXT
 # NULL Access
 
 # ----------------------------------------------  1.4 Body
-# Statement body is not provided
+# Statement body is provided
 1
 foo = bar;
 

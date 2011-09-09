@@ -67,10 +67,9 @@
 # include <stdio.h>
 # include <openscop/macros.h>
 # include <openscop/util.h>
-# include <openscop/names.h>
-# include <openscop/body.h>
 # include <openscop/relation.h>
 # include <openscop/relation_list.h>
+# include <openscop/generic.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -88,7 +87,8 @@ struct openscop_statement {
   openscop_relation_p domain;       /**< Iteration domain of the statement */
   openscop_relation_p scattering;   /**< Scattering relation of the statement*/
   openscop_relation_list_p access;  /**< Access information */
-  openscop_body_p body;             /**< Statement body information */
+  openscop_generic_p iterators;     /**< Original iterators */
+  openscop_generic_p expression;    /**< Original statement expression */
   void * usr;                       /**< A user-defined field, not touched
 				         AT ALL by the OpenScop Library. */
   struct openscop_statement * next; /**< Next statement in the linked list */
@@ -102,8 +102,7 @@ typedef struct openscop_statement * openscop_statement_p;
  *****************************************************************************/
 void openscop_statement_idump(FILE *, openscop_statement_p, int);
 void openscop_statement_dump(FILE *, openscop_statement_p);
-void openscop_statement_print(FILE *, openscop_statement_p,
-                                       openscop_names_p);
+void openscop_statement_print(FILE *, openscop_statement_p);
 
 
 /*****************************************************************************

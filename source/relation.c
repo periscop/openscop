@@ -566,12 +566,9 @@ void openscop_relation_print_comment(FILE * file,
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information has to be printed.
- * \param[in] names    The textual names of the various elements.
- *                     Set to NULL if printing comments is not needed.
  */
 void openscop_relation_print(FILE * file,
-                             openscop_relation_p relation,
-                             openscop_names_p names) {
+                             openscop_relation_p relation) {
   int i, j;
   int part, nb_parts;
   int printable_comments;
@@ -647,7 +644,7 @@ void openscop_relation_print(FILE * file,
 static
 int openscop_relation_read_type(FILE * file) {
   int type;
-  char ** strings;
+  openscop_strings_p strings;
   
   strings = openscop_strings_read(file);
   if (openscop_strings_size(strings) > 1) {
@@ -656,37 +653,37 @@ int openscop_relation_read_type(FILE * file) {
   if (openscop_strings_size(strings) == 0)
     OPENSCOP_error("no relation type");
  
-  if (!strcmp(strings[0], OPENSCOP_STRING_UNDEFINED)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_UNDEFINED)) {
     type = OPENSCOP_UNDEFINED;
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_CONTEXT)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_CONTEXT)) {
     type = OPENSCOP_TYPE_CONTEXT; 
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_DOMAIN)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_DOMAIN)) {
     type = OPENSCOP_TYPE_DOMAIN; 
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_SCATTERING)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_SCATTERING)) {
     type = OPENSCOP_TYPE_SCATTERING; 
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_READ)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_READ)) {
     type = OPENSCOP_TYPE_READ; 
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_WRITE)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_WRITE)) {
     type = OPENSCOP_TYPE_WRITE; 
     goto return_type;
   }
 
-  if (!strcmp(strings[0], OPENSCOP_STRING_MAY_WRITE)) {
+  if (!strcmp(strings->string[0], OPENSCOP_STRING_MAY_WRITE)) {
     type = OPENSCOP_TYPE_MAY_WRITE; 
     goto return_type;
   }
