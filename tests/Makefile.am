@@ -85,5 +85,16 @@ openscop_test_LDFLAGS  = -L$(top_srcdir)/source
 
 openscop_test_LDADD    = -lopenscop
 
-openscop_test_SOURCES  = openscop_test.c
+openscop_test_SOURCES  =            \
+	openscop_test.c             \
+	polynom.scop                \
+	test_empty_statement.scop   \
+	test_just_access.scop       \
+	test_just_body.scop         \
+	test_just_domain.scop       \
+	test_just_scattering.scop   \
+	test_matmult.scop           \
+	test_no_statement.scop      \
+	test_scop_list.scop
+
 
