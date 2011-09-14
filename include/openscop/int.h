@@ -88,6 +88,7 @@ void   openscop_int_set_si(int, void *, int, int);
 int    openscop_int_get_si(int, void *, int);
 void   openscop_int_init_set_si(int, void *, int, int);
 void   openscop_int_clear(int, void *, int);
+void   openscop_int_free(int, void *, int);
 void   openscop_int_print(FILE *, int, void *, int);
 void   openscop_int_sprint(char *, int, void *, int);
 void   openscop_int_sread(char *, int, void *, int);

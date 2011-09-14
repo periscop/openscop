@@ -309,6 +309,14 @@ void openscop_int_clear(int precision, void * value_base, int value_offset) {
 }
 
 
+void openscop_int_free(int precision, void * value_base, int value_offset) {
+  void * value = openscop_int_address(precision, value_base, value_offset);
+
+  openscop_int_clear(precision, value_base, value_offset);
+  free(value);
+}
+
+
 /**
  * openscop_int_print function:
  * this function displays an integer value into a file (file, possibly stdout).
