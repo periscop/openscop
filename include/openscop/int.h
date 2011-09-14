@@ -70,6 +70,9 @@
 # endif
 
 
+typedef void * openscop_int_p;
+
+
 /*+***************************************************************************
  *                                Basic Functions                            *
  *****************************************************************************/
@@ -79,6 +82,7 @@ void   openscop_int_dump_precision(FILE *, int);
 int    openscop_int_sizeof(int);
 void * openscop_int_address(int, void *, int);
 void   openscop_int_init(int, void *, int);
+void * openscop_int_malloc(int);
 void   openscop_int_assign(int, void *, int, void *, int);
 void   openscop_int_set_si(int, void *, int, int);
 int    openscop_int_get_si(int, void *, int);

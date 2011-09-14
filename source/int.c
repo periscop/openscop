@@ -159,6 +159,34 @@ void openscop_int_init(int precision, void * value_base, int value_offset) {
 }
 
 
+void * openscop_int_malloc(int precision) {
+  void * value;
+
+  switch (precision) {
+    case OPENSCOP_PRECISION_SP:
+      value = malloc(sizeof(long int));
+      break;
+
+    case OPENSCOP_PRECISION_DP:
+      value = malloc(sizeof(long long int));
+      *(long long int *)value = 0;
+      break;
+
+#ifdef OPENSCOP_GMP_IS_HERE
+    case OPENSCOP_PRECISION_MP:
+      value = malloc(sizeof(mpz_t));
+      break;
+#endif
+
+    default:
+      OPENSCOP_error("unknown precision");
+  }
+
+  openscop_int_init(precision, value, 0);
+  return value;
+}
+
+
 void openscop_int_assign(int precision,
                          void * val1_base, int val1_offset,
                          void * val2_base, int val2_offset) {
