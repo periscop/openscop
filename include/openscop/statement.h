@@ -88,7 +88,7 @@ struct openscop_statement {
   openscop_relation_p scattering;   /**< Scattering relation of the statement*/
   openscop_relation_list_p access;  /**< Access information */
   openscop_generic_p iterators;     /**< Original iterators */
-  openscop_generic_p expression;    /**< Original statement expression */
+  openscop_generic_p body;          /**< Original statement body */
   void * usr;                       /**< A user-defined field, not touched
 				         AT ALL by the OpenScop Library. */
   struct openscop_statement * next; /**< Next statement in the linked list */

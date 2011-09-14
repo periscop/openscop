@@ -1998,7 +1998,7 @@ struct openscop_statement @{
   openscop_relation_p scattering;   /* Scattering relation */
   openscop_relation_list_p access;  /* List of array access relations */
   openscop_generic_p iterators;     /* Original iterators */
-  openscop_generic_p expression;    /* Original statement expression */
+  openscop_generic_p body;          /* Original statement body */
   void * usr;                       /* A user-defined field */
   struct openscop_statement * next; /* Next statement in the list */
 @};
@@ -2015,14 +2015,17 @@ framework. The order in the list may matter for naming conventions
 and the scattering are represented using an @code{openscop_relation_p}
 structure while the accesses are using a list of
 relations: one for each memory access in the statement.
-The @code{expression} and @code{iterators} provide information about
-the statement body. The @code{expression} field contains the information
-about the statement expression in the original program. The @code{iterators}
-field contains the information about the iterators surrounding the original
-statement in the original program (at the code generation step, they should be
-replaced from the original statement expression with the generated iterators).
-It is also possible to use the @code{usr} field, but it has to be totally managed
-by the user.
+The @code{body} and @code{iterators} provide information about
+the statement body. Since they are generic types, the specification
+is not strict about how they are used. The recommendation is that the
+@code{body} field should contain the information about the statement
+expression in the original program. The @code{iterators}
+field should contain the information about the iterators surrounding
+the original statement in the original program. The rationale behind this
+is the code generation step should replace the original iterators
+from the original statement expression with the generated iterators.
+It is also possible to use the @code{usr} field, but it has to be
+totally managed by the user.
 
 @node openscop_scop_t
 @subsubsection openscop_scop_t

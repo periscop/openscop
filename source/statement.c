@@ -125,7 +125,7 @@ void openscop_statement_idump(FILE * file,
     openscop_generic_idump(file, statement->iterators, level + 1);
 
     // Print the original body expression.
-    openscop_generic_idump(file, statement->expression, level + 1);
+    openscop_generic_idump(file, statement->body, level + 1);
 
     statement = statement->next;
     number++;
@@ -201,7 +201,7 @@ void openscop_statement_print(FILE * file,
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
-    if (openscop_generic_hasURI(statement->expression, OPENSCOP_URI_STRINGS)) {
+    if (openscop_generic_hasURI(statement->body, OPENSCOP_URI_STRINGS)) {
       fprintf(file, "# Statement body is provided\n");
       fprintf(file, "1\n");
       if (openscop_generic_hasURI(statement->iterators,OPENSCOP_URI_STRINGS)) {
@@ -209,7 +209,7 @@ void openscop_statement_print(FILE * file,
         openscop_generic_print(file, statement->iterators);
       }
       fprintf(file, "# Body expression\n");
-      openscop_generic_print(file, statement->expression);
+      openscop_generic_print(file, statement->body);
     }
     else {
       fprintf(file, "# Statement body is not provided\n");
@@ -336,9 +336,9 @@ openscop_statement_p openscop_statement_read(FILE * file) {
       *end = '\0';
       
       // - Build the body.
-      stmt->expression = openscop_generic_malloc();
-      stmt->expression->interface = openscop_strings_interface();
-      stmt->expression->data = openscop_strings_encapsulate(strdup(start));
+      stmt->body = openscop_generic_malloc();
+      stmt->body->interface = openscop_strings_interface();
+      stmt->body->data = openscop_strings_encapsulate(strdup(start));
     }
   }
 
@@ -367,7 +367,7 @@ openscop_statement_p openscop_statement_malloc() {
   statement->scattering = NULL;
   statement->access     = NULL;
   statement->iterators  = NULL;
-  statement->expression = NULL;
+  statement->body       = NULL;
   statement->next       = NULL;
 
   return statement;
@@ -389,7 +389,7 @@ void openscop_statement_free(openscop_statement_p statement) {
     openscop_relation_free(statement->scattering);
     openscop_relation_list_free(statement->access);
     openscop_generic_free(statement->iterators);
-    openscop_generic_free(statement->expression);
+    openscop_generic_free(statement->body);
 
     free(statement);
     statement = next;
@@ -453,7 +453,7 @@ openscop_statement_p openscop_statement_clone(openscop_statement_p statement) {
     node->scattering = openscop_relation_clone(statement->scattering);
     node->access     = openscop_relation_list_clone(statement->access);
     node->iterators  = openscop_generic_clone(statement->iterators);
-    node->expression = openscop_generic_clone(statement->expression);
+    node->body       = openscop_generic_clone(statement->body);
     node->next       = NULL;
     
     if (first) {
@@ -520,8 +520,8 @@ int openscop_statement_equal(openscop_statement_p s1,
     return 0;
   }
 
-  if (!openscop_generic_equal(s1->expression, s2->expression)) {
-    OPENSCOP_info("statement expressions are not the same"); 
+  if (!openscop_generic_equal(s1->body, s2->body)) {
+    OPENSCOP_info("statement bodies are not the same"); 
     return 0;
   }
 
