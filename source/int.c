@@ -326,30 +326,10 @@ void openscop_int_free(int precision, void * value_base, int value_offset) {
  */
 void openscop_int_print(FILE * file, int precision,
                         void * value_base, int value_offset) {
-  void * value = openscop_int_address(precision, value_base, value_offset);
-            
-  switch (precision) {
-    case OPENSCOP_PRECISION_SP:
-      fprintf(file, OPENSCOP_FMT_SP, *(long int *)value);
-      break;
-
-    case OPENSCOP_PRECISION_DP:
-      fprintf(file, OPENSCOP_FMT_DP, *(long long int *)value);
-      break;
-
-#ifdef OPENSCOP_GMP_IS_HERE
-    case OPENSCOP_PRECISION_MP: {
-      char * str;
-      str = mpz_get_str(0, 10, *(mpz_t *)value); //TODO: 10 -> #define
-      fprintf(file, OPENSCOP_FMT_MP, str);
-      free(str);
-      break;
-    }
-#endif
-
-    default:
-      OPENSCOP_error("unknown precision");
-  }
+  char string[OPENSCOP_MAX_STRING];
+  
+  openscop_int_sprint(string, precision, value_base, value_offset);
+  fprintf(file, "%s", string);
 }
 
 
@@ -659,24 +639,9 @@ int openscop_int_eq(int precision,
 int openscop_int_ne(int precision,
                     void * val1_base, int val1_offset,
                     void * val2_base, int val2_offset) {
-  void * val1 = openscop_int_address(precision, val1_base, val1_offset);
-  void * val2 = openscop_int_address(precision, val2_base, val2_offset);
-
-  switch (precision) {
-    case OPENSCOP_PRECISION_SP:
-      return (*(long int *)val1 != *(long int *)val2);
-
-    case OPENSCOP_PRECISION_DP:
-      return (*(long long int *)val1 != *(long long int *)val2);
-
-#ifdef OPENSCOP_GMP_IS_HERE
-    case OPENSCOP_PRECISION_MP:
-      return (mpz_cmp(*(mpz_t *)val1, *(mpz_t *)val2) != 0);
-#endif
-
-    default:
-      OPENSCOP_error("unknown precision");
-  }
+  return !openscop_int_eq(precision,
+                          val1_base, val1_offset,
+                          val2_base, val2_offset);
 }
 
 
@@ -744,23 +709,8 @@ int openscop_int_zero(int precision, void * value_base, int value_offset) {
 
 
 int openscop_int_notzero(int precision, void * value_base, int value_offset) {
-  void * value = openscop_int_address(precision, value_base, value_offset);
-
-  switch (precision) {
-    case OPENSCOP_PRECISION_SP:
-      return (*(long int *)value != 0);
-
-    case OPENSCOP_PRECISION_DP:
-      return (*(long long int *)value != 0);
-
-#ifdef OPENSCOP_GMP_IS_HERE
-    case OPENSCOP_PRECISION_MP:
-      return (mpz_sgn(*(mpz_t *)value) != 0);
-#endif
-
-    default:
-      OPENSCOP_error("unknown precision");
-  }
+  
+  return !openscop_int_zero(precision, value_base, value_offset);
 }
 
 
