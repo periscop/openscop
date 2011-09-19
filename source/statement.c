@@ -595,3 +595,24 @@ int openscop_statement_integrity_check(openscop_statement_p statement,
 
   return 1;
 }
+
+
+/**
+ * openscop_statement_get_nb_iterators function:
+ * this function returns the number of surroounding iterators of a given
+ * statement.
+ * \param statement The statement we want to know the number of iterators.
+ * \return The number of surrounding iterators for the statement.
+ */
+int openscop_statement_get_nb_iterators(openscop_statement_p statement) {
+
+  if (statement->domain == NULL) {
+    OPENSCOP_warning("no statement domain, assuming 0 iterators");
+    return 0;
+  }
+  else {
+    return statement->domain->nb_output_dims;
+  }
+}
+
+

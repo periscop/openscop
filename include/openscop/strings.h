@@ -112,11 +112,10 @@ void openscop_strings_free(openscop_strings_p);
  *****************************************************************************/
 openscop_strings_p openscop_strings_clone(openscop_strings_p);
 int openscop_strings_equal(openscop_strings_p, openscop_strings_p);
+int openscop_strings_size(openscop_strings_p);
 openscop_strings_p openscop_strings_encapsulate(char *);
 openscop_interface_p openscop_strings_interface();
 openscop_strings_p openscop_strings_generate(char *, int);
-void  openscop_strings_complete(openscop_strings_p *, char *, int);
-int openscop_strings_size(openscop_strings_p);
 
 
 # if defined(__cplusplus)

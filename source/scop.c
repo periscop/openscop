@@ -702,6 +702,24 @@ int openscop_scop_integrity_check(openscop_scop_p scop) {
 
 
 /**
+ * openscop_scop_get_nb_parameters function:
+ * this function returns the number of global parameters of a given SCoP.
+ * \param scop The scop we want to know the number of global parameters.
+ * \return The number of global parameters in the scop.
+ */
+int openscop_scop_get_nb_parameters(openscop_scop_p scop) {
+
+  if (scop->context == NULL) {
+    OPENSCOP_warning("no context domain, assuming 0 parameters");
+    return 0;
+  }
+  else {
+    return scop->context->nb_parameters;
+  }
+}
+
+
+/**
  * openscop_scop_register_extension function:
  * this function registers a list of extension interfaces to a scop, i.e., it
  * adds them to the scop registry. In addition, it will extract extensions

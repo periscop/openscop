@@ -70,6 +70,7 @@
 # include <openscop/util.h>
 # include <openscop/vector.h>
 # include <openscop/strings.h>
+# include <openscop/names.h>
 
 
 # if defined(__cplusplus)
@@ -128,9 +129,9 @@ typedef struct openscop_relation * openscop_relation_p;
 void                openscop_relation_idump(FILE *,
                                         openscop_relation_p, int);
 void                openscop_relation_dump(FILE *, openscop_relation_p);
-//char *              openscop_relation_expression(
-//                                        openscop_relation_p relation,
-//                                        int row, openscop_names_p names);
+char *              openscop_relation_expression(
+                                        openscop_relation_p relation,
+                                        int row, openscop_names_p names);
 void                openscop_relation_print(FILE *, openscop_relation_p);
 
 

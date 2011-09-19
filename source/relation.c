@@ -222,11 +222,10 @@ void openscop_relation_dump(FILE * file, openscop_relation_p relation) {
 }
 
 
-#if 0
 /**
  * openscop_relation_expression_element function:
- * this function returns a string containing the printing of a value (possibly
- * an iterator or a parameter with its coefficient or a constant).
+ * this function returns a string containing the printing of a value (e.g.,
+ * an iterator with its coefficient or a constant).
  * \param[in]     val       Address of the coefficient or constant value.
  * \param[in]     precision The precision of the value.
  * \param[in,out] first     Pointer to a boolean set to 1 if the current value
@@ -249,17 +248,17 @@ char * openscop_relation_expression_element(void * val,
   sval[0] = '\0';
 
   // statements for the 'normal' processing.
-  if (openscop_int_notzero(val) && (!cst)) {
-    if ((*first) || openscop_int_neg(val)) {
-      if (OPENSCOP_INT_one_p(val)) {         // case 1
+  if (openscop_int_notzero(precision, val, 0) && (!cst)) {
+    if ((*first) || openscop_int_neg(precision, val, 0)) {
+      if (openscop_int_one(precision, val, 0)) {         // case 1
         sprintf(sval, "%s", name);
       }
       else {
-        if (OPENSCOP_INT_mone_p(val)) {      // case -1
+        if (openscop_int_mone(precision, val, 0)) {      // case -1
           sprintf(sval, "-%s", name);
         }
-	else {                          // default case
-	  OPENSCOP_INT_sprint(sval, OPENSCOP_FMT_TXT, val);
+	else {                                           // default case
+	  openscop_int_sprint(sval, precision, val, 0);
 	  sprintf(temp, "*%s", name);
 	  strcat(sval, temp);
         }
@@ -267,12 +266,12 @@ char * openscop_relation_expression_element(void * val,
       *first = 0;
     }
     else {
-      if (OPENSCOP_INT_one_p(val)) {
+      if (openscop_int_one(precision, val, 0)) {
         sprintf(sval, "+%s", name);
       }
       else {
         sprintf(sval, "+");
-	OPENSCOP_INT_sprint(temp, OPENSCOP_FMT_TXT, val);
+	openscop_int_sprint(temp, precision, val, 0);
 	strcat(sval, temp);
 	sprintf(temp, "*%s", name);
 	strcat(sval, temp);
@@ -281,14 +280,17 @@ char * openscop_relation_expression_element(void * val,
   }
   else {
     if (cst) {
-      if ((OPENSCOP_INT_zero_p(val) && (*first)) || OPENSCOP_INT_neg_p(val))
-        OPENSCOP_INT_sprint(sval, OPENSCOP_FMT_TXT, val);
-      if (OPENSCOP_INT_pos_p(val)) {
+      if ((openscop_int_zero(precision, val, 0) && (*first)) ||
+          (openscop_int_neg(precision, val, 0)))
+        openscop_int_sprint(sval, precision, val, 0);
+      if (openscop_int_pos(precision, val, 0)) {
         if (!(*first)) {
-	  OPENSCOP_INT_sprint(sval, "+"OPENSCOP_FMT_TXT, val); // Block macro !
+          sprintf(sval, "+");
+          openscop_int_sprint(temp, precision, val, 0);
+	  strcat(sval, temp);
 	}
 	else {
-          OPENSCOP_INT_sprint(sval, OPENSCOP_FMT_TXT, val);
+          openscop_int_sprint(sval, precision, val, 0);
         }
       }
     }
@@ -297,6 +299,58 @@ char * openscop_relation_expression_element(void * val,
   free(body);
 
   return(sval);
+}
+
+
+static
+char ** openscop_relation_strings(openscop_relation_p relation,
+                                  openscop_names_p names) {
+  char ** strings;
+  char temp[OPENSCOP_MAX_STRING];
+  int i, offset, array_id;
+  
+  OPENSCOP_malloc(strings, char **, (relation->nb_columns - 1)*sizeof(char *));
+  strings[relation->nb_columns - 2] = NULL;
+
+  // 1. Output dimensions.
+  if (openscop_relation_is_access(relation)) {
+    // The first output dimension is the array name.
+    array_id  = openscop_relation_get_array_id(relation);
+    strings[0] = strdup(names->arrays->string[array_id - 1]);
+    // The other ones are the array dimensions [1]...[n]
+    for (i = 1; i < relation->nb_output_dims; i++) {
+      sprintf(temp, "[%d]", i);
+      strings[i] = strdup(temp);
+    }
+  }
+  else
+  if (relation->type == OPENSCOP_TYPE_SCATTERING) {
+    for (i = 0; i < relation->nb_output_dims; i++) {
+      strings[i] = strdup(names->scatt_dims->string[i]);
+    }
+  }
+  else {
+    for (i = 0; i < relation->nb_output_dims; i++) {
+      strings[i] = strdup(names->iterators->string[i]);
+    }
+  }
+
+  // 2. Input dimensions.
+  offset = relation->nb_output_dims;
+  for (i = offset; i < relation->nb_input_dims + offset; i++)
+    strings[i] = strdup(names->iterators->string[i - offset]);
+
+  // 3. Local dimensions.
+  offset += relation->nb_input_dims;
+  for (i = offset; i < relation->nb_local_dims + offset; i++)
+    strings[i] = strdup(names->local_dims->string[i - offset]);
+
+  // 4. Parameters.
+  offset += relation->nb_local_dims;
+  for (i = offset; i < relation->nb_parameters + offset; i++)
+    strings[i] = strdup(names->parameters->string[i - offset]);
+
+  return strings;
 }
 
 
@@ -313,45 +367,27 @@ char * openscop_relation_expression_element(void * val,
 char * openscop_relation_expression(openscop_relation_p relation,
                                     int row, openscop_names_p names) {
   int i, first = 1;
+  char ** strings;
   char * sval;
   char * sline = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
   sline[0] = '\0';
 
-  // First the iterator part.
-  for (i = 1; i <= names->nb_iterators; i++) {
+  // Create the array of element strings.
+  strings = openscop_relation_strings(relation, names);
+
+  // Create the expression.
+  for (i = 1; i <= relation->nb_columns - 2; i++) {
     sval = openscop_relation_expression_element(
-        &(relation->m[row][i]), relation->precision, &first, 0,
-        names->iterators[i-1]);
+        openscop_int_address(relation->precision, relation->m[row], i),
+        relation->precision, &first, 0, strings[i-1]);
     strcat(sline, sval);
     free(sval);
   }
-
-  // Next the local dims part.
-  for (i = names->nb_iterators + 1;
-       i <= names->nb_iterators + names->nb_localdims; i++) {
-    sval = openscop_relation_expression_element(
-        &(relation->m[row][i]), relation->precision, &first, 0,
-	names->localdims[i - names->nb_iterators - 1]);
-    strcat(sline, sval);
-    free(sval);
-  }
-
-  // Next the parameter part.
-  for (i = names->nb_iterators + names->nb_localdims + 1;
-       i <= names->nb_iterators + names->nb_localdims + names->nb_parameters;
-       i++) {
-    sval = openscop_relation_expression_element(
-        &(relation->m[row][i]), relation->precision, &first, 0,
-	names->parameters[i - names->nb_iterators - names->nb_localdims - 1]);
-    strcat(sline, sval);
-    free(sval);
-  }
-
-  // Finally the constant part (yes, I reused it).
-  sval = openscop_relation_expression_element(
-      &(relation->m[row][i]), relation->precision, &first, 1, NULL);
-  strcat(sline, sval);
-  free(sval);
+  
+  // Free the array of element strings.
+  for (i = 0; i < relation->nb_columns - 2; i++)
+    free(strings[i]);
+  free(strings);
 
   return sline;
 }
@@ -435,62 +471,22 @@ void openscop_relation_properties(openscop_relation_p relation,
 }
 
 
-/**
- * openscop_relation_printable_comments function:
- * this function returns 1 if we can print safely the comments for the
- * relation provided as parameter (in the OpenScop file), 0 otherwise.
- * \param[in] relation The relation we want to know if we can print comments.
- * \param[in] names    The names used for comment printing.
- * \return 1 if we can print the comments safely, 0 otherwise.
- */
 static
-int openscop_relation_printable_comments(openscop_relation_p relation,
-                                         openscop_names_p names) {
+openscop_names_p openscop_relation_names(openscop_relation_p relation) {
   int nb_parameters;
   int nb_iterators;
   int nb_scattdims;
   int nb_localdims;
   int array_id;
- 
-  if ((relation == NULL) || (names == NULL))
-    return 0;
 
-  // TODO: remove this !!!
-  // Temporarily deactivate comments, to finish OpenScop RFC first.
-  return 0;
-
-  // We cannot print comments if the names are not textual.
-  if (names->textual != 1)
-    return 0;
-
-  // We cannot print comments if the relation is not of one known type.
-  if (!(relation->type == OPENSCOP_TYPE_DOMAIN) &&
-      !(relation->type == OPENSCOP_TYPE_SCATTERING) &&
-      !(relation->type == OPENSCOP_TYPE_ACCESS))
-    return 0;
-
-  // We cannot print comments if we are not sure we have enough names.
-  nb_parameters = names->nb_parameters;
   openscop_relation_properties(relation, &nb_parameters, &nb_iterators,
                                &nb_scattdims, &nb_localdims, &array_id);
-
-  if ((nb_parameters == OPENSCOP_UNDEFINED)   ||
-      (nb_iterators  == OPENSCOP_UNDEFINED)   ||
-      (nb_scattdims  == OPENSCOP_UNDEFINED)   ||
-      (nb_localdims  == OPENSCOP_UNDEFINED)   ||
-      (array_id      == OPENSCOP_UNDEFINED)   ||
-      (nb_parameters >  names->nb_parameters) ||
-      (nb_iterators  >  names->nb_iterators)  ||
-      (nb_scattdims  >  names->nb_scattdims)  ||
-      (nb_localdims  >  names->nb_localdims)  ||
-      (array_id      >  names->nb_arrays)) {
-    
-    OPENSCOP_warning("something is wrong with the names or "
-                     "an array identifier, printing comments deactivated");
-    return 0;
-  }
-
-  return 1;
+  
+  return openscop_names_generate("P", nb_parameters,
+                                 "i", nb_iterators,
+                                 "t", nb_scattdims,
+                                 "l", nb_localdims,
+                                 "A", array_id);
 }
 
 
@@ -507,58 +503,21 @@ int openscop_relation_printable_comments(openscop_relation_p relation,
  */ 
 static
 void openscop_relation_print_comment(FILE * file,
-                                     openscop_relation_p relation, int row,
-                                     openscop_names_p names) {
-  int k;
-  int type;
+                                     openscop_relation_p relation, int row) {
   char * expression;
-  
-  if (openscop_relation_is_access(relation))
-    type = OPENSCOP_TYPE_ACCESS;
-  else
-    type = relation->type;
+  openscop_names_p names = openscop_relation_names(relation);
 
-  switch (type) {
-    case OPENSCOP_TYPE_DOMAIN: {
-      expression = openscop_relation_expression(relation, row, names);
-      fprintf(file, "   ## %s", expression);
-      free(expression);
-      if (OPENSCOP_INT_zero_p(relation->m[row][0]))
-        fprintf(file, " == 0");
-      else
-        fprintf(file, " >= 0");
-      break;
-    }
-    case OPENSCOP_TYPE_SCATTERING: {
-      expression = openscop_relation_expression(relation, row, names);
-      fprintf(file, "   ## %s", expression);
-      free(expression);
-      break;
-    }
-    case OPENSCOP_TYPE_ACCESS: {
-      //TODO: works only for matrix: use openscop_relation_get_array_id
-      if (OPENSCOP_INT_notzero_p(relation->m[row][0])) {
-        if (strncmp(names->arrays[OPENSCOP_INT_get_si(relation->m[row][0]) - 1],
-                    OPENSCOP_FAKE_ARRAY, strlen(OPENSCOP_FAKE_ARRAY)))
-          fprintf(file, "   ## %s",
-                  names->arrays[OPENSCOP_INT_get_si(relation->m[row][0]) - 1]);
-        k = row;
-        do {
-          expression = openscop_relation_expression(relation, k, names);
-          fprintf(file, "[%s]", expression);
-          free(expression);
-          k++;
-        }
-        while ((k < relation->nb_rows) &&
-               OPENSCOP_INT_zero_p(relation->m[k][0]));
-      }
-      else {
-        fprintf(file, "   ##");
-      }
-    }
-  }
+  expression = openscop_relation_expression(relation, row, names);
+  fprintf(file, "   ## %s", expression);
+  if (openscop_int_zero(relation->precision, relation->m[row], 0))
+    fprintf(file, " == 0");
+  else
+    fprintf(file, " >= 0");
+  
+  openscop_names_free(names);
+  free(expression);
 }
-#endif
+
 
 /**
  * openscop_relation_print function:
@@ -619,8 +578,7 @@ void openscop_relation_print(FILE * file,
         fprintf(file, " ");
       }
 
-      //if (printable_comments)
-      //  openscop_relation_print_comment(file, relation, i, names);
+      openscop_relation_print_comment(file, relation, i);
 
       fprintf(file, "\n");
     }

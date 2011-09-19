@@ -306,7 +306,7 @@ void openscop_strings_free(openscop_strings_p strings) {
 
 
 /**
- * openscop_strings_clone internal function.
+ * openscop_strings_clone function.
  * this function builds and return a "hard copy" (not a pointer copy) of an
  * strings structure provided as parameter.
  * \param[in] strings The strings structure to clone.
@@ -423,6 +423,38 @@ openscop_interface_p openscop_strings_interface() {
 }
 
 
+/**
+ * openscop_strings_generate function:
+ * this function generates a new strings structure containing
+ * 'nb_strings' strings of the form "prefixXX" where XX goes from 1 to
+ * nb_strings.
+ * \param[in] prefix     The prefix of the generated strings.
+ * \param[in] nb_strings The number of strings to generate.
+ * \return A new strings structure containing generated strings.
+ */
+openscop_strings_p openscop_strings_generate(char * prefix, int nb_strings) {
+  char ** strings = NULL;
+  char buff[strlen(prefix) + 16]; // TODO: better (log10(INT_MAX) ?) :-D.
+  int i;
+  openscop_strings_p generated;
+
+  if (nb_strings) {
+    OPENSCOP_malloc(strings, char **, sizeof(char *) * (nb_strings + 1));
+    strings[nb_strings] = NULL;
+    for (i = 0; i < nb_strings; i++) {
+      sprintf(buff, "%s%d", prefix, i + 1);
+      strings[i] = strdup(buff);
+      if (strings[i] == NULL)
+        OPENSCOP_error("memory overflow");
+    }
+  }
+
+  generated = openscop_strings_malloc();
+  generated->string = strings;
+  return generated;
+}
+
+
 #if 0
 /**
  * openscop_strings_print function:
@@ -458,33 +490,6 @@ void openscop_strings_print(FILE * file, char ** strings,
   }
 }
 
-
-/**
- * openscop_strings_generate function:
- * This function generates an array of size 'nb_strings' of strings of the
- * form "prefixXX" where XX goes from 1 to nb.
- * \param[in] prefix     The prefix of the generated names.
- * \param[in] nb_strings The number of strings to generate.
- * \return An array of 'nb' generated strings.
- */
-char ** openscop_strings_generate(char * prefix, int nb_strings) {
-  char ** strings = NULL;
-  char buff[strlen(prefix) + 16]; // TODO: better (log10(INT_MAX) ?) :-D.
-  int i;
-
-  if (nb_strings) {
-    OPENSCOP_malloc(strings, char **, sizeof(char *) * (nb_strings + 1));
-    strings[nb_strings] = NULL;
-    for (i = 0; i < nb_strings; i++) {
-      sprintf(buff, "%s%d", prefix, i + 1);
-      strings[i] = strdup(buff);
-      if (strings[i] == NULL)
-        OPENSCOP_error("memory overflow");
-    }
-  }
-
-  return strings;
-}
 
 
 
