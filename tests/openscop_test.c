@@ -68,7 +68,7 @@
 #include <sys/wait.h>
 #include <openscop/openscop.h>
 
-#define FORK                 // Comment that if you want only one process
+//#define FORK                 // Comment that if you want only one process
                              // (best for debugging with valgrind but bad
                              // for make check since any error will
                              // stop the job).
@@ -79,11 +79,13 @@
 
 /**
  * test_file function
- * This function tests an onpenscop file. A test has four steps:
+ * This function tests an onpenscop file. A test has six steps:
  * 1. read the file to raise the data up to OpenScop data structures,
- * 2. dump the data structures to a new OpenScop file,
- * 3. read the generated file,
- * 4. compare the data structures.
+ * 2. clone the data structures,
+ * 3. compare the clone and the original one,
+ * 4. dump the data structures to a new OpenScop file,
+ * 5. read the generated file,
+ * 6. compare the data structures.
  * If everything went well, the data structure of the two scops are the same.
  * \param input_name The name of the input file.
  * \param verbose    Verbose option (1 to set, 0 not to set).
@@ -92,15 +94,18 @@
 int test_file(char * input_name, int verbose) {
   int success = 0;
   int failure = 0;
-  int equal;
+  int cloning = 0;
+  int dumping = 0;
+  int equal   = 0;
   char * output_name;
   FILE * input_file, * output_file;
   openscop_scop_p input_scop;
   openscop_scop_p output_scop;
+  openscop_scop_p cloned_scop;
 
   printf("Testing file %20s... \n", input_name); 
     
-  // Raise the OpenScop file format to OpenScop data structures.
+  // PART I. Raise from file.
   input_file = fopen(input_name, "r");
   if (input_file == NULL) {
     fflush(stdout);
@@ -109,8 +114,16 @@ int test_file(char * input_name, int verbose) {
   }
   input_scop = openscop_scop_read(input_file);
   fclose(input_file);
-  
-  // Dump the OpenScop data structures to OpenScop file format.
+
+  // PART II. Clone and test.
+  cloned_scop = openscop_scop_clone(input_scop);
+  // Compare the two scops.
+  if (cloning = openscop_scop_equal(input_scop, cloned_scop))
+    printf("- cloning succeed\n");
+  else
+    printf("- cloning failed\n");
+
+  // PART III. Dump to file and test.
   output_name = tmpnam(NULL);
   output_file = fopen(output_name, "w");
   //openscop_scop_dump(stdout, input_scop);
@@ -132,13 +145,20 @@ int test_file(char * input_name, int verbose) {
   }
 
   // Compare the two scops.
-  if (equal = openscop_scop_equal(input_scop, output_scop))
+  if (dumping = openscop_scop_equal(input_scop, output_scop))
+    printf("- dumping succeed\n");
+  else
+    printf("- dumping failed\n");
+
+  // PART IV. Report.
+  if (equal = (cloning + dumping > 0) ? 1 : 0)
     printf("Success :-)\n");
   else
     printf("Failure :-(\n");
 
   // Save the planet.
   openscop_scop_free(input_scop);
+  openscop_scop_free(cloned_scop);
   openscop_scop_free(output_scop);
   remove(output_name);
 

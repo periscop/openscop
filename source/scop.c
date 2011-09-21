@@ -400,6 +400,7 @@ openscop_scop_p openscop_scop_read(FILE * file) {
     }
 
     scop = openscop_scop_malloc();
+    openscop_scop_register_default_extensions(scop);
 
     //
     // II. CONTEXT PART
@@ -478,23 +479,6 @@ openscop_scop_p openscop_scop_read(FILE * file) {
 
 
 /**
- * openscop_scop_register_default_extensions function:
- * this function registers the default OpenScop Library extensions to an
- * existing scop.
- * \param scop The scop for which default options have to be registered.
- */
-static
-void openscop_scop_register_default_extensions(openscop_scop_p scop) {
-  
-  openscop_interface_add(&scop->registry, openscop_textual_interface());
-  openscop_interface_add(&scop->registry, openscop_comment_interface());
-  openscop_interface_add(&scop->registry, openscop_arrays_interface());
-  openscop_interface_add(&scop->registry, openscop_lines_interface());
-  openscop_interface_add(&scop->registry, openscop_irregular_interface());
-}
-
-
-/**
  * openscop_scop_malloc function:
  * this function allocates the memory space for a openscop_scop_t structure and
  * sets its fields with default values. Then it returns a pointer to the
@@ -515,7 +499,6 @@ openscop_scop_p openscop_scop_malloc() {
   scop->extension      = NULL;
   scop->usr            = NULL;
   scop->next           = NULL;
-  openscop_scop_register_default_extensions(scop);
 
   return scop;
 }
@@ -548,6 +531,22 @@ void openscop_scop_free(openscop_scop_p scop) {
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+
+
+/**
+ * openscop_scop_register_default_extensions function:
+ * this function registers the default OpenScop Library extensions to an
+ * existing scop.
+ * \param scop The scop for which default options have to be registered.
+ */
+void openscop_scop_register_default_extensions(openscop_scop_p scop) {
+  
+  openscop_interface_add(&(scop->registry), openscop_textual_interface());
+  openscop_interface_add(&(scop->registry), openscop_comment_interface());
+  openscop_interface_add(&(scop->registry), openscop_arrays_interface());
+  openscop_interface_add(&(scop->registry), openscop_lines_interface());
+  openscop_interface_add(&(scop->registry), openscop_irregular_interface());
+}
 
 
 /**

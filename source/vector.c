@@ -195,10 +195,12 @@ void openscop_vector_free(openscop_vector_p vector) {
   int i;
 
   if (vector != NULL) {
-    for (i = 0; i < vector->size; i++)
-      openscop_int_clear(vector->precision, vector->v, i);
+    if (vector->v != NULL) {
+      for (i = 0; i < vector->size; i++)
+        openscop_int_clear(vector->precision, vector->v, i);
 
-    free(vector->v);
+      free(vector->v);
+    }
     free(vector);
   }
 }

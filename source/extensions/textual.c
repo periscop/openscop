@@ -263,9 +263,7 @@ openscop_textual_p openscop_textual_clone(openscop_textual_p textual) {
     return NULL;
 
   copy = openscop_textual_malloc();
-  copy->textual = strdup(textual->textual);
-  if ((copy->textual == NULL) && (textual->textual != NULL))
-    OPENSCOP_error("memory overflow");
+  OPENSCOP_strdup(copy->textual, textual->textual);
 
   return copy;
 }

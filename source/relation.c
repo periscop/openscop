@@ -876,22 +876,22 @@ void openscop_relation_free(openscop_relation_p relation) {
 
 
 /**
- * openscop_relation_ncopy function:
+ * openscop_relation_nclone function:
  * this functions builds and returns a "hard copy" (not a pointer copy) of a
- * openscop_relation_t data structure such that the copy is restricted to the
+ * openscop_relation_t data structure such that the clone is restricted to the
  * "n" first rows of the relation. This applies to all the parts in the case
  * of a relation union.
- * \param[in] relation The pointer to the relation we want to copy.
- * \param[in] n        The number of row of the relation we want to copy (the
+ * \param[in] relation The pointer to the relation we want to clone.
+ * \param[in] n        The number of row of the relation we want to clone (the
  *                     special value -1 means "all the rows").
- * \return A pointer to the full copy of the relation union restricted to the
+ * \return A pointer to the clone of the relation union restricted to the
  *         first n rows of constraint matrix for each part of the union.
  */
-openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
-                                            int n) {
+openscop_relation_p openscop_relation_nclone(openscop_relation_p relation,
+                                             int n) {
   int i, j;
   int first = 1, all_rows = 0;
-  openscop_relation_p copy = NULL, node, previous = NULL;
+  openscop_relation_p clone = NULL, node, previous = NULL;
 
   if (n == -1)
     all_rows = 1;
@@ -901,7 +901,7 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
       n = relation->nb_rows;
 
     if (n > relation->nb_rows)
-      OPENSCOP_error("not enough rows to copy in the relation");
+      OPENSCOP_error("not enough rows to clone in the relation");
 
     node = openscop_relation_pmalloc(relation->precision,
                                      n, relation->nb_columns);
@@ -919,7 +919,7 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
   
     if (first) {
       first = 0;
-      copy = node;
+      clone = node;
       previous = node;
     }
     else {
@@ -930,7 +930,7 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
     relation = relation->next;
   }
 
-  return copy;
+  return clone;
 }
 
 
@@ -938,14 +938,14 @@ openscop_relation_p openscop_relation_ncopy(openscop_relation_p relation,
  * openscop_relation_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
  * openscop_relation_t data structure (the full union of relation).
- * \param[in] relation The pointer to the relation we want to copy.
- * \return A pointer to the copy of the union of relations.
+ * \param[in] relation The pointer to the relation we want to clone.
+ * \return A pointer to the clone of the union of relations.
  */
 openscop_relation_p openscop_relation_clone(openscop_relation_p relation) {
   if (relation == NULL)
     return NULL;
 
-  return openscop_relation_ncopy(relation, -1);
+  return openscop_relation_nclone(relation, -1);
 }
 
 

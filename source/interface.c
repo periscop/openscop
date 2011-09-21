@@ -219,7 +219,8 @@ openscop_interface_p openscop_interface_malloc() {
  */
 void openscop_interface_free(openscop_interface_p interface) {
   openscop_interface_p tmp;
-  
+  int i = 0;
+ 
   if (interface == NULL)
     return;
 
@@ -229,6 +230,7 @@ void openscop_interface_free(openscop_interface_p interface) {
       free(interface->URI);
     free(interface);
     interface = tmp;
+    i++;
   }
 }
 
@@ -253,7 +255,7 @@ openscop_interface_p openscop_interface_nclone(openscop_interface_p interface,
 
   while ((interface != NULL) && ((n == -1) || (i < n))) {
     new = openscop_interface_malloc();
-    new->URI    = strdup(interface->URI);
+    OPENSCOP_strdup(new->URI, interface->URI);
     new->idump  = interface->idump;
     new->dump   = interface->dump;
     new->sprint = interface->sprint;
@@ -262,6 +264,7 @@ openscop_interface_p openscop_interface_nclone(openscop_interface_p interface,
     new->free   = interface->free;
     new->clone  = interface->clone;
     new->equal  = interface->equal;
+    
     openscop_interface_add(&clone, new);
     interface = interface->next;
     i++;

@@ -436,6 +436,37 @@ void openscop_int_increment(int precision,
 }
 
 
+void openscop_int_decrement(int precision,
+                            void * result_base, int result_offset,
+                            void * value_base,  int value_offset) {
+  void * result = openscop_int_address(precision, result_base, result_offset);
+  void * value  = openscop_int_address(precision, value_base, value_offset);
+
+  switch (precision) {
+    case OPENSCOP_PRECISION_SP:
+      *(long int *)result = *(long int *)value - (long int)1;
+      break;
+
+    case OPENSCOP_PRECISION_DP:
+      *(long long int *)result = *(long long int *)value - (long long int)1;
+      break;
+
+#ifdef OPENSCOP_GMP_IS_HERE
+    case OPENSCOP_PRECISION_MP: {
+      mpz_t one;
+      mpz_init_set_si(one, 1);
+      mpz_sub(*(mpz_t *)result, *(mpz_t *)value, one);
+      mpz_clear(one);
+      break;
+    }
+#endif
+
+    default:
+      OPENSCOP_error("unknown precision");
+  }
+}
+
+
 void openscop_int_add(int precision,
                       void * result_base, int result_offset,
                       void * val1_base,   int val1_offset,

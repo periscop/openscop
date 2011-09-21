@@ -143,5 +143,17 @@
              OPENSCOP_error("memory overflow");                            \
          } while (0)
 
+# define OPENSCOP_strdup(destination, source)                              \
+         do {                                                              \
+           if (source != NULL) {                                           \
+             if (((destination) = strdup(source)) == NULL)                 \
+               OPENSCOP_error("memory overflow");                          \
+           }                                                               \
+           else {                                                          \
+             destination = NULL;                                           \
+             OPENSCOP_warning("strdup of a NULL string");                  \
+           }                                                               \
+         } while (0)
+
 
 #endif /* define OPENSCOP_MACROS_H */
