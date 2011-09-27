@@ -197,7 +197,6 @@ osl_interface_p osl_interface_malloc() {
                   sizeof(osl_interface_t));
   interface->URI    = NULL;
   interface->idump  = NULL; 
-  interface->dump   = NULL; 
   interface->sprint = NULL; 
   interface->sread  = NULL; 
   interface->malloc = NULL; 
@@ -255,7 +254,6 @@ osl_interface_p osl_interface_nclone(osl_interface_p interface, int n) {
     new = osl_interface_malloc();
     OSL_strdup(new->URI, interface->URI);
     new->idump  = interface->idump;
-    new->dump   = interface->dump;
     new->sprint = interface->sprint;
     new->sread  = interface->sread;
     new->malloc = interface->malloc;
@@ -305,7 +303,6 @@ int osl_interface_equal(osl_interface_p interface1,
 
   if (strcmp(interface1->URI, interface2->URI)   ||
       (interface1->idump  != interface2->idump)  ||
-      (interface1->dump   != interface2->dump)   ||
       (interface1->sprint != interface2->sprint) ||
       (interface1->sread  != interface2->sread)  ||
       (interface1->malloc != interface2->malloc) ||

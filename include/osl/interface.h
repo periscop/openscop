@@ -73,7 +73,6 @@ extern "C"
 
 
 typedef void   (*osl_idump_f) (FILE *, void *, int);
-typedef void   (*osl_dump_f)  (FILE *, void *);
 typedef char * (*osl_sprint_f)(void *);
 typedef void * (*osl_sread_f) (char *);
 typedef void * (*osl_malloc_f)();
@@ -90,7 +89,6 @@ typedef int    (*osl_equal_f) (void *, void *);
 struct osl_interface {
   char * URI;                  /**< Unique identifier string */
   osl_idump_f  idump;          /**< Pointer to idump function */
-  osl_dump_f   dump;           /**< Pointer to dump function */
   osl_sprint_f sprint;         /**< Pointer to sprint function */
   osl_sread_f  sread;          /**< Pointer to sread function */
   osl_malloc_f malloc;         /**< Pointer to malloc function */

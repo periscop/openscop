@@ -296,7 +296,6 @@ osl_interface_p osl_lines_interface() {
   
   interface->URI    = strdup(OSL_URI_LINES);
   interface->idump  = (osl_idump_f)osl_lines_idump;
-  interface->dump   = (osl_dump_f)osl_lines_dump;
   interface->sprint = (osl_sprint_f)osl_lines_sprint;
   interface->sread  = (osl_sread_f)osl_lines_sread;
   interface->malloc = (osl_malloc_f)osl_lines_malloc;

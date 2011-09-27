@@ -436,7 +436,6 @@ osl_interface_p osl_arrays_interface() {
   
   interface->URI    = strdup(OSL_URI_ARRAYS);
   interface->idump  = (osl_idump_f)osl_arrays_idump;
-  interface->dump   = (osl_dump_f)osl_arrays_dump;
   interface->sprint = (osl_sprint_f)osl_arrays_sprint;
   interface->sread  = (osl_sread_f)osl_arrays_sread;
   interface->malloc = (osl_malloc_f)osl_arrays_malloc;

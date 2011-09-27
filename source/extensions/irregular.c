@@ -743,7 +743,6 @@ osl_interface_p osl_irregular_interface() {
   
   interface->URI    = strdup(OSL_URI_IRREGULAR);
   interface->idump  = (osl_idump_f)osl_irregular_idump;
-  interface->dump   = (osl_dump_f)osl_irregular_dump;
   interface->sprint = (osl_sprint_f)osl_irregular_sprint;
   interface->sread  = (osl_sread_f)osl_irregular_sread;
   interface->malloc = (osl_malloc_f)osl_irregular_malloc;

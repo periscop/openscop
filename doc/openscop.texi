@@ -1931,7 +1931,6 @@ the next element of the list.
 @example
 @group
 typedef void   (*osl_idump_f) (FILE *, void *, int);
-typedef void   (*osl_dump_f)  (FILE *, void *);
 typedef char * (*osl_sprint_f)(void *);
 typedef void * (*osl_sread_f) (char *);
 typedef void * (*osl_malloc_f)();
@@ -1942,7 +1941,6 @@ typedef int    (*osl_equal_f) (void *, void *);
 struct osl_interface @{
   char * URI;                  /* Unique interface identifier string */
   osl_idump_f  idump;          /* Pointer to the idump function */
-  osl_dump_f   dump;           /* Pointer to the dump function */
   osl_sprint_f sprint;         /* Pointer to the sprint function */
   osl_sread_f  sread;          /* Pointer to the sread function */
   osl_malloc_f malloc;         /* Pointer to the malloc function */
@@ -2973,7 +2971,6 @@ strict):
       default extensions):
       @itemize @bullet
       @item @code{osl_foo_idump} (@pxref{Dumping}) 
-      @item @code{osl_foo_dump} (@pxref{Dumping}) 
       @item @code{osl_foo_sprint} has the following prototype:
 @example
 @group

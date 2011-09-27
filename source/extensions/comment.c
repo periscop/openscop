@@ -297,7 +297,6 @@ osl_interface_p osl_comment_interface() {
   
   interface->URI    = strdup(OSL_URI_COMMENT);
   interface->idump  = (osl_idump_f)osl_comment_idump;
-  interface->dump   = (osl_dump_f)osl_comment_dump;
   interface->sprint = (osl_sprint_f)osl_comment_sprint;
   interface->sread  = (osl_sread_f)osl_comment_sread;
   interface->malloc = (osl_malloc_f)osl_comment_malloc;
