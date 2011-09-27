@@ -1320,7 +1320,7 @@ int osl_relation_integrity_check(osl_relation_p relation,
     if ((expected_nb_output_dims != OSL_UNDEFINED) ||
         (expected_nb_input_dims  != OSL_UNDEFINED) ||
         (expected_nb_parameters  != OSL_UNDEFINED)) {
-      OSL_warning("NULL relation with some expected attibutes");
+      OSL_debug("NULL relation with some expected attibutes");
       //return 0;
     }
 

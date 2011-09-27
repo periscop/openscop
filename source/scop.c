@@ -396,7 +396,7 @@ osl_scop_p osl_scop_pread(FILE * file, int precision) {
     tmp = osl_util_read_uptotag(file, OSL_TAG_START_SCOP);
     free(tmp);
     if (feof(file)) {
-      OSL_info("no more scop in the file");
+      OSL_debug("no more scop in the file");
       break;
     }
 

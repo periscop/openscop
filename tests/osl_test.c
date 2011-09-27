@@ -103,7 +103,7 @@ int test_file(char * input_name, int verbose) {
   osl_scop_p output_scop;
   osl_scop_p cloned_scop;
 
-  printf("Testing file %20s... \n", input_name); 
+  printf("\nTesting file %s... \n", input_name); 
     
   // PART I. Raise from file.
   input_file = fopen(input_name, "r");
@@ -119,7 +119,7 @@ int test_file(char * input_name, int verbose) {
   cloned_scop = osl_scop_clone(input_scop);
   // Compare the two scops.
   if (cloning = osl_scop_equal(input_scop, cloned_scop))
-    printf("- cloning succeed\n");
+    printf("- cloning succeeded\n");
   else
     printf("- cloning failed\n");
 
@@ -146,7 +146,7 @@ int test_file(char * input_name, int verbose) {
 
   // Compare the two scops.
   if (dumping = osl_scop_equal(input_scop, output_scop))
-    printf("- dumping succeed\n");
+    printf("- dumping succeeded\n");
   else
     printf("- dumping failed\n");
 

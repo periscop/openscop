@@ -187,7 +187,7 @@ char * osl_util_read_uptotag(FILE * file, char * tag) {
   }
 
   if (!tag_found)
-    OSL_info("tag was not found, end of file reached");
+    OSL_debug("tag was not found, end of file reached");
 
   // - 0-terminate the string.
   OSL_realloc(res, char *, (nb_chars + 1) * sizeof(char));

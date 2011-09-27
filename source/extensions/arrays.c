@@ -196,7 +196,7 @@ osl_arrays_p osl_arrays_sread(char * extensions) {
                                              OSL_TAG_ARRAYS_STOP);
 
   if (content == NULL) {
-    OSL_info("no arrays optional tag");
+    OSL_debug("no arrays optional tag");
     return NULL;
   }
   content_backup = content;

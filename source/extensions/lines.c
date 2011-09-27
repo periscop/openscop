@@ -178,7 +178,7 @@ osl_lines_p osl_lines_sread(char * extensions) {
   content = osl_util_tag_content(extensions, OSL_TAG_LINES_START,
                                              OSL_TAG_LINES_STOP);
   if (content == NULL) {
-    OSL_info("no lines optional tag");
+    OSL_debug("no lines optional tag");
     return NULL;
   }
 

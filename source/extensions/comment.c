@@ -184,7 +184,7 @@ osl_comment_p osl_comment_sread(char * extensions) {
   content = osl_util_tag_content(extensions, OSL_TAG_COMMENT_START,
                                              OSL_TAG_COMMENT_STOP);
   if (content == NULL) {
-    OSL_info("no comment optional tag");
+    OSL_debug("no comment optional tag");
     return NULL;
   }
 

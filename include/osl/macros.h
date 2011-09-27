@@ -64,6 +64,7 @@
 #ifndef OSL_MACROS_H
 # define OSL_MACROS_H
 
+# define OSL_DEBUG                 0
 
 # define OSL_TAG_START_SCOP        "<OpenScop>"
 # define OSL_TAG_END_SCOP          "</OpenScop>"
@@ -114,6 +115,12 @@
 /*+***************************************************************************
  *                               UTILITY MACROS                              *
  *****************************************************************************/
+
+# define OSL_debug(msg)                                                    \
+         do {                                                              \
+           if (OSL_DEBUG)                                                  \
+             fprintf(stderr,"[OpenScop] Debug: "msg" (%s).\n", __func__);  \
+         } while (0)
 
 # define OSL_info(msg)                                                     \
          do {                                                              \

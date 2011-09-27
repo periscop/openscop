@@ -230,7 +230,7 @@ osl_irregular_p osl_irregular_sread(char * extensions) {
   content = osl_util_tag_content(extensions, OSL_TAG_IRREGULAR_START,
                                              OSL_TAG_IRREGULAR_STOP);
   if (content == NULL) {
-    OSL_info("no irregular optional tag");
+    OSL_debug("no irregular optional tag");
     return NULL;
   }
 
