@@ -79,10 +79,10 @@ INCLUDES		= -I$(top_builddir) -I$(top_srcdir)  \
 
 #############################################################################
 
-lib_LTLIBRARIES 	= libopenscop.la
+lib_LTLIBRARIES 	= libosl.la
 
 
-libopenscop_la_SOURCES 	=      \
+libosl_la_SOURCES 	=      \
 	scop.c                 \
 	statement.c            \
 	extensions/textual.c   \

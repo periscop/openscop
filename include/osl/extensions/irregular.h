@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/textual.h                        **
+     **                     extensions/irregular.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 15/07/2011                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,12 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_TEXTUAL_H
-# define OPENSCOP_TEXTUAL_H
+#ifndef OSL_IRREGULAR_H
+# define OSL_IRREGULAR_H
 
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/interface.h>
+# include <osl/macros.h>
+# include <osl/strings.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -74,53 +74,75 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_URI_TEXTUAL       "textual"
-# define OPENSCOP_TAG_TEXTUAL_START ""
-# define OPENSCOP_TAG_TEXTUAL_STOP  ""
+# define OSL_URI_IRREGULAR        "irregular"
+# define OSL_TAG_IRREGULAR_START  "<"OSL_URI_IRREGULAR">"
+# define OSL_TAG_IRREGULAR_STOP   "</"OSL_URI_IRREGULAR">"
 
 
 /**
- * The openscop_textual_t structure stores the complete textual
- * representation of the scop extension field. It is a special case of
- * extension since it does not require start and end tag.
+ * The osl_irregular_t structure stores an irregular extension to the core
+ * OpenScop representation. It contains a list of predicates (in their textual
+ * representation), and for each statement, its list of associated predicates.
+ * The list of predicates contains both control and exit predicates (see
+ * Benabderrhamane et al.'s paper at CC'2010), control predicates are listed
+ * first, then come exit predicates.
  */
-struct openscop_textual {
-  char * textual;  /**< Full extension string as a 0-terminated string. */
+struct osl_irregular {
+  // List of predicates (textual representation).
+  int nb_control;      /**< Number of control predicates in the SCoP. */
+  int nb_exit;         /**< Number of exit predicates in the SCoP. */
+  int * nb_iterators;  /**< nb_iterators[i]: #iterators for ith predicate. */
+  char *** iterators;  /**< iterators[i]: array of (nb_control + nb_exit)
+                            arrays of nb_iterators[i] strings. Each element
+                            corresponds to the list of original iterators
+                            for the ith predicate. */
+  char ** body;        /**< body[i]: original source code of ith predicate. */
+  
+  // List of associated predicates for each statement.
+  int nb_statements;   /**< Number of statements in the SCoP. */
+  int * nb_predicates; /**< nb_predicates[i]: #predicates for ith statement. */
+  int ** predicates;   /**< predicates[i]: array of nb_predicates[i] predicates
+                            corresponding to the list of predicates associated
+                            to the ith statement. */
 };
-typedef struct openscop_textual   openscop_textual_t;
-typedef struct openscop_textual * openscop_textual_p;
+typedef struct osl_irregular   osl_irregular_t;
+typedef struct osl_irregular * osl_irregular_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_textual_idump(FILE *, openscop_textual_p, int);
-void   openscop_textual_dump(FILE *, openscop_textual_p);
-char * openscop_textual_sprint(openscop_textual_p);
+void            osl_irregular_idump(FILE *, osl_irregular_p, int);
+void            osl_irregular_dump(FILE *, osl_irregular_p);
+char *          osl_irregular_sprint(osl_irregular_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_textual_p openscop_textual_sread(char *);
+osl_irregular_p osl_irregular_sread(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_textual_p openscop_textual_malloc();
-void openscop_textual_free(openscop_textual_p);
+osl_irregular_p osl_irregular_malloc();
+void            osl_irregular_free(osl_irregular_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_textual_p openscop_textual_clone(openscop_textual_p);
-int openscop_textual_equal(openscop_textual_p, openscop_textual_p);
-openscop_interface_p openscop_textual_interface();
+osl_irregular_p osl_irregular_clone(osl_irregular_p);
+int             osl_irregular_equal(osl_irregular_p, osl_irregular_p);
+osl_irregular_p osl_irregular_add_control(osl_irregular_p, char**, int, char*);
+osl_irregular_p osl_irregular_add_exit(osl_irregular_p, char**, int, char*);
+osl_irregular_p osl_irregular_add_predicates(osl_irregular_p, int*, int);
+osl_interface_p osl_irregular_interface();
+
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_TEXTUAL_H */
+#endif /* define OSL_IRREGULAR_H */

@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/lines.h                        **
+     **                           macros.h                              **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 30/04/2008                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,68 +61,99 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_LINES_H
-# define OPENSCOP_LINES_H
-# include <openscop/interface.h>
-
-# include <openscop/macros.h>
-# include <openscop/util.h>
-
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#ifndef OSL_MACROS_H
+# define OSL_MACROS_H
 
 
-# define OPENSCOP_URI_LINES        "lines"
-# define OPENSCOP_TAG_LINES_START  "<"OPENSCOP_URI_LINES">"
-# define OPENSCOP_TAG_LINES_STOP   "</"OPENSCOP_URI_LINES">"
+# define OSL_TAG_START_SCOP        "<OpenScop>"
+# define OSL_TAG_END_SCOP          "</OpenScop>"
+
+# define OSL_PRECISION_ENV         "OSL_PRECISION"
+# define OSL_PRECISION_ENV_SP      "32"
+# define OSL_PRECISION_ENV_DP      "64"
+# define OSL_PRECISION_ENV_MP      "0"
+# define OSL_PRECISION_SP          32
+# define OSL_PRECISION_DP          64
+# define OSL_PRECISION_MP          0
+
+# define OSL_FMT_SP                "%4ld"
+# define OSL_FMT_DP                "%4lld"
+# define OSL_FMT_MP                "%4s"
+# define OSL_FMT_TXT_SP            "%ld"
+# define OSL_FMT_TXT_DP            "%lld"
+# define OSL_FMT_TXT_MP            "%s"
 
 
-/**
- * The openscop_lines_t structure stores a lines extention to the core
- * OpenScop representation. It provides information about the line
- * numbers of the SCoP in the original source file.
- */
-struct openscop_lines {
-  int start;   /**< First line of the SCoP in the original source file. */
-  int end;     /**< Last line of the SCoP in the original source file. */
-};
-typedef struct openscop_lines   openscop_lines_t;
-typedef struct openscop_lines * openscop_lines_p;
+# define OSL_DEBUG                 0    // 1 for debug mode, 0 otherwise.
+# define OSL_BACKEND_C             0
+# define OSL_BACKEND_FORTRAN       1
+# define OSL_UNDEFINED             -1
+# define OSL_MAX_STRING            2048
+# define OSL_MAX_ARRAYS            128
 
+# define OSL_TYPE_GENERIC          0
+# define OSL_TYPE_STRING           1
+# define OSL_TYPE_CONTEXT          2
+# define OSL_TYPE_DOMAIN           3
+# define OSL_TYPE_SCATTERING       4
+# define OSL_TYPE_ACCESS           5
+# define OSL_TYPE_READ             6
+# define OSL_TYPE_WRITE            7
+# define OSL_TYPE_MAY_WRITE        8
 
-/*+***************************************************************************
- *                          Structure display function                       *
- *****************************************************************************/
-void   openscop_lines_idump(FILE *, openscop_lines_p, int);
-void   openscop_lines_dump(FILE *, openscop_lines_p);
-char * openscop_lines_sprint(openscop_lines_p);
+# define OSL_FAKE_ARRAY            "fakearray"
 
-
-/*****************************************************************************
- *                               Reading function                            *
- *****************************************************************************/
-openscop_lines_p openscop_lines_sread(char *);
-
-
-/*+***************************************************************************
- *                    Memory allocation/deallocation function                *
- *****************************************************************************/
-openscop_lines_p openscop_lines_malloc();
-void openscop_lines_free(openscop_lines_p);
-
+# define OSL_STRING_UNDEFINED      "UNDEFINED"
+# define OSL_STRING_CONTEXT        "CONTEXT"
+# define OSL_STRING_DOMAIN         "DOMAIN"
+# define OSL_STRING_SCATTERING     "SCATTERING"
+# define OSL_STRING_READ           "READ"
+# define OSL_STRING_WRITE          "WRITE"
+# define OSL_STRING_MAY_WRITE      "MAY_WRITE"
 
 /*+***************************************************************************
- *                            Processing functions                           *
+ *                               UTILITY MACROS                              *
  *****************************************************************************/
-openscop_lines_p openscop_lines_clone(openscop_lines_p);
-int openscop_lines_equal(openscop_lines_p, openscop_lines_p);
-openscop_interface_p openscop_lines_interface();
+
+# define OSL_info(msg)                                                     \
+         do {                                                              \
+           fprintf(stderr,"[OpenScop] Info: "msg" (%s).\n", __func__);     \
+         } while (0)
+
+# define OSL_warning(msg)                                                  \
+         do {                                                              \
+           fprintf(stderr,"[OpenScop] Warning: "msg" (%s).\n", __func__);  \
+         } while (0)
+
+# define OSL_error(msg)                                                    \
+         do {                                                              \
+           fprintf(stderr,"[OpenScop] Error: "msg" (%s).\n", __func__);    \
+           exit(1);                                                        \
+         } while (0)
+
+# define OSL_malloc(ptr, type, size)                                       \
+         do {                                                              \
+           if (((ptr) = (type)malloc(size)) == NULL)                       \
+             OSL_error("memory overflow");                                 \
+         } while (0)
+
+# define OSL_realloc(ptr, type, size)                                      \
+         do {                                                              \
+           if (((ptr) = (type)realloc(ptr, size)) == NULL)                 \
+             OSL_error("memory overflow");                                 \
+         } while (0)
+
+# define OSL_strdup(destination, source)                                   \
+         do {                                                              \
+           if (source != NULL) {                                           \
+             if (((destination) = strdup(source)) == NULL)                 \
+               OSL_error("memory overflow");                               \
+           }                                                               \
+           else {                                                          \
+             destination = NULL;                                           \
+             OSL_warning("strdup of a NULL string");                       \
+           }                                                               \
+         } while (0)
 
 
-# if defined(__cplusplus)
-  }
-# endif
-
-#endif /* define OPENSCOP_LINES_H */
+#endif /* define OSL_MACROS_H */

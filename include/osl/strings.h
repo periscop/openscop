@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/irregular.h                        **
+     **                           strings.h                             **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 13/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,92 +61,65 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_IRREGULAR_H
-# define OPENSCOP_IRREGULAR_H
+#ifndef OSL_STRINGS_H
+# define OSL_STRINGS_H
 
-# include <openscop/macros.h>
-# include <openscop/strings.h>
-# include <openscop/interface.h>
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
   {
 # endif
 
+# define OSL_URI_STRINGS "strings"
 
-# define OPENSCOP_URI_IRREGULAR        "irregular"
-# define OPENSCOP_TAG_IRREGULAR_START  "<"OPENSCOP_URI_IRREGULAR">"
-# define OPENSCOP_TAG_IRREGULAR_STOP   "</"OPENSCOP_URI_IRREGULAR">"
-
-
-/**
- * The openscop_irregular_t structure stores an irregular extension to the core
- * OpenScop representation. It contains a list of predicates (in their textual
- * representation), and for each statement, its list of associated predicates.
- * The list of predicates contains both control and exit predicates (see
- * Benabderrhamane et al.'s paper at CC'2010), control predicates are listed
- * first, then come exit predicates.
+/* The "strings" type is simply a NULL-terminated array of C character
+ * strings, i.e. a char **. It is encapsulated into a structure to allow
+ * it manipulation through a generic type.
  */
-struct openscop_irregular {
-  // List of predicates (textual representation).
-  int nb_control;      /**< Number of control predicates in the SCoP. */
-  int nb_exit;         /**< Number of exit predicates in the SCoP. */
-  int * nb_iterators;  /**< nb_iterators[i]: #iterators for ith predicate. */
-  char *** iterators;  /**< iterators[i]: array of (nb_control + nb_exit)
-                            arrays of nb_iterators[i] strings. Each element
-                            corresponds to the list of original iterators
-                            for the ith predicate. */
-  char ** body;        /**< body[i]: original source code of ith predicate. */
-  
-  // List of associated predicates for each statement.
-  int nb_statements;   /**< Number of statements in the SCoP. */
-  int * nb_predicates; /**< nb_predicates[i]: #predicates for ith statement. */
-  int ** predicates;   /**< predicates[i]: array of nb_predicates[i] predicates
-                            corresponding to the list of predicates associated
-                            to the ith statement. */
+struct osl_strings {
+  char ** string; /**< NULL-terminated array of character strings */
 };
-typedef struct openscop_irregular   openscop_irregular_t;
-typedef struct openscop_irregular * openscop_irregular_p;
+typedef struct osl_strings   osl_strings_t;
+typedef struct osl_strings * osl_strings_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_irregular_idump(FILE *, openscop_irregular_p, int);
-void   openscop_irregular_dump(FILE *, openscop_irregular_p);
-char * openscop_irregular_sprint(openscop_irregular_p);
+void            osl_strings_idump(FILE *, osl_strings_p, int);
+void            osl_strings_dump(FILE *, osl_strings_p);
+char *          osl_strings_sprint(osl_strings_p);
+void            osl_strings_print(FILE *, osl_strings_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_irregular_p openscop_irregular_sread(char *);
-
+osl_strings_p   osl_strings_sread(char *);
+osl_strings_p   osl_strings_read(FILE *);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_irregular_p openscop_irregular_malloc();
-void                 openscop_irregular_free(openscop_irregular_p);
-
+osl_strings_p   osl_strings_malloc();
+void            osl_strings_free(osl_strings_p);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_irregular_p openscop_irregular_clone(openscop_irregular_p);
-int                  openscop_irregular_equal(openscop_irregular_p,
-                                  openscop_irregular_p);
-openscop_irregular_p openscop_irregular_add_control(openscop_irregular_p,
-                                  char**, int, char*);
-openscop_irregular_p openscop_irregular_add_exit(openscop_irregular_p,
-                                  char**, int, char*);
-openscop_irregular_p openscop_irregular_add_predicates(openscop_irregular_p,
-                                  int*, int);
-openscop_interface_p openscop_irregular_interface();
+osl_strings_p   osl_strings_clone(osl_strings_p);
+int             osl_strings_equal(osl_strings_p, osl_strings_p);
+int             osl_strings_size(osl_strings_p);
+osl_strings_p   osl_strings_encapsulate(char *);
+osl_interface_p osl_strings_interface();
+osl_strings_p   osl_strings_generate(char *, int);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_IRREGULAR_H */
+#endif /* define OSL_STRINGS_H */

@@ -61,12 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_generic_H
-# define OPENSCOP_generic_H
+#ifndef OSL_generic_H
+# define OSL_generic_H
 
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/interface.h>
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -75,54 +75,54 @@ extern "C"
 
 
 /**
- * The openscop_generic_t structure stores OpenScop data and operations with
+ * The osl_generic_t structure stores OpenScop data and operations with
  * no pre-defined type. The information is accessible through the data pointer
  * while the type and operations are accessible through the interface pointer.
  * A generic is a also a node of a NULL-terminated linked list of generics.
  */
-struct openscop_generic {
-  void * data;                    /**< Pointer to the data. */
-  openscop_interface_p interface; /**< Interface to work with the data. */
-  struct openscop_generic * next; /**< Pointer to the next generic. */
+struct osl_generic {
+  void * data;               /**< Pointer to the data. */
+  osl_interface_p interface; /**< Interface to work with the data. */
+  struct osl_generic * next; /**< Pointer to the next generic. */
 };
-typedef struct openscop_generic   openscop_generic_t;
-typedef struct openscop_generic * openscop_generic_p;
+typedef struct osl_generic   osl_generic_t;
+typedef struct osl_generic * osl_generic_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_generic_idump(FILE *, openscop_generic_p, int);
-void openscop_generic_dump(FILE *, openscop_generic_p);
-void openscop_generic_print(FILE *, openscop_generic_p);
+void          osl_generic_idump(FILE *, osl_generic_p, int);
+void          osl_generic_dump(FILE *, osl_generic_p);
+void          osl_generic_print(FILE *, osl_generic_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_generic_p openscop_generic_sread(char *, openscop_interface_p);
-openscop_generic_p openscop_generic_read(FILE *, openscop_interface_p);
+osl_generic_p osl_generic_sread(char *, osl_interface_p);
+osl_generic_p osl_generic_read(FILE *, osl_interface_p);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void openscop_generic_add(openscop_generic_p*, openscop_generic_p);
-openscop_generic_p openscop_generic_malloc();
-void openscop_generic_free(openscop_generic_p);
+void          osl_generic_add(osl_generic_p*, osl_generic_p);
+osl_generic_p osl_generic_malloc();
+void          osl_generic_free(osl_generic_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_generic_p openscop_generic_clone(openscop_generic_p);
-int openscop_generic_equal(openscop_generic_p, openscop_generic_p);
-int openscop_generic_hasURI(openscop_generic_p, char *);
-void * openscop_generic_lookup(openscop_generic_p, char *);
+osl_generic_p osl_generic_clone(osl_generic_p);
+int           osl_generic_equal(osl_generic_p, osl_generic_p);
+int           osl_generic_hasURI(osl_generic_p, char *);
+void *        osl_generic_lookup(osl_generic_p, char *);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_generic_H */
+#endif /* define OSL_generic_H */

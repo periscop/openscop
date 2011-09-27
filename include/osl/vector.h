@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                             int.h                               **
+     **                           vector.h                              **
      **-----------------------------------------------------------------**
-     **                   First version: 18/07/2011                     **
+     **                   First version: 01/05/2008                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,68 +61,64 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_INT_H
-# define OPENSCOP_INT_H
+#ifndef OSL_VECTOR_H
+# define OSL_VECTOR_H
 
-# include <openscop/macros.h>
-# ifdef OPENSCOP_GMP_IS_HERE
-#  include <gmp.h>
+# include <stdio.h>
+# include <osl/macros.h>
+# include <osl/int.h>
+# include <osl/util.h>
+
+
+# if defined(__cplusplus)
+extern "C"
+  {
 # endif
 
 
-typedef void * openscop_int_p;
+/**
+ * The osl_vector_t structure stores a vector information in the PolyLib
+ * format (the first entry has a specific meaning). When a vector
+ * describes a linear constraint, a 0 means it is an equality == 0, a 1 means
+ * an inequality >= 0. When the vector describes an array access, a number
+ * different than 0 is the array identifier.
+ */
+struct osl_vector {
+  int size;      /**< Number of vector entries */
+  int precision; /**< Precision of the integer elements. */
+  void * v;      /**< An array of values */
+};
+typedef struct osl_vector   osl_vector_t;
+typedef struct osl_vector * osl_vector_p;
 
 
 /*+***************************************************************************
- *                                Basic Functions                            *
+ *                          Structure display function                       *
  *****************************************************************************/
-
-
-void   openscop_int_dump_precision(FILE *, int);
-int    openscop_int_sizeof(int);
-void * openscop_int_address(int, void *, int);
-void   openscop_int_init(int, void *, int);
-void * openscop_int_malloc(int);
-void   openscop_int_assign(int, void *, int, void *, int);
-void   openscop_int_set_si(int, void *, int, int);
-int    openscop_int_get_si(int, void *, int);
-void   openscop_int_init_set_si(int, void *, int, int);
-void   openscop_int_clear(int, void *, int);
-void   openscop_int_free(int, void *, int);
-void   openscop_int_print(FILE *, int, void *, int);
-void   openscop_int_sprint(char *, int, void *, int);
-void   openscop_int_sread(char *, int, void *, int);
+void         osl_vector_idump(FILE *, osl_vector_p, int);
+void         osl_vector_dump(FILE *, osl_vector_p);
 
 
 /*+***************************************************************************
- *                            Arithmetic Operations                          *
+ *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
-
-void   openscop_int_increment(int, void *, int, void *, int);
-void   openscop_int_decrement(int, void *, int, void *, int);
-void   openscop_int_add(int, void *, int, void *, int, void *, int);
-void   openscop_int_add_ui(int, void *, int, void *, int, int);
-void   openscop_int_mul(int, void *, int, void *, int, void *, int);
-void   openscop_int_mul_si(int, void *, int, void *, int, int);
-void   openscop_int_sub(int, void *, int, void *, int, void *, int);
-void   openscop_int_oppose(int, void *, int, void *, int);
+osl_vector_p osl_vector_pmalloc(int, int);
+osl_vector_p osl_vector_malloc(int);
+void         osl_vector_free(osl_vector_p);
 
 
 /*+***************************************************************************
- *                            Conditional Operations                         *
+ *                            Processing functions                           *
  *****************************************************************************/
+osl_vector_p osl_vector_add_scalar(osl_vector_p, int);
+osl_vector_p osl_vector_mul_scalar(osl_vector_p, int);
+osl_vector_p osl_vector_add(osl_vector_p, osl_vector_p);
+osl_vector_p osl_vector_sub(osl_vector_p, osl_vector_p);
+void         osl_vector_tag_inequality(osl_vector_p);
+void         osl_vector_tag_equality(osl_vector_p);
+int          osl_vector_equal(osl_vector_p, osl_vector_p);
 
-
-int    openscop_int_eq(int, void *, int, void *, int);
-int    openscop_int_ne(int, void *, int, void *, int);
-int    openscop_int_pos(int, void *, int);
-int    openscop_int_neg(int, void *, int);
-int    openscop_int_zero(int, void *, int);
-int    openscop_int_notzero(int, void *, int);
-int    openscop_int_one(int, void *, int);
-int    openscop_int_mone(int, void *, int);
-int    openscop_int_divisible(int, void *, int, void *, int);
-
-
-#endif /* define OPENSCOP_INT_H */
+# if defined(__cplusplus)
+  }
+# endif
+#endif /* define OSL_VECTOR_H */

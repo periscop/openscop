@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                      extensions/arrays.h                        **
+     **                         statement.h                             **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 30/04/2008                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,12 +61,15 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_ARRAYS_H
-# define OPENSCOP_ARRAYS_H
+#ifndef OSL_STATEMENT_H
+# define OSL_STATEMENT_H
 
-# include <openscop/macros.h>
-# include <openscop/strings.h>
-# include <openscop/interface.h>
+# include <stdio.h>
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/relation.h>
+# include <osl/relation_list.h>
+# include <osl/generic.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -74,57 +77,59 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_URI_ARRAYS        "arrays"
-# define OPENSCOP_TAG_ARRAYS_START  "<"OPENSCOP_URI_ARRAYS">"
-# define OPENSCOP_TAG_ARRAYS_STOP   "</"OPENSCOP_URI_ARRAYS">"
-
-
 /**
- * The openscop_arrays_t structure stores a set of array names in
- * the extension part of the OpenScop representation. Each name
- * has a name string and an identifier: the ith name as name
- * string names[i] and identifier id[i].
+ * The osl_statement_t structure stores a list of statement. Each node
+ * contains the useful informations for a given statement to process it
+ * within a polyhedral framework. The order in the list may matter for naming
+ * conventions (e.g. "S1" for the first statement in the list).
  */
-struct openscop_arrays {
-  int nb_names;      /**< Number of names. */
-  int  *  id;        /**< Array of nb_names identifiers. */
-  char ** names;     /**< Array of nb_names names. */
+struct osl_statement {
+  osl_relation_p domain;       /**< Iteration domain of the statement */
+  osl_relation_p scattering;   /**< Scattering relation of the statement*/
+  osl_relation_list_p access;  /**< Access information */
+  osl_generic_p iterators;     /**< Original iterators */
+  osl_generic_p body;          /**< Original statement body */
+  void * usr;                  /**< A user-defined field, not touched
+				    AT ALL by the OpenScop Library. */
+  struct osl_statement * next; /**< Next statement in the linked list */
 };
-typedef struct openscop_arrays   openscop_arrays_t;
-typedef struct openscop_arrays * openscop_arrays_p;
+typedef struct osl_statement   osl_statement_t;
+typedef struct osl_statement * osl_statement_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_arrays_idump(FILE *, openscop_arrays_p, int);
-void   openscop_arrays_dump(FILE *, openscop_arrays_p);
-char * openscop_arrays_sprint(openscop_arrays_p);
+void            osl_statement_idump(FILE *, osl_statement_p, int);
+void            osl_statement_dump(FILE *, osl_statement_p);
+void            osl_statement_print(FILE *, osl_statement_p);
 
 
 /*****************************************************************************
- *                               Reading function                            *
+ *                              Reading function                             *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_sread(char *);
+osl_statement_p osl_statement_read(FILE*);
 
 
 /*+***************************************************************************
- *                    Memory allocation/deallocation function                *
+ *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_malloc();
-void              openscop_arrays_free(openscop_arrays_p);
+osl_statement_p osl_statement_malloc();
+void            osl_statement_free(osl_statement_p);
 
 
 /*+***************************************************************************
- *                            Processing functions                           *
+ *                           Processing functions                            *
  *****************************************************************************/
-openscop_arrays_p openscop_arrays_clone(openscop_arrays_p);
-int               openscop_arrays_equal(openscop_arrays_p, openscop_arrays_p);
-char **           openscop_arrays_generate_names(openscop_arrays_p, int *);
-openscop_interface_p openscop_arrays_interface();
+void            osl_statement_add(osl_statement_p *, osl_statement_p);
+void            osl_statement_compact(osl_statement_p, int);
+int             osl_statement_number(osl_statement_p);
+osl_statement_p osl_statement_clone(osl_statement_p);
+int             osl_statement_equal(osl_statement_p, osl_statement_p);
+int             osl_statement_integrity_check(osl_statement_p, int);
+int             osl_statement_get_nb_iterators(osl_statement_p);
 
 # if defined(__cplusplus)
   }
 # endif
-
-#endif /* define OPENSCOP_ARRAYS_H */
+#endif /* define OSL_STATEMENT_H */

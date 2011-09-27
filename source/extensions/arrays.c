@@ -64,7 +64,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <ctype.h>
-# include <openscop/extensions/arrays.h>
+# include <osl/extensions/arrays.h>
 
 
 /*+***************************************************************************
@@ -73,8 +73,8 @@
 
 
 /**
- * openscop_arrays_print_structure function:
- * this function displays a openscop_arrays_t structure (*arrays) into a file
+ * osl_arrays_print_structure function:
+ * this function displays a osl_arrays_t structure (*arrays) into a file
  * (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -82,8 +82,7 @@
  * \param arrays The arrays structure whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_arrays_idump(FILE * file, openscop_arrays_p arrays,
-                                     int level) {
+void osl_arrays_idump(FILE * file, osl_arrays_p arrays, int level) {
   int i, j;
 
   // Go to the right level.
@@ -91,7 +90,7 @@ void openscop_arrays_idump(FILE * file, openscop_arrays_p arrays,
     fprintf(file, "|\t");
 
   if (arrays != NULL)
-    fprintf(file, "+-- openscop_arrays_t\n");
+    fprintf(file, "+-- osl_arrays_t\n");
   else
     fprintf(file, "+-- NULL arrays\n");
 
@@ -121,49 +120,49 @@ void openscop_arrays_idump(FILE * file, openscop_arrays_p arrays,
 
 
 /**
- * openscop_arrays_print function:
- * this function prints the content of an openscop_arrays_t structure
+ * osl_arrays_print function:
+ * this function prints the content of an osl_arrays_t structure
  * (*arrays) into a file (file, possibly stdout).
  * \param file   The file where the information has to be printed.
  * \param arrays The arrays structure whose information has to be printed.
  */
-void openscop_arrays_dump(FILE * file, openscop_arrays_p arrays) {
-  openscop_arrays_idump(file, arrays, 0);
+void osl_arrays_dump(FILE * file, osl_arrays_p arrays) {
+  osl_arrays_idump(file, arrays, 0);
 }
 
 
 /**
- * openscop_arrays_print_openscop function:
- * this function prints the content of an openscop_arrays_t structure
+ * osl_arrays_print_openscop function:
+ * this function prints the content of an osl_arrays_t structure
  * (*arrays) into a string (returned) in the OpenScop textual format.
  * \param  arrays The arrays structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the arrays structure.
  */
-char * openscop_arrays_sprint(openscop_arrays_p arrays) {
+char * osl_arrays_sprint(osl_arrays_p arrays) {
   int i;
-  int high_water_mark = OPENSCOP_MAX_STRING;
+  int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char * buffer;
 
   if (arrays != NULL) {
-    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
-    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
+    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
 
-    sprintf(buffer, OPENSCOP_TAG_ARRAYS_START);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_ARRAYS_START);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     sprintf(buffer, "\n%d\n", arrays->nb_names);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     for (i = 0; i < arrays->nb_names; i++) {
       sprintf(buffer, "%d %s\n", arrays->id[i], arrays->names[i]);
-      openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
-    sprintf(buffer, OPENSCOP_TAG_ARRAYS_STOP"\n");
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_ARRAYS_STOP"\n");
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -177,33 +176,33 @@ char * openscop_arrays_sprint(openscop_arrays_p arrays) {
 
 
 /**
- * openscop_arrays_read function:
+ * osl_arrays_read function:
  * this function reads an arrays structure from a string complying to the
  * OpenScop textual format and returns a pointer to this arrays structure.
  * The string should contain only one textual format of an arrays structure.
  * \param  extensions The input string where to find an arrays structure.
  * \return A pointer to the arrays structure that has been read.
  */
-openscop_arrays_p openscop_arrays_sread(char * extensions) {
+osl_arrays_p osl_arrays_sread(char * extensions) {
   int i, k, array_id;
   int  nb_names;
   int  *  id;
   char ** names;
   char * content, * content_backup;
-  char buff[OPENSCOP_MAX_STRING];
-  openscop_arrays_p arrays;
+  char buff[OSL_MAX_STRING];
+  osl_arrays_p arrays;
 
-  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_ARRAYS_START,
-                                                  OPENSCOP_TAG_ARRAYS_STOP);
+  content = osl_util_tag_content(extensions, OSL_TAG_ARRAYS_START,
+                                             OSL_TAG_ARRAYS_STOP);
 
   if (content == NULL) {
-    OPENSCOP_info("no arrays optional tag");
+    OSL_info("no arrays optional tag");
     return NULL;
   }
   content_backup = content;
 
   // Find the number of names provided.
-  nb_names = openscop_util_read_int(NULL, &content);
+  nb_names = osl_util_read_int(NULL, &content);
 
   // Allocate the array of id and names.
   id = (int *)malloc(nb_names * sizeof(int));
@@ -226,7 +225,7 @@ openscop_arrays_p openscop_arrays_sread(char * extensions) {
     buff[i] = '\0';
     sscanf(buff, "%d", &array_id);
     if (array_id <= 0)
-      OPENSCOP_error("array id must be > 0");
+      OSL_error("array id must be > 0");
     id[k] = array_id;
 
     // Get the array name string.
@@ -243,7 +242,7 @@ openscop_arrays_p openscop_arrays_sread(char * extensions) {
   }
   free(content_backup);
 
-  arrays = openscop_arrays_malloc();
+  arrays = osl_arrays_malloc();
   arrays->nb_names = nb_names;
   arrays->id       = id;
   arrays->names    = names;
@@ -258,17 +257,17 @@ openscop_arrays_p openscop_arrays_sread(char * extensions) {
 
 
 /**
- * openscop_arrays_malloc function:
- * This function allocates the memory space for an openscop_arrays_t
+ * osl_arrays_malloc function:
+ * This function allocates the memory space for an osl_arrays_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty arrays structure with fields set to
  *         default values.
  */
-openscop_arrays_p openscop_arrays_malloc() {
-  openscop_arrays_p arrays;
+osl_arrays_p osl_arrays_malloc() {
+  osl_arrays_p arrays;
 
-  OPENSCOP_malloc(arrays, openscop_arrays_p, sizeof(openscop_arrays_t));
+  OSL_malloc(arrays, osl_arrays_p, sizeof(osl_arrays_t));
   arrays->nb_names = 0;
   arrays->id       = NULL;
   arrays->names    = NULL;
@@ -278,11 +277,11 @@ openscop_arrays_p openscop_arrays_malloc() {
 
 
 /**
- * openscop_arrays_free function:
+ * osl_arrays_free function:
  * This function frees the allocated memory for an arrays structure.
  * \param arrays The pointer to the arrays structure we want to free.
  */
-void openscop_arrays_free(openscop_arrays_p arrays) {
+void osl_arrays_free(osl_arrays_p arrays) {
   int i;
 
   if (arrays != NULL) {
@@ -304,30 +303,30 @@ void openscop_arrays_free(openscop_arrays_p arrays) {
 
 
 /**
- * openscop_arrays_clone function:
+ * osl_arrays_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_arrays_t data structure.
+ * osl_arrays_t data structure.
  * \param arrays The pointer to the arrays structure we want to copy.
  * \return A pointer to the copy of the arrays structure.
  */
-openscop_arrays_p openscop_arrays_clone(openscop_arrays_p arrays) {
-  openscop_arrays_p copy;
+osl_arrays_p osl_arrays_clone(osl_arrays_p arrays) {
+  osl_arrays_p copy;
   int i;
 
   if (arrays == NULL)
     return NULL;
 
-  copy = openscop_arrays_malloc();
+  copy = osl_arrays_malloc();
   if (copy != NULL) {
     copy->nb_names = arrays->nb_names;
     copy->id = (int *)malloc(arrays->nb_names * sizeof(int));
-    OPENSCOP_malloc(copy->names, char **, arrays->nb_names * sizeof(char*));
+    OSL_malloc(copy->names, char **, arrays->nb_names * sizeof(char*));
     
     for (i = 0; i < arrays->nb_names; i++) {
       copy->id[i] = arrays->id[i];
       copy->names[i] = strdup(arrays->names[i]);
       if ((copy->names[i] == NULL) && (arrays->names[i] != NULL))
-        OPENSCOP_error("memory overflow");
+        OSL_error("memory overflow");
     }
   }
 
@@ -336,7 +335,7 @@ openscop_arrays_p openscop_arrays_clone(openscop_arrays_p arrays) {
 
 
 /**
- * openscop_arrays_equal function:
+ * osl_arrays_equal function:
  * this function returns true if the two arrays structures are the same
  * (content-wise), false otherwise. This functions considers two arrays
  * structures as equal if the order of the array names differ, however the
@@ -345,7 +344,7 @@ openscop_arrays_p openscop_arrays_clone(openscop_arrays_p arrays) {
  * \param a2  The second arrays structure.
  * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2) {
+int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
   int i, j, found;
 
   if (a1 == a2)
@@ -377,7 +376,7 @@ int openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2) {
 
 
 /**
- * openscop_arrays_generate_names function:
+ * osl_arrays_generate_names function:
  * This function generates an array of strings corresponding to array names.
  * The ith string will correspond to the array name with identifier i in the
  * arrays structure. If some identifiers are missing, the corresponding names
@@ -387,8 +386,7 @@ int openscop_arrays_equal(openscop_arrays_p a1, openscop_arrays_p a2) {
  * \param nb_names Pointer to the location to store the number of names.
  * \return An array of strings corresponding to the array names.
  */
-char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
-                                       int * nb_names) {
+char ** osl_arrays_generate_names(osl_arrays_p arrays, int * nb_names) {
   char ** names = NULL;
   char ** tmpnames;
   int i;
@@ -402,17 +400,17 @@ char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
 	*nb_names = arrays->id[i];
   
     // Allocate the array of names and store the existing names.
-    OPENSCOP_malloc(names, char **, *nb_names * sizeof(char *));
+    OSL_malloc(names, char **, *nb_names * sizeof(char *));
     for (i = 0; i < arrays->nb_names; i++) {
       names[arrays->id[i] - 1] = strdup(arrays->names[i]);
       if (names[arrays->id[i] - 1] == NULL)
-	OPENSCOP_error("memory overflow");
+	OSL_error("memory overflow");
     }
 
     // Fill the missing names.
-    // TODO : update this with the new openscop_strings_t
+    // TODO : update this with the new osl_strings_t
     /*
-    tmpnames = openscop_strings_generate("A_", *nb_names);
+    tmpnames = osl_strings_generate("A_", *nb_names);
     for (i = 0; i < *nb_names; i++) {
       if (names[i] == NULL || names[i][0] == '\0')
 	names[i] = tmpnames[i]; // Use a generated name.
@@ -428,23 +426,23 @@ char ** openscop_arrays_generate_names(openscop_arrays_p arrays,
 
 
 /**
- * openscop_arrays_interface function:
+ * osl_arrays_interface function:
  * this function creates an interface structure corresponding to the arrays
  * extension and returns it).
  * \return An interface structure for the arrays extension.
  */
-openscop_interface_p openscop_arrays_interface() {
-  openscop_interface_p interface = openscop_interface_malloc();
+osl_interface_p osl_arrays_interface() {
+  osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OPENSCOP_URI_ARRAYS);
-  interface->idump  = (openscop_idump_f)openscop_arrays_idump;
-  interface->dump   = (openscop_dump_f)openscop_arrays_dump;
-  interface->sprint = (openscop_sprint_f)openscop_arrays_sprint;
-  interface->sread  = (openscop_sread_f)openscop_arrays_sread;
-  interface->malloc = (openscop_malloc_f)openscop_arrays_malloc;
-  interface->free   = (openscop_free_f)openscop_arrays_free;
-  interface->clone  = (openscop_clone_f)openscop_arrays_clone;
-  interface->equal  = (openscop_equal_f)openscop_arrays_equal;
+  interface->URI    = strdup(OSL_URI_ARRAYS);
+  interface->idump  = (osl_idump_f)osl_arrays_idump;
+  interface->dump   = (osl_dump_f)osl_arrays_dump;
+  interface->sprint = (osl_sprint_f)osl_arrays_sprint;
+  interface->sread  = (osl_sread_f)osl_arrays_sread;
+  interface->malloc = (osl_malloc_f)osl_arrays_malloc;
+  interface->free   = (osl_free_f)osl_arrays_free;
+  interface->clone  = (osl_clone_f)osl_arrays_clone;
+  interface->equal  = (osl_equal_f)osl_arrays_equal;
 
   return interface;
 }

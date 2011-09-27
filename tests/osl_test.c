@@ -66,7 +66,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <openscop/openscop.h>
+#include <osl/osl.h>
 
 //#define FORK                 // Comment that if you want only one process
                              // (best for debugging with valgrind but bad
@@ -99,9 +99,9 @@ int test_file(char * input_name, int verbose) {
   int equal   = 0;
   char * output_name;
   FILE * input_file, * output_file;
-  openscop_scop_p input_scop;
-  openscop_scop_p output_scop;
-  openscop_scop_p cloned_scop;
+  osl_scop_p input_scop;
+  osl_scop_p output_scop;
+  osl_scop_p cloned_scop;
 
   printf("Testing file %20s... \n", input_name); 
     
@@ -112,13 +112,13 @@ int test_file(char * input_name, int verbose) {
     fprintf(stderr, "\nError: unable to open file %s\n", input_name);
     exit(2);
   }
-  input_scop = openscop_scop_read(input_file);
+  input_scop = osl_scop_read(input_file);
   fclose(input_file);
 
   // PART II. Clone and test.
-  cloned_scop = openscop_scop_clone(input_scop);
+  cloned_scop = osl_scop_clone(input_scop);
   // Compare the two scops.
-  if (cloning = openscop_scop_equal(input_scop, cloned_scop))
+  if (cloning = osl_scop_equal(input_scop, cloned_scop))
     printf("- cloning succeed\n");
   else
     printf("- cloning failed\n");
@@ -126,26 +126,26 @@ int test_file(char * input_name, int verbose) {
   // PART III. Dump to file and test.
   output_name = tmpnam(NULL);
   output_file = fopen(output_name, "w");
-  //openscop_scop_dump(stdout, input_scop);
-  //openscop_scop_print(stdout, input_scop);
-  openscop_scop_print(output_file, input_scop);
+  //osl_scop_dump(stdout, input_scop);
+  //osl_scop_print(stdout, input_scop);
+  osl_scop_print(output_file, input_scop);
   fclose(output_file);
   
   // Raise the generated file to data structures.
   output_file = fopen(output_name, "r");
-  output_scop = openscop_scop_read(output_file);
-  //openscop_scop_dump(stdout, output_scop);
+  output_scop = osl_scop_read(output_file);
+  //osl_scop_dump(stdout, output_scop);
   fclose(output_file);
 
   if (verbose) {
     printf("\n\n*************************************************\n\n");
-    openscop_scop_dump(stdout, output_scop);
-    openscop_scop_print(stdout, output_scop);
+    osl_scop_dump(stdout, output_scop);
+    osl_scop_print(stdout, output_scop);
     printf("\n*************************************************\n\n");
   }
 
   // Compare the two scops.
-  if (dumping = openscop_scop_equal(input_scop, output_scop))
+  if (dumping = osl_scop_equal(input_scop, output_scop))
     printf("- dumping succeed\n");
   else
     printf("- dumping failed\n");
@@ -157,9 +157,9 @@ int test_file(char * input_name, int verbose) {
     printf("Failure :-(\n");
 
   // Save the planet.
-  openscop_scop_free(input_scop);
-  openscop_scop_free(cloned_scop);
-  openscop_scop_free(output_scop);
+  osl_scop_free(input_scop);
+  osl_scop_free(cloned_scop);
+  osl_scop_free(output_scop);
   remove(output_name);
 
   return equal;
@@ -168,7 +168,7 @@ int test_file(char * input_name, int verbose) {
 
 /**
  * OpenScop test program.
- * Usage: openscop_test [-v] [openscop_file]
+ * Usage: osl_test [-v] [osl_file]
  * This program scans a directory for openscop files and test each of them.
  * Optionnally the user can provide a file name to check this file only. A
  * verbose option is also provided to output more information during tests.
@@ -190,7 +190,7 @@ int main(int argc, char * argv[]) {
     verbose = 1;
 
   if ((argc > 3) || ((argc == 3) && (!verbose))) {
-    fprintf(stderr, "usage: openscop_test [-v] [openscop_file]\n");
+    fprintf(stderr, "usage: osl_test [-v] [osl_file]\n");
     exit(1); 
   }
 

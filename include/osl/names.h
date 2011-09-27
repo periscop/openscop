@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/comment.h                        **
+     **                      extensions/names.h                         **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 18/05/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,12 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_COMMENT_H
-# define OPENSCOP_COMMENT_H
+#ifndef OSL_NAMES_H
+# define OSL_NAMES_H
 
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/interface.h>
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/strings.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -74,53 +74,52 @@ extern "C"
 # endif
 
 
-# define OPENSCOP_URI_COMMENT        "comment"
-# define OPENSCOP_TAG_COMMENT_START  "<"OPENSCOP_URI_COMMENT">"
-# define OPENSCOP_TAG_COMMENT_STOP   "</"OPENSCOP_URI_COMMENT">"
-
-
 /**
- * The openscop_comment_t structure stores a comment extention to the core
- * OpenScop representation. It is simply a 0-terminated string.
+ * The osl_names_t structure stores the various names (names of iterators,
+ * parameters...) necessary to generate a code from the OpenScop data
+ * structure.
  */
-struct openscop_comment {
-  char * comment;  /**< A comment message as a 0-terminated string. */
+struct osl_names {
+  osl_strings_p parameters; /**< Parameter names */
+  osl_strings_p iterators;  /**< Iterator names */
+  osl_strings_p scatt_dims; /**< Scattering dimension names */
+  osl_strings_p local_dims; /**< Local dimension names */
+  osl_strings_p arrays;     /**< Array names */
 };
-typedef struct openscop_comment   openscop_comment_t;
-typedef struct openscop_comment * openscop_comment_p;
+typedef struct osl_names   osl_names_t;
+typedef struct osl_names * osl_names_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void   openscop_comment_idump(FILE *, openscop_comment_p, int);
-void   openscop_comment_dump(FILE *, openscop_comment_p);
-char * openscop_comment_sprint(openscop_comment_p);
+void         osl_names_idump(FILE *, osl_names_p, int);
+void         osl_names_dump(FILE *, osl_names_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_comment_p openscop_comment_sread(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_comment_p openscop_comment_malloc();
-void openscop_comment_free(openscop_comment_p);
+osl_names_p osl_names_malloc();
+void        osl_names_free(osl_names_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_comment_p openscop_comment_clone(openscop_comment_p);
-int openscop_comment_equal(openscop_comment_p, openscop_comment_p);
-openscop_interface_p openscop_comment_interface();
+osl_names_p osl_names_clone(osl_names_p);
+osl_names_p osl_names_generate(char *, int, char *, int,
+                               char *, int, char *, int,
+                               char *, int);
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_COMMENT_H */
+#endif /* define OSL_NAMES_H */

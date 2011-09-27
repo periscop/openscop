@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                         statement.h                             **
+     **                     extensions/lines.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 30/04/2008                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,15 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_STATEMENT_H
-# define OPENSCOP_STATEMENT_H
+#ifndef OSL_LINES_H
+# define OSL_LINES_H
+# include <osl/interface.h>
 
-# include <stdio.h>
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
-# include <openscop/generic.h>
+# include <osl/macros.h>
+# include <osl/util.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -77,59 +74,55 @@ extern "C"
 # endif
 
 
+# define OSL_URI_LINES        "lines"
+# define OSL_TAG_LINES_START  "<"OSL_URI_LINES">"
+# define OSL_TAG_LINES_STOP   "</"OSL_URI_LINES">"
+
+
 /**
- * The openscop_statement_t structure stores a list of statement. Each node
- * contains the useful informations for a given statement to process it
- * within a polyhedral framework. The order in the list may matter for naming
- * conventions (e.g. "S1" for the first statement in the list).
+ * The osl_lines_t structure stores a lines extention to the core
+ * OpenScop representation. It provides information about the line
+ * numbers of the SCoP in the original source file.
  */
-struct openscop_statement {
-  openscop_relation_p domain;       /**< Iteration domain of the statement */
-  openscop_relation_p scattering;   /**< Scattering relation of the statement*/
-  openscop_relation_list_p access;  /**< Access information */
-  openscop_generic_p iterators;     /**< Original iterators */
-  openscop_generic_p body;          /**< Original statement body */
-  void * usr;                       /**< A user-defined field, not touched
-				         AT ALL by the OpenScop Library. */
-  struct openscop_statement * next; /**< Next statement in the linked list */
+struct osl_lines {
+  int start; /**< First line of the SCoP in the original source file. */
+  int end;   /**< Last line of the SCoP in the original source file. */
 };
-typedef struct openscop_statement   openscop_statement_t;
-typedef struct openscop_statement * openscop_statement_p;
+typedef struct osl_lines   osl_lines_t;
+typedef struct osl_lines * osl_lines_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_statement_idump(FILE *, openscop_statement_p, int);
-void openscop_statement_dump(FILE *, openscop_statement_p);
-void openscop_statement_print(FILE *, openscop_statement_p);
+void            osl_lines_idump(FILE *, osl_lines_p, int);
+void            osl_lines_dump(FILE *, osl_lines_p);
+char *          osl_lines_sprint(osl_lines_p);
 
 
 /*****************************************************************************
- *                              Reading function                             *
+ *                               Reading function                            *
  *****************************************************************************/
-openscop_statement_p openscop_statement_read(FILE*);
+osl_lines_p     osl_lines_sread(char *);
 
 
 /*+***************************************************************************
- *                   Memory allocation/deallocation function                 *
+ *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_statement_p openscop_statement_malloc();
-void                 openscop_statement_free(openscop_statement_p);
+osl_lines_p     osl_lines_malloc();
+void            osl_lines_free(osl_lines_p);
 
 
 /*+***************************************************************************
- *                           Processing functions                            *
+ *                            Processing functions                           *
  *****************************************************************************/
-void openscop_statement_add(openscop_statement_p *, openscop_statement_p);
-void openscop_statement_compact(openscop_statement_p, int);
-int  openscop_statement_number(openscop_statement_p);
-openscop_statement_p openscop_statement_clone(openscop_statement_p);
-int  openscop_statement_equal(openscop_statement_p, openscop_statement_p);
-int  openscop_statement_integrity_check(openscop_statement_p, int);
-int  openscop_statement_get_nb_iterators(openscop_statement_p);
+osl_lines_p     osl_lines_clone(osl_lines_p);
+int             osl_lines_equal(osl_lines_p, osl_lines_p);
+osl_interface_p osl_lines_interface();
+
 
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define OPENSCOP_STATEMENT_H */
+
+#endif /* define OSL_LINES_H */

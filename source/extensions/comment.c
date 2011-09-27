@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/extensions/comment.h>
+# include <osl/extensions/comment.h>
 
 
 /*+***************************************************************************
@@ -72,8 +72,8 @@
 
 
 /**
- * openscop_comment_idump function:
- * this function displays an openscop_comment_t structure (*comment) into a
+ * osl_comment_idump function:
+ * this function displays an osl_comment_t structure (*comment) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -81,8 +81,7 @@
  * \param comment The comment structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void openscop_comment_idump(FILE * file, openscop_comment_p comment,
-                            int level) {
+void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
   int j;
   char * tmp;
 
@@ -91,7 +90,7 @@ void openscop_comment_idump(FILE * file, openscop_comment_p comment,
     fprintf(file, "|\t");
 
   if (comment != NULL)
-    fprintf(file, "+-- openscop_comment_t\n");
+    fprintf(file, "+-- osl_comment_t\n");
   else
     fprintf(file, "+-- NULL comment\n");
 
@@ -117,48 +116,48 @@ void openscop_comment_idump(FILE * file, openscop_comment_p comment,
 
 
 /**
- * openscop_comment_dump function:
- * this function prints the content of an openscop_comment_t structure
+ * osl_comment_dump function:
+ * this function prints the content of an osl_comment_t structure
  * (*comment) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
  * \param comment The comment structure whose information has to be printed.
  */
-void openscop_comment_dump(FILE * file, openscop_comment_p comment) {
-  openscop_comment_idump(file, comment, 0);
+void osl_comment_dump(FILE * file, osl_comment_p comment) {
+  osl_comment_idump(file, comment, 0);
 }
 
 
 /**
- * openscop_comment_sprint function:
- * this function prints the content of an openscop_comment_t structure
+ * osl_comment_sprint function:
+ * this function prints the content of an osl_comment_t structure
  * (*comment) into a string (returned) in the OpenScop textual format.
  * \param  comment The comment structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the comment structure.
  */
-char * openscop_comment_sprint(openscop_comment_p comment) {
-  int high_water_mark = OPENSCOP_MAX_STRING;
+char * osl_comment_sprint(osl_comment_p comment) {
+  int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char * buffer;
 
   if (comment != NULL) {
-    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
-    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
+    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the begin tag.
-    sprintf(buffer, OPENSCOP_TAG_COMMENT_START);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_COMMENT_START);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the comment.
     sprintf(buffer, "\n%s", comment->comment);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the end tag.
-    sprintf(buffer, OPENSCOP_TAG_COMMENT_STOP"\n");
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_COMMENT_STOP"\n");
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -171,28 +170,28 @@ char * openscop_comment_sprint(openscop_comment_p comment) {
  *****************************************************************************/
 
 /**
- * openscop_comment_sread function:
+ * osl_comment_sread function:
  * this function reads a comment structure from a string complying to the
  * OpenScop textual format and returns a pointer to this comment structure.
  * The string should contain only one textual format of a comment structure.
  * \param  extensions The input string where to find a comment structure.
  * \return A pointer to the comment structure that has been read.
  */
-openscop_comment_p openscop_comment_sread(char * extensions) {
+osl_comment_p osl_comment_sread(char * extensions) {
   char * content;
-  openscop_comment_p comment;
+  osl_comment_p comment;
 
-  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_COMMENT_START,
-                                                  OPENSCOP_TAG_COMMENT_STOP);
+  content = osl_util_tag_content(extensions, OSL_TAG_COMMENT_START,
+                                             OSL_TAG_COMMENT_STOP);
   if (content == NULL) {
-    OPENSCOP_info("no comment optional tag");
+    OSL_info("no comment optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING) 
-    OPENSCOP_error("comment too long");
+  if (strlen(content) > OSL_MAX_STRING) 
+    OSL_error("comment too long");
 
-  comment = openscop_comment_malloc();
+  comment = osl_comment_malloc();
   comment->comment = content;
 
   return comment;
@@ -205,17 +204,17 @@ openscop_comment_p openscop_comment_sread(char * extensions) {
 
 
 /**
- * openscop_comment_malloc function:
- * This function allocates the memory space for an openscop_comment_t
+ * osl_comment_malloc function:
+ * This function allocates the memory space for an osl_comment_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty comment structure with fields set to
  *         default values.
  */
-openscop_comment_p openscop_comment_malloc() {
-  openscop_comment_p comment;
+osl_comment_p osl_comment_malloc() {
+  osl_comment_p comment;
 
-  OPENSCOP_malloc(comment, openscop_comment_p, sizeof(openscop_comment_t));
+  OSL_malloc(comment, osl_comment_p, sizeof(osl_comment_t));
   comment->comment = NULL;
 
   return comment;
@@ -223,12 +222,12 @@ openscop_comment_p openscop_comment_malloc() {
 
 
 /**
- * openscop_comment_free function:
- * This function frees the allocated memory for an openscop_comment_t
+ * osl_comment_free function:
+ * This function frees the allocated memory for an osl_comment_t
  * structure.
  * \param comment The pointer to the comment structure we want to free.
  */
-void openscop_comment_free(openscop_comment_p comment) {
+void osl_comment_free(osl_comment_p comment) {
   if (comment != NULL) {
     if(comment->comment != NULL)
       free(comment->comment);
@@ -243,36 +242,36 @@ void openscop_comment_free(openscop_comment_p comment) {
 
 
 /**
- * openscop_comment_clone function:
+ * osl_comment_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_comment_t data structure.
+ * osl_comment_t data structure.
  * \param comment The pointer to the comment structure we want to copy.
  * \return A pointer to the copy of the comment structure.
  */
-openscop_comment_p openscop_comment_clone(openscop_comment_p comment) {
-  openscop_comment_p copy;
+osl_comment_p osl_comment_clone(osl_comment_p comment) {
+  osl_comment_p copy;
 
   if (comment == NULL)
     return NULL;
 
-  copy = openscop_comment_malloc();
+  copy = osl_comment_malloc();
   copy->comment = strdup(comment->comment);
   if ((copy->comment == NULL) && (comment->comment != NULL))
-    OPENSCOP_error("memory overflow");
+    OSL_error("memory overflow");
 
   return copy;
 }
 
 
 /**
- * openscop_comment_equal function:
+ * osl_comment_equal function:
  * this function returns true if the two comment structures are the same
  * (content-wise), false otherwise.
  * \param c1  The first comment structure.
  * \param c2  The second comment structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2) {
+int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
   
   if (c1 == c2)
     return 1;
@@ -288,23 +287,23 @@ int openscop_comment_equal(openscop_comment_p c1, openscop_comment_p c2) {
 
 
 /**
- * openscop_comment_interface function:
+ * osl_comment_interface function:
  * this function creates an interface structure corresponding to the comment
  * extension and returns it).
  * \return An interface structure for the comment extension.
  */
-openscop_interface_p openscop_comment_interface() {
-  openscop_interface_p interface = openscop_interface_malloc();
+osl_interface_p osl_comment_interface() {
+  osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OPENSCOP_URI_COMMENT);
-  interface->idump  = (openscop_idump_f)openscop_comment_idump;
-  interface->dump   = (openscop_dump_f)openscop_comment_dump;
-  interface->sprint = (openscop_sprint_f)openscop_comment_sprint;
-  interface->sread  = (openscop_sread_f)openscop_comment_sread;
-  interface->malloc = (openscop_malloc_f)openscop_comment_malloc;
-  interface->free   = (openscop_free_f)openscop_comment_free;
-  interface->clone  = (openscop_clone_f)openscop_comment_clone;
-  interface->equal  = (openscop_equal_f)openscop_comment_equal;
+  interface->URI    = strdup(OSL_URI_COMMENT);
+  interface->idump  = (osl_idump_f)osl_comment_idump;
+  interface->dump   = (osl_dump_f)osl_comment_dump;
+  interface->sprint = (osl_sprint_f)osl_comment_sprint;
+  interface->sread  = (osl_sread_f)osl_comment_sread;
+  interface->malloc = (osl_malloc_f)osl_comment_malloc;
+  interface->free   = (osl_free_f)osl_comment_free;
+  interface->clone  = (osl_clone_f)osl_comment_clone;
+  interface->equal  = (osl_equal_f)osl_comment_equal;
 
   return interface;
 }

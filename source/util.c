@@ -64,7 +64,7 @@
 # include <stdio.h>
 # include <ctype.h>
 # include <string.h>
-# include <openscop/util.h>
+# include <osl/util.h>
 
 
 /*+***************************************************************************
@@ -73,12 +73,12 @@
 
 
 /**
- * openscop_util_skip_blank_and_comments internal function.
+ * osl_util_skip_blank_and_comments internal function.
  * This function reads the open file 'file' line by line and skips
  * blank/comment lines and spaces. The first line where there is some
  * useful information is stored at the address 'str' (the memory to
  * store the line must be allocated before the call to this function
- * and must be at least OPENSCOP_MAX_STRING*sizeof(char)). The pointer
+ * and must be at least OSL_MAX_STRING*sizeof(char)). The pointer
  * to the first useful information in this line is returned by the
  * function.
  * \param file The (opened) file to read.
@@ -86,11 +86,11 @@
  *             that contains useful information.
  * \return The address of the the first useful digit in str.
  */
-char * openscop_util_skip_blank_and_comments(FILE * file, char * str) {
+char * osl_util_skip_blank_and_comments(FILE * file, char * str) {
   char * start;
 
   do {
-    start = fgets(str, OPENSCOP_MAX_STRING, file);
+    start = fgets(str, OSL_MAX_STRING, file);
     while ((start != NULL) && isspace(*start) && (*start != '\n'))
       start++;
   }
@@ -101,7 +101,7 @@ char * openscop_util_skip_blank_and_comments(FILE * file, char * str) {
 
 
 /**
- * openscop_util_read_int internal function.
+ * osl_util_read_int internal function.
  * Read an int on the input 'file' or the input string 'str' depending on
  * which one is not NULL (exactly one of them must not be NULL).
  * \param file The file where to read an int (if not NULL).
@@ -109,21 +109,21 @@ char * openscop_util_skip_blank_and_comments(FILE * file, char * str) {
  *             is updated to reflect the read and points after the int.
  * \return The int that have been read.
  */
-int openscop_util_read_int(FILE * file, char ** str) {
-  char s[OPENSCOP_MAX_STRING], * start;
+int osl_util_read_int(FILE * file, char ** str) {
+  char s[OSL_MAX_STRING], * start;
   int res;
   int i = 0;
   int read_int = 0;
 
   if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
-    OPENSCOP_error("one and only one of the two parameters"
+    OSL_error("one and only one of the two parameters"
                    " of util_read_int can be non-NULL");
 
   if (file != NULL) {
     // Parse from a file.
-    start = openscop_util_skip_blank_and_comments(file, s);
+    start = osl_util_skip_blank_and_comments(file, s);
     if (sscanf(start, " %d", &res) != 1)
-      OPENSCOP_error("an int was expected");
+      OSL_error("an int was expected");
   }
   if (str != NULL) {
     // Parse from a string.
@@ -141,7 +141,7 @@ int openscop_util_read_int(FILE * file, char ** str) {
           s[i++] = *((*str)++);
         s[i] = '\0';
         if (sscanf(s, "%d", &res) != 1)
-          OPENSCOP_error("an int was expected");
+          OSL_error("an int was expected");
         read_int = 1;
       }
     }
@@ -153,21 +153,21 @@ int openscop_util_read_int(FILE * file, char ** str) {
 
 
 /**
- * openscop_util_read_uptotag function:
+ * osl_util_read_uptotag function:
  * this function reads a file up to a given tag (the tag is read) or the
  * end of file. It puts everything it reads in a string which is returned.
  * \param[in] file The file where to read the tail.
  * \param[in] tag  The tag which, when reached, stops the file reading.
  * \return The string that has been read from the file.
  */
-char * openscop_util_read_uptotag(FILE * file, char * tag) {
-  int high_water_mark = OPENSCOP_MAX_STRING;
+char * osl_util_read_uptotag(FILE * file, char * tag) {
+  int high_water_mark = OSL_MAX_STRING;
   int nb_chars = 0;
   int lentag = strlen(tag);
   int tag_found = 0;
   char * res;
 
-  OPENSCOP_malloc(res, char *, high_water_mark * sizeof(char));
+  OSL_malloc(res, char *, high_water_mark * sizeof(char));
 
   // - Copy everything else to the res string.
   while (!feof(file)) {
@@ -182,15 +182,15 @@ char * openscop_util_read_uptotag(FILE * file, char * tag) {
 
     if (nb_chars >= high_water_mark) {
       high_water_mark += high_water_mark;
-      OPENSCOP_realloc(res, char *, high_water_mark * sizeof(char));
+      OSL_realloc(res, char *, high_water_mark * sizeof(char));
     }
   }
 
   if (!tag_found)
-    OPENSCOP_info("tag was not found, end of file reached");
+    OSL_info("tag was not found, end of file reached");
 
   // - 0-terminate the string.
-  OPENSCOP_realloc(res, char *, (nb_chars + 1) * sizeof(char));
+  OSL_realloc(res, char *, (nb_chars + 1) * sizeof(char));
   res[nb_chars] = '\0';
 
   return res;
@@ -198,7 +198,7 @@ char * openscop_util_read_uptotag(FILE * file, char * tag) {
 
 
 /**
- * openscop_util_tag_content function:
+ * osl_util_tag_content function:
  * This function returns a freshly allocated string containing the
  * content, in the given string 'str', between the tag 'tag' and
  * the tag 'endtag'. If the tag 'tag' is not found, returns NULL.
@@ -207,7 +207,7 @@ char * openscop_util_read_uptotag(FILE * file, char * tag) {
  * \param endtag The string that marks the end of the content.
  * \return The string between 'tag' and 'endtag' in 'str'.
  */
-char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
+char * osl_util_tag_content(char * str, char * tag, char * endtag) {
   int i;
   char * start;
   char * stop;
@@ -233,7 +233,7 @@ char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
     // the tag 'endtag' was not found.
     if (! *stop)
       return NULL;
-    OPENSCOP_malloc(res, char *, (size + 1) * sizeof(char));
+    OSL_malloc(res, char *, (size + 1) * sizeof(char));
     
     // Copy the chain between the two tags.
     for (++start, i = 0; start != stop; ++start, ++i)
@@ -246,7 +246,7 @@ char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
 
 
 /**
- * openscop_util_safe_strcat function:
+ * osl_util_safe_strcat function:
  * this function concatenates the string src to the string *dst
  * and reallocates *dst if necessary. The current size of the
  * *dst buffer must be *hwm (high water mark), if there is some
@@ -256,14 +256,14 @@ char * openscop_util_tag_content(char * str, char * tag, char * endtag) {
  * \param hwm pointer to the size of the *dst buffer (may be updated).
  * TODO: This function is not that safe, improve it !
  */
-void openscop_util_safe_strcat(char ** dst, char * src, int * hwm) {
+void osl_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
-  if (strlen(src) >= OPENSCOP_MAX_STRING)
-    OPENSCOP_error("string to concatenate is too long");
+  if (strlen(src) >= OSL_MAX_STRING)
+    OSL_error("string to concatenate is too long");
 
   if (strlen(*dst) + strlen(src) >= *hwm) {
-    *hwm += OPENSCOP_MAX_STRING;
-    OPENSCOP_realloc(*dst, char *, *hwm * sizeof(char));
+    *hwm += OSL_MAX_STRING;
+    OSL_realloc(*dst, char *, *hwm * sizeof(char));
   }
 
   strcat(*dst, src);
@@ -271,29 +271,29 @@ void openscop_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
 
 /**
- * openscop_util_get_precision function:
+ * osl_util_get_precision function:
  * this function returns the precision defined by the precision environment
  * variable or the highest available precision if it is not defined.
  * \return environment precision if defined or highest available precision.
  */
-int openscop_util_get_precision() {
-  int precision = OPENSCOP_PRECISION_DP;
+int osl_util_get_precision() {
+  int precision = OSL_PRECISION_DP;
   char * precision_env;
 
-#ifdef OPENSCOP_GMP_IS_HERE
-  precision = OPENSCOP_PRECISION_MP;
+#ifdef OSL_GMP_IS_HERE
+  precision = OSL_PRECISION_MP;
 #endif
 
-  precision_env = getenv(OPENSCOP_PRECISION_ENV);
+  precision_env = getenv(OSL_PRECISION_ENV);
   if (precision_env != NULL) {
-    if (!strcmp(precision_env, OPENSCOP_PRECISION_ENV_SP))
-      precision = OPENSCOP_PRECISION_SP;
-    else if (!strcmp(precision_env, OPENSCOP_PRECISION_ENV_DP))
-      precision = OPENSCOP_PRECISION_DP;
-    else if (!strcmp(precision_env, OPENSCOP_PRECISION_ENV_MP))
-      precision = OPENSCOP_PRECISION_MP;
+    if (!strcmp(precision_env, OSL_PRECISION_ENV_SP))
+      precision = OSL_PRECISION_SP;
+    else if (!strcmp(precision_env, OSL_PRECISION_ENV_DP))
+      precision = OSL_PRECISION_DP;
+    else if (!strcmp(precision_env, OSL_PRECISION_ENV_MP))
+      precision = OSL_PRECISION_MP;
     else
-      OPENSCOP_warning("bad precision environment value");
+      OSL_warning("bad precision environment value");
   }
 
   return precision;
@@ -301,14 +301,14 @@ int openscop_util_get_precision() {
 
 
 /**
- * openscop_util_print_provided function:
+ * osl_util_print_provided function:
  * this function prints a "provided" boolean in a file (file, possibly stdout),
  * with a comment title according to the OpenScop specification.
  * \param[in] file     File where the information has to be printed.
  * \param[in] provided The provided boolean to print.
  * \param[in] title    A string to use as a title for the provided booblean.
  */
-void openscop_util_print_provided(FILE * file, int provided, char * title) {
+void osl_util_print_provided(FILE * file, int provided, char * title) {
   if (provided) {
     fprintf(file, "# %s provided\n", title);
     fprintf(file, "1\n");

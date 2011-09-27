@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          openscop.h                             **
+     **                          interface.h                            **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 15/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,28 +61,78 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_OPENSCOP_H
-# define OPENSCOP_OPENSCOP_H
+#ifndef OSL_INTERFACE_H
+# define OSL_INTERFACE_H
+
+# include <osl/macros.h>
+
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-# include <openscop/macros.h>
-# include <openscop/int.h>
-# include <openscop/util.h>
-# include <openscop/strings.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/relation_list.h>
-# include <openscop/interface.h>
-
-# include <openscop/extensions/textual.h>
-# include <openscop/extensions/comment.h>
-# include <openscop/extensions/arrays.h>
-# include <openscop/extensions/lines.h>
-# include <openscop/extensions/irregular.h>
-
-# include <openscop/generic.h>
-# include <openscop/statement.h>
-# include <openscop/scop.h>
+typedef void   (*osl_idump_f) (FILE *, void *, int);
+typedef void   (*osl_dump_f)  (FILE *, void *);
+typedef char * (*osl_sprint_f)(void *);
+typedef void * (*osl_sread_f) (char *);
+typedef void * (*osl_malloc_f)();
+typedef void   (*osl_free_f)  (void *);
+typedef void * (*osl_clone_f) (void *);
+typedef int    (*osl_equal_f) (void *, void *);
 
 
-#endif /* define OPENSCOP_OPENSCOP_H */
+/**
+ * The osl_interface structure stores the URI and base
+ * functions pointers an openscop object implementation has to offer. It
+ * is a node in a NULL-terminated list of interfaces.
+ */
+struct osl_interface {
+  char * URI;                  /**< Unique identifier string */
+  osl_idump_f  idump;          /**< Pointer to idump function */
+  osl_dump_f   dump;           /**< Pointer to dump function */
+  osl_sprint_f sprint;         /**< Pointer to sprint function */
+  osl_sread_f  sread;          /**< Pointer to sread function */
+  osl_malloc_f malloc;         /**< Pointer to malloc function */
+  osl_free_f   free;           /**< Pointer to free function */
+  osl_clone_f  clone;          /**< Pointer to clone function */
+  osl_equal_f  equal;          /**< Pointer to equal function */
+  struct osl_interface * next; /**< Next interface in the list */
+};
+typedef struct osl_interface   osl_interface_t;
+typedef struct osl_interface * osl_interface_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void            osl_interface_idump(FILE *, osl_interface_p, int);
+void            osl_interface_dump(FILE *, osl_interface_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+void            osl_interface_add(osl_interface_p *, osl_interface_p);
+osl_interface_p osl_interface_malloc();
+void            osl_interface_free(osl_interface_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+osl_interface_p osl_interface_nclone(osl_interface_p, int);
+osl_interface_p osl_interface_clone(osl_interface_p);
+int             osl_interface_equal(osl_interface_p, osl_interface_p);
+osl_interface_p osl_interface_lookup(osl_interface_p, char *);
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OSL_INTERFACE_H */

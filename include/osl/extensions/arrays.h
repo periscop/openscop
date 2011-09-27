@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                            util.h                               **
+     **                      extensions/arrays.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 08/10/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,10 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_UTIL_H
-# define OPENSCOP_UTIL_H
+#ifndef OSL_ARRAYS_H
+# define OSL_ARRAYS_H
 
-# include <openscop/macros.h>
+# include <osl/macros.h>
+# include <osl/strings.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -72,21 +74,57 @@ extern "C"
 # endif
 
 
-/*+***************************************************************************
- *                            Utility functions                              *
- *****************************************************************************/
-char * openscop_util_skip_blank_and_comments(FILE *, char *);
-int    openscop_util_read_int(FILE *, char **);
-char * openscop_util_read_tail(FILE *);
-char * openscop_util_read_uptotag(FILE *, char *);
-char * openscop_util_tag_content(char *, char *, char *);
-void   openscop_util_safe_strcat(char **, char *, int *);
-int    openscop_util_get_precision();
-void   openscop_util_print_provided(FILE *, int, char *);
+# define OSL_URI_ARRAYS        "arrays"
+# define OSL_TAG_ARRAYS_START  "<"OSL_URI_ARRAYS">"
+# define OSL_TAG_ARRAYS_STOP   "</"OSL_URI_ARRAYS">"
 
+
+/**
+ * The osl_arrays_t structure stores a set of array names in
+ * the extension part of the OpenScop representation. Each name
+ * has a name string and an identifier: the ith name as name
+ * string names[i] and identifier id[i].
+ */
+struct osl_arrays {
+  int nb_names;      /**< Number of names. */
+  int  *  id;        /**< Array of nb_names identifiers. */
+  char ** names;     /**< Array of nb_names names. */
+};
+typedef struct osl_arrays   osl_arrays_t;
+typedef struct osl_arrays * osl_arrays_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void            osl_arrays_idump(FILE *, osl_arrays_p, int);
+void            osl_arrays_dump(FILE *, osl_arrays_p);
+char *          osl_arrays_sprint(osl_arrays_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+osl_arrays_p    osl_arrays_sread(char *);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+osl_arrays_p    osl_arrays_malloc();
+void            osl_arrays_free(osl_arrays_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+osl_arrays_p    osl_arrays_clone(osl_arrays_p);
+int             osl_arrays_equal(osl_arrays_p, osl_arrays_p);
+char **         osl_arrays_generate_names(osl_arrays_p, int *);
+osl_interface_p osl_arrays_interface();
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_UTIL_H */
+#endif /* define OSL_ARRAYS_H */

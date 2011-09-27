@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/extensions/irregular.h>
+# include <osl/extensions/irregular.h>
 
 
 /*+***************************************************************************
@@ -72,8 +72,8 @@
 
 
 /**
- * openscop_irregular_idump function:
- * this function displays an openscop_irregular_t structure (*irregular) into a
+ * osl_irregular_idump function:
+ * this function displays an osl_irregular_t structure (*irregular) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -81,8 +81,7 @@
  * \param irregular The irregular structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
-                              int level) {
+void osl_irregular_idump(FILE * file, osl_irregular_p irregular, int level) {
   int i,j;
 
   // Go to the right level.
@@ -90,7 +89,7 @@ void openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
     fprintf(file, "|\t");
 
   if (irregular != NULL)
-    fprintf(file, "+-- openscop_irregular_t\n");
+    fprintf(file, "+-- osl_irregular_t\n");
   else
     fprintf(file, "+-- NULL irregular\n");
 
@@ -134,37 +133,37 @@ void openscop_irregular_idump(FILE * file, openscop_irregular_p irregular,
 
 
 /**
- * openscop_irregular_dump function:
- * this function prints the content of an openscop_irregular_t structure
+ * osl_irregular_dump function:
+ * this function prints the content of an osl_irregular_t structure
  * (*irregular) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
  * \param irregular The irregular structure whose information has to be printed.
  */
-void openscop_irregular_dump(FILE * file, openscop_irregular_p irregular) {
-  openscop_irregular_idump(file, irregular, 0);
+void osl_irregular_dump(FILE * file, osl_irregular_p irregular) {
+  osl_irregular_idump(file, irregular, 0);
 }
 
 
 /**
- * openscop_irregular_sprint function:
- * this function prints the content of an openscop_irregular_t structure
+ * osl_irregular_sprint function:
+ * this function prints the content of an osl_irregular_t structure
  * (*irregular) into a string (returned) in the OpenScop textual format.
  * \param  irregular The irregular structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the irregular structure.
  */
-char * openscop_irregular_sprint(openscop_irregular_p irregular) {
-  int high_water_mark = OPENSCOP_MAX_STRING,i,j;
+char * osl_irregular_sprint(osl_irregular_p irregular) {
+  int high_water_mark = OSL_MAX_STRING,i,j;
   char * string = NULL;
   char * buffer;
 
   if (irregular != NULL) {
-    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
-    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
+    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the begin tag.
-    sprintf(buffer, OPENSCOP_TAG_IRREGULAR_START);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_IRREGULAR_START);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the content.
     sprintf(buffer, "\n%d\n", irregular->nb_statements);
@@ -196,14 +195,14 @@ char * openscop_irregular_sprint(openscop_irregular_p irregular) {
                                           irregular->nb_control + i]);
     }
 
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the end tag.
-    sprintf(buffer, OPENSCOP_TAG_IRREGULAR_STOP"\n");
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_IRREGULAR_STOP"\n");
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -216,36 +215,36 @@ char * openscop_irregular_sprint(openscop_irregular_p irregular) {
  *****************************************************************************/
 
 /**
- * openscop_irregular_sread function:
+ * osl_irregular_sread function:
  * this function reads a irregular structure from a string complying to the
  * OpenScop textual format and returns a pointer to this irregular structure.
  * The string should contain only one textual format of a irregular structure.
  * \param  extensions The input string where to find a irregular structure.
  * \return A pointer to the irregular structure that has been read.
  */
-openscop_irregular_p openscop_irregular_sread(char * extensions) {
+osl_irregular_p osl_irregular_sread(char * extensions) {
   char * content,*tok;
   int i,j;
-  openscop_irregular_p irregular;
+  osl_irregular_p irregular;
 
-  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_IRREGULAR_START,
-                                                  OPENSCOP_TAG_IRREGULAR_STOP);
+  content = osl_util_tag_content(extensions, OSL_TAG_IRREGULAR_START,
+                                             OSL_TAG_IRREGULAR_STOP);
   if (content == NULL) {
-    OPENSCOP_info("no irregular optional tag");
+    OSL_info("no irregular optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING)
-    OPENSCOP_error("irregular too long");
+  if (strlen(content) > OSL_MAX_STRING)
+    OSL_error("irregular too long");
 
-  irregular = openscop_irregular_malloc();
+  irregular = osl_irregular_malloc();
 
   // nb statements
   tok = strtok(content," \n");
   irregular->nb_statements = atoi(tok);
-  OPENSCOP_malloc(irregular->predicates, int **, 
+  OSL_malloc(irregular->predicates, int **, 
                   sizeof(int*) * irregular->nb_statements);
-  OPENSCOP_malloc(irregular->nb_predicates, int *, 
+  OSL_malloc(irregular->nb_predicates, int *, 
                   sizeof(int) * irregular->nb_statements);
   
   // get predicats
@@ -253,7 +252,7 @@ openscop_irregular_p openscop_irregular_sread(char * extensions) {
     // nb conditions
     tok = strtok(NULL," \n");
     irregular->nb_predicates[i] = atoi(tok);
-    OPENSCOP_malloc(irregular->predicates[i], int *,
+    OSL_malloc(irregular->predicates[i], int *,
                     sizeof(int) * irregular->nb_predicates[i]);
     for(j = 0; j < irregular->nb_predicates[i]; j++){
       tok = strtok(NULL, " \n");
@@ -269,16 +268,16 @@ openscop_irregular_p openscop_irregular_sread(char * extensions) {
 
   int nb_predicates = irregular->nb_control + irregular->nb_exit;
 
-  OPENSCOP_malloc(irregular->iterators, char ***,
+  OSL_malloc(irregular->iterators, char ***,
                   sizeof(char **) * nb_predicates);
-  OPENSCOP_malloc(irregular->nb_iterators, int *, sizeof(int) * nb_predicates);
-  OPENSCOP_malloc(irregular->body, char **, sizeof(char *) * nb_predicates);
+  OSL_malloc(irregular->nb_iterators, int *, sizeof(int) * nb_predicates);
+  OSL_malloc(irregular->body, char **, sizeof(char *) * nb_predicates);
   
   for(i = 0; i < nb_predicates; i++) {
     // Get number of iterators
     tok = strtok(NULL, " \n");
     irregular->nb_iterators[i] = atoi(tok);
-    OPENSCOP_malloc(irregular->iterators[i], char **,
+    OSL_malloc(irregular->iterators[i], char **,
                     sizeof(char *) * irregular->nb_iterators[i]);
     
     // Get iterators
@@ -298,18 +297,18 @@ openscop_irregular_p openscop_irregular_sread(char * extensions) {
 
 
 /**
- * openscop_irregular_malloc function:
- * This function allocates the memory space for an openscop_irregular_t
+ * osl_irregular_malloc function:
+ * This function allocates the memory space for an osl_irregular_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty irregular structure with fields set to
  *         default values.
  */
-openscop_irregular_p openscop_irregular_malloc() {
-  openscop_irregular_p irregular;
+osl_irregular_p osl_irregular_malloc() {
+  osl_irregular_p irregular;
 
-  OPENSCOP_malloc(irregular, openscop_irregular_p,
-                  sizeof(openscop_irregular_t));
+  OSL_malloc(irregular, osl_irregular_p,
+                  sizeof(osl_irregular_t));
   irregular->nb_statements = 0;
   irregular->predicates = NULL;
   irregular->nb_predicates = NULL;
@@ -324,12 +323,12 @@ openscop_irregular_p openscop_irregular_malloc() {
 
 
 /**
- * openscop_irregular_free function:
- * This function frees the allocated memory for an openscop_irregular_t
+ * osl_irregular_free function:
+ * This function frees the allocated memory for an osl_irregular_t
  * structure.
  * \param irregular The pointer to the irregular structure we want to free.
  */
-void openscop_irregular_free(openscop_irregular_p irregular) {
+void osl_irregular_free(osl_irregular_p irregular) {
   int i, j, nb_predicates;
 
   if (irregular != NULL) {
@@ -365,20 +364,20 @@ void openscop_irregular_free(openscop_irregular_p irregular) {
 
 
 /**
- * openscop_irregular_clone function:
+ * osl_irregular_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_irregular_t data structure.
+ * osl_irregular_t data structure.
  * \param irregular The pointer to the irregular structure we want to copy.
  * \return A pointer to the copy of the irregular structure.
  */
-openscop_irregular_p openscop_irregular_clone(openscop_irregular_p irregular) {
+osl_irregular_p osl_irregular_clone(osl_irregular_p irregular) {
   int i,j;
-  openscop_irregular_p copy;
+  osl_irregular_p copy;
 
   if (irregular == NULL)
     return NULL;
 
-  copy = openscop_irregular_malloc();
+  copy = osl_irregular_malloc();
   copy->nb_statements = irregular->nb_statements;
   copy->nb_predicates = (int *)malloc(sizeof(int)*copy->nb_statements);
   if (copy->nb_predicates == NULL)
@@ -445,7 +444,7 @@ openscop_irregular_p openscop_irregular_clone(openscop_irregular_p irregular) {
 
 
 /**
- * openscop_irregular_equal function:
+ * osl_irregular_equal function:
  * this function returns true if the two irregular structures are the same
  * (content-wise), false otherwise. This functions considers two irregular
  * \param c1  The first irregular structure.
@@ -453,7 +452,7 @@ openscop_irregular_p openscop_irregular_clone(openscop_irregular_p irregular) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int
-openscop_irregular_equal(openscop_irregular_p c1, openscop_irregular_p c2)
+osl_irregular_equal(osl_irregular_p c1, osl_irregular_p c2)
 {
   int i,j,bool = 0;
   if (c1 == c2)
@@ -493,14 +492,14 @@ openscop_irregular_equal(openscop_irregular_p c1, openscop_irregular_p c2)
   return 1;
 }
 
-openscop_irregular_p openscop_irregular_add_control(
-                                               openscop_irregular_p irregular,
+osl_irregular_p osl_irregular_add_control(
+                                               osl_irregular_p irregular,
                                                char** iterators,
 					       int nb_iterators,
 					       char* body)
 {
   int i,j;
-  openscop_irregular_p result=openscop_irregular_malloc();
+  osl_irregular_p result=osl_irregular_malloc();
 
   result->nb_control    = irregular->nb_control + 1;
   result->nb_exit       = irregular->nb_exit;
@@ -582,14 +581,14 @@ openscop_irregular_p openscop_irregular_add_control(
 }
 
 
-openscop_irregular_p openscop_irregular_add_exit(
-                                               openscop_irregular_p irregular,
+osl_irregular_p osl_irregular_add_exit(
+                                               osl_irregular_p irregular,
                                                char** iterators,
 					       int nb_iterators,
 					       char* body)
 {
   int i,j;
-  openscop_irregular_p result=openscop_irregular_malloc();
+  osl_irregular_p result=osl_irregular_malloc();
 
   result->nb_control    = irregular->nb_control;
   result->nb_exit       = irregular->nb_exit + 1;
@@ -657,13 +656,13 @@ openscop_irregular_p openscop_irregular_add_exit(
 }
 
 
-openscop_irregular_p openscop_irregular_add_predicates(
-                                               openscop_irregular_p irregular,
+osl_irregular_p osl_irregular_add_predicates(
+                                               osl_irregular_p irregular,
 					       int* predicates, 
 					       int nb_add_predicates)
 {
   int i,j;
-  openscop_irregular_p result=openscop_irregular_malloc();
+  osl_irregular_p result=osl_irregular_malloc();
 
   result->nb_control    = irregular->nb_control;
   result->nb_exit       = irregular->nb_exit;
@@ -734,23 +733,23 @@ openscop_irregular_p openscop_irregular_add_predicates(
 
 
 /**
- * openscop_irregular_interface function:
+ * osl_irregular_interface function:
  * this function creates an interface structure corresponding to the irregular
  * extension and returns it).
  * \return An interface structure for the irregular extension.
  */
-openscop_interface_p openscop_irregular_interface() {
-  openscop_interface_p interface = openscop_interface_malloc();
+osl_interface_p osl_irregular_interface() {
+  osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OPENSCOP_URI_IRREGULAR);
-  interface->idump  = (openscop_idump_f)openscop_irregular_idump;
-  interface->dump   = (openscop_dump_f)openscop_irregular_dump;
-  interface->sprint = (openscop_sprint_f)openscop_irregular_sprint;
-  interface->sread  = (openscop_sread_f)openscop_irregular_sread;
-  interface->malloc = (openscop_malloc_f)openscop_irregular_malloc;
-  interface->free   = (openscop_free_f)openscop_irregular_free;
-  interface->clone  = (openscop_clone_f)openscop_irregular_clone;
-  interface->equal  = (openscop_equal_f)openscop_irregular_equal;
+  interface->URI    = strdup(OSL_URI_IRREGULAR);
+  interface->idump  = (osl_idump_f)osl_irregular_idump;
+  interface->dump   = (osl_dump_f)osl_irregular_dump;
+  interface->sprint = (osl_sprint_f)osl_irregular_sprint;
+  interface->sread  = (osl_sread_f)osl_irregular_sread;
+  interface->malloc = (osl_malloc_f)osl_irregular_malloc;
+  interface->free   = (osl_free_f)osl_irregular_free;
+  interface->clone  = (osl_clone_f)osl_irregular_clone;
+  interface->equal  = (osl_equal_f)osl_irregular_equal;
 
   return interface;
 }

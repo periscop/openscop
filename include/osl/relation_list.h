@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                           macros.h                              **
+     **                        relation_list.h                          **
      **-----------------------------------------------------------------**
-     **                   First version: 30/04/2008                     **
+     **                   First version: 08/10/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,99 +61,72 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_MACROS_H
-# define OPENSCOP_MACROS_H
+#ifndef OSL_RELATION_LIST_H
+# define OSL_RELATION_LIST_H
+
+# include <stdio.h>
+# include <osl/macros.h>
+# include <osl/vector.h>
+# include <osl/relation.h>
 
 
-# define OPENSCOP_TAG_START_SCOP        "<OpenScop>"
-# define OPENSCOP_TAG_END_SCOP          "</OpenScop>"
-
-# define OPENSCOP_PRECISION_ENV         "OPENSCOP_PRECISION"
-# define OPENSCOP_PRECISION_ENV_SP      "32"
-# define OPENSCOP_PRECISION_ENV_DP      "64"
-# define OPENSCOP_PRECISION_ENV_MP      "0"
-# define OPENSCOP_PRECISION_SP          32
-# define OPENSCOP_PRECISION_DP          64
-# define OPENSCOP_PRECISION_MP          0
-
-# define OPENSCOP_FMT_SP                "%4ld"
-# define OPENSCOP_FMT_DP                "%4lld"
-# define OPENSCOP_FMT_MP                "%4s"
-# define OPENSCOP_FMT_TXT_SP            "%ld"
-# define OPENSCOP_FMT_TXT_DP            "%lld"
-# define OPENSCOP_FMT_TXT_MP            "%s"
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-# define OPENSCOP_DEBUG	                0    // 1 for debug mode, 0 otherwise.
-# define OPENSCOP_BACKEND_C             0
-# define OPENSCOP_BACKEND_FORTRAN       1
-# define OPENSCOP_UNDEFINED             -1
-# define OPENSCOP_MAX_STRING            2048
-# define OPENSCOP_MAX_ARRAYS            128
+/**
+ * The osl_relation_list_t structure describes a (NULL-terminated
+ * linked) list of relations.
+ */
+struct osl_relation_list {
+  osl_relation_p elt;              /**< An element of the list. */
+  struct osl_relation_list * next; /**< Pointer to the next element
+				        of the list.*/
+};
+typedef struct osl_relation_list   osl_relation_list_t;
+typedef struct osl_relation_list * osl_relation_list_p;
 
-# define OPENSCOP_TYPE_GENERIC          0
-# define OPENSCOP_TYPE_STRING           1
-# define OPENSCOP_TYPE_CONTEXT	        2
-# define OPENSCOP_TYPE_DOMAIN           3
-# define OPENSCOP_TYPE_SCATTERING       4
-# define OPENSCOP_TYPE_ACCESS	        5
-# define OPENSCOP_TYPE_READ             6
-# define OPENSCOP_TYPE_WRITE            7
-# define OPENSCOP_TYPE_MAY_WRITE        8
-
-# define OPENSCOP_FAKE_ARRAY            "fakearray"
-
-# define OPENSCOP_STRING_UNDEFINED      "UNDEFINED"
-# define OPENSCOP_STRING_CONTEXT        "CONTEXT"
-# define OPENSCOP_STRING_DOMAIN         "DOMAIN"
-# define OPENSCOP_STRING_SCATTERING     "SCATTERING"
-# define OPENSCOP_STRING_READ           "READ"
-# define OPENSCOP_STRING_WRITE          "WRITE"
-# define OPENSCOP_STRING_MAY_WRITE      "MAY_WRITE"
 
 /*+***************************************************************************
- *                               UTILITY MACROS                              *
+ *                          Structure display function                       *
  *****************************************************************************/
-
-# define OPENSCOP_info(msg)                                                \
-         do {                                                              \
-           fprintf(stderr,"[OpenScop] Info: "msg" (%s).\n", __func__);     \
-         } while (0)
-
-# define OPENSCOP_warning(msg)                                             \
-         do {                                                              \
-           fprintf(stderr,"[OpenScop] Warning: "msg" (%s).\n", __func__);  \
-         } while (0)
-
-# define OPENSCOP_error(msg)                                               \
-         do {                                                              \
-           fprintf(stderr,"[OpenScop] Error: "msg" (%s).\n", __func__);    \
-           exit(1);                                                        \
-         } while (0)
-
-# define OPENSCOP_malloc(ptr, type, size)                                  \
-         do {                                                              \
-           if (((ptr) = (type)malloc(size)) == NULL)                       \
-             OPENSCOP_error("memory overflow");                            \
-         } while (0)
-
-# define OPENSCOP_realloc(ptr, type, size)                                 \
-         do {                                                              \
-           if (((ptr) = (type)realloc(ptr, size)) == NULL)                 \
-             OPENSCOP_error("memory overflow");                            \
-         } while (0)
-
-# define OPENSCOP_strdup(destination, source)                              \
-         do {                                                              \
-           if (source != NULL) {                                           \
-             if (((destination) = strdup(source)) == NULL)                 \
-               OPENSCOP_error("memory overflow");                          \
-           }                                                               \
-           else {                                                          \
-             destination = NULL;                                           \
-             OPENSCOP_warning("strdup of a NULL string");                  \
-           }                                                               \
-         } while (0)
+void                osl_relation_list_idump(FILE *, osl_relation_list_p, int);
+void                osl_relation_list_dump(FILE *, osl_relation_list_p);
+void                osl_relation_list_print_elts(FILE *, osl_relation_list_p);
+void                osl_relation_list_print(FILE *, osl_relation_list_p);
 
 
-#endif /* define OPENSCOP_MACROS_H */
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+osl_relation_list_p osl_relation_list_read(FILE *);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+osl_relation_list_p osl_relation_list_malloc();
+void                osl_relation_list_free(osl_relation_list_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+osl_relation_list_p osl_relation_list_node(osl_relation_p);
+osl_relation_list_p osl_relation_list_clone(osl_relation_list_p);
+osl_relation_list_p osl_relation_list_concat(osl_relation_list_p,
+                                             osl_relation_list_p);
+int                 osl_relation_list_equal(osl_relation_list_p,
+                                            osl_relation_list_p);
+int                 osl_relation_list_integrity_check(osl_relation_list_p,
+                                                      int, int, int, int);
+void                osl_relation_list_set_type(osl_relation_list_p, int);
+osl_relation_list_p osl_relation_list_filter(osl_relation_list_p, int);
+int                 osl_relation_list_count(osl_relation_list_p);
+
+# if defined(__cplusplus)
+  }
+# endif
+#endif /* define OSL_RELATION_LIST_H */

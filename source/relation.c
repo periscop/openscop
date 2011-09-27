@@ -65,7 +65,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <ctype.h>
-# include <openscop/relation.h>
+# include <osl/relation.h>
 
 
 /*+***************************************************************************
@@ -74,49 +74,49 @@
 
 
 /**
- * openscop_relation_print_type function:
- * this function displays the textual type of an openscop_relation_t structure
+ * osl_relation_print_type function:
+ * this function displays the textual type of an osl_relation_t structure
  * into a file (file, possibly stdout), accoding to the OpenScop specification.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose type has to be printed.
  */
 static
-void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
+void osl_relation_print_type(FILE * file, osl_relation_p relation) {
 
   if (relation != NULL) {
     switch (relation->type) {
-      case OPENSCOP_UNDEFINED: {
-        fprintf(file, OPENSCOP_STRING_UNDEFINED);
+      case OSL_UNDEFINED: {
+        fprintf(file, OSL_STRING_UNDEFINED);
         break;
       }
-      case OPENSCOP_TYPE_CONTEXT: {
-        fprintf(file, OPENSCOP_STRING_CONTEXT);
+      case OSL_TYPE_CONTEXT: {
+        fprintf(file, OSL_STRING_CONTEXT);
         break;
       }
-      case OPENSCOP_TYPE_DOMAIN: {
-        fprintf(file, OPENSCOP_STRING_DOMAIN);
+      case OSL_TYPE_DOMAIN: {
+        fprintf(file, OSL_STRING_DOMAIN);
         break;
       }
-      case OPENSCOP_TYPE_SCATTERING: {
-        fprintf(file, OPENSCOP_STRING_SCATTERING);
+      case OSL_TYPE_SCATTERING: {
+        fprintf(file, OSL_STRING_SCATTERING);
         break;
       }
-      case OPENSCOP_TYPE_READ: {
-        fprintf(file, OPENSCOP_STRING_READ);
+      case OSL_TYPE_READ: {
+        fprintf(file, OSL_STRING_READ);
         break;
       }
-      case OPENSCOP_TYPE_WRITE: {
-        fprintf(file, OPENSCOP_STRING_WRITE);
+      case OSL_TYPE_WRITE: {
+        fprintf(file, OSL_STRING_WRITE);
         break;
       }
-      case OPENSCOP_TYPE_MAY_WRITE: {
-        fprintf(file, OPENSCOP_STRING_MAY_WRITE);
+      case OSL_TYPE_MAY_WRITE: {
+        fprintf(file, OSL_STRING_MAY_WRITE);
         break;
       }
       default: {
-        OPENSCOP_warning("unknown relation type, "
-                         "replaced with "OPENSCOP_STRING_UNDEFINED);
-        fprintf(file, OPENSCOP_STRING_UNDEFINED);
+        OSL_warning("unknown relation type, "
+                    "replaced with "OSL_STRING_UNDEFINED);
+        fprintf(file, OSL_STRING_UNDEFINED);
       }
     }
   }
@@ -124,8 +124,8 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
 
 
 /**
- * openscop_relation_idump function:
- * this function displays a openscop_relation_t structure (*relation) into a
+ * osl_relation_idump function:
+ * this function displays a osl_relation_t structure (*relation) into a
  * file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -133,9 +133,7 @@ void openscop_relation_print_type(FILE * file, openscop_relation_p relation) {
  * \param[in] relation The relation whose information has to be printed.
  * \param[in] level    Number of spaces before printing, for each line.
  */
-void openscop_relation_idump(FILE * file,
-                             openscop_relation_p relation,
-                             int level) {
+void osl_relation_idump(FILE * file, osl_relation_p relation, int level) {
   int i, j, first = 1;
 
   // Go to the right level.
@@ -143,10 +141,10 @@ void openscop_relation_idump(FILE * file,
     fprintf(file, "|\t");
 
   if (relation != NULL) {
-    fprintf(file, "+-- openscop_relation_t (");
-    openscop_relation_print_type(file, relation);
+    fprintf(file, "+-- osl_relation_t (");
+    osl_relation_print_type(file, relation);
     fprintf(file, ", ");
-    openscop_int_dump_precision(file, relation->precision);
+    osl_int_dump_precision(file, relation->precision);
     fprintf(file, ")\n");
   }
   else {
@@ -158,10 +156,10 @@ void openscop_relation_idump(FILE * file,
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_relation_t (");
-      openscop_relation_print_type(file, relation);
+      fprintf(file, "|   osl_relation_t (");
+      osl_relation_print_type(file, relation);
       fprintf(file, ", ");
-      openscop_int_dump_precision(file, relation->precision);
+      osl_int_dump_precision(file, relation->precision);
       fprintf(file, ")\n");
     }
     else
@@ -183,7 +181,7 @@ void openscop_relation_idump(FILE * file,
       fprintf(file, "[ ");
 
       for (j = 0; j < relation->nb_columns; j++) {
-        openscop_int_print(file, relation->precision, relation->m[i], j);
+        osl_int_print(file, relation->precision, relation->m[i], j);
         fprintf(file, " ");
       }
 
@@ -211,19 +209,19 @@ void openscop_relation_idump(FILE * file,
 
 
 /**
- * openscop_relation_dump function:
- * this function prints the content of a openscop_relation_t structure
+ * osl_relation_dump function:
+ * this function prints the content of a osl_relation_t structure
  * (*relation) into a file (file, possibly stdout).
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information have to be printed.
  */
-void openscop_relation_dump(FILE * file, openscop_relation_p relation) {
-  openscop_relation_idump(file, relation, 0);
+void osl_relation_dump(FILE * file, osl_relation_p relation) {
+  osl_relation_idump(file, relation, 0);
 }
 
 
 /**
- * openscop_relation_expression_element function:
+ * osl_relation_expression_element function:
  * this function returns a string containing the printing of a value (e.g.,
  * an iterator with its coefficient or a constant).
  * \param[in]     val       Address of the coefficient or constant value.
@@ -237,28 +235,28 @@ void openscop_relation_dump(FILE * file, openscop_relation_p relation) {
  * \return A string that contains the printing of a value.
  */
 static
-char * openscop_relation_expression_element(void * val,
-                                            int precision, int * first,
-                                            int cst, char * name) {
-  char * temp = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-  char * body = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
-  char * sval = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
+char * osl_relation_expression_element(void * val,
+                                       int precision, int * first,
+                                       int cst, char * name) {
+  char * temp = (char *)malloc(OSL_MAX_STRING * sizeof(char));
+  char * body = (char *)malloc(OSL_MAX_STRING * sizeof(char));
+  char * sval = (char *)malloc(OSL_MAX_STRING * sizeof(char));
   
   body[0] = '\0';
   sval[0] = '\0';
 
   // statements for the 'normal' processing.
-  if (openscop_int_notzero(precision, val, 0) && (!cst)) {
-    if ((*first) || openscop_int_neg(precision, val, 0)) {
-      if (openscop_int_one(precision, val, 0)) {         // case 1
+  if (osl_int_notzero(precision, val, 0) && (!cst)) {
+    if ((*first) || osl_int_neg(precision, val, 0)) {
+      if (osl_int_one(precision, val, 0)) {         // case 1
         sprintf(sval, "%s", name);
       }
       else {
-        if (openscop_int_mone(precision, val, 0)) {      // case -1
+        if (osl_int_mone(precision, val, 0)) {      // case -1
           sprintf(sval, "-%s", name);
         }
-	else {                                           // default case
-	  openscop_int_sprint(sval, precision, val, 0);
+	else {                                      // default case
+	  osl_int_sprint(sval, precision, val, 0);
 	  sprintf(temp, "*%s", name);
 	  strcat(sval, temp);
         }
@@ -266,12 +264,12 @@ char * openscop_relation_expression_element(void * val,
       *first = 0;
     }
     else {
-      if (openscop_int_one(precision, val, 0)) {
+      if (osl_int_one(precision, val, 0)) {
         sprintf(sval, "+%s", name);
       }
       else {
         sprintf(sval, "+");
-	openscop_int_sprint(temp, precision, val, 0);
+	osl_int_sprint(temp, precision, val, 0);
 	strcat(sval, temp);
 	sprintf(temp, "*%s", name);
 	strcat(sval, temp);
@@ -280,17 +278,17 @@ char * openscop_relation_expression_element(void * val,
   }
   else {
     if (cst) {
-      if ((openscop_int_zero(precision, val, 0) && (*first)) ||
-          (openscop_int_neg(precision, val, 0)))
-        openscop_int_sprint(sval, precision, val, 0);
-      if (openscop_int_pos(precision, val, 0)) {
+      if ((osl_int_zero(precision, val, 0) && (*first)) ||
+          (osl_int_neg(precision, val, 0)))
+        osl_int_sprint(sval, precision, val, 0);
+      if (osl_int_pos(precision, val, 0)) {
         if (!(*first)) {
           sprintf(sval, "+");
-          openscop_int_sprint(temp, precision, val, 0);
+          osl_int_sprint(temp, precision, val, 0);
 	  strcat(sval, temp);
 	}
 	else {
-          openscop_int_sprint(sval, precision, val, 0);
+          osl_int_sprint(sval, precision, val, 0);
         }
       }
     }
@@ -303,19 +301,18 @@ char * openscop_relation_expression_element(void * val,
 
 
 static
-char ** openscop_relation_strings(openscop_relation_p relation,
-                                  openscop_names_p names) {
+char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
   char ** strings;
-  char temp[OPENSCOP_MAX_STRING];
+  char temp[OSL_MAX_STRING];
   int i, offset, array_id;
   
-  OPENSCOP_malloc(strings, char **, (relation->nb_columns - 1)*sizeof(char *));
+  OSL_malloc(strings, char **, (relation->nb_columns - 1)*sizeof(char *));
   strings[relation->nb_columns - 2] = NULL;
 
   // 1. Output dimensions.
-  if (openscop_relation_is_access(relation)) {
+  if (osl_relation_is_access(relation)) {
     // The first output dimension is the array name.
-    array_id  = openscop_relation_get_array_id(relation);
+    array_id  = osl_relation_get_array_id(relation);
     strings[0] = strdup(names->arrays->string[array_id - 1]);
     // The other ones are the array dimensions [1]...[n]
     for (i = 1; i < relation->nb_output_dims; i++) {
@@ -324,7 +321,7 @@ char ** openscop_relation_strings(openscop_relation_p relation,
     }
   }
   else
-  if (relation->type == OPENSCOP_TYPE_SCATTERING) {
+  if (relation->type == OSL_TYPE_SCATTERING) {
     for (i = 0; i < relation->nb_output_dims; i++) {
       strings[i] = strdup(names->scatt_dims->string[i]);
     }
@@ -355,7 +352,7 @@ char ** openscop_relation_strings(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_expression function:
+ * osl_relation_expression function:
  * this function returns a string corresponding to an affine expression
  * stored at the "row"^th row of the relation pointed by "relation".
  * \param[in] relation A set of linear expressions.
@@ -364,21 +361,21 @@ char ** openscop_relation_strings(openscop_relation_p relation,
  *                     Set to NULL if printing comments is not needed.
  * \return A string that contains the printing of an affine expression.
  */
-char * openscop_relation_expression(openscop_relation_p relation,
-                                    int row, openscop_names_p names) {
+char * osl_relation_expression(osl_relation_p relation,
+                               int row, osl_names_p names) {
   int i, first = 1;
   char ** strings;
   char * sval;
-  char * sline = (char *)malloc(OPENSCOP_MAX_STRING * sizeof(char));
+  char * sline = (char *)malloc(OSL_MAX_STRING * sizeof(char));
   sline[0] = '\0';
 
   // Create the array of element strings.
-  strings = openscop_relation_strings(relation, names);
+  strings = osl_relation_strings(relation, names);
 
   // Create the expression.
   for (i = 1; i <= relation->nb_columns - 2; i++) {
-    sval = openscop_relation_expression_element(
-        openscop_int_address(relation->precision, relation->m[row], i),
+    sval = osl_relation_expression_element(
+        osl_int_address(relation->precision, relation->m[row], i),
         relation->precision, &first, 0, strings[i-1]);
     strcat(sline, sval);
     free(sval);
@@ -394,11 +391,11 @@ char * openscop_relation_expression(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_properties function:
+ * osl_relation_properties function:
  * this function returns, through its parameters, the values of the relation
  * attributes (nb_iterators, nb_parameters etc), depending on its value and
  * its type. The array identifier 0 is used when there is no array
- * identifier (AND this is OK), OPENSCOP_UNDEFINED is used to report it
+ * identifier (AND this is OK), OSL_UNDEFINED is used to report it
  * is impossible to provide the property while it should.
  * This function is not intended for checking, the input relation should be
  * correct.
@@ -410,32 +407,31 @@ char * openscop_relation_expression(openscop_relation_p relation,
  * \param[out] array_id      Array identifier property.
  */
 static
-void openscop_relation_properties(openscop_relation_p relation,
-                                int * nb_parameters,
-                                int * nb_iterators,
-                                int * nb_scattdims,
-                                int * nb_localdims,
-                                int * array_id) {
-
+void osl_relation_properties(osl_relation_p relation,
+                             int * nb_parameters,
+                             int * nb_iterators,
+                             int * nb_scattdims,
+                             int * nb_localdims,
+                             int * array_id) {
   int type;
  
-  *nb_parameters = OPENSCOP_UNDEFINED;
-  *nb_iterators  = OPENSCOP_UNDEFINED;
-  *nb_scattdims  = OPENSCOP_UNDEFINED;
-  *nb_localdims  = OPENSCOP_UNDEFINED;
-  *array_id      = OPENSCOP_UNDEFINED;
+  *nb_parameters = OSL_UNDEFINED;
+  *nb_iterators  = OSL_UNDEFINED;
+  *nb_scattdims  = OSL_UNDEFINED;
+  *nb_localdims  = OSL_UNDEFINED;
+  *array_id      = OSL_UNDEFINED;
  
   if (relation == NULL)
     return;
 
-  if (openscop_relation_is_access(relation))
-    type = OPENSCOP_TYPE_ACCESS;
+  if (osl_relation_is_access(relation))
+    type = OSL_TYPE_ACCESS;
   else
     type = relation->type;
 
   // There is some redundancy but I believe the code is cleaner this way.
   switch (type) {
-    case OPENSCOP_TYPE_CONTEXT: {
+    case OSL_TYPE_CONTEXT: {
       *nb_parameters = relation->nb_parameters;
       *nb_iterators  = 0;
       *nb_scattdims  = 0;
@@ -443,7 +439,7 @@ void openscop_relation_properties(openscop_relation_p relation,
       *array_id      = 0;
       break;
     }
-    case OPENSCOP_TYPE_DOMAIN: {
+    case OSL_TYPE_DOMAIN: {
       *nb_parameters = relation->nb_parameters;
       *nb_iterators  = relation->nb_output_dims;
       *nb_scattdims  = 0;
@@ -451,7 +447,7 @@ void openscop_relation_properties(openscop_relation_p relation,
       *array_id      = 0;
       break;
     }
-    case OPENSCOP_TYPE_SCATTERING: {
+    case OSL_TYPE_SCATTERING: {
       *nb_parameters = relation->nb_parameters;
       *nb_iterators  = relation->nb_input_dims;
       *nb_scattdims  = relation->nb_output_dims;
@@ -459,12 +455,12 @@ void openscop_relation_properties(openscop_relation_p relation,
       *array_id      = 0;
       break;
     }
-    case OPENSCOP_TYPE_ACCESS: {
+    case OSL_TYPE_ACCESS: {
       *nb_parameters = relation->nb_parameters;
       *nb_iterators  = relation->nb_input_dims;
       *nb_scattdims  = 0;
       *nb_localdims  = relation->nb_local_dims;
-      *array_id      = openscop_relation_get_array_id(relation);
+      *array_id      = osl_relation_get_array_id(relation);
       break;
     }
   }
@@ -472,26 +468,26 @@ void openscop_relation_properties(openscop_relation_p relation,
 
 
 static
-openscop_names_p openscop_relation_names(openscop_relation_p relation) {
+osl_names_p osl_relation_names(osl_relation_p relation) {
   int nb_parameters;
   int nb_iterators;
   int nb_scattdims;
   int nb_localdims;
   int array_id;
 
-  openscop_relation_properties(relation, &nb_parameters, &nb_iterators,
-                               &nb_scattdims, &nb_localdims, &array_id);
+  osl_relation_properties(relation, &nb_parameters, &nb_iterators,
+                          &nb_scattdims, &nb_localdims, &array_id);
   
-  return openscop_names_generate("P", nb_parameters,
-                                 "i", nb_iterators,
-                                 "t", nb_scattdims,
-                                 "l", nb_localdims,
-                                 "A", array_id);
+  return osl_names_generate("P", nb_parameters,
+                            "i", nb_iterators,
+                            "t", nb_scattdims,
+                            "l", nb_localdims,
+                            "A", array_id);
 }
 
 
 /**
- * openscop_relation_print_comment function:
+ * osl_relation_print_comment function:
  * this function prints a comment corresponding to a constraint of a relation,
  * according to its type. This function does not check that printing the
  * comment is possible (i.e., are there enough names ?), hence it is the
@@ -502,43 +498,42 @@ openscop_names_p openscop_relation_names(openscop_relation_p relation) {
  * \param[in] names    The textual names of the various elements.
  */ 
 static
-void openscop_relation_print_comment(FILE * file,
-                                     openscop_relation_p relation, int row) {
+void osl_relation_print_comment(FILE * file,
+                                osl_relation_p relation, int row) {
   char * expression;
-  openscop_names_p names = openscop_relation_names(relation);
+  osl_names_p names = osl_relation_names(relation);
 
-  expression = openscop_relation_expression(relation, row, names);
+  expression = osl_relation_expression(relation, row, names);
   fprintf(file, "   ## %s", expression);
-  if (openscop_int_zero(relation->precision, relation->m[row], 0))
+  if (osl_int_zero(relation->precision, relation->m[row], 0))
     fprintf(file, " == 0");
   else
     fprintf(file, " >= 0");
   
-  openscop_names_free(names);
+  osl_names_free(names);
   free(expression);
 }
 
 
 /**
- * openscop_relation_print function:
- * this function prints the content of an openscop_relation_t structure
+ * osl_relation_print function:
+ * this function prints the content of an osl_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information has to be printed.
  */
-void openscop_relation_print(FILE * file,
-                             openscop_relation_p relation) {
+void osl_relation_print(FILE * file, osl_relation_p relation) {
   int i, j;
   int part, nb_parts;
   int printable_comments;
-  openscop_relation_p r;
+  osl_relation_p r;
 
   if (relation == NULL) {
     fprintf(file, "# NULL relation\n");
     return;
   }
 
-  //printable_comments = openscop_relation_printable_comments(relation, names); 
+  //printable_comments = osl_relation_printable_comments(relation, names); 
   printable_comments = 0;
 
   // Count the number of parts in the union and print it if it is not 1.
@@ -550,7 +545,7 @@ void openscop_relation_print(FILE * file,
   }
 
   if (nb_parts > 0) {
-    openscop_relation_print_type(file, relation);
+    osl_relation_print_type(file, relation);
     fprintf(file, "\n");
   }
 
@@ -561,10 +556,10 @@ void openscop_relation_print(FILE * file,
   for (part = 1; part <= nb_parts; part++) {
     if (nb_parts > 1)
       fprintf(file, "# Union part No.%d\n", part);
-    if ((relation->nb_output_dims == OPENSCOP_UNDEFINED) && 
-        (relation->nb_input_dims  == OPENSCOP_UNDEFINED) && 
-        (relation->nb_local_dims  == OPENSCOP_UNDEFINED) && 
-        (relation->nb_parameters  == OPENSCOP_UNDEFINED)) 
+    if ((relation->nb_output_dims == OSL_UNDEFINED) && 
+        (relation->nb_input_dims  == OSL_UNDEFINED) && 
+        (relation->nb_local_dims  == OSL_UNDEFINED) && 
+        (relation->nb_parameters  == OSL_UNDEFINED)) 
       fprintf(file, "%d %d\n", relation->nb_rows, relation->nb_columns);
     else
       fprintf(file, "%d %d %d %d %d %d\n",
@@ -574,11 +569,11 @@ void openscop_relation_print(FILE * file,
 
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j < relation->nb_columns; j++) {
-        openscop_int_print(file, relation->precision, relation->m[i], j);
+        osl_int_print(file, relation->precision, relation->m[i], j);
         fprintf(file, " ");
       }
 
-      openscop_relation_print_comment(file, relation, i);
+      //osl_relation_print_comment(file, relation, i);
 
       fprintf(file, "\n");
     }
@@ -593,76 +588,76 @@ void openscop_relation_print(FILE * file,
 
 
 /**
- * openscop_relation_read_type function:
+ * osl_relation_read_type function:
  * this function reads a textual relation type and returns its integer
  * counterpart.
  * \param[in] file The input stream.
  * \return The relation type.
  */
 static
-int openscop_relation_read_type(FILE * file) {
+int osl_relation_read_type(FILE * file) {
   int type;
-  openscop_strings_p strings;
+  osl_strings_p strings;
   
-  strings = openscop_strings_read(file);
-  if (openscop_strings_size(strings) > 1) {
-    OPENSCOP_warning("uninterpreted information (after the relation type)");
+  strings = osl_strings_read(file);
+  if (osl_strings_size(strings) > 1) {
+    OSL_warning("uninterpreted information (after the relation type)");
   }
-  if (openscop_strings_size(strings) == 0)
-    OPENSCOP_error("no relation type");
+  if (osl_strings_size(strings) == 0)
+    OSL_error("no relation type");
  
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_UNDEFINED)) {
-    type = OPENSCOP_UNDEFINED;
+  if (!strcmp(strings->string[0], OSL_STRING_UNDEFINED)) {
+    type = OSL_UNDEFINED;
     goto return_type;
   }
 
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_CONTEXT)) {
-    type = OPENSCOP_TYPE_CONTEXT; 
+  if (!strcmp(strings->string[0], OSL_STRING_CONTEXT)) {
+    type = OSL_TYPE_CONTEXT; 
     goto return_type;
   }
 
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_DOMAIN)) {
-    type = OPENSCOP_TYPE_DOMAIN; 
+  if (!strcmp(strings->string[0], OSL_STRING_DOMAIN)) {
+    type = OSL_TYPE_DOMAIN; 
     goto return_type;
   }
 
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_SCATTERING)) {
-    type = OPENSCOP_TYPE_SCATTERING; 
+  if (!strcmp(strings->string[0], OSL_STRING_SCATTERING)) {
+    type = OSL_TYPE_SCATTERING; 
     goto return_type;
   }
 
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_READ)) {
-    type = OPENSCOP_TYPE_READ; 
+  if (!strcmp(strings->string[0], OSL_STRING_READ)) {
+    type = OSL_TYPE_READ; 
     goto return_type;
   }
 
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_WRITE)) {
-    type = OPENSCOP_TYPE_WRITE; 
+  if (!strcmp(strings->string[0], OSL_STRING_WRITE)) {
+    type = OSL_TYPE_WRITE; 
     goto return_type;
   }
 
-  if (!strcmp(strings->string[0], OPENSCOP_STRING_MAY_WRITE)) {
-    type = OPENSCOP_TYPE_MAY_WRITE; 
+  if (!strcmp(strings->string[0], OSL_STRING_MAY_WRITE)) {
+    type = OSL_TYPE_MAY_WRITE; 
     goto return_type;
   }
 
-  OPENSCOP_error("relation type not supported");
+  OSL_error("relation type not supported");
 
 return_type:
-  openscop_strings_free(strings);
+  osl_strings_free(strings);
   return type;
 }
 
 
 /**
- * openscop_relation_read function:
+ * osl_relation_read function:
  * this function reads a relation into a file (foo, posibly stdin) and
  * returns a pointer this relation. The relation is set to the maximum
  * available precision.
  * \param[in] file The input stream.
  * \return A pointer to the relation structure that has been read.
  */
-openscop_relation_p openscop_relation_read(FILE * foo) {
+osl_relation_p osl_relation_read(FILE * foo) {
   int i, j, k, n, read = 0;
   int nb_rows, nb_columns;
   int nb_output_dims, nb_input_dims, nb_local_dims, nb_parameters;
@@ -671,11 +666,11 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
   int read_properties = 1;
   int first = 1;
   int type;
-  int precision = openscop_util_get_precision();
-  char * c, s[OPENSCOP_MAX_STRING], str[OPENSCOP_MAX_STRING];
-  openscop_relation_p relation, relation_union = NULL, previous = NULL;
+  int precision = osl_util_get_precision();
+  char * c, s[OSL_MAX_STRING], str[OSL_MAX_STRING];
+  osl_relation_p relation, relation_union = NULL, previous = NULL;
 
-  type = openscop_relation_read_type(foo);
+  type = osl_relation_read_type(foo);
 
   // Read each part of the union (the number of parts may be updated inside)
   for (k = 0; k < nb_union_parts; k++) {
@@ -684,20 +679,20 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
       read_properties = 0;
 
       // Read relation properties.
-      c = openscop_util_skip_blank_and_comments(foo, s);
+      c = osl_util_skip_blank_and_comments(foo, s);
       read = sscanf(c, " %d %d %d %d %d %d", &nb_rows, &nb_columns,
                                              &nb_output_dims, &nb_input_dims,
                                              &nb_local_dims, &nb_parameters);
     
       if (((read != 1) && (read != 6)) ||
           ((read == 1) && (may_read_nb_union_parts != 1)))
-        OPENSCOP_error("not 1 or 6 integers on the first relation line");
+        OSL_error("not 1 or 6 integers on the first relation line");
 
       if (read == 1) {
         // Only one number means a union and is the number of parts.
         nb_union_parts = nb_rows;
         if (nb_union_parts < 1)
-          OPENSCOP_error("negative nb of union parts");
+          OSL_error("negative nb of union parts");
         
         // Allow to read the properties of the first part of the union.
         read_properties = 1;
@@ -707,7 +702,7 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
     }
 
     // Allocate the union part and fill its properties.
-    relation = openscop_relation_pmalloc(precision, nb_rows, nb_columns);
+    relation = osl_relation_pmalloc(precision, nb_rows, nb_columns);
     relation->type           = type;
     relation->nb_output_dims = nb_output_dims;
     relation->nb_input_dims  = nb_input_dims;
@@ -716,17 +711,17 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
 
     // Read the matrix of constraints.
     for (i = 0; i < relation->nb_rows; i++) {
-      c = openscop_util_skip_blank_and_comments(foo, s);
+      c = osl_util_skip_blank_and_comments(foo, s);
       if (c == NULL)
-        OPENSCOP_error("not enough rows");
+        OSL_error("not enough rows");
 
       for (j = 0; j < relation->nb_columns; j++) {
         if (c == NULL || *c == '#' || *c == '\n')
-          OPENSCOP_error("not enough columns");
+          OSL_error("not enough columns");
         if (sscanf(c, "%s%n", str, &n) == 0)
-          OPENSCOP_error("not enough rows");
+          OSL_error("not enough rows");
 
-        openscop_int_sread(str, precision, relation->m[i], j);
+        osl_int_sread(str, precision, relation->m[i], j);
         c += n;
       }
     }
@@ -754,9 +749,9 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
 
 
 /**
- * openscop_relation_pmalloc function:
+ * osl_relation_pmalloc function:
  * (precision malloc) this function allocates the memory space for an
- * openscop_relation_t structure and sets its fields with default values.
+ * osl_relation_t structure and sets its fields with default values.
  * Then it returns a pointer to the allocated space.
  * \param[in] precision  The precision of the constraint matrix.
  * \param[in] nb_rows    The number of row of the relation to allocate.
@@ -764,35 +759,35 @@ openscop_relation_p openscop_relation_read(FILE * foo) {
  * \return A pointer to an empty relation with fields set to default values
  *         and a ready-to-use constraint matrix.
  */
-openscop_relation_p openscop_relation_pmalloc(int precision,
-                                              int nb_rows, int nb_columns) {
-  openscop_relation_p relation;
+osl_relation_p osl_relation_pmalloc(int precision,
+                                    int nb_rows, int nb_columns) {
+  osl_relation_p relation;
   void ** p, * q;
   int i, j;
 
-  OPENSCOP_malloc(relation, openscop_relation_p, sizeof(openscop_relation_t));
-  relation->type           = OPENSCOP_UNDEFINED;
+  OSL_malloc(relation, osl_relation_p, sizeof(osl_relation_t));
+  relation->type           = OSL_UNDEFINED;
   relation->nb_rows        = nb_rows;
   relation->nb_columns     = nb_columns;
-  relation->nb_output_dims = OPENSCOP_UNDEFINED;
-  relation->nb_input_dims  = OPENSCOP_UNDEFINED;
-  relation->nb_parameters  = OPENSCOP_UNDEFINED;
-  relation->nb_local_dims  = OPENSCOP_UNDEFINED;
+  relation->nb_output_dims = OSL_UNDEFINED;
+  relation->nb_input_dims  = OSL_UNDEFINED;
+  relation->nb_parameters  = OSL_UNDEFINED;
+  relation->nb_local_dims  = OSL_UNDEFINED;
   relation->precision      = precision;
   
   if ((nb_rows == 0) || (nb_columns == 0) ||
-      (nb_rows == OPENSCOP_UNDEFINED) || (nb_columns == OPENSCOP_UNDEFINED)) {
+      (nb_rows == OSL_UNDEFINED) || (nb_columns == OSL_UNDEFINED)) {
     relation->m = NULL;
   } 
   else {
-    OPENSCOP_malloc(p, void **, nb_rows * sizeof(void *));
-    OPENSCOP_malloc(q, void *,
-                    nb_rows * nb_columns * openscop_int_sizeof(precision));
+    OSL_malloc(p, void **, nb_rows * sizeof(void *));
+    OSL_malloc(q, void *,
+                    nb_rows * nb_columns * osl_int_sizeof(precision));
     relation->m = p;
     for (i = 0; i < nb_rows; i++) {
-      relation->m[i] = openscop_int_address(precision, q, i * nb_columns);
+      relation->m[i] = osl_int_address(precision, q, i * nb_columns);
       for (j = 0; j < nb_columns; j++)
-        openscop_int_init_set_si(precision, relation->m[i], j, 0);
+        osl_int_init_set_si(precision, relation->m[i], j, 0);
     }
   }
  
@@ -803,8 +798,8 @@ openscop_relation_p openscop_relation_pmalloc(int precision,
 
 
 /**
- * openscop_relation_malloc function:
- * this function allocates the memory space for an openscop_relation_t
+ * osl_relation_malloc function:
+ * this function allocates the memory space for an osl_relation_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space. The precision of the constraint matrix
  * elements corresponds to the precision environment variable or to the
@@ -814,19 +809,19 @@ openscop_relation_p openscop_relation_pmalloc(int precision,
  * \return A pointer to an empty relation with fields set to default values
  *         and a ready-to-use constraint matrix.
  */
-openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns) {
-  int precision = openscop_util_get_precision();
-  return openscop_relation_pmalloc(precision, nb_rows, nb_columns);
+osl_relation_p osl_relation_malloc(int nb_rows, int nb_columns) {
+  int precision = osl_util_get_precision();
+  return osl_relation_pmalloc(precision, nb_rows, nb_columns);
 }
 
 
 /**
- * openscop_relation_free_inside function:
+ * osl_relation_free_inside function:
  * this function frees the allocated memory for the inside of a
- * openscop_relation_t structure, i.e. only m.
+ * osl_relation_t structure, i.e. only m.
  * \param[in] relation The pointer to the relation we want to free internals.
  */
-void openscop_relation_free_inside(openscop_relation_p relation) {
+void osl_relation_free_inside(osl_relation_p relation) {
   int i, nb_elements;
   void * p;
 
@@ -839,7 +834,7 @@ void openscop_relation_free_inside(openscop_relation_p relation) {
     p = relation->m[0];
   
   for (i = 0; i < nb_elements; i++)
-    openscop_int_clear(relation->precision, p, i);
+    osl_int_clear(relation->precision, p, i);
 
   if (relation->m != NULL) {
     if (nb_elements > 0)
@@ -850,20 +845,20 @@ void openscop_relation_free_inside(openscop_relation_p relation) {
 
 
 /**
- * openscop_relation_free function:
- * this function frees the allocated memory for an openscop_relation_t
+ * osl_relation_free function:
+ * this function frees the allocated memory for an osl_relation_t
  * structure.
  * \param[in] relation The pointer to the relation we want to free.
  */
-void openscop_relation_free(openscop_relation_p relation) {
-  openscop_relation_p tmp;
+void osl_relation_free(osl_relation_p relation) {
+  osl_relation_p tmp;
   
   if (relation == NULL)
     return;
 
   while (relation != NULL) {
     tmp = relation->next;
-    openscop_relation_free_inside(relation);
+    osl_relation_free_inside(relation);
     free(relation);
     relation = tmp;
   }
@@ -876,9 +871,9 @@ void openscop_relation_free(openscop_relation_p relation) {
 
 
 /**
- * openscop_relation_nclone function:
+ * osl_relation_nclone function:
  * this functions builds and returns a "hard copy" (not a pointer copy) of a
- * openscop_relation_t data structure such that the clone is restricted to the
+ * osl_relation_t data structure such that the clone is restricted to the
  * "n" first rows of the relation. This applies to all the parts in the case
  * of a relation union.
  * \param[in] relation The pointer to the relation we want to clone.
@@ -887,11 +882,10 @@ void openscop_relation_free(openscop_relation_p relation) {
  * \return A pointer to the clone of the relation union restricted to the
  *         first n rows of constraint matrix for each part of the union.
  */
-openscop_relation_p openscop_relation_nclone(openscop_relation_p relation,
-                                             int n) {
+osl_relation_p osl_relation_nclone(osl_relation_p relation, int n) {
   int i, j;
   int first = 1, all_rows = 0;
-  openscop_relation_p clone = NULL, node, previous = NULL;
+  osl_relation_p clone = NULL, node, previous = NULL;
 
   if (n == -1)
     all_rows = 1;
@@ -901,10 +895,9 @@ openscop_relation_p openscop_relation_nclone(openscop_relation_p relation,
       n = relation->nb_rows;
 
     if (n > relation->nb_rows)
-      OPENSCOP_error("not enough rows to clone in the relation");
+      OSL_error("not enough rows to clone in the relation");
 
-    node = openscop_relation_pmalloc(relation->precision,
-                                     n, relation->nb_columns);
+    node = osl_relation_pmalloc(relation->precision, n, relation->nb_columns);
     node->type           = relation->type;
     node->nb_output_dims = relation->nb_output_dims;
     node->nb_input_dims  = relation->nb_input_dims;
@@ -913,9 +906,7 @@ openscop_relation_p openscop_relation_nclone(openscop_relation_p relation,
 
     for (i = 0; i < n; i++)
       for (j = 0; j < relation->nb_columns; j++)
-        openscop_int_assign(relation->precision,
-                            node->m[i], j,
-                            relation->m[i], j);
+        osl_int_assign(relation->precision, node->m[i], j, relation->m[i], j);
   
     if (first) {
       first = 0;
@@ -935,22 +926,22 @@ openscop_relation_p openscop_relation_nclone(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_clone function:
+ * osl_relation_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_relation_t data structure (the full union of relation).
+ * osl_relation_t data structure (the full union of relation).
  * \param[in] relation The pointer to the relation we want to clone.
  * \return A pointer to the clone of the union of relations.
  */
-openscop_relation_p openscop_relation_clone(openscop_relation_p relation) {
+osl_relation_p osl_relation_clone(osl_relation_p relation) {
   if (relation == NULL)
     return NULL;
 
-  return openscop_relation_nclone(relation, -1);
+  return osl_relation_nclone(relation, -1);
 }
 
 
 /**
- * openscop_relation_replace_vector function:
+ * osl_relation_replace_vector function:
  * this function replaces the "row"^th row of a relation "relation" with the
  * vector "vector". It directly updates the relation union part pointed
  * by "relation" and this part only.
@@ -958,25 +949,23 @@ openscop_relation_p openscop_relation_clone(openscop_relation_p relation) {
  * \param[in]     vector   The vector that will replace a row of the relation.
  * \param[in]     row      The row of the relation to be replaced.
  */
-void openscop_relation_replace_vector(openscop_relation_p relation,
-                                      openscop_vector_p vector, int row) {
+void osl_relation_replace_vector(osl_relation_p relation,
+                                 osl_vector_p vector, int row) {
   int i;
 
   if ((relation == NULL) || (vector == NULL)     ||
       (relation->precision != vector->precision) ||
       (relation->nb_columns != vector->size)     ||
       (row >= relation->nb_rows) || (row < 0))
-    OPENSCOP_error("vector cannot replace relation row");
+    OSL_error("vector cannot replace relation row");
 
   for (i = 0; i < vector->size; i++)
-    openscop_int_assign(relation->precision,
-                        relation->m[row], i,
-                        vector->v, i);
+    osl_int_assign(relation->precision, relation->m[row], i, vector->v, i);
 }
 
 
 /**
- * openscop_relation_add_vector function:
+ * osl_relation_add_vector function:
  * this function adds (meaning, +) a vector to the "row"^th row of a
  * relation "relation". It directly updates the relation union part pointed
  * by "relation" and this part only.
@@ -984,31 +973,27 @@ void openscop_relation_replace_vector(openscop_relation_p relation,
  * \param[in]     vector   The vector that will replace a row of the relation.
  * \param[in]     row      The row of the relation to be replaced.
  */
-void openscop_relation_add_vector(openscop_relation_p relation,
-                                  openscop_vector_p vector, int row) {
+void osl_relation_add_vector(osl_relation_p relation,
+                             osl_vector_p vector, int row) {
   int i;
 
   if ((relation == NULL) || (vector == NULL)     ||
       (relation->precision != vector->precision) ||
       (relation->nb_columns != vector->size)     ||
       (row >= relation->nb_rows) || (row < 0))
-    OPENSCOP_error("vector cannot be added to relation");
+    OSL_error("vector cannot be added to relation");
 
-  if (openscop_int_get_si(relation->precision, relation->m[row], 0) == 0)
-    openscop_int_assign(relation->precision,
-                        relation->m[row], 0,
-                        vector->v, 0);
+  if (osl_int_get_si(relation->precision, relation->m[row], 0) == 0)
+    osl_int_assign(relation->precision, relation->m[row], 0, vector->v, 0);
 
   for (i = 1; i < vector->size; i++)
-    openscop_int_add(relation->precision,
-                     relation->m[row], i,
-                     relation->m[row], i,
-                     vector->v, i);
+    osl_int_add(relation->precision,
+                relation->m[row], i, relation->m[row], i, vector->v, i);
 }
 
 
 /**
- * openscop_relation_sub_vector function:
+ * osl_relation_sub_vector function:
  * this function subtracts the vector "vector" to the "row"^th row of
  * a relation "relation. It directly updates the relation union part pointed
  * by "relation" and this part only.
@@ -1016,31 +1001,27 @@ void openscop_relation_add_vector(openscop_relation_p relation,
  * \param[in]     vector   The vector to subtract to a relation row.
  * \param[in]     row      The row of the relation to subtract the vector.
  */
-void openscop_relation_sub_vector(openscop_relation_p relation,
-                                  openscop_vector_p vector, int row) {
+void osl_relation_sub_vector(osl_relation_p relation,
+                             osl_vector_p vector, int row) {
   int i;
 
   if ((relation == NULL) || (vector == NULL)     ||
       (relation->precision != vector->precision) ||
       (relation->nb_columns != vector->size)     ||
       (row >= relation->nb_rows) || (row < 0))
-    OPENSCOP_error("vector cannot be subtracted to row");
+    OSL_error("vector cannot be subtracted to row");
 
-  if (openscop_int_get_si(relation->precision, relation->m[row], 0) == 0)
-    openscop_int_assign(relation->precision,
-                        relation->m[row], 0,
-                        vector->v, 0);
+  if (osl_int_get_si(relation->precision, relation->m[row], 0) == 0)
+    osl_int_assign(relation->precision, relation->m[row], 0, vector->v, 0);
 
   for (i = 1; i < vector->size; i++)
-    openscop_int_sub(relation->precision,
-                     relation->m[row], i,
-                     relation->m[row], i,
-                     vector->v, i);
+    osl_int_sub(relation->precision,
+                relation->m[row], i, relation->m[row], i, vector->v, i);
 }
 
 
 /**
- * openscop_relation_insert_vector function:
+ * osl_relation_insert_vector function:
  * this function inserts a new row corresponding to the vector "vector" to
  * the relation "relation" by inserting it at the "row"^th row. It directly
  * updates the relation union part pointed by "relation" and this part only.
@@ -1049,37 +1030,37 @@ void openscop_relation_sub_vector(openscop_relation_p relation,
  * \param[in]     vector   The vector that will be added relation.
  * \param[in]     row      The row where to insert the vector.
  */
-void openscop_relation_insert_vector(openscop_relation_p relation,
-                                     openscop_vector_p vector, int row) {
-  openscop_relation_p temp;
+void osl_relation_insert_vector(osl_relation_p relation,
+                                osl_vector_p vector, int row) {
+  osl_relation_p temp;
 
-  temp = openscop_relation_from_vector(vector);
-  openscop_relation_insert_constraints(relation, temp, row);
-  openscop_relation_free(temp);
+  temp = osl_relation_from_vector(vector);
+  osl_relation_insert_constraints(relation, temp, row);
+  osl_relation_free(temp);
 }
 
 
 /**
- * openscop_relation_from_vector function:
+ * osl_relation_from_vector function:
  * this function converts a vector "vector" to a relation with a single row
  * and returns a pointer to that relation.
  * \param[in] vector The vector to convert to a relation.
  * \return A pointer to a relation resulting from the vector conversion.
  */
-openscop_relation_p openscop_relation_from_vector(openscop_vector_p vector) {
-  openscop_relation_p relation;
+osl_relation_p osl_relation_from_vector(osl_vector_p vector) {
+  osl_relation_p relation;
 
   if (vector == NULL)
     return NULL;
 
-  relation = openscop_relation_pmalloc(vector->precision, 1, vector->size);
-  openscop_relation_replace_vector(relation, vector, 0);
+  relation = osl_relation_pmalloc(vector->precision, 1, vector->size);
+  osl_relation_replace_vector(relation, vector, 0);
   return relation;
 }
 
 
 /**
- * openscop_relation_replace_constraints function:
+ * osl_relation_replace_constraints function:
  * this function replaces some rows of a relation "r1" with the rows of
  * the relation "r2". It begins at the "row"^th row of "r1". It directly
  * updates the relation union part pointed by "r1" and this part only.
@@ -1087,24 +1068,24 @@ openscop_relation_p openscop_relation_from_vector(openscop_vector_p vector) {
  * \param[in]     r2  The relation containing the new rows.
  * \param[in]     row The first row of the relation r1 to be replaced.
  */
-void openscop_relation_replace_constraints(openscop_relation_p r1,
-                                           openscop_relation_p r2, int row) {
+void osl_relation_replace_constraints(osl_relation_p r1,
+                                      osl_relation_p r2, int row) {
   int i, j;
 
   if ((r1 == NULL) || (r2 == NULL)       ||
       (r1->precision != r2->precision)   ||
       (r1->nb_columns != r1->nb_columns) ||
       ((row + r2->nb_rows) > r1->nb_rows) || (row < 0))
-    OPENSCOP_error("relation rows could not be replaced");
+    OSL_error("relation rows could not be replaced");
 
   for (i = 0; i < r2->nb_rows; i++)
     for (j = 0; j < r2->nb_columns; j++)
-      openscop_int_assign(r1->precision, r1->m[i+row], j, r2->m[i], j);
+      osl_int_assign(r1->precision, r1->m[i+row], j, r2->m[i], j);
 }
 
 
 /**
- * openscop_relation_insert_constraints function:
+ * osl_relation_insert_constraints function:
  * this function adds new rows corresponding to the relation "r1" to
  * the relation "r2" by inserting it at the "row"^th row. It directly
  * updates the relation union part pointed by "r1" and this part only.
@@ -1113,10 +1094,10 @@ void openscop_relation_replace_constraints(openscop_relation_p r1,
  * \param[in]     r2  The relation to be inserted.
  * \param[in]     row The row where to insert the relation
  */
-void openscop_relation_insert_constraints(openscop_relation_p r1,
-                                          openscop_relation_p r2, int row) {
+void osl_relation_insert_constraints(osl_relation_p r1,
+                                     osl_relation_p r2, int row) {
   int i, j;
-  openscop_relation_p temp;
+  osl_relation_p temp;
 
   if ((r1 == NULL) || (r2 == NULL))
     return;
@@ -1124,26 +1105,23 @@ void openscop_relation_insert_constraints(openscop_relation_p r1,
   if ((r1->nb_columns != r2->nb_columns) ||
       (r1->precision != r2->precision)   ||
       (row > r1->nb_rows) || (row < 0))
-    OPENSCOP_error("constraints cannot be inserted");
+    OSL_error("constraints cannot be inserted");
 
   // We use a temporary relation just to reuse existing functions. Cleaner.
-  temp = openscop_relation_pmalloc(r1->precision,
-                                   r1->nb_rows + r2->nb_rows,
-                                   r1->nb_columns);
+  temp = osl_relation_pmalloc(r1->precision,
+                              r1->nb_rows + r2->nb_rows, r1->nb_columns);
 
   for (i = 0; i < row; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      openscop_int_assign(r1->precision, temp->m[i], j, r1->m[i], j);
+      osl_int_assign(r1->precision, temp->m[i], j, r1->m[i], j);
 
-  openscop_relation_replace_constraints(temp, r2, row);
+  osl_relation_replace_constraints(temp, r2, row);
 
   for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      openscop_int_assign(r1->precision,
-                          temp->m[i], j,
-                          r1->m[i-r2->nb_rows], j);
+      osl_int_assign(r1->precision, temp->m[i], j, r1->m[i-r2->nb_rows], j);
 
-  openscop_relation_free_inside(r1);
+  osl_relation_free_inside(r1);
 
   // Replace the inside of relation.
   r1->nb_rows = temp->nb_rows;
@@ -1155,7 +1133,7 @@ void openscop_relation_insert_constraints(openscop_relation_p r1,
 
 
 /**
- * openscop_relation_concat_constraints function:
+ * osl_relation_concat_constraints function:
  * this function builds a new relation from two relations sent as
  * parameters. The new set of constraints is built as the concatenation
  * of the rows of the first elements of the two relation unions r1 and r2.
@@ -1165,43 +1143,42 @@ void openscop_relation_insert_constraints(openscop_relation_p r1,
  * \return A pointer to the relation resulting from the concatenation of
  *         the first elements of r1 and r2.
  */
-openscop_relation_p openscop_relation_concat_constraints(
-    openscop_relation_p r1,
-    openscop_relation_p r2) {
-  openscop_relation_p new;
+osl_relation_p osl_relation_concat_constraints(
+    osl_relation_p r1,
+    osl_relation_p r2) {
+  osl_relation_p new;
 
   if (r1 == NULL)
-    return openscop_relation_clone(r2);
+    return osl_relation_clone(r2);
 
   if (r2 == NULL)
-    return openscop_relation_clone(r1);
+    return osl_relation_clone(r1);
 
   if (r1->nb_columns != r2->nb_columns)
-    OPENSCOP_error("incompatible sizes for concatenation");
+    OSL_error("incompatible sizes for concatenation");
   
   if (r1->next || r2->next)
-    OPENSCOP_warning("relation concatenation is done on the first elements "
+    OSL_warning("relation concatenation is done on the first elements "
                      "of union only");
 
-  new = openscop_relation_pmalloc(r1->precision,
-                                  r1->nb_rows + r2->nb_rows,
-                                  r1->nb_columns);
-  openscop_relation_replace_constraints(new, r1, 0);
-  openscop_relation_replace_constraints(new, r2, r1->nb_rows);
+  new = osl_relation_pmalloc(r1->precision,
+                             r1->nb_rows + r2->nb_rows, r1->nb_columns);
+  osl_relation_replace_constraints(new, r1, 0);
+  osl_relation_replace_constraints(new, r2, r1->nb_rows);
 
   return new;
 }
 
 
 /**
- * openscop_relation_equal function:
+ * osl_relation_equal function:
  * this function returns true if the two relations provided as parameters
  * are the same, false otherwise.
  * \param[in] r1  The first relation.
  * \param[in] r2  The second relation.
  * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
  */
-int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
+int osl_relation_equal(osl_relation_p r1, osl_relation_p r2) {
   int i, j;
 
   while ((r1 != NULL) && (r2 != NULL)) {
@@ -1220,7 +1197,7 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
 
     for (i = 0; i < r1->nb_rows; ++i)
       for (j = 0; j < r1->nb_columns; ++j)
-        if (openscop_int_ne(r1->precision, r1->m[i], j, r2->m[i], j))
+        if (osl_int_ne(r1->precision, r1->m[i], j, r2->m[i], j))
           return 0;
 
     r1 = r1->next;
@@ -1235,24 +1212,24 @@ int openscop_relation_equal(openscop_relation_p r1, openscop_relation_p r2) {
 
 
 /**
- * openscop_relation_check_attribute internal function:
+ * osl_relation_check_attribute internal function:
  * This function checks whether an "actual" value is the same as an
  * "expected" value or not. If the expected value is set to
- * OPENSCOP_UNDEFINED, this function sets it to the "actual" value
+ * OSL_UNDEFINED, this function sets it to the "actual" value
  * and do not report a difference has been detected.
  * It returns 0 if a difference has been detected, 1 otherwise.
  * \param[in,out] expected Pointer to the expected value (the value is
- *                         modified if it was set to OPENSCOP_UNDEFINED).
+ *                         modified if it was set to OSL_UNDEFINED).
  * \param[in]     actual   Value we want to check.
  * \return 0 if the values are not the same while the expected value was
- *         not OPENSCOP_UNDEFINED, 1 otherwise.
+ *         not OSL_UNDEFINED, 1 otherwise.
  */
 static
-int openscop_relation_check_attribute(int * expected, int actual) {
-  if (*expected != OPENSCOP_UNDEFINED) { 
-    if ((actual != OPENSCOP_UNDEFINED) &&
+int osl_relation_check_attribute(int * expected, int actual) {
+  if (*expected != OSL_UNDEFINED) { 
+    if ((actual != OSL_UNDEFINED) &&
         (actual != *expected)) {
-      OPENSCOP_warning("unexpected atribute");
+      OSL_warning("unexpected atribute");
       return 0;
     }
   }
@@ -1265,10 +1242,10 @@ int openscop_relation_check_attribute(int * expected, int actual) {
 
 
 /**
- * openscop_relation_check_nb_columns internal function:
+ * osl_relation_check_nb_columns internal function:
  * This function checks that the number of columns of a relation
  * corresponds to some expected properties (setting an expected property to
- * OPENSCOP_UNDEFINED makes this function unable to detect a problem).
+ * OSL_UNDEFINED makes this function unable to detect a problem).
  * It returns 0 if the number of columns seems incorrect or 1 if no problem
  * has been detected.
  * \param[in] relation  The relation we want to check the number of columns.
@@ -1278,17 +1255,17 @@ int openscop_relation_check_attribute(int * expected, int actual) {
  * \return 0 if the number of columns seems incorrect, 1 otherwise.
  */
 static
-int openscop_relation_check_nb_columns(openscop_relation_p relation,
-                                       int expected_nb_output_dims,
-                                       int expected_nb_input_dims,
-                                       int expected_nb_parameters) {
+int osl_relation_check_nb_columns(osl_relation_p relation,
+                                  int expected_nb_output_dims,
+                                  int expected_nb_input_dims,
+                                  int expected_nb_parameters) {
   int expected_nb_local_dims, expected_nb_columns;
   
-  if ((expected_nb_output_dims != OPENSCOP_UNDEFINED) &&
-      (expected_nb_input_dims  != OPENSCOP_UNDEFINED) &&
-      (expected_nb_parameters  != OPENSCOP_UNDEFINED)) {
+  if ((expected_nb_output_dims != OSL_UNDEFINED) &&
+      (expected_nb_input_dims  != OSL_UNDEFINED) &&
+      (expected_nb_parameters  != OSL_UNDEFINED)) {
     
-    if (relation->nb_local_dims == OPENSCOP_UNDEFINED)
+    if (relation->nb_local_dims == OSL_UNDEFINED)
       expected_nb_local_dims = 0;
     else
       expected_nb_local_dims = relation->nb_local_dims;
@@ -1300,7 +1277,7 @@ int openscop_relation_check_nb_columns(openscop_relation_p relation,
                           2;
     
     if (expected_nb_columns != relation->nb_columns) {
-      OPENSCOP_warning("unexpected number of columns");
+      OSL_warning("unexpected number of columns");
       return 0;
     }
   }
@@ -1310,9 +1287,9 @@ int openscop_relation_check_nb_columns(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_integrity_check function:
+ * osl_relation_integrity_check function:
  * this function checks that a relation is "well formed" according to some
- * expected properties (setting an expected value to OPENSCOP_UNDEFINED means
+ * expected properties (setting an expected value to OSL_UNDEFINED means
  * that we do not expect a specific value) and what the relation is supposed
  * to represent. It returns 0 if the check failed or 1 if no problem has been
  * detected.
@@ -1323,19 +1300,19 @@ int openscop_relation_check_nb_columns(openscop_relation_p relation,
  * \param[in] expected_nb_parameters  Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int openscop_relation_integrity_check(openscop_relation_p relation,
-                                      int expected_type,
-                                      int expected_nb_output_dims,
-                                      int expected_nb_input_dims,
-                                      int expected_nb_parameters) {
+int osl_relation_integrity_check(osl_relation_p relation,
+                                 int expected_type,
+                                 int expected_nb_output_dims,
+                                 int expected_nb_input_dims,
+                                 int expected_nb_parameters) {
   int i;
 
   // Check the NULL case.
   if (relation == NULL) {
-    if ((expected_nb_output_dims != OPENSCOP_UNDEFINED) ||
-        (expected_nb_input_dims  != OPENSCOP_UNDEFINED) ||
-        (expected_nb_parameters  != OPENSCOP_UNDEFINED)) {
-      OPENSCOP_warning("NULL relation with some expected attibutes");
+    if ((expected_nb_output_dims != OSL_UNDEFINED) ||
+        (expected_nb_input_dims  != OSL_UNDEFINED) ||
+        (expected_nb_parameters  != OSL_UNDEFINED)) {
+      OSL_warning("NULL relation with some expected attibutes");
       //return 0;
     }
 
@@ -1343,51 +1320,51 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
   }
 
   // Check the type.
-  if (((expected_type != OPENSCOP_TYPE_ACCESS) &&
+  if (((expected_type != OSL_TYPE_ACCESS) &&
        (expected_type != relation->type)) ||
-      ((expected_type == OPENSCOP_TYPE_ACCESS) &&
-       (!openscop_relation_is_access(relation)))) {
-    OPENSCOP_warning("wrong type");
-    openscop_relation_dump(stderr, relation);
+      ((expected_type == OSL_TYPE_ACCESS) &&
+       (!osl_relation_is_access(relation)))) {
+    OSL_warning("wrong type");
+    osl_relation_dump(stderr, relation);
     return 0;
   }
 
   // Check that relations have no undefined atributes.
-  if ((relation->nb_output_dims == OPENSCOP_UNDEFINED) ||
-      (relation->nb_input_dims  == OPENSCOP_UNDEFINED) ||
-      (relation->nb_local_dims  == OPENSCOP_UNDEFINED) ||
-      (relation->nb_parameters  == OPENSCOP_UNDEFINED)) {
-    OPENSCOP_warning("all attributes should be defined");
-    openscop_relation_dump(stderr, relation);
+  if ((relation->nb_output_dims == OSL_UNDEFINED) ||
+      (relation->nb_input_dims  == OSL_UNDEFINED) ||
+      (relation->nb_local_dims  == OSL_UNDEFINED) ||
+      (relation->nb_parameters  == OSL_UNDEFINED)) {
+    OSL_warning("all attributes should be defined");
+    osl_relation_dump(stderr, relation);
     return 0;
   }
 
   // Check that a context has actually 0 output dimensions.
-  if ((relation->type == OPENSCOP_TYPE_CONTEXT) &&
+  if ((relation->type == OSL_TYPE_CONTEXT) &&
       (relation->nb_output_dims != 0)) {
-    OPENSCOP_warning("context without 0 as number of output dimensions");
-    openscop_relation_dump(stderr, relation);
+    OSL_warning("context without 0 as number of output dimensions");
+    osl_relation_dump(stderr, relation);
     return 0;
   }
 
   // Check that a domain or a context has actually 0 input dimensions.
-  if (((relation->type == OPENSCOP_TYPE_DOMAIN) ||
-       (relation->type == OPENSCOP_TYPE_CONTEXT)) &&
+  if (((relation->type == OSL_TYPE_DOMAIN) ||
+       (relation->type == OSL_TYPE_CONTEXT)) &&
       (relation->nb_input_dims != 0)) {
-    OPENSCOP_warning("domain or context without 0 input dimensions");
-    openscop_relation_dump(stderr, relation);
+    OSL_warning("domain or context without 0 input dimensions");
+    osl_relation_dump(stderr, relation);
     return 0;
   }
 
   // Check properties according to expected values (and if expected values
   // are undefined, define them with the first relation part properties).
-  if (!openscop_relation_check_attribute(&expected_nb_output_dims,
-                                         relation->nb_output_dims) ||
-      !openscop_relation_check_attribute(&expected_nb_input_dims,
-                                         relation->nb_input_dims)  ||
-      !openscop_relation_check_attribute(&expected_nb_parameters,
-                                         relation->nb_parameters)) {
-    openscop_relation_dump(stderr, relation);
+  if (!osl_relation_check_attribute(&expected_nb_output_dims,
+                                    relation->nb_output_dims) ||
+      !osl_relation_check_attribute(&expected_nb_input_dims,
+                                    relation->nb_input_dims)  ||
+      !osl_relation_check_attribute(&expected_nb_parameters,
+                                    relation->nb_parameters)) {
+    osl_relation_dump(stderr, relation);
     return 0;
   }
 
@@ -1398,17 +1375,17 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     if ((expected_nb_output_dims != relation->nb_output_dims) ||
         (expected_nb_input_dims  != relation->nb_input_dims)  ||
         (expected_nb_parameters  != relation->nb_parameters)) {
-      OPENSCOP_warning("inconsistent attributes");
-      openscop_relation_dump(stderr, relation);
+      OSL_warning("inconsistent attributes");
+      osl_relation_dump(stderr, relation);
       return 0;
     }
    
     // Check whether the number of columns is OK or not.
-    if (!openscop_relation_check_nb_columns(relation,
-                                            expected_nb_output_dims,
-                                            expected_nb_input_dims,
-                                            expected_nb_parameters)) {
-      openscop_relation_dump(stderr, relation);
+    if (!osl_relation_check_nb_columns(relation,
+                                       expected_nb_output_dims,
+                                       expected_nb_input_dims,
+                                       expected_nb_parameters)) {
+      osl_relation_dump(stderr, relation);
       return 0;
     }
 
@@ -1416,20 +1393,20 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
     // made of 0 or 1 only.
     if ((relation->nb_rows > 0) && (relation->nb_columns > 0)) {
       for (i = 0; i < relation->nb_rows; i++) {
-        if (!openscop_int_zero(relation->precision, relation->m[i], 0) &&
-            !openscop_int_one(relation->precision, relation->m[i], 0)) {
-          OPENSCOP_warning("first column of a relation is not "
+        if (!osl_int_zero(relation->precision, relation->m[i], 0) &&
+            !osl_int_one(relation->precision, relation->m[i], 0)) {
+          OSL_warning("first column of a relation is not "
                            "strictly made of 0 or 1");
-          openscop_relation_dump(stderr, relation);
+          osl_relation_dump(stderr, relation);
           return 0;
         }
       }
     }
 
     // Array accesses must provide the array identifier.
-    if ((openscop_relation_is_access(relation)) &&
-        (openscop_relation_get_array_id(relation) == OPENSCOP_UNDEFINED)) {
-      openscop_relation_dump(stderr, relation);
+    if ((osl_relation_is_access(relation)) &&
+        (osl_relation_get_array_id(relation) == OSL_UNDEFINED)) {
+      osl_relation_dump(stderr, relation);
       return 0;
     }
 
@@ -1441,7 +1418,7 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
 
 
 /**
- * openscop_relation_union function:
+ * osl_relation_union function:
  * this function builds a new relation from two relations provided
  * as parameters. The new relation is built as an union of the
  * two relations: the list of constraint sets are linked together.
@@ -1449,15 +1426,15 @@ int openscop_relation_integrity_check(openscop_relation_p relation,
  * \param[in] r2 The second relation.
  * \return A new relation corresponding to the union of r1 and r2.
  */
-openscop_relation_p openscop_relation_union(openscop_relation_p r1,
-                                            openscop_relation_p r2) {
-  openscop_relation_p copy1, copy2, tmp;
+osl_relation_p osl_relation_union(osl_relation_p r1,
+                                  osl_relation_p r2) {
+  osl_relation_p copy1, copy2, tmp;
   
   if ((r1 == NULL) && (r2 == NULL))
     return NULL;
   
-  copy1 = openscop_relation_clone(r1);
-  copy2 = openscop_relation_clone(r2);
+  copy1 = osl_relation_clone(r1);
+  copy2 = osl_relation_clone(r2);
 
   if ((r1 != NULL) && (r2 == NULL))
     return copy1;
@@ -1475,13 +1452,13 @@ openscop_relation_p openscop_relation_union(openscop_relation_p r1,
 
 
 /** 
- * openscop_relation_set_type function:
+ * osl_relation_set_type function:
  * this function sets the type of each relation union part in the relation
  * to the one provided as parameter.
  * \param relation The relation to set the type.
  * \param type     The type.
  */
-void openscop_relation_set_type(openscop_relation_p relation, int type) {
+void osl_relation_set_type(osl_relation_p relation, int type) {
 
   while (relation != NULL) {
     relation->type = type;
@@ -1491,28 +1468,28 @@ void openscop_relation_set_type(openscop_relation_p relation, int type) {
 
 
 /**
- * openscop_relation_get_array_id function:
+ * osl_relation_get_array_id function:
  * this function returns the array identifier in a relation with access type
- * It returns OPENSCOP_UNDEFINED if it is not able to find it (in particular
+ * It returns OSL_UNDEFINED if it is not able to find it (in particular
  * if there are irregularities in the relation).
  * \param[in] relation The relation where to find an array identifier.
- * \return The array identifier in the relation or OPENSCOP_UNDEFINED.
+ * \return The array identifier in the relation or OSL_UNDEFINED.
  */
-int openscop_relation_get_array_id(openscop_relation_p relation) {
+int osl_relation_get_array_id(osl_relation_p relation) {
   int i;
   int first = 1;
-  int array_id = OPENSCOP_UNDEFINED;
-  int reference_array_id = OPENSCOP_UNDEFINED;
+  int array_id = OSL_UNDEFINED;
+  int reference_array_id = OSL_UNDEFINED;
   int nb_array_id;
   int row_id = 0;
   int precision;
 
   if (relation == NULL)
-    return OPENSCOP_UNDEFINED;
+    return OSL_UNDEFINED;
   
-  if (!openscop_relation_is_access(relation)) {
-    OPENSCOP_warning("asked for an array id of non-array relation");
-    return OPENSCOP_UNDEFINED;
+  if (!osl_relation_is_access(relation)) {
+    OSL_warning("asked for an array id of non-array relation");
+    return OSL_UNDEFINED;
   }
   
   while (relation != NULL) {
@@ -1521,8 +1498,8 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     // There should be room to store the array identifier.
     if ((relation->nb_rows < 1) ||
         (relation->nb_columns < 3)) {
-      OPENSCOP_warning("no array identifier in an access function");
-      return OPENSCOP_UNDEFINED;
+      OSL_warning("no array identifier in an access function");
+      return OSL_UNDEFINED;
     }
 
     // Array identifiers are m[i][#columns -1] / m[i][1], with i the only row
@@ -1533,38 +1510,38 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     // - check that (-m[i][#columns -1] / m[i][1]) > 0.
     nb_array_id = 0;
     for (i = 0; i < relation->nb_rows; i++) {
-      if (!openscop_int_zero(precision, relation->m[i], 1)) {
+      if (!osl_int_zero(precision, relation->m[i], 1)) {
         nb_array_id ++;
         row_id = i;
       }
     }
     if (nb_array_id == 0) {
-      OPENSCOP_warning("no array identifier in an access function");
-      return OPENSCOP_UNDEFINED;
+      OSL_warning("no array identifier in an access function");
+      return OSL_UNDEFINED;
     }
     if (nb_array_id > 1) {
-      OPENSCOP_warning("several array identifiers in one access function");
-      return OPENSCOP_UNDEFINED;
+      OSL_warning("several array identifiers in one access function");
+      return OSL_UNDEFINED;
     }
     for (i = 0; i < relation->nb_columns - 1; i++) {
-      if ((i != 1) && !openscop_int_zero(precision, relation->m[row_id], i)) {
-        OPENSCOP_warning("non integer array identifier");
-        return OPENSCOP_UNDEFINED;
+      if ((i != 1) && !osl_int_zero(precision, relation->m[row_id], i)) {
+        OSL_warning("non integer array identifier");
+        return OSL_UNDEFINED;
       }
     }
-    if (!openscop_int_divisible(precision,
-                                relation->m[row_id], relation->nb_columns - 1,
-                                relation->m[row_id], 1)) {
-      OPENSCOP_warning("rational array identifier");
-      return OPENSCOP_UNDEFINED;
+    if (!osl_int_divisible(precision,
+                           relation->m[row_id], relation->nb_columns - 1,
+                           relation->m[row_id], 1)) {
+      OSL_warning("rational array identifier");
+      return OSL_UNDEFINED;
     }
-    array_id = -openscop_int_get_si(precision,
-                                    relation->m[row_id],
-                                    relation->nb_columns - 1);
-    array_id /= openscop_int_get_si(precision, relation->m[row_id], 1);
+    array_id = -osl_int_get_si(precision,
+                               relation->m[row_id],
+                               relation->nb_columns - 1);
+    array_id /= osl_int_get_si(precision, relation->m[row_id], 1);
     if (array_id <= 0) {
-      OPENSCOP_warning("negative or 0 identifier in access function");
-      return OPENSCOP_UNDEFINED;
+      OSL_warning("negative or 0 identifier in access function");
+      return OSL_UNDEFINED;
     }
 
     // Unions of accesses are allowed, but they should refer at the same array.
@@ -1574,9 +1551,9 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
     }
     else {
       if (reference_array_id != array_id) {
-        OPENSCOP_warning("inconsistency of array identifiers in an "
-                         "union of access relations");
-        return OPENSCOP_UNDEFINED;
+        OSL_warning("inconsistency of array identifiers in an "
+                    "union of access relations");
+        return OSL_UNDEFINED;
       }
     }
     
@@ -1588,21 +1565,21 @@ int openscop_relation_get_array_id(openscop_relation_p relation) {
 
 
 /**
- * openscop_relation_is_access function:
+ * osl_relation_is_access function:
  * this function returns 1 if the relation corresponds to an access relation,
  * whatever its precise type (read, write etc.), 0 otherwise.
  * \param relation The relation to check wheter it is an access relation or not.
  * \return 1 if the relation is an access relation, 0 otherwise.
  */
-int openscop_relation_is_access(openscop_relation_p relation) {
+int osl_relation_is_access(osl_relation_p relation) {
 
   if (relation == NULL)
     return 0;
   
-  if ((relation->type == OPENSCOP_TYPE_ACCESS)    ||
-      (relation->type == OPENSCOP_TYPE_READ)      ||
-      (relation->type == OPENSCOP_TYPE_WRITE)     ||
-      (relation->type == OPENSCOP_TYPE_MAY_WRITE))
+  if ((relation->type == OSL_TYPE_ACCESS)    ||
+      (relation->type == OSL_TYPE_READ)      ||
+      (relation->type == OSL_TYPE_WRITE)     ||
+      (relation->type == OSL_TYPE_MAY_WRITE))
     return 1;
 
   return 0;

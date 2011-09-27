@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                      extensions/names.h                         **
+     **                     extensions/textual.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 18/05/2011                     **
+     **                   First version: 15/07/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,12 +61,12 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_NAMES_H
-# define OPENSCOP_NAMES_H
+#ifndef OSL_TEXTUAL_H
+# define OSL_TEXTUAL_H
 
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/strings.h>
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -74,52 +74,53 @@ extern "C"
 # endif
 
 
+# define OSL_URI_TEXTUAL       "textual"
+# define OSL_TAG_TEXTUAL_START ""
+# define OSL_TAG_TEXTUAL_STOP  ""
+
+
 /**
- * The openscop_names_t structure stores the various names (names of iterators,
- * parameters...) necessary to generate a code from the OpenScop data
- * structure.
+ * The osl_textual_t structure stores the complete textual
+ * representation of the scop extension field. It is a special case of
+ * extension since it does not require start and end tag.
  */
-struct openscop_names {
-  openscop_strings_p parameters; /**< Parameter names */
-  openscop_strings_p iterators;  /**< Iterator names */
-  openscop_strings_p scatt_dims; /**< Scattering dimension names */
-  openscop_strings_p local_dims; /**< Local dimension names */
-  openscop_strings_p arrays;     /**< Array names */
+struct osl_textual {
+  char * textual; /**< Full extension string as a 0-terminated string. */
 };
-typedef struct openscop_names   openscop_names_t;
-typedef struct openscop_names * openscop_names_p;
+typedef struct osl_textual   osl_textual_t;
+typedef struct osl_textual * osl_textual_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void             openscop_names_idump(FILE *, openscop_names_p, int);
-void             openscop_names_dump(FILE *, openscop_names_p);
+void            osl_textual_idump(FILE *, osl_textual_p, int);
+void            osl_textual_dump(FILE *, osl_textual_p);
+char *          osl_textual_sprint(osl_textual_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
+osl_textual_p   osl_textual_sread(char *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_names_p openscop_names_malloc();
-void             openscop_names_free(openscop_names_p);
+osl_textual_p   osl_textual_malloc();
+void            osl_textual_free(osl_textual_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_names_p openscop_names_clone(openscop_names_p);
-openscop_names_p openscop_names_generate(char *, int, char *, int,
-                                         char *, int, char *, int,
-                                         char *, int);
-
+osl_textual_p   osl_textual_clone(osl_textual_p);
+int             osl_textual_equal(osl_textual_p, osl_textual_p);
+osl_interface_p osl_textual_interface();
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_NAMES_H */
+#endif /* define OSL_TEXTUAL_H */

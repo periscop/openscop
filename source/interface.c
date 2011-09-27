@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/interface.h>
+# include <osl/interface.h>
 
 
 /*+***************************************************************************
@@ -72,8 +72,8 @@
 
 
 /**
- * openscop_interface_idump function:
- * this function displays an openscop_interface_t structure (*interface) into
+ * osl_interface_idump function:
+ * this function displays an osl_interface_t structure (*interface) into
  * a file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -81,8 +81,7 @@
  * \param interface The interface structure which has to be printed.
  * \param level     Number of spaces before printing, for each line.
  */
-void openscop_interface_idump(FILE * file, openscop_interface_p interface,
-                              int level) {
+void osl_interface_idump(FILE * file, osl_interface_p interface, int level) {
   int j, first = 1;
 
   // Go to the right level.
@@ -90,7 +89,7 @@ void openscop_interface_idump(FILE * file, openscop_interface_p interface,
     fprintf(file, "|\t");
 
   if (interface != NULL)
-    fprintf(file, "+-- openscop_interface_t: URI = %s\n", interface->URI);
+    fprintf(file, "+-- osl_interface_t: URI = %s\n", interface->URI);
   else
     fprintf(file, "+-- NULL interface\n");
 
@@ -100,7 +99,7 @@ void openscop_interface_idump(FILE * file, openscop_interface_p interface,
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_interface_t: URI = %s\n", interface->URI);
+      fprintf(file, "|   osl_interface_t: URI = %s\n", interface->URI);
     }
     else
       first = 0;
@@ -126,14 +125,14 @@ void openscop_interface_idump(FILE * file, openscop_interface_p interface,
 
 
 /**
- * openscop_interface_dump function:
- * this function prints the content of a openscop_interface_t structure
+ * osl_interface_dump function:
+ * this function prints the content of a osl_interface_t structure
  * (*interface) into a file (file, possibly stdout).
  * \param file  File where informations are printed.
  * \param extension The extension idstructure to print.
  */
-void openscop_interface_dump(FILE * file, openscop_interface_p interface) {
-  openscop_interface_idump(file, interface, 0); 
+void osl_interface_dump(FILE * file, osl_interface_p interface) {
+  osl_interface_idump(file, interface, 0); 
 }
 
 
@@ -148,26 +147,26 @@ void openscop_interface_dump(FILE * file, openscop_interface_p interface) {
 
 
 /**
- * openscop_interface_add function:
+ * osl_interface_add function:
  * this function adds an interface node (it may be a list as well) to a
  * list of interfaces provided as parameter (list). The new node
  * is inserted at the end of the list. 
  * \param list      The list of interfaces to add a node (NULL if empty).
  * \param interface The interface to add to the list.
  */
-void openscop_interface_add(openscop_interface_p * list,
-                            openscop_interface_p interface) {
-  openscop_interface_p tmp = *list, check_interface;
+void osl_interface_add(osl_interface_p * list,
+                            osl_interface_p interface) {
+  osl_interface_p tmp = *list, check_interface;
 
   if (interface != NULL) {
     // First, check that the interface list is OK.
     check_interface = interface;
     while (check_interface != NULL) {
       if (check_interface->URI == NULL)
-        OPENSCOP_error("no URI in an interface to add to a list");
+        OSL_error("no URI in an interface to add to a list");
 
-      if (openscop_interface_lookup(*list, check_interface->URI) != NULL)
-        OPENSCOP_error("only one interface with a given URI is allowed");
+      if (osl_interface_lookup(*list, check_interface->URI) != NULL)
+        OSL_error("only one interface with a given URI is allowed");
       check_interface = check_interface->next;
     }
 
@@ -184,18 +183,18 @@ void openscop_interface_add(openscop_interface_p * list,
 
 
 /**
- * openscop_interface_malloc function:
- * This function allocates the memory space for a openscop_interface_t
+ * osl_interface_malloc function:
+ * This function allocates the memory space for a osl_interface_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty interface structure with fields set to
  *         default values.
  */
-openscop_interface_p openscop_interface_malloc() {
-  openscop_interface_p interface;
+osl_interface_p osl_interface_malloc() {
+  osl_interface_p interface;
 
-  OPENSCOP_malloc(interface, openscop_interface_p,
-                  sizeof(openscop_interface_t));
+  OSL_malloc(interface, osl_interface_p,
+                  sizeof(osl_interface_t));
   interface->URI    = NULL;
   interface->idump  = NULL; 
   interface->dump   = NULL; 
@@ -212,13 +211,13 @@ openscop_interface_p openscop_interface_malloc() {
 
 
 /**
- * openscop_interface_free function:
- * this function frees the allocated memory for an openscop_interface_t
+ * osl_interface_free function:
+ * this function frees the allocated memory for an osl_interface_t
  * structure, and all the interfaces stored in the list.
  * \param[in] id The pointer to the interface we want to free.
  */
-void openscop_interface_free(openscop_interface_p interface) {
-  openscop_interface_p tmp;
+void osl_interface_free(osl_interface_p interface) {
+  osl_interface_p tmp;
   int i = 0;
  
   if (interface == NULL)
@@ -241,21 +240,20 @@ void openscop_interface_free(openscop_interface_p interface) {
 
 
 /**
- * openscop_interface_nclone function:
+ * osl_interface_nclone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of the
- * n first elements of an openscop_interface_t list.
+ * n first elements of an osl_interface_t list.
  * \param interface The pointer to the interface structure we want to clone.
  * \param n         The number of nodes we want to copy (-1 for infinity).
  * \return The clone of the n first nodes of the interface list.
  */
-openscop_interface_p openscop_interface_nclone(openscop_interface_p interface,
-                                               int n) {
-  openscop_interface_p clone = NULL, new;
+osl_interface_p osl_interface_nclone(osl_interface_p interface, int n) {
+  osl_interface_p clone = NULL, new;
   int i = 0;
 
   while ((interface != NULL) && ((n == -1) || (i < n))) {
-    new = openscop_interface_malloc();
-    OPENSCOP_strdup(new->URI, interface->URI);
+    new = osl_interface_malloc();
+    OSL_strdup(new->URI, interface->URI);
     new->idump  = interface->idump;
     new->dump   = interface->dump;
     new->sprint = interface->sprint;
@@ -265,7 +263,7 @@ openscop_interface_p openscop_interface_nclone(openscop_interface_p interface,
     new->clone  = interface->clone;
     new->equal  = interface->equal;
     
-    openscop_interface_add(&clone, new);
+    osl_interface_add(&clone, new);
     interface = interface->next;
     i++;
   }
@@ -275,29 +273,28 @@ openscop_interface_p openscop_interface_nclone(openscop_interface_p interface,
 
 
 /**
- * openscop_interface_clone function:
+ * osl_interface_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_interface_t data structure.
+ * osl_interface_t data structure.
  * \param interface The pointer to the interface structure we want to copy.
  * \return A pointer to the copy of the interface structure.
  */
-openscop_interface_p
-openscop_interface_clone(openscop_interface_p interface) {
+osl_interface_p osl_interface_clone(osl_interface_p interface) {
 
-  return openscop_interface_nclone(interface, -1);
+  return osl_interface_nclone(interface, -1);
 }
 
 
 /**
- * openscop_interface_equal function:
+ * osl_interface_equal function:
  * this function returns true if the two interface structures are the same,
  * (content-wise) false otherwise. 
  * \param interface1 The first interface structure.
  * \param interface2 The second interface structure.
  * \return 1 if interface1 and interface2 are the same, 0 otherwise.
  */
-int openscop_interface_equal(openscop_interface_p interface1,
-                             openscop_interface_p interface2) {
+int osl_interface_equal(osl_interface_p interface1,
+                        osl_interface_p interface2) {
 
   if (interface1 == interface2)
     return 1;
@@ -322,7 +319,7 @@ int openscop_interface_equal(openscop_interface_p interface1,
 
 
 /**
- * openscop_interface_lookup function:
+ * osl_interface_lookup function:
  * this function returns the first interface with a given URI in the
  * interface list provided as parameter and NULL if it doesn't find such
  * an interface.
@@ -330,8 +327,8 @@ int openscop_interface_equal(openscop_interface_p interface1,
  * \param URI  The URI of the interface we are looking for.
  * \return The first interface of the requested URI in the list.
  */
-openscop_interface_p
-openscop_interface_lookup(openscop_interface_p list, char * URI) {
+osl_interface_p
+osl_interface_lookup(osl_interface_p list, char * URI) {
   while (list != NULL) {
     if ((list->URI != NULL) && (!strcmp(list->URI, URI)))
       return list;

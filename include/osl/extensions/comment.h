@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                           strings.h                             **
+     **                     extensions/comment.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 13/07/2011                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,65 +61,66 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_STRINGS_H
-# define OPENSCOP_STRINGS_H
+#ifndef OSL_COMMENT_H
+# define OSL_COMMENT_H
 
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/interface.h>
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
   {
 # endif
 
-# define OPENSCOP_URI_STRINGS "strings"
 
-/* The "strings" type is simply a NULL-terminated array of C character
- * strings, i.e. a char **. It is encapsulated into a structure to allow
- * it manipulation through a generic type.
+# define OSL_URI_COMMENT        "comment"
+# define OSL_TAG_COMMENT_START  "<"OSL_URI_COMMENT">"
+# define OSL_TAG_COMMENT_STOP   "</"OSL_URI_COMMENT">"
+
+
+/**
+ * The osl_comment_t structure stores a comment extention to the core
+ * OpenScop representation. It is simply a 0-terminated string.
  */
-struct openscop_strings {
-  char ** string; /**< NULL-terminated array of character strings */
+struct osl_comment {
+  char * comment;  /**< A comment message as a 0-terminated string. */
 };
-typedef struct openscop_strings   openscop_strings_t;
-typedef struct openscop_strings * openscop_strings_p;
+typedef struct osl_comment   osl_comment_t;
+typedef struct osl_comment * osl_comment_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_strings_idump(FILE *, openscop_strings_p, int);
-void openscop_strings_dump(FILE *, openscop_strings_p);
-char * openscop_strings_sprint(openscop_strings_p);
-void openscop_strings_print(FILE *, openscop_strings_p);
+void            osl_comment_idump(FILE *, osl_comment_p, int);
+void            osl_comment_dump(FILE *, osl_comment_p);
+char *          osl_comment_sprint(osl_comment_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_strings_p openscop_strings_sread(char *);
-openscop_strings_p openscop_strings_read(FILE *);
+osl_comment_p   osl_comment_sread(char *);
+
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_strings_p openscop_strings_malloc();
-void openscop_strings_free(openscop_strings_p);
+osl_comment_p   osl_comment_malloc();
+void            osl_comment_free(osl_comment_p);
+
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_strings_p openscop_strings_clone(openscop_strings_p);
-int openscop_strings_equal(openscop_strings_p, openscop_strings_p);
-int openscop_strings_size(openscop_strings_p);
-openscop_strings_p openscop_strings_encapsulate(char *);
-openscop_interface_p openscop_strings_interface();
-openscop_strings_p openscop_strings_generate(char *, int);
+osl_comment_p   osl_comment_clone(osl_comment_p);
+int             osl_comment_equal(osl_comment_p, osl_comment_p);
+osl_interface_p osl_comment_interface();
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OPENSCOP_STRINGS_H */
+#endif /* define OSL_COMMENT_H */

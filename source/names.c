@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/names.h>
+# include <osl/names.h>
 
 
 /*+***************************************************************************
@@ -72,8 +72,8 @@
 
 
 /**
- * openscop_names_idump function:
- * this function displays an openscop_names_t structure (*names) into a
+ * osl_names_idump function:
+ * this function displays an osl_names_t structure (*names) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -81,7 +81,7 @@
  * \param[in] names The names structure whose information has to be printed.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void openscop_names_idump(FILE * file, openscop_names_p names, int level) {
+void osl_names_idump(FILE * file, osl_names_p names, int level) {
   int j;
 
   // Go to the right level.
@@ -89,7 +89,7 @@ void openscop_names_idump(FILE * file, openscop_names_p names, int level) {
     fprintf(file, "|\t");
 
   if (names != NULL)
-    fprintf(file, "+-- openscop_names_t\n");
+    fprintf(file, "+-- osl_names_t\n");
   else
     fprintf(file, "+-- NULL names\n");
 
@@ -100,11 +100,11 @@ void openscop_names_idump(FILE * file, openscop_names_p names, int level) {
     fprintf(file, "\n");
     
     // Print the various names.
-    openscop_strings_idump(file, names->parameters, level + 1);
-    openscop_strings_idump(file, names->iterators,  level + 1);
-    openscop_strings_idump(file, names->scatt_dims, level + 1);
-    openscop_strings_idump(file, names->local_dims, level + 1);
-    openscop_strings_idump(file, names->arrays,     level + 1);
+    osl_strings_idump(file, names->parameters, level + 1);
+    osl_strings_idump(file, names->iterators,  level + 1);
+    osl_strings_idump(file, names->scatt_dims, level + 1);
+    osl_strings_idump(file, names->local_dims, level + 1);
+    osl_strings_idump(file, names->arrays,     level + 1);
   }
 
   // The last line.
@@ -115,14 +115,14 @@ void openscop_names_idump(FILE * file, openscop_names_p names, int level) {
 
 
 /**
- * openscop_names_dump function:
- * this function prints the content of an openscop_names_t structure
+ * osl_names_dump function:
+ * this function prints the content of an osl_names_t structure
  * (*names) into a file (file, possibly stdout).
  * \param[in] file  The file where the information has to be printed.
  * \param[in] names The names structure whose information has to be printed.
  */
-void openscop_names_dump(FILE * file, openscop_names_p names) {
-  openscop_names_idump(file, names, 0);
+void osl_names_dump(FILE * file, osl_names_p names) {
+  osl_names_idump(file, names, 0);
 }
 
 
@@ -137,17 +137,17 @@ void openscop_names_dump(FILE * file, openscop_names_p names) {
 
 
 /**
- * openscop_names_malloc function:
- * this function allocates the memory space for an openscop_names_t
+ * osl_names_malloc function:
+ * this function allocates the memory space for an osl_names_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty names structure with fields set to
  *         default values.
  */
-openscop_names_p openscop_names_malloc() {
-  openscop_names_p names;
+osl_names_p osl_names_malloc() {
+  osl_names_p names;
 
-  OPENSCOP_malloc(names, openscop_names_p, sizeof(openscop_names_t));
+  OSL_malloc(names, osl_names_p, sizeof(osl_names_t));
   names->parameters = NULL;
   names->iterators  = NULL;
   names->scatt_dims = NULL;
@@ -159,20 +159,20 @@ openscop_names_p openscop_names_malloc() {
 
 
 /**
- * openscop_names_free function:
- * This function frees the allocated memory for an openscop_names_t
+ * osl_names_free function:
+ * This function frees the allocated memory for an osl_names_t
  * structure. If the names are not character strings, it is the
  * responsibility of the user to free each array of elements (including
- * the array itself), this function will only free the openscop_names_t shell.
+ * the array itself), this function will only free the osl_names_t shell.
  * \param[in,out] names The pointer to the names structure we want to free.
  */
-void openscop_names_free(openscop_names_p names) {
+void osl_names_free(osl_names_p names) {
   if (names != NULL) {
-    openscop_strings_free(names->parameters);
-    openscop_strings_free(names->iterators);
-    openscop_strings_free(names->scatt_dims);
-    openscop_strings_free(names->local_dims);
-    openscop_strings_free(names->arrays);
+    osl_strings_free(names->parameters);
+    osl_strings_free(names->iterators);
+    osl_strings_free(names->scatt_dims);
+    osl_strings_free(names->local_dims);
+    osl_strings_free(names->arrays);
 
     free(names);
   }
@@ -185,7 +185,7 @@ void openscop_names_free(openscop_names_p names) {
 
 
 /**
- * openscop_names_generate function:
+ * osl_names_generate function:
  * this function generates some names. For each kind of name it will generate
  * a given number of names with a given prefix followed by a number.
  * \param[in] parameter_prefix Prefix for parameter names.
@@ -200,40 +200,40 @@ void openscop_names_free(openscop_names_p names) {
  * \param[in] nb_arrays        Number of array names to generate.
  * \return A new names structure containing generated names.
  */
-openscop_names_p openscop_names_generate(
+osl_names_p osl_names_generate(
     char * parameter_prefix, int nb_parameters,
     char * iterator_prefix,  int nb_iterators,
     char * scatt_dim_prefix, int nb_scatt_dims,
     char * local_dim_prefix, int nb_local_dims,
     char * array_prefix,     int nb_arrays) {
-  openscop_names_p names = openscop_names_malloc();
+  osl_names_p names = osl_names_malloc();
 
-  names->parameters= openscop_strings_generate(parameter_prefix,nb_parameters);
-  names->iterators = openscop_strings_generate(iterator_prefix, nb_iterators);
-  names->scatt_dims= openscop_strings_generate(scatt_dim_prefix,nb_scatt_dims);
-  names->local_dims= openscop_strings_generate(local_dim_prefix,nb_local_dims);
-  names->arrays    = openscop_strings_generate(array_prefix,    nb_arrays);
+  names->parameters= osl_strings_generate(parameter_prefix,nb_parameters);
+  names->iterators = osl_strings_generate(iterator_prefix, nb_iterators);
+  names->scatt_dims= osl_strings_generate(scatt_dim_prefix,nb_scatt_dims);
+  names->local_dims= osl_strings_generate(local_dim_prefix,nb_local_dims);
+  names->arrays    = osl_strings_generate(array_prefix,    nb_arrays);
   
   return names;
 }
 
 /**
- * openscop_names_clone function:
+ * osl_names_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_names_t data structure provided as parameter.
+ * osl_names_t data structure provided as parameter.
  * \param[in] names The pointer to the names structure we want to clone.
  * \return A pointer to the clone of the names structure provided as parameter.
  */
-openscop_names_p openscop_names_clone(openscop_names_p names) {
-  openscop_names_p clone = NULL;
+osl_names_p osl_names_clone(osl_names_p names) {
+  osl_names_p clone = NULL;
   
   if (names != NULL) {
-    clone = openscop_names_malloc();
-    clone->parameters = openscop_strings_clone(names->parameters);
-    clone->iterators  = openscop_strings_clone(names->iterators);
-    clone->scatt_dims = openscop_strings_clone(names->scatt_dims);
-    clone->local_dims = openscop_strings_clone(names->local_dims);
-    clone->arrays     = openscop_strings_clone(names->arrays);
+    clone = osl_names_malloc();
+    clone->parameters = osl_strings_clone(names->parameters);
+    clone->iterators  = osl_strings_clone(names->iterators);
+    clone->scatt_dims = osl_strings_clone(names->scatt_dims);
+    clone->local_dims = osl_strings_clone(names->local_dims);
+    clone->arrays     = osl_strings_clone(names->arrays);
   }
   return clone;
 }

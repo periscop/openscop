@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/generic.h>
+# include <osl/generic.h>
 
 
 /*+***************************************************************************
@@ -72,8 +72,8 @@
 
 
 /**
- * openscop_generic_idump function:
- * this function displays an openscop_generic_t structure (*generic) into
+ * osl_generic_idump function:
+ * this function displays an osl_generic_t structure (*generic) into
  * a file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -81,8 +81,7 @@
  * \param[in] generic The generic whose information has to be printed.
  * \param[in] level   Number of spaces before printing, for each line.
  */
-void openscop_generic_idump(FILE * file,
-                            openscop_generic_p generic, int level) {
+void osl_generic_idump(FILE * file, osl_generic_p generic, int level) {
   int j, first = 1;
   
   // Go to the right level.
@@ -90,7 +89,7 @@ void openscop_generic_idump(FILE * file,
     fprintf(file,"|\t");
 
   if (generic != NULL)
-    fprintf(file, "+-- openscop_generic_t\n");
+    fprintf(file, "+-- osl_generic_t\n");
   else
     fprintf(file, "+-- NULL generic\n");
  
@@ -99,7 +98,7 @@ void openscop_generic_idump(FILE * file,
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_generic_t\n");
+      fprintf(file, "|   osl_generic_t\n");
     }
     else
       first = 0;
@@ -109,7 +108,7 @@ void openscop_generic_idump(FILE * file,
       fprintf(file, "|\t");
     fprintf(file, "\n");
 
-    openscop_interface_idump(file, generic->interface, level + 1);
+    osl_interface_idump(file, generic->interface, level + 1);
    
     if (generic->interface != NULL)
       generic->interface->idump(file, generic->data, level + 1);
@@ -132,25 +131,25 @@ void openscop_generic_idump(FILE * file,
 
 
 /**
- * openscop_generic_dump function:
- * this function prints the content of an openscop_generic_t structure
+ * osl_generic_dump function:
+ * this function prints the content of an osl_generic_t structure
  * (*generic) into a file (file, possibly stdout).
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  */
-void openscop_generic_dump(FILE * file, openscop_generic_p generic) {
-  openscop_generic_idump(file, generic, 0); 
+void osl_generic_dump(FILE * file, osl_generic_p generic) {
+  osl_generic_idump(file, generic, 0); 
 }
 
 
 /**
- * openscop_generic_print function:
- * this function prints the content of an openscop_generic_t structure
+ * osl_generic_print function:
+ * this function prints the content of an osl_generic_t structure
  * (*generic) into a string (returned) in the OpenScop format.
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  */
-void openscop_generic_print(FILE * file, openscop_generic_p generic) {
+void osl_generic_print(FILE * file, osl_generic_p generic) {
   char * string;
   
   if (generic == NULL)
@@ -175,7 +174,7 @@ void openscop_generic_print(FILE * file, openscop_generic_p generic) {
 
 
 /**
- * openscop_generic_sread function:
+ * osl_generic_sread function:
  * this function reads a list of generics from a string complying to the
  * OpenScop textual format and a list of known interfaces. It returns a
  * pointer to the corresponding list of generic structures.
@@ -183,20 +182,19 @@ void openscop_generic_print(FILE * file, openscop_generic_p generic) {
  * \param[in] registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic information list that has been read.
  */
-openscop_generic_p openscop_generic_sread(char * string,
-                                          openscop_interface_p registry) {
-  openscop_generic_p generic = NULL, new;
-  openscop_interface_p interface;
+osl_generic_p osl_generic_sread(char * string, osl_interface_p registry) {
+  osl_generic_p generic = NULL, new;
+  osl_interface_p interface;
   void * x;
 
   while (registry != NULL) {
     x = registry->sread(string);
     if (x != NULL) {
-      interface = openscop_interface_nclone(registry, 1);
-      new = openscop_generic_malloc();
+      interface = osl_interface_nclone(registry, 1);
+      new = osl_generic_malloc();
       new->interface = interface;
       new->data = x;
-      openscop_generic_add(&generic, new);
+      osl_generic_add(&generic, new);
     }
     registry = registry->next;
   }
@@ -206,7 +204,7 @@ openscop_generic_p openscop_generic_sread(char * string,
 
 
 /**
- * openscop_generic_read function:
+ * osl_generic_read function:
  * this function reads a list of generics from a file (possibly stdin)
  * complying to the OpenScop textual format and a list of known interfaces.
  * It returns a pointer to the list of corresponding generic structures.
@@ -214,13 +212,12 @@ openscop_generic_p openscop_generic_sread(char * string,
  * \param[in] registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic information list that has been read.
  */
-openscop_generic_p openscop_generic_read(FILE * file,
-                                         openscop_interface_p registry) {
+osl_generic_p osl_generic_read(FILE * file, osl_interface_p registry) {
   char * generic_string;
   void * generic_list;
 
-  generic_string = openscop_util_read_uptotag(file, OPENSCOP_TAG_END_SCOP);
-  generic_list = openscop_generic_sread(generic_string, registry);
+  generic_string = osl_util_read_uptotag(file, OSL_TAG_END_SCOP);
+  generic_list = osl_generic_sread(generic_string, registry);
   free(generic_string);
   return generic_list;
 }
@@ -232,27 +229,26 @@ openscop_generic_p openscop_generic_read(FILE * file,
 
 
 /**
- * openscop_generic_add function:
+ * osl_generic_add function:
  * this function adds a generic node (it may be a list as well) to a list
  * of generics provided as parameter (list). The new node is inserted at
  * the end of the list. 
  * \param[in] list    The list of generics to add a node (NULL if empty).
  * \param[in] generic The generic list to add to the initial list.
  */
-void openscop_generic_add(openscop_generic_p * list,
-                          openscop_generic_p generic) {
-  openscop_generic_p tmp = *list, check;
+void osl_generic_add(osl_generic_p * list, osl_generic_p generic) {
+  osl_generic_p tmp = *list, check;
   
   if (generic != NULL) {
     // First, check that the generic list is OK.
     check = generic;
     while (check != NULL) {
       if ((check->interface == NULL) || (check->interface->URI == NULL))
-        OPENSCOP_error("no interface or URI in a generic to add to a list");
+        OSL_error("no interface or URI in a generic to add to a list");
 
       // TODO: move this to the integrity check.
-      if (openscop_generic_lookup(*list, check->interface->URI) != NULL)
-        OPENSCOP_error("only one generic with a given URI is allowed");
+      if (osl_generic_lookup(*list, check->interface->URI) != NULL)
+        OSL_error("only one generic with a given URI is allowed");
       check = check->next;
     }
 
@@ -269,17 +265,17 @@ void openscop_generic_add(openscop_generic_p * list,
 
 
 /**
- * openscop_generic_malloc function:
- * This function allocates the memory space for an openscop_generic_t
+ * osl_generic_malloc function:
+ * This function allocates the memory space for an osl_generic_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty generic structure with fields set to
  *         default values.
  */
-openscop_generic_p openscop_generic_malloc() {
-  openscop_generic_p generic;
+osl_generic_p osl_generic_malloc() {
+  osl_generic_p generic;
 
-  OPENSCOP_malloc(generic, openscop_generic_p, sizeof(openscop_generic_t));
+  OSL_malloc(generic, osl_generic_p, sizeof(osl_generic_t));
   generic->interface = NULL;
   generic->data      = NULL;
   generic->next      = NULL;
@@ -289,22 +285,22 @@ openscop_generic_p openscop_generic_malloc() {
 
 
 /**
- * openscop_generic_free function:
+ * osl_generic_free function:
  * This function frees the allocated memory for a generic structure.
  * \param[in] generic The pointer to the generic structure we want to free.
  */
-void openscop_generic_free(openscop_generic_p generic) {
-  openscop_generic_p next;
+void osl_generic_free(osl_generic_p generic) {
+  osl_generic_p next;
 
   while (generic != NULL) {
     next = generic->next;
     if (generic->interface != NULL) {
       generic->interface->free(generic->data);
-      openscop_interface_free(generic->interface);
+      osl_interface_free(generic->interface);
     }
     else {
       if (generic->data != NULL) {
-        OPENSCOP_warning("unregistered interface, memory leaks are possible");
+        OSL_warning("unregistered interface, memory leaks are possible");
         free(generic->data);
       }
     }
@@ -320,28 +316,28 @@ void openscop_generic_free(openscop_generic_p generic) {
 
 
 /**
- * openscop_generic_clone function:
+ * osl_generic_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_generic_t data structure.
+ * osl_generic_t data structure.
  * \param[in] generic The pointer to the generic structure we want to clone.
  * \return A pointer to the clone of the input generic structure.
  */
-openscop_generic_p openscop_generic_clone(openscop_generic_p generic) {
-  openscop_generic_p clone = NULL, new;
-  openscop_interface_p interface;
+osl_generic_p osl_generic_clone(osl_generic_p generic) {
+  osl_generic_p clone = NULL, new;
+  osl_interface_p interface;
   void * x;
 
   while (generic != NULL) { 
     if (generic->interface != NULL) {
       x = generic->interface->clone(generic->data);
-      interface = openscop_interface_clone(generic->interface);
-      new = openscop_generic_malloc();
+      interface = osl_interface_clone(generic->interface);
+      new = osl_generic_malloc();
       new->interface = interface;
       new->data = x;
-      openscop_generic_add(&clone, new);
+      osl_generic_add(&clone, new);
     }
     else {
-      OPENSCOP_warning("unregistered interface, cloning ignored");
+      OSL_warning("unregistered interface, cloning ignored");
     }
     generic = generic->next;
   }
@@ -351,13 +347,13 @@ openscop_generic_p openscop_generic_clone(openscop_generic_p generic) {
 
 
 /**
- * openscop_generic_count function:
+ * osl_generic_count function:
  * this function counts the number of elements in the generic list provided
  * as parameter (x) and returns this number.
  * \param[in] x The list of generics.
  * \return  The number of elements in the list.
  */
-int openscop_generic_count(openscop_generic_p x) {
+int osl_generic_count(osl_generic_p x) {
   int generic_number = 0;
 
   while (x != NULL) {
@@ -370,7 +366,7 @@ int openscop_generic_count(openscop_generic_p x) {
 
 
 /**
- * openscop_generic_equal function:
+ * osl_generic_equal function:
  * this function returns true if the two generic structures are the same,
  * false otherwise. This functions considers two generic structures as equal
  * independently of the order of the nodes. TODO: make it dependent on the
@@ -379,18 +375,17 @@ int openscop_generic_count(openscop_generic_p x) {
  * \param x2 The second generic structure.
  * \return 1 if x1 and x2 are the same (content-wise), 0 otherwise.
  */
-int openscop_generic_equal(openscop_generic_p x1,
-                             openscop_generic_p x2) {
+int osl_generic_equal(osl_generic_p x1, osl_generic_p x2) {
   int x1_generic_number, x2_generic_number;
   int found, equal;
-  openscop_generic_p backup_x2 = x2;
+  osl_generic_p backup_x2 = x2;
 
   if (x1 == x2)
     return 1;
 
   // Check whether the number of generics is the same or not.
-  x1_generic_number = openscop_generic_count(x1);
-  x2_generic_number = openscop_generic_count(x2);
+  x1_generic_number = osl_generic_count(x1);
+  x2_generic_number = osl_generic_count(x2);
   if (x1_generic_number != x2_generic_number)
     return 0;
 
@@ -399,13 +394,13 @@ int openscop_generic_equal(openscop_generic_p x1,
     x2 = backup_x2;
     found = 0;
     while ((x2 != NULL) && (found != 1)) {
-      if (openscop_interface_equal(x1->interface, x2->interface)) {
+      if (osl_interface_equal(x1->interface, x2->interface)) {
         if (x1->interface != NULL) {
           equal = x1->interface->equal(x1->data, x2->data);
         }
         else {
-          OPENSCOP_warning("unregistered generic, "
-                           "cannot state generic equality");
+          OSL_warning("unregistered generic, "
+                      "cannot state generic equality");
           equal = 0;
         }
 
@@ -429,14 +424,14 @@ int openscop_generic_equal(openscop_generic_p x1,
 
 
 /**
- * openscop_generic_hasURI function:
+ * osl_generic_hasURI function:
  * this function returns 1 if the generic provided as parameter has
  * a given URI, 0 other wise.
  * \param x   The generic structure to test.
  * \param URI The URI value to test.
  * \return 1 if x has the provided URI, 0 otherwise.
  */
-int openscop_generic_hasURI(openscop_generic_p x, char * URI) {
+int osl_generic_hasURI(osl_generic_p x, char * URI) {
 
   if ((x == NULL) ||
       (x->interface == NULL) ||
@@ -449,7 +444,7 @@ int openscop_generic_hasURI(openscop_generic_p x, char * URI) {
 
 
 /**
- * openscop_generic_lookup function:
+ * osl_generic_lookup function:
  * this function returns the first generic with a given URI in the
  * generic list provided as parameter and NULL if it doesn't find such
  * a generic.
@@ -457,9 +452,9 @@ int openscop_generic_hasURI(openscop_generic_p x, char * URI) {
  * \param URI The URI of the generic we are looking for.
  * \return The first generic of the requested URI in the list.
  */
-void * openscop_generic_lookup(openscop_generic_p x, char * URI) {
+void * osl_generic_lookup(osl_generic_p x, char * URI) {
   while (x != NULL) {
-    if (openscop_generic_hasURI(x, URI))
+    if (osl_generic_hasURI(x, URI))
       return x->data;
 
     x = x->next;

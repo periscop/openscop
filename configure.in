@@ -67,9 +67,9 @@ dnl Input file for autoconf to build a configuration shellscript.
 
 AC_PREREQ(2.13)
 dnl Fill here the @bug email adress.
-AC_INIT([openscop], [0.6.0], [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
+AC_INIT([osl], [0.6.0], [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
 dnl A common file, which serve as a test.
-AC_CONFIG_SRCDIR([include/openscop/macros.h])
+AC_CONFIG_SRCDIR([include/osl/macros.h])
 dnl Put as most as possible configuration files to an auxialiry
 dnl directory.
 AC_CONFIG_AUX_DIR([autoconf])
@@ -116,7 +116,7 @@ dnl documentation says it does...
 gmp_package="yes"
 gmp_include_package="yes"
 gmp_library_package="yes"
-gmp_flag="OPENSCOP_GMP_IS_HERE"
+gmp_flag="OSL_GMP_IS_HERE"
 
 ASKED_FOR_GMP="no"
 
@@ -215,7 +215,7 @@ AC_CONFIG_FILES([
 	doc/Makefile
 	doc/Doxyfile
 	include/Makefile
-	include/openscop/scop.h
+	include/osl/scop.h
 	source/Makefile
 	tests/Makefile
 	],

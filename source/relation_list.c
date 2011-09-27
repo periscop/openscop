@@ -65,7 +65,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <ctype.h>
-# include <openscop/relation_list.h>
+# include <osl/relation_list.h>
 
 
 /*+***************************************************************************
@@ -74,17 +74,15 @@
 
 
 /**
- * openscop_relation_list_idump function:
- * Displays a openscop_relation_list_t structure (a list of relations) into a
- * file (file, possibly stdout). See openscop_relation_print_structure for
+ * osl_relation_list_idump function:
+ * Displays a osl_relation_list_t structure (a list of relations) into a
+ * file (file, possibly stdout). See osl_relation_print_structure for
  * more details.
  * \param file   File where informations are printed.
  * \param l	 The list of relations whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void openscop_relation_list_idump(FILE * file,
-                                  openscop_relation_list_p l,
-			          int level) {
+void osl_relation_list_idump(FILE * file, osl_relation_list_p l, int level) {
   int j, first = 1;
 
   // Go to the right level.
@@ -92,7 +90,7 @@ void openscop_relation_list_idump(FILE * file,
     fprintf(file,"|\t");
 
   if (l != NULL)
-    fprintf(file, "+-- openscop_relation_list_t\n");
+    fprintf(file, "+-- osl_relation_list_t\n");
   else
     fprintf(file, "+-- NULL relation list\n");
 
@@ -101,7 +99,7 @@ void openscop_relation_list_idump(FILE * file,
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   openscop_relation_list_t\n");
+      fprintf(file, "|   osl_relation_list_t\n");
     }
     else
       first = 0;
@@ -112,7 +110,7 @@ void openscop_relation_list_idump(FILE * file,
     fprintf(file, "\n");
 
     // Print a relation.
-    openscop_relation_idump(file, l->elt, level+1);
+    osl_relation_idump(file, l->elt, level+1);
 
     l = l->next;
 
@@ -132,40 +130,39 @@ void openscop_relation_list_idump(FILE * file,
 
 
 /**
- * openscop_relation_dump function:
- * This function prints the content of a openscop_relation_list_t into
+ * osl_relation_dump function:
+ * This function prints the content of a osl_relation_list_t into
  * a file (file, possibly stdout).
  * \param file File where informations are printed.
  * \param list The relation whose information has to be printed.
  */
-void openscop_relation_list_dump(FILE * file, openscop_relation_list_p list) {
-  openscop_relation_list_idump(file, list, 0);
+void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
+  osl_relation_list_idump(file, list, 0);
 }
 
 
 /**
- * openscop_relation_list_print_elts function:
- * This function prints the elements of a openscop_relation_list_t structure
+ * osl_relation_list_print_elts function:
+ * This function prints the elements of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. I.e., it prints
  * only the elements and not the number of elements. It prints an element of the
  * list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
  */
-void openscop_relation_list_print_elts(FILE * file,
-                                       openscop_relation_list_p list) {
+void osl_relation_list_print_elts(FILE * file, osl_relation_list_p list) {
   int i;
-  openscop_relation_list_p head = list;
+  osl_relation_list_p head = list;
 
   // Count the number of elements in the list with non-NULL content.
-  i = openscop_relation_list_count(list);
+  i = osl_relation_list_count(list);
   
   // Print each element of the relation list.
   if (i > 0) {
     i = 0;
     while (head) {
       if (head->elt != NULL) {
-        openscop_relation_print(file, head->elt);
+        osl_relation_print(file, head->elt);
         if (head->next != NULL)
           fprintf(file, "\n");
         i++;
@@ -180,19 +177,18 @@ void openscop_relation_list_print_elts(FILE * file,
 
 
 /**
- * openscop_relation_list_print function:
- * This function prints the content of a openscop_relation_list_t structure
+ * osl_relation_list_print function:
+ * This function prints the content of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. It prints
  * an element of the list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
  */
-void openscop_relation_list_print(FILE * file,
-                                  openscop_relation_list_p list) {
+void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
   int i;
 
   // Count the number of elements in the list with non-NULL content.
-  i = openscop_relation_list_count(list);
+  i = osl_relation_list_count(list);
   
   // Print it.
   if (i > 1)
@@ -201,7 +197,7 @@ void openscop_relation_list_print(FILE * file,
     fprintf(file,"# List of %d element \n%d\n", i, i);
 
   // Print each element of the relation list.
-  openscop_relation_list_print_elts(file, list);
+  osl_relation_list_print_elts(file, list);
 }
 
 
@@ -211,30 +207,30 @@ void openscop_relation_list_print(FILE * file,
 
 
 /**
- * openscop_relation_list_read function:
+ * osl_relation_list_read function:
  * This function reads a list of relations into a file (foo,
  * posibly stdin) and returns a pointer this relation list.
  * \param file  The input stream.
  * \return A pointer to the relation list structure that has been read.
  */
-openscop_relation_list_p openscop_relation_list_read(FILE * file) {
+osl_relation_list_p osl_relation_list_read(FILE * file) {
   int i;
-  openscop_relation_list_p list;
-  openscop_relation_list_p res;
+  osl_relation_list_p list;
+  osl_relation_list_p res;
   int nb_mat;
 
   // Read the number of relations to read.
-  nb_mat = openscop_util_read_int(file, NULL); 
+  nb_mat = osl_util_read_int(file, NULL); 
 
   if (nb_mat < 0)
-    OPENSCOP_error("negative number of relations");
+    OSL_error("negative number of relations");
 
   // Allocate the header of the list and start reading each element.
-  res = list = openscop_relation_list_malloc();
+  res = list = osl_relation_list_malloc();
   for (i = 0; i < nb_mat; ++i) {
-    list->elt = openscop_relation_read(file);
+    list->elt = osl_relation_read(file);
     if (i < nb_mat - 1)
-      list->next = openscop_relation_list_malloc();
+      list->next = osl_relation_list_malloc();
     list = list->next;
   }
 
@@ -248,19 +244,18 @@ openscop_relation_list_p openscop_relation_list_read(FILE * file) {
 
 
 /**
- * openscop_relation_list_malloc function:
- * This function allocates the memory space for a openscop_relation_list_t
+ * osl_relation_list_malloc function:
+ * This function allocates the memory space for a osl_relation_list_t
  * structure and sets its fields with default values. Then it returns
  * a pointer to the allocated space.
  * \return A pointer to an empty relation list with fields set to default
  *         values.
  */
-openscop_relation_list_p openscop_relation_list_malloc() {
-  openscop_relation_list_p res;
+osl_relation_list_p osl_relation_list_malloc() {
+  osl_relation_list_p res;
   
-  OPENSCOP_malloc(res, openscop_relation_list_p,
-                  sizeof(openscop_relation_list_t));
-  res->elt = NULL;
+  OSL_malloc(res, osl_relation_list_p, sizeof(osl_relation_list_t));
+  res->elt  = NULL;
   res->next = NULL;
 
   return res;
@@ -269,20 +264,20 @@ openscop_relation_list_p openscop_relation_list_malloc() {
 
 
 /**
- * openscop_relation_list_free function:
- * This function frees the allocated memory for a openscop_relation_list_t
+ * osl_relation_list_free function:
+ * This function frees the allocated memory for a osl_relation_list_t
  * structure, and all the relations stored in the list.
  * \param list The pointer to the relation list we want to free.
  */
-void openscop_relation_list_free(openscop_relation_list_p list) {
-  openscop_relation_list_p tmp;
+void osl_relation_list_free(osl_relation_list_p list) {
+  osl_relation_list_p tmp;
 
   if (list == NULL)
     return;
 
   while (list != NULL) {
     if (list->elt != NULL)
-      openscop_relation_free(list->elt);
+      osl_relation_free(list->elt);
     tmp = list->next;
     free(list);
     list = tmp;
@@ -296,35 +291,34 @@ void openscop_relation_list_free(openscop_relation_list_p list) {
 
 
 /**
- * openscop_relation_list_node function:
- * This function builds an openscop_relation_list_t node and sets its
+ * osl_relation_list_node function:
+ * This function builds an osl_relation_list_t node and sets its
  * relation element as a copy of the one provided as parameter.
  * \param r The pointer to the relation to copy/paste in a list node.
  * \return A pointer to a relation list node containing a copy of "relation".
  */
-openscop_relation_list_p openscop_relation_list_node(openscop_relation_p r) {
-  openscop_relation_list_p new = openscop_relation_list_malloc();
-  new->elt = openscop_relation_clone(r);
+osl_relation_list_p osl_relation_list_node(osl_relation_p r) {
+  osl_relation_list_p new = osl_relation_list_malloc();
+  new->elt = osl_relation_clone(r);
   return new;
 }
 
 
 /**
- * openscop_relation_list_clone function:
+ * osl_relation_list_clone function:
  * This functions builds and returns a quasi-"hard copy" (not a pointer copy)
- * of a openscop_relation_list_t data structure provided as parameter.
+ * of a osl_relation_list_t data structure provided as parameter.
  * \param list  The pointer to the relation list we want to copy.
  * \return A pointer to the full copy of the relation list in parameter.
  */
-openscop_relation_list_p openscop_relation_list_clone(
-    openscop_relation_list_p list) {
+osl_relation_list_p osl_relation_list_clone(osl_relation_list_p list) {
   
-  openscop_relation_list_p clone = NULL, node, previous = NULL; 
+  osl_relation_list_p clone = NULL, node, previous = NULL; 
   int first = 1;
 
   while (list != NULL) {
-    node      = openscop_relation_list_malloc();
-    node->elt = openscop_relation_clone(list->elt);
+    node      = osl_relation_list_malloc();
+    node->elt = osl_relation_clone(list->elt);
 
     if (first) {
       first = 0;
@@ -344,7 +338,7 @@ openscop_relation_list_p openscop_relation_list_clone(
 
 
 /**
- * openscop_relation_list_concat function:
+ * osl_relation_list_concat function:
  * this function builds a new relation list as the concatenation of the
  * two lists sent as parameters.
  * \param l1  The first relation list.
@@ -352,43 +346,40 @@ openscop_relation_list_p openscop_relation_list_clone(
  * \return A pointer to the relation list resulting from the concatenation of
  *         l1 and l2.
  */
-openscop_relation_list_p openscop_relation_list_concat(
-    openscop_relation_list_p l1,
-    openscop_relation_list_p l2) {
-  
-  openscop_relation_list_p new, end;
+osl_relation_list_p osl_relation_list_concat(osl_relation_list_p l1,
+                                             osl_relation_list_p l2) {
+  osl_relation_list_p new, end;
 
   if (l1 == NULL)
-    return openscop_relation_list_clone(l2);
+    return osl_relation_list_clone(l2);
 
   if (l2 == NULL)
-    return openscop_relation_list_clone(l1);
+    return osl_relation_list_clone(l1);
 
-  new = openscop_relation_list_clone(l1);
+  new = osl_relation_list_clone(l1);
   end = new;
   while (end->next != NULL)
     end = end->next;
-  end->next = openscop_relation_list_clone(l2);
+  end->next = osl_relation_list_clone(l2);
 
   return new;
 }
 
 
 /**
- * openscop_relation_list_equal function:
+ * osl_relation_list_equal function:
  * This function returns true if the two relation lists are the same, false
  * otherwise..
  * \param l1 The first relation list.
  * \param l2 The second relation list.
  * \return 1 if l1 and l2 are the same (content-wise), 0 otherwise.
  */
-int openscop_relation_list_equal(openscop_relation_list_p l1,
-                                 openscop_relation_list_p l2) {
+int osl_relation_list_equal(osl_relation_list_p l1, osl_relation_list_p l2) {
   while ((l1 != NULL) && (l2 != NULL)) {
     if (l1 == l2)
       return 1;
     
-    if (!openscop_relation_equal(l1->elt, l2->elt))
+    if (!osl_relation_equal(l1->elt, l2->elt))
       return 0;
 
     l1 = l1->next;
@@ -403,9 +394,9 @@ int openscop_relation_list_equal(openscop_relation_list_p l1,
 
 
 /**
- * openscop_relation_integrity_check function:
+ * osl_relation_integrity_check function:
  * This function checks that a list of relation is "well formed" according to
- * some expected properties (setting an expected value to OPENSCOP_UNDEFINED
+ * some expected properties (setting an expected value to OSL_UNDEFINED
  * means that we do not expect a specific value) and what the relations are
  * supposed to represent (all relations of a list are supposed to have the
  * same semantics). It returns 0 if the check failed or 1 if no problem has
@@ -417,18 +408,18 @@ int openscop_relation_list_equal(openscop_relation_list_p l1,
  * \param expected_nb_parameters  Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int openscop_relation_list_integrity_check(openscop_relation_list_p list,
-                                           int type,
-                                           int expected_nb_output_dims,
-                                           int expected_nb_input_dims,
-                                           int expected_nb_parameters) {
+int osl_relation_list_integrity_check(osl_relation_list_p list,
+                                      int type,
+                                      int expected_nb_output_dims,
+                                      int expected_nb_input_dims,
+                                      int expected_nb_parameters) {
   while (list != NULL) {
     // Check the access function.
-    if (!openscop_relation_integrity_check(list->elt,
-                                           type,
-                                           expected_nb_output_dims,
-                                           expected_nb_input_dims,
-                                           expected_nb_parameters)) {
+    if (!osl_relation_integrity_check(list->elt,
+                                      type,
+                                      expected_nb_output_dims,
+                                      expected_nb_input_dims,
+                                      expected_nb_parameters)) {
       return 0;
     }
 
@@ -440,13 +431,13 @@ int openscop_relation_list_integrity_check(openscop_relation_list_p list,
 
 
 /** 
- * openscop_relation_list_set_type function:
+ * osl_relation_list_set_type function:
  * this function sets the type of each relation in the relation list to the
  * one provided as parameter.
  * \param list The list of relations to set the type.
  * \param type The type.
  */
-void openscop_relation_list_set_type(openscop_relation_list_p list, int type) {
+void osl_relation_list_set_type(osl_relation_list_p list, int type) {
 
   while (list != NULL) {
     if (list->elt != NULL) {
@@ -458,29 +449,28 @@ void openscop_relation_list_set_type(openscop_relation_list_p list, int type) {
 
 
 /** 
- * openscop_relation_list_filter function:
+ * osl_relation_list_filter function:
  * this function returns a copy of the input relation list, restricted to
- * the relations of a given type. The special type OPENSCOP_TYPE_ACCESS
+ * the relations of a given type. The special type OSL_TYPE_ACCESS
  * filters any kind of access (read, write, rdwr etc.).
  * \param list The relation list to copy/filter.
  * \param type The filtering type.
  * \return A copy of the input list with only relation of the given type.
  */
-openscop_relation_list_p openscop_relation_list_filter(
-    openscop_relation_list_p list,
-    int type) {
+osl_relation_list_p osl_relation_list_filter(osl_relation_list_p list,
+                                             int type) {
 
-  openscop_relation_list_p copy = openscop_relation_list_clone(list);
-  openscop_relation_list_p filtered = NULL;
-  openscop_relation_list_p previous = NULL;
-  openscop_relation_list_p trash;
+  osl_relation_list_p copy = osl_relation_list_clone(list);
+  osl_relation_list_p filtered = NULL;
+  osl_relation_list_p previous = NULL;
+  osl_relation_list_p trash;
   int first = 1;
 
   while (copy != NULL) {
     if ((copy->elt != NULL) &&
-        (((type == OPENSCOP_TYPE_ACCESS) &&
-          (openscop_relation_is_access(copy->elt))) ||
-         ((type != OPENSCOP_TYPE_ACCESS) &&
+        (((type == OSL_TYPE_ACCESS) &&
+          (osl_relation_is_access(copy->elt))) ||
+         ((type != OSL_TYPE_ACCESS) &&
           (type == copy->elt->type)))) {
       if (first) {
         filtered = copy;
@@ -496,7 +486,7 @@ openscop_relation_list_p openscop_relation_list_filter(
         previous->next = copy->next;
       copy = copy->next;
       trash->next = NULL;
-      openscop_relation_list_free(trash);
+      osl_relation_list_free(trash);
     }
   }
 
@@ -505,13 +495,13 @@ openscop_relation_list_p openscop_relation_list_filter(
 
 
 /**
- * openscop_relation_list_count function:
+ * osl_relation_list_count function:
  * this function returns the number of elements with non-NULL content
  * in a relation list.
  * \param list The relation list to count the number of elements.
  * \return The number of nodes with non-NULL content in the relation list.
  */
-int openscop_relation_list_count(openscop_relation_list_p list) {
+int osl_relation_list_count(osl_relation_list_p list) {
   int i = 0;
   
   while (list != NULL) {

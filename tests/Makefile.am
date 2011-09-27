@@ -75,18 +75,18 @@ MAINTAINERCLEANFILES	= Makefile.in
 
 #############################################################################
 
-noinst_PROGRAMS = openscop_test
+noinst_PROGRAMS = osl_test
 
-TESTS = openscop_test
+TESTS = osl_test
 
-openscop_test_CPPFLAGS = -I$(top_srcdir)/include -static
+osl_test_CPPFLAGS = -I$(top_srcdir)/include -static
 
-openscop_test_LDFLAGS  = -L$(top_srcdir)/source
+osl_test_LDFLAGS  = -L$(top_srcdir)/source
 
-openscop_test_LDADD    = -lopenscop
+osl_test_LDADD    = -losl
 
-openscop_test_SOURCES  =            \
-	openscop_test.c             \
+osl_test_SOURCES  =                 \
+	osl_test.c                  \
 	polynom.scop                \
 	test_empty_statement.scop   \
 	test_just_access.scop       \

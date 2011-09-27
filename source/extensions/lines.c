@@ -63,7 +63,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
-# include <openscop/extensions/lines.h>
+# include <osl/extensions/lines.h>
 
 
 /*+***************************************************************************
@@ -72,8 +72,8 @@
 
 
 /**
- * openscop_lines_idump function:
- * this function displays an openscop_lines_t structure (*lines) into a
+ * osl_lines_idump function:
+ * this function displays an osl_lines_t structure (*lines) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
@@ -81,8 +81,7 @@
  * \param lines The lines structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void openscop_lines_idump(FILE * file, openscop_lines_p lines,
-                          int level) {
+void osl_lines_idump(FILE * file, osl_lines_p lines, int level) {
   int j;
 
   // Go to the right level.
@@ -90,7 +89,7 @@ void openscop_lines_idump(FILE * file, openscop_lines_p lines,
     fprintf(file, "|\t");
 
   if (lines != NULL)
-    fprintf(file, "+-- openscop_lines_t\n");
+    fprintf(file, "+-- osl_lines_t\n");
   else
     fprintf(file, "+-- NULL lines\n");
 
@@ -111,48 +110,48 @@ void openscop_lines_idump(FILE * file, openscop_lines_p lines,
 
 
 /**
- * openscop_lines_dump function:
- * this function prints the content of an openscop_lines_t structure
+ * osl_lines_dump function:
+ * this function prints the content of an osl_lines_t structure
  * (*lines) into a file (file, possibly stdout).
  * \param file    The file where the information has to be printed.
  * \param lines The lines structure whose information has to be printed.
  */
-void openscop_lines_dump(FILE * file, openscop_lines_p lines) {
-  openscop_lines_idump(file, lines, 0);
+void osl_lines_dump(FILE * file, osl_lines_p lines) {
+  osl_lines_idump(file, lines, 0);
 }
 
 
 /**
- * openscop_lines_sprint function:
- * this function prints the content of an openscop_lines_t structure
+ * osl_lines_sprint function:
+ * this function prints the content of an osl_lines_t structure
  * (*lines) into a string (returned) in the OpenScop textual format.
  * \param  lines The lines structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the lines structure.
  */
-char * openscop_lines_sprint(openscop_lines_p lines) {
-  int high_water_mark = OPENSCOP_MAX_STRING;
+char * osl_lines_sprint(osl_lines_p lines) {
+  int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char * buffer;
 
   if (lines != NULL) {
-    OPENSCOP_malloc(string, char *, high_water_mark * sizeof(char));
-    OPENSCOP_malloc(buffer, char *, OPENSCOP_MAX_STRING * sizeof(char));
+    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the begin tag.
-    sprintf(buffer, OPENSCOP_TAG_LINES_START);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_LINES_START);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the lines content.
     sprintf(buffer, "\n%d - %d\n", lines->start, lines->end);
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the end tag.
-    sprintf(buffer, OPENSCOP_TAG_LINES_STOP"\n");
-    openscop_util_safe_strcat(&string, buffer, &high_water_mark);
+    sprintf(buffer, OSL_TAG_LINES_STOP"\n");
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    OPENSCOP_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -165,37 +164,37 @@ char * openscop_lines_sprint(openscop_lines_p lines) {
  *****************************************************************************/
 
 /**
- * openscop_lines_sread function:
+ * osl_lines_sread function:
  * this function reads a lines structure from a string complying to the
  * OpenScop textual format and returns a pointer to this lines structure.
  * The string should contain only one textual format of a lines structure.
  * \param  extensions The input string where to find a lines structure.
  * \return A pointer to the lines structure that has been read.
  */
-openscop_lines_p openscop_lines_sread(char * extensions) {
+osl_lines_p osl_lines_sread(char * extensions) {
   char * content, *tmp;
-  openscop_lines_p lines;
+  osl_lines_p lines;
 
-  content = openscop_util_tag_content(extensions, OPENSCOP_TAG_LINES_START,
-                                                  OPENSCOP_TAG_LINES_STOP);
+  content = osl_util_tag_content(extensions, OSL_TAG_LINES_START,
+                                             OSL_TAG_LINES_STOP);
   if (content == NULL) {
-    OPENSCOP_info("no lines optional tag");
+    OSL_info("no lines optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OPENSCOP_MAX_STRING) 
-    OPENSCOP_error("lines too long");
+  if (strlen(content) > OSL_MAX_STRING) 
+    OSL_error("lines too long");
   
-  lines = openscop_lines_malloc();
+  lines = osl_lines_malloc();
   tmp = strtok(content," -");
   lines->start = atoi(tmp);
   if(lines->start == -1)
-    OPENSCOP_error("lines start NaN");
+    OSL_error("lines start NaN");
   
   tmp = strtok(NULL," -");
   lines->end = atoi(tmp);
   if(lines->end == -1)
-    OPENSCOP_error("lines end NaN");
+    OSL_error("lines end NaN");
   
   return lines;
 }
@@ -207,31 +206,31 @@ openscop_lines_p openscop_lines_sread(char * extensions) {
 
 
 /**
- * openscop_lines_malloc function:
- * This function allocates the memory space for an openscop_lines_t
+ * osl_lines_malloc function:
+ * This function allocates the memory space for an osl_lines_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty lines structure with fields set to
  *         default values.
  */
-openscop_lines_p openscop_lines_malloc() {
-  openscop_lines_p lines;
+osl_lines_p osl_lines_malloc() {
+  osl_lines_p lines;
   
-  OPENSCOP_malloc(lines, openscop_lines_p, sizeof(openscop_lines_t));
-  lines->start = OPENSCOP_UNDEFINED;
-  lines->end   = OPENSCOP_UNDEFINED;
+  OSL_malloc(lines, osl_lines_p, sizeof(osl_lines_t));
+  lines->start = OSL_UNDEFINED;
+  lines->end   = OSL_UNDEFINED;
 
   return lines;
 }
 
 
 /**
- * openscop_lines_free function:
- * This function frees the allocated memory for an openscop_lines_t
+ * osl_lines_free function:
+ * This function frees the allocated memory for an osl_lines_t
  * structure.
  * \param lines The pointer to the lines structure we want to free.
  */
-void openscop_lines_free(openscop_lines_p lines) {
+void osl_lines_free(osl_lines_p lines) {
   if (lines != NULL) {
     free(lines);
   }
@@ -244,19 +243,19 @@ void openscop_lines_free(openscop_lines_p lines) {
 
 
 /**
- * openscop_lines_clone function:
+ * osl_lines_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
- * openscop_lines_t data structure.
+ * osl_lines_t data structure.
  * \param lines The pointer to the lines structure we want to copy.
  * \return A pointer to the copy of the lines structure.
  */
-openscop_lines_p openscop_lines_clone(openscop_lines_p lines) {
-  openscop_lines_p copy;
+osl_lines_p osl_lines_clone(osl_lines_p lines) {
+  osl_lines_p copy;
 
   if (lines == NULL)
     return NULL;
 
-  copy = openscop_lines_malloc();
+  copy = osl_lines_malloc();
   copy->start = lines->start;
   copy->end = lines->end;
 
@@ -265,14 +264,14 @@ openscop_lines_p openscop_lines_clone(openscop_lines_p lines) {
 
 
 /**
- * openscop_lines_equal function:
+ * osl_lines_equal function:
  * this function returns true if the two lines structures are the same
  * (content-wise), false otherwise. This functions considers two lines
  * \param c1  The first lines structure.
  * \param c2  The second lines structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int openscop_lines_equal(openscop_lines_p c1, openscop_lines_p c2) {
+int osl_lines_equal(osl_lines_p c1, osl_lines_p c2) {
   if (c1 == c2)
     return 1;
 
@@ -287,23 +286,23 @@ int openscop_lines_equal(openscop_lines_p c1, openscop_lines_p c2) {
 
 
 /**
- * openscop_lines_interface function:
+ * osl_lines_interface function:
  * this function creates an interface structure corresponding to the lines
  * extension and returns it).
  * \return An interface structure for the lines extension.
  */
-openscop_interface_p openscop_lines_interface() {
-  openscop_interface_p interface = openscop_interface_malloc();
+osl_interface_p osl_lines_interface() {
+  osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OPENSCOP_URI_LINES);
-  interface->idump  = (openscop_idump_f)openscop_lines_idump;
-  interface->dump   = (openscop_dump_f)openscop_lines_dump;
-  interface->sprint = (openscop_sprint_f)openscop_lines_sprint;
-  interface->sread  = (openscop_sread_f)openscop_lines_sread;
-  interface->malloc = (openscop_malloc_f)openscop_lines_malloc;
-  interface->free   = (openscop_free_f)openscop_lines_free;
-  interface->clone  = (openscop_clone_f)openscop_lines_clone;
-  interface->equal  = (openscop_equal_f)openscop_lines_equal;
+  interface->URI    = strdup(OSL_URI_LINES);
+  interface->idump  = (osl_idump_f)osl_lines_idump;
+  interface->dump   = (osl_dump_f)osl_lines_dump;
+  interface->sprint = (osl_sprint_f)osl_lines_sprint;
+  interface->sread  = (osl_sread_f)osl_lines_sread;
+  interface->malloc = (osl_malloc_f)osl_lines_malloc;
+  interface->free   = (osl_free_f)osl_lines_free;
+  interface->clone  = (osl_clone_f)osl_lines_clone;
+  interface->equal  = (osl_equal_f)osl_lines_equal;
 
   return interface;
 }

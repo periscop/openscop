@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                            scop.h                               **
+     **                          relation.h                             **
      **-----------------------------------------------------------------**
      **                   First version: 30/04/2008                     **
      **-----------------------------------------------------------------**
@@ -61,34 +61,16 @@
  *****************************************************************************/
 
 
-/*+****************************************************************************
- *  THIS FILE HAS BEEN AUTOMATICALLY GENERATED FROM scop.h.in BY configure    *
- ******************************************************************************/
+#ifndef OSL_RELATION_H
+# define OSL_RELATION_H
 
-
-#ifndef OPENSCOP_SCOP_H
-# define OPENSCOP_SCOP_H
-
-# include <unistd.h>
-
-# define OPENSCOP_RELEASE "@PACKAGE_VERSION@"
-# define OPENSCOP_VERSION "@BITS@"
-
-# include <openscop/macros.h>
-# include <openscop/util.h>
-# include <openscop/strings.h>
-# include <openscop/vector.h>
-# include <openscop/relation.h>
-# include <openscop/interface.h>
-
-# include <openscop/extensions/textual.h>
-# include <openscop/extensions/comment.h>
-# include <openscop/extensions/arrays.h>
-# include <openscop/extensions/lines.h>
-# include <openscop/extensions/irregular.h>
-
-# include <openscop/generic.h>
-# include <openscop/statement.h>
+# include <stdio.h>
+# include <osl/macros.h>
+# include <osl/int.h>
+# include <osl/util.h>
+# include <osl/vector.h>
+# include <osl/strings.h>
+# include <osl/names.h>
 
 
 # if defined(__cplusplus)
@@ -98,65 +80,99 @@ extern "C"
 
 
 /**
- * The scop_t structure stores a list of scops. Each node stores the useful
- * information of a static control part of a program to process it within a
- * polyhedral framework. Parameter information may be strings of characters
- * (char *) when the type field is OPENSCOP_TYPE_STRING or a generic pointer
- * to anything else (void *) when the type field is OPENSCOP_TYPE_GENERIC.
- * The OpenScop library does not touch AT ALL generic information: printing,
- * copy etc. must be done externally.
+ * The osl_relation_t structure stores a union of relations. It is a
+ * NULL-terminated linked list of relations. Each relation is described
+ * using a matrix where each row represents a linear constraint. The entries
+ * of each row are organised in the following order:
+ * - An equality/inequality tag: 0 means the row corresponds to an
+ *   equality constraint == 0, 1 means it is an inequality >= 0.
+ * - The coefficients of the output dimensions.
+ * - The coefficients of the input dimensions (0 for a set).
+ * - The coefficients of the local (existentially quantified) dimensions.
+ * - The coefficients of the parameters.
+ * - The coefficient of the constant.
+ * Thus we have the following invariant: nb_columns =
+ * 1 + nb_output_dims + nb_input_dims + dims + nb_parameters + 1.
+ * Moreover we use the following conventions:
+ * - Sets (e.g., iteration domains) are the images of relations with a
+ *   zero-dimensional domain, hence the number of input dimensions is 0.
+ * - The first output dimension of any access relations corresponds to
+ *   the name of the array.
+ * The type field may provide some semantics about the relation, it may be:
+ * - Undefined : OSL_UNDEFINED,
+ * - An iteration domain : OSL_TYPE_DOMAIN,
+ * - A scattering relation : OSL_TYPE_SCATTERING,
+ * - An access relation : OSL_TYPE_ACCESS.
  */
-struct openscop_scop {
-  int version;                    /**< Version of the data structure */
-  char * language;                /**< Target language (backend) */
-  openscop_relation_p context;    /**< Constraints on the SCoP parameters */
-  int parameter_type;             /**< Parameter type */
-  openscop_generic_p parameters;  /**< NULL-terminated array of parameters */
-  openscop_statement_p statement; /**< Statement list of the SCoP */
-  openscop_interface_p registry;  /**< Registered extensions interfaces */
-  openscop_generic_p extension;   /**< List of extensions */
-  void * usr;                     /**< A user-defined field, not touched
-				       AT ALL by the OpenScop Library */
-  struct openscop_scop * next;    /**< Next statement in the linked list */
+struct osl_relation {
+  int type;                   /**< Semantics about the relation */
+  int precision;              /**< Precision of relation matrix elements*/
+  int nb_rows;                /**< Number of rows */
+  int nb_columns;	      /**< Number of columns */
+  int nb_output_dims;         /**< Number of output dimensions */
+  int nb_input_dims;          /**< Number of input dimensions */
+  int nb_local_dims;          /**< Number of local (existentially
+                                   quantified) dimensions */
+  int nb_parameters;          /**< Number of parameters */
+  void ** m;                  /**< An array of pointers to the beginning
+			           of each row of the relation matrix */
+  struct osl_relation * next; /**< Pointer to the next relation in the
+                                   union of relations (NULL if none) */
 };
-typedef struct openscop_scop   openscop_scop_t;
-typedef struct openscop_scop * openscop_scop_p;
+typedef struct osl_relation   osl_relation_t;
+typedef struct osl_relation * osl_relation_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void openscop_scop_idump(FILE *, openscop_scop_p, int);
-void openscop_scop_dump(FILE *, openscop_scop_p);
-void openscop_scop_print(FILE *, openscop_scop_p);
+void           osl_relation_idump(FILE *, osl_relation_p, int);
+void           osl_relation_dump(FILE *, osl_relation_p);
+char *         osl_relation_expression(osl_relation_p relation,
+                                       int row, osl_names_p names);
+void           osl_relation_print(FILE *, osl_relation_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_read(FILE *);
+osl_relation_p osl_relation_read(FILE *);
+osl_relation_p osl_relation_read_arrays(FILE *, char ***, int *);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_malloc();
-void		openscop_scop_free(openscop_scop_p);
+osl_relation_p osl_relation_pmalloc(int, int, int);
+osl_relation_p osl_relation_malloc(int, int);
+void           osl_relation_free_inside(osl_relation_p);
+void           osl_relation_free(osl_relation_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-openscop_scop_p	openscop_scop_clone(openscop_scop_p);
-int             openscop_scop_equal(openscop_scop_p, openscop_scop_p);
-int             openscop_scop_integrity_check(openscop_scop_p);
-int             openscop_scop_get_nb_parameters(openscop_scop_p);
-void            openscop_scop_register_extension(openscop_scop_p,
-                                                 openscop_interface_p);
+osl_relation_p osl_relation_nclone(osl_relation_p, int);
+osl_relation_p osl_relation_clone(osl_relation_p);
+void           osl_relation_replace_vector(osl_relation_p, osl_vector_p, int);
+void           osl_relation_insert_vector(osl_relation_p, osl_vector_p, int);
+void           osl_relation_add_vector(osl_relation_p, osl_vector_p, int);
+void           osl_relation_sub_vector(osl_relation_p, osl_vector_p, int);
+osl_relation_p osl_relation_from_vector(osl_vector_p);
+void           osl_relation_replace_constraints(osl_relation_p,
+                                                osl_relation_p, int);
+void           osl_relation_insert_constraints(osl_relation_p,
+                                               osl_relation_p, int);
+osl_relation_p osl_relation_concat_constraints(osl_relation_p, osl_relation_p);
+int            osl_relation_equal(osl_relation_p, osl_relation_p);    
+int            osl_relation_integrity_check(osl_relation_p, int, int, int,int);
+osl_relation_p osl_relation_union(osl_relation_p, osl_relation_p);
+void           osl_relation_set_type(osl_relation_p, int);
+int            osl_relation_get_array_id(osl_relation_p);
+int            osl_relation_is_access(osl_relation_p);
 
 
 # if defined(__cplusplus)
   }
 # endif
-
-#endif /* define OPENSCOP_SCOP_H */
+#endif /* define OSL_RELATION_H */

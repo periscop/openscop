@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                           vector.h                              **
+     **                            util.h                               **
      **-----------------------------------------------------------------**
-     **                   First version: 01/05/2008                     **
+     **                   First version: 08/10/2010                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,14 +61,10 @@
  *****************************************************************************/
 
 
-#ifndef OPENSCOP_VECTOR_H
-# define OPENSCOP_VECTOR_H
+#ifndef OSL_UTIL_H
+# define OSL_UTIL_H
 
-# include <stdio.h>
-# include <openscop/macros.h>
-# include <openscop/int.h>
-# include <openscop/util.h>
-
+# include <osl/macros.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -76,49 +72,21 @@ extern "C"
 # endif
 
 
-/**
- * The openscop_vector_t structure stores a vector information in the PolyLib
- * format (the first entry has a specific meaning). When a vector
- * describes a linear constraint, a 0 means it is an equality == 0, a 1 means
- * an inequality >= 0. When the vector describes an array access, a number
- * different than 0 is the array identifier.
- */
-struct openscop_vector {
-  int size;      /**< Number of vector entries */
-  int precision; /**< Precision of the integer elements. */
-  void * v;      /**< An array of values */
-};
-typedef struct openscop_vector   openscop_vector_t;
-typedef struct openscop_vector * openscop_vector_p;
-
-
 /*+***************************************************************************
- *                          Structure display function                       *
+ *                            Utility functions                              *
  *****************************************************************************/
-void openscop_vector_idump(FILE *, openscop_vector_p, int);
-void openscop_vector_dump(FILE *, openscop_vector_p);
+char * osl_util_skip_blank_and_comments(FILE *, char *);
+int    osl_util_read_int(FILE *, char **);
+char * osl_util_read_tail(FILE *);
+char * osl_util_read_uptotag(FILE *, char *);
+char * osl_util_tag_content(char *, char *, char *);
+void   osl_util_safe_strcat(char **, char *, int *);
+int    osl_util_get_precision();
+void   osl_util_print_provided(FILE *, int, char *);
 
-
-/*+***************************************************************************
- *                    Memory allocation/deallocation function                *
- *****************************************************************************/
-openscop_vector_p openscop_vector_pmalloc(int, int);
-openscop_vector_p openscop_vector_malloc(int);
-void              openscop_vector_free(openscop_vector_p);
-
-
-/*+***************************************************************************
- *                            Processing functions                           *
- *****************************************************************************/
-openscop_vector_p openscop_vector_add_scalar(openscop_vector_p, int);
-openscop_vector_p openscop_vector_mul_scalar(openscop_vector_p, int);
-openscop_vector_p openscop_vector_add(openscop_vector_p, openscop_vector_p);
-openscop_vector_p openscop_vector_sub(openscop_vector_p, openscop_vector_p);
-void              openscop_vector_tag_inequality(openscop_vector_p);
-void              openscop_vector_tag_equality(openscop_vector_p);
-int               openscop_vector_equal(openscop_vector_p, openscop_vector_p);
 
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define OPENSCOP_VECTOR_H */
+
+#endif /* define OSL_UTIL_H */
