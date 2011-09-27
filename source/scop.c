@@ -364,16 +364,17 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
 
 
 /**
- * osl_scop_read function:
+ * osl_scop_pread function ("precision read"):
  * this function reads a list of scop structures from a file (possibly stdin)
  * complying to the OpenScop textual format and returns a pointer to this
  * scop list. If some relation properties (number of input/output/local
  * dimensions and number of parameters) are undefined, it will define them
  * according to the available information. 
- * \param file The file where the scop has to be read.
+ * \param[in] file      The file where the scop has to be read.
+ * \param[in] precision The precision of the relation elements.
  * \return A pointer to the scop structure that has been read.
  */
-osl_scop_p osl_scop_read(FILE * file) {
+osl_scop_p osl_scop_pread(FILE * file, int precision) {
   osl_scop_p list = NULL, current = NULL, scop;
   osl_statement_p stmt = NULL;
   osl_statement_p prev = NULL;
@@ -420,7 +421,7 @@ osl_scop_p osl_scop_read(FILE * file) {
     }
 
     // Read the context domain.
-    scop->context = osl_relation_read(file);
+    scop->context = osl_relation_pread(file, precision);
 
     // Read the parameters.
     scop->parameter_type = OSL_TYPE_STRING;
@@ -440,7 +441,7 @@ osl_scop_p osl_scop_read(FILE * file) {
 
     for (i = 0; i < nb_statements; i++) {
       // Read each statement.
-      stmt = osl_statement_read(file);
+      stmt = osl_statement_pread(file, precision);
       if (scop->statement == NULL)
         scop->statement = stmt;
       else
@@ -470,6 +471,19 @@ osl_scop_p osl_scop_read(FILE * file) {
     OSL_warning("scop integrity check failed");
 
   return list;
+}
+
+
+/**
+ * osl_scop_read function:
+ * this function is equivalent to osl_scop_pread() except that
+ * the precision corresponds to the precision environment variable or
+ * to the highest available precision if it is not defined.
+ * \see{osl_scop_pread}
+ */
+osl_scop_p osl_scop_read(FILE * foo) {
+  int precision = osl_util_get_precision();
+  return osl_scop_pread(foo, precision);
 }
 
 

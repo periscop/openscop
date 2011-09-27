@@ -134,6 +134,7 @@ void       osl_scop_print(FILE *, osl_scop_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
+osl_scop_p osl_scop_pread(FILE *, int);
 osl_scop_p osl_scop_read(FILE *);
 
 

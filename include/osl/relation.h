@@ -136,6 +136,7 @@ void           osl_relation_print(FILE *, osl_relation_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
+osl_relation_p osl_relation_pread(FILE *, int);
 osl_relation_p osl_relation_read(FILE *);
 osl_relation_p osl_relation_read_arrays(FILE *, char ***, int *);
 

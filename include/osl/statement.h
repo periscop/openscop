@@ -108,7 +108,8 @@ void            osl_statement_print(FILE *, osl_statement_p);
 /*****************************************************************************
  *                              Reading function                             *
  *****************************************************************************/
-osl_statement_p osl_statement_read(FILE*);
+osl_statement_p osl_statement_pread(FILE *, int);
+osl_statement_p osl_statement_read(FILE *);
 
 
 /*+***************************************************************************

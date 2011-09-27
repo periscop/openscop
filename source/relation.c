@@ -246,7 +246,7 @@ char * osl_relation_expression_element(void * val,
   sval[0] = '\0';
 
   // statements for the 'normal' processing.
-  if (osl_int_notzero(precision, val, 0) && (!cst)) {
+  if (!osl_int_zero(precision, val, 0) && (!cst)) {
     if ((*first) || osl_int_neg(precision, val, 0)) {
       if (osl_int_one(precision, val, 0)) {         // case 1
         sprintf(sval, "%s", name);
@@ -650,14 +650,15 @@ return_type:
 
 
 /**
- * osl_relation_read function:
+ * osl_relation_pread function ("precision read"):
  * this function reads a relation into a file (foo, posibly stdin) and
  * returns a pointer this relation. The relation is set to the maximum
  * available precision.
- * \param[in] file The input stream.
+ * \param[in] file      The input stream.
+ * \param[in] precision The precision of the relation elements.
  * \return A pointer to the relation structure that has been read.
  */
-osl_relation_p osl_relation_read(FILE * foo) {
+osl_relation_p osl_relation_pread(FILE * foo, int precision) {
   int i, j, k, n, read = 0;
   int nb_rows, nb_columns;
   int nb_output_dims, nb_input_dims, nb_local_dims, nb_parameters;
@@ -666,7 +667,6 @@ osl_relation_p osl_relation_read(FILE * foo) {
   int read_properties = 1;
   int first = 1;
   int type;
-  int precision = osl_util_get_precision();
   char * c, s[OSL_MAX_STRING], str[OSL_MAX_STRING];
   osl_relation_p relation, relation_union = NULL, previous = NULL;
 
@@ -743,6 +743,19 @@ osl_relation_p osl_relation_read(FILE * foo) {
 }
 
 
+/**
+ * osl_relation_read function:
+ * this function is equivalent to osl_relation_pread() except that
+ * the precision corresponds to the precision environment variable or
+ * to the highest available precision if it is not defined.
+ * \see{osl_relation_pread}
+ */
+osl_relation_p osl_relation_read(FILE * foo) {
+  int precision = osl_util_get_precision();
+  return osl_relation_pread(foo, precision);
+}
+
+
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
@@ -799,15 +812,10 @@ osl_relation_p osl_relation_pmalloc(int precision,
 
 /**
  * osl_relation_malloc function:
- * this function allocates the memory space for an osl_relation_t
- * structure and sets its fields with default values. Then it returns a
- * pointer to the allocated space. The precision of the constraint matrix
- * elements corresponds to the precision environment variable or to the
- * highest available precision if it is not defined.
- * \param[in] nb_rows    The number of row of the relation to allocate.
- * \param[in] nb_columns The number of columns of the relation to allocate.
- * \return A pointer to an empty relation with fields set to default values
- *         and a ready-to-use constraint matrix.
+ * this function is equivalent to osl_relation_pmalloc() except that
+ * the precision corresponds to the precision environment variable or
+ * to the highest available precision if it is not defined.
+ * \see{osl_relation_pmalloc}
  */
 osl_relation_p osl_relation_malloc(int nb_rows, int nb_columns) {
   int precision = osl_util_get_precision();

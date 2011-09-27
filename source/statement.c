@@ -283,13 +283,14 @@ void osl_statement_dispatch(osl_statement_p stmt, osl_relation_list_p list) {
 
 
 /**
- * osl_statement_read function:
+ * osl_statement_pread function ("precision read"):
  * this function reads an osl_statement_t structure from an input stream
  * (possibly stdin).
  * \param[in] file The input stream.
+ * \param[in] precision The precision of the relation elements.
  * \return A pointer to the statement structure that has been read.
  */
-osl_statement_p osl_statement_read(FILE * file) {
+osl_statement_p osl_statement_pread(FILE * file, int precision) {
   int nb_iterators;
   char buffer[OSL_MAX_STRING], * start, * end;
   osl_statement_p stmt = osl_statement_malloc();
@@ -298,7 +299,7 @@ osl_statement_p osl_statement_read(FILE * file) {
 
   if (file) {
     // Read all statement relations.
-    list = osl_relation_list_read(file);
+    list = osl_relation_list_pread(file, precision);
 
     // Store relations at the right place according to their type.
     osl_statement_dispatch(stmt, list);
@@ -340,6 +341,20 @@ osl_statement_p osl_statement_read(FILE * file) {
 
   return stmt;
 }
+
+
+/**
+ * osl_statement_read function:
+ * this function is equivalent to osl_statement_pread() except that
+ * the precision corresponds to the precision environment variable or
+ * to the highest available precision if it is not defined.
+ * \see{osl_statement_pread}
+ */
+osl_statement_p osl_statement_read(FILE * foo) {
+  int precision = osl_util_get_precision();
+  return osl_statement_pread(foo, precision);
+}
+
 
 
 /*+***************************************************************************

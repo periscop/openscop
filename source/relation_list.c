@@ -207,13 +207,14 @@ void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
 
 
 /**
- * osl_relation_list_read function:
- * This function reads a list of relations into a file (foo,
+ * osl_relation_list_pread function ("precision read"):
+ * this function reads a list of relations into a file (foo,
  * posibly stdin) and returns a pointer this relation list.
- * \param file  The input stream.
+ * \param[in] file      The input stream.
+ * \param[in] precision The precision of the relation elements.
  * \return A pointer to the relation list structure that has been read.
  */
-osl_relation_list_p osl_relation_list_read(FILE * file) {
+osl_relation_list_p osl_relation_list_pread(FILE * file, int precision) {
   int i;
   osl_relation_list_p list;
   osl_relation_list_p res;
@@ -228,13 +229,26 @@ osl_relation_list_p osl_relation_list_read(FILE * file) {
   // Allocate the header of the list and start reading each element.
   res = list = osl_relation_list_malloc();
   for (i = 0; i < nb_mat; ++i) {
-    list->elt = osl_relation_read(file);
+    list->elt = osl_relation_pread(file, precision);
     if (i < nb_mat - 1)
       list->next = osl_relation_list_malloc();
     list = list->next;
   }
 
   return res;
+}
+
+
+/**
+ * osl_relation_list_read function:
+ * this function is equivalent to osl_relation_list_pread() except that
+ * the precision corresponds to the precision environment variable or
+ * to the highest available precision if it is not defined.
+ * \see{osl_relation_list_pread}
+ */
+osl_relation_list_p osl_relation_list_read(FILE * foo) {
+  int precision = osl_util_get_precision();
+  return osl_relation_list_pread(foo, precision);
 }
 
 

@@ -42,7 +42,7 @@ together. It also describes briefly the OpenScop Library version @value{LIB_VERS
 a Free Software that provides an example of OpenScop implementation.
 
 It would be quite kind to refer at the present document in any publication that
-results from the use of the OpenScop library:
+results from the use of the OpenScop Library:
 
 @example
 @@TechReport@{Bas11,
@@ -1849,48 +1849,48 @@ read at the OpenScop file format description, as it is quite close to this
 representation (@pxref{OpenScop Core Part File Format Specification}).
 
 @menu
-* openscop_relation_t::
-* openscop_relation_list_t::
-* openscop_interface_t::
-* openscop_generic_t::
-* openscop_statement_t::
-* openscop_scop_t::
+* osl_relation_t::
+* osl_relation_list_t::
+* osl_interface_t::
+* osl_generic_t::
+* osl_statement_t::
+* osl_scop_t::
 @end menu
 
-@node openscop_relation_t
-@subsubsection openscop_relation_t
+@node osl_relation_t
+@subsubsection osl_relation_t
 
 @example
 @group
-struct openscop_relation @{
-  int type;                        /* What this relation is encoding */ 
-  int precision;                   /* Precision of the matrix elements */ 
-  int nb_rows;                     /* Number of rows */
-  int nb_columns;                  /* Number of columns */
-  int nb_output_dims;              /* Number of output dimensions */
-  int nb_input_dims;               /* Number of input dimensions */
-  int nb_local_dims;               /* Number of local dimensions */
-  int nb_parameters;               /* Number of parameters */
-  void ** m;                       /* Matrix of constraints */
-  struct openscop_relation * next; /* Next relation in the union */
+struct osl_relation @{
+  int type;                   /* What this relation is encoding */ 
+  int precision;              /* Precision of the matrix elements */ 
+  int nb_rows;                /* Number of rows */
+  int nb_columns;             /* Number of columns */
+  int nb_output_dims;         /* Number of output dimensions */
+  int nb_input_dims;          /* Number of input dimensions */
+  int nb_local_dims;          /* Number of local dimensions */
+  int nb_parameters;          /* Number of parameters */
+  void ** m;                  /* Matrix of constraints */
+  struct osl_relation * next; /* Next relation in the union */
 @};
-typedef struct openscop_relation   openscop_relation_t;
-typedef struct openscop_relation * openscop_relation_p;
+typedef struct osl_relation   osl_relation_t;
+typedef struct osl_relation * osl_relation_p;
 @end group
 @end example
 
-@noindent The @code{openscop_relation_t} structure stores a part of an
+@noindent The @code{osl_relation_t} structure stores a part of an
 union of relations. A union of relation is a @code{NULL}-terminated
 linked list of union parts (@code{next} field). The @code{type} field
 may provide some information about what the relation is encoding:
 @itemize @bullet
-@item -1: undefined (@code{OPENSCOP_UNDEFINED}),
-@item 2: context domain (@code{OPENSCOP_TYPE_CONTEXT}),
-@item 3: iteration domain (@code{OPENSCOP_TYPE_DOMAIN}),
-@item 4: scattering relation (@code{OPENSCOP_TYPE_SCATTERING}),
-@item 6: read access relation (@code{OPENSCOP_TYPE_READ}),
-@item 7: write access relation (@code{OPENSCOP_TYPE_WRITE}),
-@item 8: may write access relation (@code{OPENSCOP_TYPE_MAY_WRITE}),
+@item -1: undefined (@code{OSL_UNDEFINED}),
+@item 2: context domain (@code{OSL_TYPE_CONTEXT}),
+@item 3: iteration domain (@code{OSL_TYPE_DOMAIN}),
+@item 4: scattering relation (@code{OSL_TYPE_SCATTERING}),
+@item 6: read access relation (@code{OSL_TYPE_READ}),
+@item 7: write access relation (@code{OSL_TYPE_WRITE}),
+@item 8: may write access relation (@code{OSL_TYPE_MAY_WRITE}),
 @end itemize
 The various numbers provide the details on the relation itself
 (@pxref{Relation Representation}) while the @code{m} field points to
@@ -1899,88 +1899,88 @@ provided by the @code{precision} field. It can take the following
 values:
 @itemize @bullet
 @item 32: 32 bits precision, elements are @code{long int}
-      (@code{OPENSCOP_PRECISION_SP}),
+      (@code{OSL_PRECISION_SP}),
 @item 64: 64 bits precision, elements are @code{long long int}
-      (@code{OPENSCOP_PRECISION_DP}),
+      (@code{OSL_PRECISION_DP}),
 @item 0: multiple precision, elements are GNU GMP Library's
-      @code{mpz_t} (@code{OPENSCOP_PRECISION_MP}).
+      @code{mpz_t} (@code{OSL_PRECISION_MP}).
 @end itemize
 
-@node openscop_relation_list_t
-@subsubsection openscop_relation_list_t
+@node osl_relation_list_t
+@subsubsection osl_relation_list_t
 
 @example
 @group
-struct openscop_relation_list @{
-  openscop_relation_p elt;              /* Element of the list */
-  struct openscop_relation_list * next; /* Next element of the list */
+struct osl_relation_list @{
+  osl_relation_p elt;              /* Element of the list */
+  struct osl_relation_list * next; /* Next element of the list */
 @};
-typedef struct openscop_relation_list   openscop_relation_list_t;
-typedef struct openscop_relation_list * openscop_relation_list_p;
+typedef struct osl_relation_list   osl_relation_list_t;
+typedef struct osl_relation_list * osl_relation_list_p;
 @end group
 @end example
 
-@noindent The @code{openscop_relation_list_t} structure is a @code{NULL}-terminated
-linked list of @code{openscop_relation_t} data structures.
+@noindent The @code{osl_relation_list_t} structure is a @code{NULL}-terminated
+linked list of @code{osl_relation_t} data structures.
 @code{elt} is a relation element of the list and @code{next} is the pointer to
 the next element of the list.
 
-@node openscop_interface_t
-@subsubsection openscop_interface_t
+@node osl_interface_t
+@subsubsection osl_interface_t
 
 @example
 @group
-typedef void   (*openscop_idump_f) (FILE *, void *, int);
-typedef void   (*openscop_dump_f)  (FILE *, void *);
-typedef char * (*openscop_sprint_f)(void *);
-typedef void * (*openscop_sread_f) (char *);
-typedef void * (*openscop_malloc_f)();
-typedef void   (*openscop_free_f)  (void *);
-typedef void * (*openscop_clone_f) (void *);
-typedef int    (*openscop_equal_f) (void *, void *);
+typedef void   (*osl_idump_f) (FILE *, void *, int);
+typedef void   (*osl_dump_f)  (FILE *, void *);
+typedef char * (*osl_sprint_f)(void *);
+typedef void * (*osl_sread_f) (char *);
+typedef void * (*osl_malloc_f)();
+typedef void   (*osl_free_f)  (void *);
+typedef void * (*osl_clone_f) (void *);
+typedef int    (*osl_equal_f) (void *, void *);
 
-struct openscop_interface @{
-  char * URI;               /* Unique interface identifier string */
-  openscop_idump_f  idump;  /* Pointer to the idump function */
-  openscop_dump_f   dump;   /* Pointer to the dump function */
-  openscop_sprint_f sprint; /* Pointer to the sprint function */
-  openscop_sread_f  sread;  /* Pointer to the sread function */
-  openscop_malloc_f malloc; /* Pointer to the malloc function */
-  openscop_free_f   free;   /* Pointer to the free function */
-  openscop_clone_f  clone;  /* Pointer to the clone function */
-  openscop_equal_f  equal;  /* Pointer to the equal function */
-  struct openscop_interface * next; /**< Next interface in the list */
+struct osl_interface @{
+  char * URI;                  /* Unique interface identifier string */
+  osl_idump_f  idump;          /* Pointer to the idump function */
+  osl_dump_f   dump;           /* Pointer to the dump function */
+  osl_sprint_f sprint;         /* Pointer to the sprint function */
+  osl_sread_f  sread;          /* Pointer to the sread function */
+  osl_malloc_f malloc;         /* Pointer to the malloc function */
+  osl_free_f   free;           /* Pointer to the free function */
+  osl_clone_f  clone;          /* Pointer to the clone function */
+  osl_equal_f  equal;          /* Pointer to the equal function */
+  struct osl_interface * next; /* Next interface in the list */
 @};
-typedef struct openscop_interface   openscop_interface_t;
-typedef struct openscop_interface * openscop_interface_p;
+typedef struct osl_interface   osl_interface_t;
+typedef struct osl_interface * osl_interface_p;
 @end group
 @end example
 
-@noindent The @code{openscop_interface_t} structure represents a
+@noindent The @code{osl_interface_t} structure represents a
 node in a @code{NULL}-terminated list of interfaces. Each node stores the
-@emph{interface} of a generic openscop object, i.e., its unique name
+@emph{interface} of a generic OpenScop object, i.e., its unique name
 (@code{URI}) and the function pointers to all the base functions it has
 to provide. Extension providers will find information relative to those
 functions in the OpenScop Library description (@pxref{Base Functions})
 and the section dedicated to writing extensions
 (@pxref{Extension Development}).
 
-@node openscop_generic_t
-@subsubsection openscop_generic_t
+@node osl_generic_t
+@subsubsection osl_generic_t
 
 @example
 @group
-struct openscop_generic @{
-  void * data;                    /* Pointer to some data. */
-  openscop_interface_p interface; /* Interface to work with the data. */
-  struct openscop_generic * next; /* Pointer to the next generic. */
+struct osl_generic @{
+  void * data;               /* Pointer to some data. */
+  osl_interface_p interface; /* Interface to work with the data. */
+  struct osl_generic * next; /* Pointer to the next generic. */
 @};
-typedef struct openscop_generic   openscop_generic_t;
-typedef struct openscop_generic * openscop_generic_p;
+typedef struct osl_generic   osl_generic_t;
+typedef struct osl_generic * osl_generic_p;
 @end group
 @end example
 
-@noindent The @code{openscop_generic_t} structure represents a node in a
+@noindent The @code{osl_generic_t} structure represents a node in a
 @code{NULL}-terminated list of generic elements. It stores some data
 and operations with no pre-defined type. The information is accessible
 through the @code{data} pointer while the type and operations are
@@ -1988,31 +1988,31 @@ accessible through the @code{interface} pointer. It is used to represent
 data that are allowed to differ in implementations, such as symbols and
 extensions.
 
-@node openscop_statement_t
-@subsubsection openscop_statement_t
+@node osl_statement_t
+@subsubsection osl_statement_t
 
 @example
 @group
-struct openscop_statement @{
-  openscop_relation_p domain;       /* Iteration domain */
-  openscop_relation_p scattering;   /* Scattering relation */
-  openscop_relation_list_p access;  /* List of array access relations */
-  openscop_generic_p iterators;     /* Original iterators */
-  openscop_generic_p body;          /* Original statement body */
-  void * usr;                       /* A user-defined field */
-  struct openscop_statement * next; /* Next statement in the list */
+struct osl_statement @{
+  osl_relation_p domain;       /* Iteration domain */
+  osl_relation_p scattering;   /* Scattering relation */
+  osl_relation_list_p access;  /* List of array access relations */
+  osl_generic_p iterators;     /* Original iterators */
+  osl_generic_p body;          /* Original statement body */
+  void * usr;                  /* A user-defined field */
+  struct osl_statement * next; /* Next statement in the list */
 @};
-typedef struct openscop_statement   openscop_statement_t;
-typedef struct openscop_statement * openscop_statement_p;
+typedef struct osl_statement   osl_statement_t;
+typedef struct osl_statement * osl_statement_p;
 @end group
 @end example
 
-@noindent The @code{openscop_statement_t} structure represents a node
+@noindent The @code{osl_statement_t} structure represents a node
 in a @code{NULL}-terminated linked list of statements. Each node contains the
 useful information for a given statement to process it within a polyhedral
 framework. The order in the list may matter for naming conventions
 (e.g. "S1" for the first statement in the list). The iteration domain
-and the scattering are represented using an @code{openscop_relation_p}
+and the scattering are represented using an @code{osl_relation_p}
 structure while the accesses are using a list of
 relations: one for each memory access in the statement.
 The @code{body} and @code{iterators} provide information about
@@ -2027,27 +2027,27 @@ from the original statement expression with the generated iterators.
 It is also possible to use the @code{usr} field, but it has to be
 totally managed by the user.
 
-@node openscop_scop_t
-@subsubsection openscop_scop_t
+@node osl_scop_t
+@subsubsection osl_scop_t
 @example
 @group
-struct openscop_scop @{
-  int version;                      /* Version of the data structure */
-  char * language;                  /* Target language */
-  openscop_relation_p context;      /* Constraints on the parameters */
-  openscop_generic_p parameters;    /* Information about parameters */
-  openscop_statement_p statement;   /* Statement list */
-  openscop_interface_p registry;    /* Registered extension interfaces */
-  openscop_generic_p extension;     /* Extension list */
-  void * usr;                       /* A user-defined field */
-  struct openscop_scop * next;      /* Next scop in the list */
+struct osl_scop @{
+  int version;                 /* Version of the data structure */
+  char * language;             /* Target language */
+  osl_relation_p context;      /* Constraints on the parameters */
+  osl_generic_p parameters;    /* Information about parameters */
+  osl_statement_p statement;   /* Statement list */
+  osl_interface_p registry;    /* Registered extension interfaces */
+  osl_generic_p extension;     /* Extension list */
+  void * usr;                  /* A user-defined field */
+  struct osl_scop * next;      /* Next scop in the list */
 @};
-typedef struct openscop_scop   openscop_scop_t;
-typedef struct openscop_scop * openscop_scop_p;
+typedef struct osl_scop   osl_scop_t;
+typedef struct osl_scop * osl_scop_p;
 @end group
 @end example
 
-@noindent @code{openscop_scop_t} represents a node in a
+@noindent @code{osl_scop_t} represents a node in a
 @code{NULL}-terminated list of scops. It stores the useful informations
 of a static control part of a program to process it within a polyhedral
 framework. To prepare OpenScop specification evolution, the @code{version}
@@ -2068,40 +2068,40 @@ As an example, let us consider again the matrix multiply program
 (@pxref{Preliminary Example}).
 The next figure gives a possible representation in memory for this
 SCoP thanks to the OpenScop data structures (it has been actually printed
-by the @code{openscop_scop_dump} function), note that symbols like
+by the @code{osl_scop_dump} function), note that symbols like
 parameters, original iterators and statement expression are represented
-with an @code{openscop_strings_t} which does not belong to the
+with an @code{osl_strings_t} which does not belong to the
 specification but to the OpenScop Library implementation:
 
 @c @smallexample
 @example
-+-- openscop_scop_t
++-- osl_scop_t
 |    |    
 |    Version: 1
 |    |    
 |    Language: C
 |    |    
-|    +-- openscop_relation_t (CONTEXT, 32 bits)
+|    +-- osl_relation_t (CONTEXT, 32 bits)
 |    |    1 3 0 0 0 1
 |    |    [   1   1  -1 ]
 |    |    
-|    +-- openscop_generic_t
+|    +-- osl_generic_t
 |    |    |    
-|    |    +-- openscop_interface_t: URI = strings
+|    |    +-- osl_interface_t: URI = strings
 |    |    |    
-|    |    +-- openscop_strings_t: N
+|    |    +-- osl_strings_t: N
 |    |    |    
 |    |    
-|    +-- openscop_statement_t (S1)
+|    +-- osl_statement_t (S1)
 |    |    |    
-|    |    +-- openscop_relation_t (DOMAIN, 32 bits)
+|    |    +-- osl_relation_t (DOMAIN, 32 bits)
 |    |    |    4 5 2 0 0 1
 |    |    |    [   1   1   0   0   0 ]
 |    |    |    [   1  -1   0   1  -1 ]
 |    |    |    [   1   0   1   0   0 ]
 |    |    |    [   1   0  -1   1  -1 ]
 |    |    |    
-|    |    +-- openscop_relation_t (SCATTERING, 32 bits)
+|    |    +-- osl_relation_t (SCATTERING, 32 bits)
 |    |    |    5 10 5 2 0 1
 |    |    |    [   0  -1   0   0   0   0   0   0   0   0 ]
 |    |    |    [   0   0  -1   0   0   0   1   0   0   0 ]
@@ -2109,33 +2109,33 @@ specification but to the OpenScop Library implementation:
 |    |    |    [   0   0   0   0  -1   0   0   1   0   0 ]
 |    |    |    [   0   0   0   0   0  -1   0   0   0   0 ]
 |    |    |    
-|    |    +-- openscop_relation_list_t
+|    |    +-- osl_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (WRITE, 32 bits)
+|    |    |    +-- osl_relation_t (WRITE, 32 bits)
 |    |    |    |    3 8 3 2 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   1   0   0 ]
 |    |    |    |    
 |    |    |    
-|    |    +-- openscop_generic_t
+|    |    +-- osl_generic_t
 |    |    |    |    
-|    |    |    +-- openscop_interface_t: URI = strings
+|    |    |    +-- osl_interface_t: URI = strings
 |    |    |    |    
-|    |    |    +-- openscop_strings_t: i j
+|    |    |    +-- osl_strings_t: i j
 |    |    |    |    
 |    |    |    
-|    |    +-- openscop_generic_t
+|    |    +-- osl_generic_t
 |    |    |    |    
-|    |    |    +-- openscop_interface_t: URI = strings
+|    |    |    +-- osl_interface_t: URI = strings
 |    |    |    |    
-|    |    |    +-- openscop_strings_t: C[i][j] = 0.0;
+|    |    |    +-- osl_strings_t: C[i][j] = 0.0;
 |    |    |    |    
 |    |    |    
 |    |    V
-|    |  openscop_statement_t (S2)
+|    |  osl_statement_t (S2)
 |    |    |    
-|    |    +-- openscop_relation_t (DOMAIN, 32 bits)
+|    |    +-- osl_relation_t (DOMAIN, 32 bits)
 |    |    |    6 6 3 0 0 1
 |    |    |    [   1   1   0   0   0   0 ]
 |    |    |    [   1  -1   0   0   1  -1 ]
@@ -2144,7 +2144,7 @@ specification but to the OpenScop Library implementation:
 |    |    |    [   1   0   0   1   0   0 ]
 |    |    |    [   1   0   0  -1   1  -1 ]
 |    |    |    
-|    |    +-- openscop_relation_t (SCATTERING, 32 bits)
+|    |    +-- osl_relation_t (SCATTERING, 32 bits)
 |    |    |    7 13 7 3 0 1
 |    |    |    [   0  -1   0   0   0   0   0   0   0   0   0   0   0 ]
 |    |    |    [   0   0  -1   0   0   0   0   0   1   0   0   0   0 ]
@@ -2154,54 +2154,54 @@ specification but to the OpenScop Library implementation:
 |    |    |    [   0   0   0   0   0   0  -1   0   0   0   1   0   0 ]
 |    |    |    [   0   0   0   0   0   0   0  -1   0   0   0   0   0 ]
 |    |    |    
-|    |    +-- openscop_relation_list_t
+|    |    +-- osl_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (WRITE, 32 bits)
+|    |    |    +-- osl_relation_t (WRITE, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   1   0   0   0 ]
 |    |    |    |    
 |    |    |    V
-|    |    |  openscop_relation_list_t
+|    |    |  osl_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ, 32 bits)
+|    |    |    +-- osl_relation_t (READ, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   1 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   1   0   0   0 ]
 |    |    |    |    
 |    |    |    V
-|    |    |  openscop_relation_list_t
+|    |    |  osl_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ, 32 bits)
+|    |    |    +-- osl_relation_t (READ, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   2 ]
 |    |    |    |    [   0   0  -1   0   1   0   0   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   0   1   0   0 ]
 |    |    |    |    
 |    |    |    V
-|    |    |  openscop_relation_list_t
+|    |    |  osl_relation_list_t
 |    |    |    |    
-|    |    |    +-- openscop_relation_t (READ, 32 bits)
+|    |    |    +-- osl_relation_t (READ, 32 bits)
 |    |    |    |    3 9 3 3 0 1
 |    |    |    |    [   0  -1   0   0   0   0   0   0   3 ]
 |    |    |    |    [   0   0  -1   0   0   0   1   0   0 ]
 |    |    |    |    [   0   0   0  -1   0   1   0   0   0 ]
 |    |    |    |    
 |    |    |    
-|    |    +-- openscop_generic_t
+|    |    +-- osl_generic_t
 |    |    |    |    
-|    |    |    +-- openscop_interface_t: URI = strings
+|    |    |    +-- osl_interface_t: URI = strings
 |    |    |    |    
-|    |    |    +-- openscop_strings_t: i j k
+|    |    |    +-- osl_strings_t: i j k
 |    |    |    |    
 |    |    |    
-|    |    +-- openscop_generic_t
+|    |    +-- osl_generic_t
 |    |    |    |    
-|    |    |    +-- openscop_interface_t: URI = strings
+|    |    |    +-- osl_interface_t: URI = strings
 |    |    |    |    
-|    |    |    +-- openscop_strings_t: C[i][j] = C[i][j] + A[i][k]*B[k][j];
+|    |    |    +-- osl_strings_t: C[i][j] = C[i][j] + A[i][k]*B[k][j];
 |    |    |    |    
 |    |    |    
 |    |    
@@ -2243,7 +2243,7 @@ XML-like tags corresponding to its URI (e.g., if the extension has the URI
 There is no specification or preferred way to write the extension body.
 Extensions in an OpenScop data structure must be accessible through one
 pointer. This pointer will be stored in the @code{data}
-field of an @code{openscop_generic_t} container. There must be only
+field of an @code{osl_generic_t} container. There must be only
 one extension with the same URI in an OpenScop file or data structure.
 
 Extension writers may write a short documentation about their extension to
@@ -2306,11 +2306,11 @@ This is a comment string.
 The @code{comment} extension data structure is the following:
 @example
 @group
-struct openscop_comment @{
+struct osl_comment @{
   char * comment;  /* Comment message as a 0-terminated string */
 @};
-typedef struct openscop_comment   openscop_comment_t;
-typedef struct openscop_comment * openscop_comment_p;
+typedef struct osl_comment   osl_comment_t;
+typedef struct osl_comment * osl_comment_p;
 @end group
 @end example
 
@@ -2374,13 +2374,13 @@ The @code{arrays} extension data structure is the following:
 
 @example
 @group
-struct openscop_arrays @{
+struct osl_arrays @{
   int nb_names;      /* Number of names */
   int  *  id;        /* Array of nb_names identifiers */
   char ** names;     /* Array of nb_names names */
 @};
-typedef struct openscop_arrays   openscop_arrays_t;
-typedef struct openscop_arrays * openscop_arrays_p;
+typedef struct osl_arrays   osl_arrays_t;
+typedef struct osl_arrays * osl_arrays_p;
 @end group
 @end example
 
@@ -2470,23 +2470,23 @@ and output, so they can be incorporated to any OpenScop-based tool chain.}.
 @section Precision
 
 The OpenScop specification does not impose a specific type for the
-constraint matrix elements. For a maximum flexibility, the OpenScop library
+constraint matrix elements. For a maximum flexibility, the OpenScop Library
 offers an hybrid precision implementation. It supports 32 bits, 64 bits and
 multiple precision (relying on GNU GMP) relations transparently. At relation
 allocation time, users have two ways to set the precision. The first way is
 to call an allocation function with a precision parameter. The second way is
-to rely on the environment variable @code{OPENSCOP_PRECISION}.
+to rely on the environment variable @code{OSL_PRECISION}.
 The accepted values for this variable are @code{32} for 32 bits precision,
 @code{64} for 64 bits precision and @code{0} for multiple precision. When this
 variable is set, its value becomes the default precision for relation elements.
-For instance, to ensure the OpenScop library will use 64 bits precision
+For instance, to ensure the OpenScop Library will use 64 bits precision
 by default, the user may set: 
 @example
-export OPENSCOP_PRECISION=64
+export OSL_PRECISION=64
 @end example
 @noindent if his shell is, e.g., bash or
 @example
-setenv OPENSCOP_PRECISION 64
+setenv OSL_PRECISION 64
 @end example
 @noindent if his shell is, e.g., tcsh. The user should ad this line to
 his .bashrc or .tcshrc (or whatever convenient file) to make this
@@ -2495,7 +2495,7 @@ setting permanent.
 @node Base Functions
 @section Base Functions
 
-The OpenScop library provides, for each OpenScop data structure,
+The OpenScop Library provides, for each OpenScop data structure,
 a set of functions devoted to basic manipulation, conversion
 from file format to data structures and from data structures to
 file format. The naming convention is consistent for all data
@@ -2503,10 +2503,10 @@ structures. Hence, the function prototypes differ only with the
 name of the data structure. In the following, we will use the
 generic term of @emph{structure} to refer at any OpenScop
 data structure. For instance the
-@code{openscop_}@emph{structure}@code{_malloc()} function is a
+@code{osl_}@emph{structure}@code{_malloc()} function is a
 generic name can be instantiated to
-@code{openscop_relation_malloc()} or
-@code{openscop_statement_malloc()} etc.
+@code{osl_relation_malloc()} or
+@code{osl_statement_malloc()} etc.
 
 We present in this documentation only
 the main functions. Many other utility functions are provided
@@ -2526,13 +2526,12 @@ OpenScop Library.
 
 
 @node Dumping
-@subsection Dumping: openscop_@emph{structure}_dump and idump 
+@subsection Dumping: osl_@emph{structure}_dump and idump 
 
 @example
 @group
-void openscop_@emph{structure}_dump(FILE * output, openscop_@emph{structure}_p s);
-void openscop_@emph{structure}_idump(FILE * output, openscop_@emph{structure}_p s,
-                              int i);
+void osl_@emph{structure}_dump(FILE * output, osl_@emph{structure}_p s);
+void osl_@emph{structure}_idump(FILE * output, osl_@emph{structure}_p s, int i);
 @end group
 @end example
 
@@ -2548,11 +2547,11 @@ function has an additional integer parameter which corresponds to
 an indentation level.
 
 @node Printing
-@subsection Printing: openscop_@emph{structure}_print
+@subsection Printing: osl_@emph{structure}_print
 
 @example
 @group
-void openscop_@emph{structure}_print(FILE * output, openscop_@emph{structure}_p s);
+void osl_@emph{structure}_print(FILE * output, osl_@emph{structure}_p s);
 @end group
 @end example
 
@@ -2565,11 +2564,11 @@ according to the OpenScop file format
 for writing).
 
 @node Reading
-@subsection Reading: openscop_@emph{structure}_read
+@subsection Reading: osl_@emph{structure}_read
 
 @example
 @group
-openscop_@emph{structure}_p openscop_@emph{structure}_read(FILE * input);
+osl_@emph{structure}_p osl_@emph{structure}_read(FILE * input);
 @end group
 @end example
 
@@ -2579,60 +2578,60 @@ data structure written according to the OpenScop file format
 (@pxref{OpenScop Core Part File Format Specification}) from 
 the @code{input} file (the file, possibly @code{stdin}, has to be open
 for reading). It returns a pointer to a freshly allocated 
-@code{openscop_@emph{structure}_t} structure containing the
+@code{osl_@emph{structure}_t} structure containing the
 information.
 
 @node Allocating
-@subsection Allocating: openscop_@emph{structure}_malloc
+@subsection Allocating: osl_@emph{structure}_malloc
 
 @example
 @group
-openscop_@emph{structure}_p openscop_@emph{structure}_malloc();
+osl_@emph{structure}_p osl_@emph{structure}_malloc();
 @end group
 @end example
 
 @noindent Each OpenScop data structure has a memory allocation function
 as shown above (except one see below). It allocates the memory to store
 the corresponding data structure, it initializes the pointer fields to
-@code{NULL} and the integer fields to @code{OPENSCOP_UNDEFINED}
+@code{NULL} and the integer fields to @code{OSL_UNDEFINED}
 (@code{-1}) and it returns a pointer to the allocated space.
 
 An exception to this base description is the
-@code{openscop_relation_malloc()} function which requires two
+@code{osl_relation_malloc()} function which requires two
 parameters: the number of rows and columns of the constraint
 matrix (@pxref{Relation Representation}):
 
 @example
 @group
-openscop_relation_p openscop_relation_malloc(int nb_rows, int nb_columns);
+osl_relation_p osl_relation_malloc(int nb_rows, int nb_columns);
 @end group
 @end example
 
 @noindent The precision of the relation elements will depend on the
-@code{OPENSCOP_PRECISION} environment variable (@pxref{Precision}) if it is set,
+@code{OSL_PRECISION} environment variable (@pxref{Precision}) if it is set,
 or the maximum available precision if it is not set. Another allocation
 function is provided to explicitly set a given precision:
 
 @example
 @group
-openscop_relation_p openscop_relation_pmalloc(int precision,
-                                              int nb_rows, int nb_columns);
+osl_relation_p osl_relation_pmalloc(int precision,
+                                    int nb_rows, int nb_columns);
 @end group
 @end example
 
 @noindent The @code{precision} field may take the following values:
 @itemize @bullet
-@item @code{OPENSCOP_PRECISION_SP} for 32 bits precision,
-@item @code{OPENSCOP_PRECISION_DP} for 64 bits precision,
-@item @code{OPENSCOP_PRECISION_MP} for multiple precision,
+@item @code{OSL_PRECISION_SP} for 32 bits precision,
+@item @code{OSL_PRECISION_DP} for 64 bits precision,
+@item @code{OSL_PRECISION_MP} for multiple precision,
 @end itemize
 
 @node Deallocating
-@subsection Deallocating: openscop_@emph{structure}_free
+@subsection Deallocating: osl_@emph{structure}_free
 
 @example
 @group
-void openscop_@emph{structure}_free(openscop_@emph{structure}_p s);
+void osl_@emph{structure}_free(osl_@emph{structure}_p s);
 @end group
 @end example
 
@@ -2641,11 +2640,11 @@ as shown above. It recursively frees the memory allocated for the
 structure pointed by @code{s}, i.e., internal structures are also freed.
 
 @node Cloning
-@subsection Cloning: openscop_@emph{structure}_clone
+@subsection Cloning: osl_@emph{structure}_clone
 
 @example
 @group
-openscop_@emph{structure}_p openscop_@emph{structure}_clone(openscop_@emph{structure}_p s);
+osl_@emph{structure}_p osl_@emph{structure}_clone(osl_@emph{structure}_p s);
 @end group
 @end example
 
@@ -2655,12 +2654,11 @@ structure pointed by @code{s}, i.e., internal structures are also copied.
 It returns a pointer to the clone of the structure pointed by @code{s}.
 
 @node Testing
-@subsection Testing: openscop_@emph{structure}_equal
+@subsection Testing: osl_@emph{structure}_equal
 
 @example
 @group
-int openscop_@emph{structure}_equal(openscop_@emph{structure}_p s1,
-                             openscop_@emph{structure}_p s2);
+int osl_@emph{structure}_equal(osl_@emph{structure}_p s1, osl_@emph{structure}_p s2);
 @end group
 @end example
 
@@ -2684,19 +2682,19 @@ input and dumps the content of the data structures to the standard output.
 @example
 /* example.c */
 # include <stdio.h>
-# include <openscop/openscop.h>
+# include <osl/osl.h>
 
 int main() @{
-  openscop_scop_p scop;
+  osl_scop_p scop;
 
   // Read the OpenScop file.
-  scop = openscop_scop_read(stdin);
+  scop = osl_scop_read(stdin);
 
   // Dump the content of the scop data structure.
-  openscop_scop_dump(stdout, scop);
+  osl_scop_dump(stdout, scop);
 
   // Save the planet.
-  openscop_scop_free(scop);
+  osl_scop_free(scop);
 
   return 0;
 @}
@@ -2704,7 +2702,7 @@ int main() @{
 
 @noindent The compilation command could be:
 @example
-gcc example.c -lopenscop -o example
+gcc example.c -losl -o example
 @end example
 @noindent A calling command with the input file test.scop could be:
 @example
@@ -2922,19 +2920,19 @@ functionality of the repository.
 
 The OpenScop Library is written in C using an object oriented style. Each
 important data structure (e.g., @code{struct foo}) has its own header file
-(@code{include/openscop/foo.h}) where lies the definition of
+(@code{include/osl/foo.h}) where lies the definition of
 the data structure, the two typedefs for the data structure (one for the
-structure, @code{openscop_foo_t}, and one for a pointer
-to the structure, @code{openscop_foo_p}), the prototypes of the various
+structure, @code{osl_foo_t}, and one for a pointer
+to the structure, @code{osl_foo_p}), the prototypes of the various
 functions related to this data structure, all named using the
-prefix "@code{openscop_foo_}". The source code of the functions is provided in a
+prefix "@code{osl_foo_}". The source code of the functions is provided in a
 separated C file (@code{source/foo.c}).
   
 Utility functions independent from the main data structures may be placed in
-separate source files (e.g., definition in @code{include/openscop/util.h}
+separate source files (e.g., definition in @code{include/osl/util.h}
 and code in @code{source/util.c}). Tool-wide preprocessor directives are
-placed in @code{include/openscop/macros.h}, macros are prefixed with
-"@code{OPENSCOP_}".
+placed in @code{include/osl/macros.h}, macros are prefixed with
+"@code{OSL_}".
 
 The core code itself has to be written according to the Google C++ Coding Style:
 @url{http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml} (for
@@ -2959,13 +2957,13 @@ strict):
       suggested by the extension developers to the OpenScop development
       mailing list @email{openscop-development@@googlegroups.com}). It
       should not correspond to an existing extension
-      (see @code{include/openscop/scop.h} for the list).The
-      maintainer will update @code{include/openscop/scop.h} in the development
+      (see @code{include/osl/scop.h} for the list).The
+      maintainer will update @code{include/osl/scop.h} in the development
       version accordingly.
 @item Look at the @code{comment} extension. The @code{comment} extension
       (@pxref{Comment Extension}) has been written to be used as a basic
       example for extension developers. Having a look at
-      @code{include/openscop/extensions/comment.h} and
+      @code{include/osl/extensions/comment.h} and
       @code{source/extensions/comment.c} will be a great help to do it right.
 @item Create the extension data structure: it is necessary that the
       extension data can be accessible through only one pointer.
@@ -2974,32 +2972,32 @@ strict):
       extension is planed to be integrated to the OpenScop Library
       default extensions):
       @itemize @bullet
-      @item @code{openscop_foo_idump} (@pxref{Dumping}) 
-      @item @code{openscop_foo_dump} (@pxref{Dumping}) 
-      @item @code{openscop_foo_sprint} has the following prototype:
+      @item @code{osl_foo_idump} (@pxref{Dumping}) 
+      @item @code{osl_foo_dump} (@pxref{Dumping}) 
+      @item @code{osl_foo_sprint} has the following prototype:
 @example
 @group
-char * openscop_@emph{structure}_sprint(openscop_@emph{structure}_p s);
+char * osl_@emph{structure}_sprint(osl_@emph{structure}_p s);
 @end group
 @end example
            It corresponds to the pretty printing functions of the core
            data structures (@pxref{Printing}) with the
            difference that the OpenScop textual representation is written
            to a string (returned by the function) instead of a file.
-      @item @code{openscop_foo_sread} has the following prototype:
+      @item @code{osl_foo_sread} has the following prototype:
 @example
 @group
-openscop_@emph{structure}_p openscop_@emph{structure}_sread(char * string);
+osl_@emph{structure}_p osl_@emph{structure}_sread(char * string);
 @end group
 @end example
            It corresponds to the reading functions of the core
            data structures (@pxref{Reading}) with the
            difference that the OpenScop textual representation is read
            from a string (provided as a parameter) instead of a file.
-      @item @code{openscop_foo_malloc} (@pxref{Allocating}) 
-      @item @code{openscop_foo_free} (@pxref{Deallocating}) 
-      @item @code{openscop_foo_clone} (@pxref{Cloning}) 
-      @item @code{openscop_foo_equal} (@pxref{Testing}) 
+      @item @code{osl_foo_malloc} (@pxref{Allocating}) 
+      @item @code{osl_foo_free} (@pxref{Deallocating}) 
+      @item @code{osl_foo_clone} (@pxref{Cloning}) 
+      @item @code{osl_foo_equal} (@pxref{Testing}) 
       @end itemize
 @item Code the other functions you need!
 @end enumerate
@@ -3008,10 +3006,10 @@ Now let us consider two scenarios.
 
 First scenario, the extension is external and is
 not planned to be integrated to the OpenScop Library. In this case you are
-all set. Simply generate an @code{openscop_interface_t} for your
+all set. Simply generate an @code{osl_interface_t} for your
 extension and have a look at the function
-@code{openscop_scop_register_extension()} which is devoted to register
-a new extension interface to an existing @code{openscop_scop_t}.
+@code{osl_scop_register_extension()} which is devoted to register
+a new extension interface to an existing @code{osl_scop_t}.
 
 Second scenario, the extension will integrate the set of default
 OpenScop Library extensions (this would be cool so it will be easier
@@ -3019,7 +3017,7 @@ for users to use it). In this case, a few additional
 things have to be done:
 @enumerate
 @item Create the extension header
-      @code{include/openscop/extensions/foo.h} to store the extension
+      @code{include/osl/extensions/foo.h} to store the extension
       structure and function prototypes and the
       extension source file @code{source/extensions/foo.c} for the code
       of the functions.
@@ -3027,13 +3025,13 @@ things have to be done:
       this document (in @code{doc/openscop.texi}), following the example
       of the @code{comment} documentation (@pxref{Comment Extension}).
 @item Integrate the extension by adding the @code{extensions/foo.c} entry
-      to the @code{libopenscop_la_SOURCES} in the @code{source/Makefile.am}
-      file, the @code{openscop/foo.h} entry to the
+      to the @code{libosl_la_SOURCES} in the @code{source/Makefile.am}
+      file, the @code{osl/foo.h} entry to the
       @code{nobase_pkginclude_HEADERS} and add the corresponding
-      @code{#include <openscop/extensions/foo.h>} in the
+      @code{#include <osl/extensions/foo.h>} in the
       @code{include/scop.h.in} file.
 @item Add the new extension in the
-      @code{openscop_scop_register_default_extensions()} function.
+      @code{osl_scop_register_default_extensions()} function.
 @item You are done! Prepare a single commit or patch corresponding to the
       integration of the new extension and ask the maintainer to merge it
       to the master branch.

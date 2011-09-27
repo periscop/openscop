@@ -101,6 +101,7 @@ void                osl_relation_list_print(FILE *, osl_relation_list_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
+osl_relation_list_p osl_relation_list_pread(FILE *, int);
 osl_relation_list_p osl_relation_list_read(FILE *);
 
 

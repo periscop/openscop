@@ -119,7 +119,6 @@ int    osl_int_ne(int, void *, int, void *, int);
 int    osl_int_pos(int, void *, int);
 int    osl_int_neg(int, void *, int);
 int    osl_int_zero(int, void *, int);
-int    osl_int_notzero(int, void *, int);
 int    osl_int_one(int, void *, int);
 int    osl_int_mone(int, void *, int);
 int    osl_int_divisible(int, void *, int, void *, int);

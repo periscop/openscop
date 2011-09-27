@@ -187,6 +187,9 @@ void * osl_int_malloc(int precision) {
 }
 
 
+/**
+ * val1_base[val1_offset] = val2_base[val2_offset];
+ */
 void osl_int_assign(int precision,
                     void * val1_base, int val1_offset,
                     void * val2_base, int val2_offset) {
@@ -214,6 +217,9 @@ void osl_int_assign(int precision,
 }
 
 
+/**
+ * value_base[value_offset] = i;
+ */
 void osl_int_set_si(int precision, void * value_base, int value_offset,
                     int i) {
   void * value = osl_int_address(precision, value_base, value_offset);
@@ -239,6 +245,9 @@ void osl_int_set_si(int precision, void * value_base, int value_offset,
 }
 
 
+/**
+ * return value_base[value_offset];
+ */
 int osl_int_get_si(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
 
@@ -260,6 +269,9 @@ int osl_int_get_si(int precision, void * value_base, int value_offset) {
 }
 
 
+/**
+ * value_base[value_offset] = i; // including initialization for GMP
+ */
 void osl_int_init_set_si(int precision,
                          void * value_base, int value_offset, int i) {
   void * value = osl_int_address(precision, value_base, value_offset);
@@ -285,6 +297,9 @@ void osl_int_init_set_si(int precision,
 }
 
 
+/**
+ * value_base[value_offset] = 0; // Including cleaning for GMP
+ */
 void osl_int_clear(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
   
@@ -409,6 +424,9 @@ void osl_int_sread(char * string, int precision,
  *****************************************************************************/
 
 
+/**
+ * result_base[result_offset] = value_base[value_offset] + 1;
+ */
 void osl_int_increment(int precision,
                        void * result_base, int result_offset,
                        void * value_base,  int value_offset) {
@@ -436,6 +454,9 @@ void osl_int_increment(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = value_base[value_offset] - 1;
+ */
 void osl_int_decrement(int precision,
                        void * result_base, int result_offset,
                        void * value_base,  int value_offset) {
@@ -467,6 +488,9 @@ void osl_int_decrement(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = val1_base[val1_offset]+val2_base[val2_offset];
+ */
 void osl_int_add(int precision,
                  void * result_base, int result_offset,
                  void * val1_base,   int val1_offset,
@@ -497,6 +521,9 @@ void osl_int_add(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = value_base[value_offset] + i;
+ */
 void osl_int_add_ui(int precision,
                     void * result_base, int result_offset,
                     void * value_base,  int value_offset, int i) {
@@ -524,6 +551,9 @@ void osl_int_add_ui(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = val1_base[val1_offset]*val2_base[val2_offset];
+ */
 void osl_int_mul(int precision,
                  void * result_base, int result_offset,
                  void * val1_base,   int val1_offset,
@@ -554,6 +584,9 @@ void osl_int_mul(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = value_base[value_offset] * i;
+ */
 void osl_int_mul_si(int precision,
                     void * result_base, int result_offset,
                     void * value_base,  int value_offset, int i) {
@@ -581,6 +614,9 @@ void osl_int_mul_si(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = val1_base[val1_offset]-val2_base[val2_offset];
+ */
 void osl_int_sub(int precision,
                  void * result_base, int result_offset,
                  void * val1_base,   int val1_offset,
@@ -611,6 +647,9 @@ void osl_int_sub(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = -value_base[value_offset];
+ */
 void osl_int_oppose(int precision,
                     void * result_base, int result_offset,
                     void * value_base,  int value_offset) {
@@ -643,6 +682,9 @@ void osl_int_oppose(int precision,
  *****************************************************************************/
 
 
+/**
+ * (val1_base[val1_offset] == val2_base[val2_offset])
+ */
 int osl_int_eq(int precision,
                void * val1_base, int val1_offset,
                void * val2_base, int val2_offset) {
@@ -667,6 +709,9 @@ int osl_int_eq(int precision,
 }
 
 
+/**
+ * (val1_base[val1_offset] != val2_base[val2_offset])
+ */
 int osl_int_ne(int precision,
                void * val1_base, int val1_offset,
                void * val2_base, int val2_offset) {
@@ -676,6 +721,9 @@ int osl_int_ne(int precision,
 }
 
 
+/**
+ * (value_base[value_offset] > 0)
+ */
 int osl_int_pos(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
 
@@ -697,6 +745,9 @@ int osl_int_pos(int precision, void * value_base, int value_offset) {
 }
 
 
+/**
+ * (value_base[value_offset] < 0)
+ */
 int osl_int_neg(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
 
@@ -718,6 +769,9 @@ int osl_int_neg(int precision, void * value_base, int value_offset) {
 }
 
 
+/**
+ * (value_base[value_offset] == 0)
+ */
 int osl_int_zero(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
 
@@ -739,12 +793,9 @@ int osl_int_zero(int precision, void * value_base, int value_offset) {
 }
 
 
-int osl_int_notzero(int precision, void * value_base, int value_offset) {
-  
-  return !osl_int_zero(precision, value_base, value_offset);
-}
-
-
+/**
+ * (value_base[value_offset] == 1)
+ */
 int osl_int_one(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
 
@@ -766,6 +817,9 @@ int osl_int_one(int precision, void * value_base, int value_offset) {
 }
 
 
+/**
+ * (value_base[value_offset] == -1)
+ */
 int osl_int_mone(int precision, void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
 
@@ -787,6 +841,9 @@ int osl_int_mone(int precision, void * value_base, int value_offset) {
 }
 
 
+/**
+ * ((val1_base[val1_offset] % val2_base[val2_offset]) == 0)
+ */
 int osl_int_divisible(int precision,
                       void * val1_base, int val1_offset,
                       void * val2_base, int val2_offset) {
