@@ -91,6 +91,7 @@ void   osl_int_clear(int, void *, int);
 void   osl_int_free(int, void *, int);
 void   osl_int_print(FILE *, int, void *, int);
 void   osl_int_sprint(char *, int, void *, int);
+void   osl_int_sprint_txt(char *, int, void *, int);
 void   osl_int_sread(char *, int, void *, int);
 
 

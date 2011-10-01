@@ -129,7 +129,8 @@ typedef struct osl_relation * osl_relation_p;
 void           osl_relation_idump(FILE *, osl_relation_p, int);
 void           osl_relation_dump(FILE *, osl_relation_p);
 char *         osl_relation_expression(osl_relation_p relation,
-                                       int row, osl_names_p names);
+                                       int row, char ** names);
+void           osl_relation_pprint(FILE *, osl_relation_p, osl_names_p);
 void           osl_relation_print(FILE *, osl_relation_p);
 
 
@@ -171,6 +172,8 @@ osl_relation_p osl_relation_union(osl_relation_p, osl_relation_p);
 void           osl_relation_set_type(osl_relation_p, int);
 int            osl_relation_get_array_id(osl_relation_p);
 int            osl_relation_is_access(osl_relation_p);
+void           osl_relation_get_attributes(osl_relation_p,
+                                           int *, int *, int *, int *, int *);
 
 
 # if defined(__cplusplus)

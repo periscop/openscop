@@ -156,16 +156,61 @@ void osl_statement_dump(FILE * file, osl_statement_p statement) {
 
 
 /**
- * osl_statement_print function:
- * this function prints the content of an osl_statement_t structure
+ * osl_statement_names function:
+ * this function generates as set of names for all the dimensions
+ * involved in a given statement.
+ * \param[in] relation The relation we have to generate names for.
+ * \return A set of generated names for the input statement dimensions.
+ */
+static
+osl_names_p osl_statement_names(osl_statement_p statement) {
+  int nb_parameters = OSL_UNDEFINED;
+  int nb_iterators  = OSL_UNDEFINED;
+  int nb_scattdims  = OSL_UNDEFINED;
+  int nb_localdims  = OSL_UNDEFINED;
+  int array_id      = OSL_UNDEFINED;
+
+  osl_statement_get_attributes(statement, &nb_parameters, &nb_iterators,
+                               &nb_scattdims,  &nb_localdims, &array_id);
+  
+  return osl_names_generate("P", nb_parameters,
+                            "i", nb_iterators,
+                            "c", nb_scattdims,
+                            "l", nb_localdims,
+                            "A", array_id);
+}
+
+
+/**
+ * osl_statement_pprint function:
+ * this function pretty-prints the content of an osl_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file      The file where the information has to be printed.
  * \param[in] statement The statement whose information has to be printed.
+ * \param[in] names     The names of the constraint columns for comments. 
  */
-void osl_statement_print(FILE * file, osl_statement_p statement) {
+void osl_statement_pprint(FILE * file, osl_statement_p statement,
+                          osl_names_p names) {
   int nb_relations, number = 1;
+  int generated_names = 0;
+  int iterators_backedup = 0;
+  osl_strings_p iterators_backup = NULL;
+
+  // Generate the dimension names if necessary and replace iterators with
+  // statement iterators if possible.
+  if (names == NULL) {
+    generated_names = 1;
+    names = osl_statement_names(statement);
+  }
 
   while (statement != NULL) {
+    // If possible, replace iterator names with statement iterator names.
+    if (osl_generic_has_URI(statement->iterators, OSL_URI_STRINGS)) {
+      iterators_backedup = 1;
+      iterators_backup = names->iterators;
+      names->iterators = statement->iterators->data;
+    }   
+
     nb_relations = 0;
 
     fprintf(file, "# =============================================== ");
@@ -183,25 +228,25 @@ void osl_statement_print(FILE * file, osl_statement_p statement) {
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
-    osl_relation_print(file, statement->domain);
+    osl_relation_pprint(file, statement->domain, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.2 Scattering\n", number);
-    osl_relation_print(file, statement->scattering);
+    osl_relation_pprint(file, statement->scattering, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.3 Access\n", number);
-    osl_relation_list_print_elts(file, statement->access);
+    osl_relation_list_pprint_elts(file, statement->access, names);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
-    if (osl_generic_hasURI(statement->body, OSL_URI_STRINGS)) {
+    if (osl_generic_has_URI(statement->body, OSL_URI_STRINGS)) {
       fprintf(file, "# Statement body is provided\n");
       fprintf(file, "1\n");
-      if (osl_generic_hasURI(statement->iterators,OSL_URI_STRINGS)) {
+      if (osl_generic_has_URI(statement->iterators, OSL_URI_STRINGS)) {
         fprintf(file, "# Original iterators\n");
         osl_generic_print(file, statement->iterators);
       }
@@ -214,9 +259,32 @@ void osl_statement_print(FILE * file, osl_statement_p statement) {
     }
 
     fprintf(file, "\n\n");
+
+    // If necessary, switch back iterator names.
+    if (iterators_backedup) {
+      iterators_backedup = 0;
+      names->iterators = iterators_backup;
+    }
+
     statement = statement->next;
     number++;
   }
+
+  if (generated_names)
+    osl_names_free(names);
+}
+
+
+/**
+ * osl_statement_print function:
+ * this function prints the content of an osl_statement_t structure
+ * (*statement) into a file (file, possibly stdout) in the OpenScop format.
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
+ */
+void osl_statement_print(FILE * file, osl_statement_p statement) {
+
+  osl_statement_pprint(file, statement, NULL);
 }
 
 
@@ -623,4 +691,65 @@ int osl_statement_get_nb_iterators(osl_statement_p statement) {
   }
 }
 
+
+/**
+ * osl_statement_get_attributes function:
+ * this function returns, through its parameters, the maximum values of the
+ * relation attributes (nb_iterators, nb_parameters etc) in the statement.
+ * HOWEVER, it updates the parameter value iff the attribute is greater than
+ * the input parameter value. Hence it may be used to get the attributes as
+ * well as to find the maximum attributes for several relations. The array
+ * identifier 0 is used when there is no array identifier (AND this is OK),
+ * OSL_UNDEFINED is used to report it is impossible to provide the property
+ * while it should. This function is not intended for checking, the input
+ * relation should be correct.
+ * \param[in]     statement     The statement to extract attributes values.
+ * \param[in,out] nb_parameters Number of parameter attribute.
+ * \param[in,out] nb_iterators  Number of iterators attribute.
+ * \param[in,out] nb_scattdims  Number of scattering dimensions attribute.
+ * \param[in,out] nb_localdims  Number of local dimensions attribute.
+ * \param[in,out] array_id      Maximum array identifier attribute.
+ */
+void osl_statement_get_attributes(osl_statement_p statement,
+                                  int * nb_parameters,
+                                  int * nb_iterators,
+                                  int * nb_scattdims,
+                                  int * nb_localdims,
+                                  int * array_id) {
+  int local_nb_parameters = OSL_UNDEFINED;
+  int local_nb_iterators  = OSL_UNDEFINED;
+  int local_nb_scattdims  = OSL_UNDEFINED;
+  int local_nb_localdims  = OSL_UNDEFINED;
+  int local_array_id      = OSL_UNDEFINED;
+
+  while (statement != NULL) {
+    osl_relation_get_attributes(statement->domain,
+                                &local_nb_parameters,
+                                &local_nb_iterators,
+                                &local_nb_scattdims,
+                                &local_nb_localdims,
+                                &local_array_id);
+
+    osl_relation_get_attributes(statement->scattering,
+                                &local_nb_parameters,
+                                &local_nb_iterators,
+                                &local_nb_scattdims,
+                                &local_nb_localdims,
+                                &local_array_id);
+
+    osl_relation_list_get_attributes(statement->access,
+                                &local_nb_parameters,
+                                &local_nb_iterators,
+                                &local_nb_scattdims,
+                                &local_nb_localdims,
+                                &local_array_id);
+    // Update.
+    *nb_parameters = OSL_max(*nb_parameters, local_nb_parameters);
+    *nb_iterators  = OSL_max(*nb_iterators,  local_nb_iterators);
+    *nb_scattdims  = OSL_max(*nb_scattdims,  local_nb_scattdims);
+    *nb_localdims  = OSL_max(*nb_localdims,  local_nb_localdims);
+    *array_id      = OSL_max(*array_id,      local_array_id);
+    statement = statement->next;
+  }
+}
 

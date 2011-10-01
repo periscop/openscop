@@ -424,14 +424,14 @@ int osl_generic_equal(osl_generic_p x1, osl_generic_p x2) {
 
 
 /**
- * osl_generic_hasURI function:
+ * osl_generic_has_URI function:
  * this function returns 1 if the generic provided as parameter has
  * a given URI, 0 other wise.
  * \param x   The generic structure to test.
  * \param URI The URI value to test.
  * \return 1 if x has the provided URI, 0 otherwise.
  */
-int osl_generic_hasURI(osl_generic_p x, char * URI) {
+int osl_generic_has_URI(osl_generic_p x, char * URI) {
 
   if ((x == NULL) ||
       (x->interface == NULL) ||
@@ -454,7 +454,7 @@ int osl_generic_hasURI(osl_generic_p x, char * URI) {
  */
 void * osl_generic_lookup(osl_generic_p x, char * URI) {
   while (x != NULL) {
-    if (osl_generic_hasURI(x, URI))
+    if (osl_generic_has_URI(x, URI))
       return x->data;
 
     x = x->next;

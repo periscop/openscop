@@ -173,134 +173,30 @@ void osl_scop_dump(FILE * file, osl_scop_p scop) {
 }
 
 
-#if 0
 /**
- * osl_scop_name_limits function:
- * this function finds the (maximum) number of various elements of a scop and
- * return the values through parameters. To ensure the correctness of the
- * results, an integrity check of the input scop should be run before calling
- * this function.
- * \param scop          The scop to analyse.
- * \parem nb_parameters The number of parameters in the scop (output).
- * \parem nb_iterators  The number of iterators in the scop (output).
- * \parem nb_scattdims  The number of scattdims in the scop (output).
- * \parem nb_localdims  The number of local dimensions in the scop (output).
- * \parem nb_arrays     The number of arrays in the scop (output).
+ * osl_scop_names function:
+ * this function generates as set of names for all the dimensions
+ * involved in a given scop.
+ * \param[in] scop The scop (list) we have to generate names for.
+ * \return A set of generated names for the input scop dimensions.
  */
 static
-void osl_scop_name_limits(osl_scop_p scop,
-                              int * nb_parameters,
-                              int * nb_iterators,
-                              int * nb_scattdims,
-                              int * nb_localdims,
-                              int * nb_arrays) {
-  int array_id;
-  osl_statement_p statement;
-  osl_relation_list_p list;
+osl_names_p osl_scop_names(osl_scop_p scop) {
+  int nb_parameters = OSL_UNDEFINED;
+  int nb_iterators  = OSL_UNDEFINED;
+  int nb_scattdims  = OSL_UNDEFINED;
+  int nb_localdims  = OSL_UNDEFINED;
+  int array_id      = OSL_UNDEFINED;
+
+  osl_scop_get_attributes(scop, &nb_parameters, &nb_iterators,
+                          &nb_scattdims,  &nb_localdims, &array_id);
   
-  // * The number of parameters is collected from the context,
-  // * The numbers of local dimensions are collected from all relations
-  //   in the corresponding field.
-  *nb_parameters = 0;
-  *nb_localdims = 0;
-  if (scop->context != NULL) { 
-    *nb_parameters = scop->context->nb_parameters;
-    *nb_localdims  = scop->context->nb_local_dims;
-  }
-
-  *nb_iterators = 0;
-  *nb_scattdims = 0;
-  *nb_arrays    = 0;
-  statement = scop->statement;
-  while (statement != NULL) {
-    // * The number of iterators are defined by iteration domains,
-    //   it corresponds to the #output_dims.
-    if (statement->domain != NULL) {
-      if (statement->domain->nb_output_dims > *nb_iterators)
-        *nb_iterators = statement->domain->nb_output_dims;
-
-      if (statement->domain->nb_local_dims > *nb_localdims)
-        *nb_localdims = statement->domain->nb_local_dims;
-    }
-
-    // * The number of scattdims are defined by scattering,
-    //   it corresponds to the #output_dims.
-    if (statement->scattering != NULL) {
-      if (statement->scattering->nb_output_dims > *nb_scattdims)
-        *nb_scattdims = statement->scattering->nb_output_dims;
-	
-      if (statement->scattering->nb_local_dims > *nb_localdims)
-        *nb_localdims = statement->scattering->nb_local_dims;
-    }
-
-    // * The number of arrays are defined by accesses,
-    list = statement->access;
-    while (list != NULL) {
-      array_id = osl_relation_get_array_id(list->elt);
-      if (array_id > *nb_arrays)
-        *nb_arrays = array_id;
-
-      list = list->next;
-    }
-
-    statement = statement->next;
-  }
+  return osl_names_generate("P", nb_parameters,
+                            "i", nb_iterators,
+                            "c", nb_scattdims,
+                            "l", nb_localdims,
+                            "A", array_id);
 }
-
-
-/**
- * osl_scop_full_names function:
- * this function generates an osl_names_p structure which contains
- * enough names for the scop provided as parameter, for each kind of names.
- * If the names contained in the input scop are not sufficient, this function
- * generated the missing names.
- * \param scop The scop we need a name for each element.
- * \return A set of names for the scop.
- */
-static
-osl_names_p osl_scop_full_names(osl_scop_p scop) {
-  int nb_parameters;
-  int nb_iterators;
-  int nb_scattdims;
-  int nb_localdims;
-  int nb_arrays;
-  osl_arrays_p arrays;
-  osl_names_p names;
-
-  names = osl_names_clone(scop->names);
-
-  // Extract array names information from extensions.
-  osl_strings_free(names->arrays, names->nb_arrays);
-  arrays = (osl_arrays_p)osl_extension_lookup(scop->extension,
-                                  OSL_EXTENSION_ARRAYS);
-  names->arrays = osl_arrays_generate_names(arrays,
-                                  &(names->nb_arrays));
-  
-  // Complete names if necessary.
-  osl_scop_name_limits(scop, &nb_parameters,
-                                  &nb_iterators,
-                                  &nb_scattdims,
-				  &nb_localdims,
-			          &nb_arrays);
-
-  osl_strings_complete(&names->parameters, &names->nb_parameters,
-                                 "P_", nb_parameters);
-  
-  osl_strings_complete(&names->iterators,  &names->nb_iterators,
-                                 "i_", nb_iterators);
-  
-  osl_strings_complete(&names->scattdims,  &names->nb_scattdims,
-                                 "s_", nb_scattdims);
-  
-  osl_strings_complete(&names->localdims,  &names->nb_localdims,
-                                 "l_", nb_localdims);
-  
-  osl_strings_complete(&names->arrays,     &names->nb_arrays,
-                                 "A_", nb_arrays);
-
-  return names;
-}
-#endif
 
 
 /**
@@ -311,6 +207,9 @@ osl_names_p osl_scop_full_names(osl_scop_p scop) {
  * \param scop The scop structure whose information has to be printed.
  */
 void osl_scop_print(FILE * file, osl_scop_p scop) {
+  int parameters_backedup = 0;
+  osl_strings_p parameters_backup = NULL;
+  osl_names_p names;
 
   if (scop == NULL) {
     fprintf(file, "# NULL scop\n");
@@ -325,7 +224,17 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
     OSL_warning("OpenScop integrity check failed. "
                      "Something may go wrong.");
   
+  // Generate the names for the various dimensions.
+  names = osl_scop_names(scop);
+
   while (scop != NULL) {
+    // If possible, replace parameter names with scop iterator names.
+    if (osl_generic_has_URI(scop->parameters, OSL_URI_STRINGS)) {
+      parameters_backedup = 1;
+      parameters_backup = names->parameters;
+      names->parameters = scop->parameters->data;
+    }
+    
     fprintf(file, "\n"OSL_TAG_START_SCOP"\n\n");
     fprintf(file, "# =============================================== "
                   "Global\n");
@@ -333,18 +242,18 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
     fprintf(file, "%s\n\n", scop->language);
 
     fprintf(file, "# Context\n");
-    osl_relation_print(file, scop->context);
+    osl_relation_pprint(file, scop->context, names);
     fprintf(file, "\n");
 
     osl_util_print_provided(file,
-        osl_generic_hasURI(scop->parameters, OSL_URI_STRINGS),
+        osl_generic_has_URI(scop->parameters, OSL_URI_STRINGS),
         "Parameters are");
     osl_generic_print(file, scop->parameters);
 
     fprintf(file, "\n# Number of statements\n");
     fprintf(file, "%d\n\n",osl_statement_number(scop->statement));
 
-    osl_statement_print(file, scop->statement);
+    osl_statement_pprint(file, scop->statement, names);
 
     if (scop->extension) {
       fprintf(file, "# =============================================== "
@@ -353,8 +262,16 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
     }
     fprintf(file, "\n"OSL_TAG_END_SCOP"\n\n");
     
+    // If necessary, switch back parameter names.
+    if (parameters_backedup) {
+      parameters_backedup = 0;
+      names->parameters = parameters_backup;
+    }
+
     scop = scop->next;
   }
+
+  osl_names_free(names);
 }
 
 
@@ -757,4 +674,58 @@ void osl_scop_register_extension(osl_scop_p scop, osl_interface_p interface) {
   }
 }
 
+
+/**
+ * osl_scop_get_attributes function:
+ * this function returns, through its parameters, the maximum values of the
+ * relation attributes (nb_iterators, nb_parameters etc) in the scop.
+ * HOWEVER, it updates the parameter value iff the attribute is greater than
+ * the input parameter value. Hence it may be used to get the attributes as
+ * well as to find the maximum attributes for several scop lists. The array
+ * identifier 0 is used when there is no array identifier (AND this is OK),
+ * OSL_UNDEFINED is used to report it is impossible to provide the property
+ * while it should. This function is not intended for checking, the input
+ * scop should be correct.
+ * \param[in]     scop          The scop to extract attributes values.
+ * \param[in,out] nb_parameters Number of parameter attribute.
+ * \param[in,out] nb_iterators  Number of iterators attribute.
+ * \param[in,out] nb_scattdims  Number of scattering dimensions attribute.
+ * \param[in,out] nb_localdims  Number of local dimensions attribute.
+ * \param[in,out] array_id      Maximum array identifier attribute.
+ */
+void osl_scop_get_attributes(osl_scop_p scop,
+                             int * nb_parameters,
+                             int * nb_iterators,
+                             int * nb_scattdims,
+                             int * nb_localdims,
+                             int * array_id) {
+  int local_nb_parameters = OSL_UNDEFINED;
+  int local_nb_iterators  = OSL_UNDEFINED;
+  int local_nb_scattdims  = OSL_UNDEFINED;
+  int local_nb_localdims  = OSL_UNDEFINED;
+  int local_array_id      = OSL_UNDEFINED;
+
+  while (scop != NULL) {
+    osl_relation_get_attributes(scop->context,
+                                &local_nb_parameters,
+                                &local_nb_iterators,
+                                &local_nb_scattdims,
+                                &local_nb_localdims,
+                                &local_array_id);
+
+    osl_statement_get_attributes(scop->statement,
+                                &local_nb_parameters,
+                                &local_nb_iterators,
+                                &local_nb_scattdims,
+                                &local_nb_localdims,
+                                &local_array_id);
+    // Update.
+    *nb_parameters = OSL_max(*nb_parameters, local_nb_parameters);
+    *nb_iterators  = OSL_max(*nb_iterators,  local_nb_iterators);
+    *nb_scattdims  = OSL_max(*nb_scattdims,  local_nb_scattdims);
+    *nb_localdims  = OSL_max(*nb_localdims,  local_nb_localdims);
+    *array_id      = OSL_max(*array_id,      local_array_id);
+    scop = scop->next;
+  }
+}
 

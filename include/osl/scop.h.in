@@ -154,6 +154,8 @@ int        osl_scop_integrity_check(osl_scop_p);
 int        osl_scop_get_nb_parameters(osl_scop_p);
 void       osl_scop_register_default_extensions(osl_scop_p);
 void       osl_scop_register_extension(osl_scop_p, osl_interface_p);
+void       osl_scop_get_attributes(osl_scop_p,
+                                   int *, int *, int *, int *, int *);
 
 
 # if defined(__cplusplus)

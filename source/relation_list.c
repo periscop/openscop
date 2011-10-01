@@ -142,15 +142,17 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
 
 
 /**
- * osl_relation_list_print_elts function:
- * This function prints the elements of a osl_relation_list_t structure
+ * osl_relation_list_pprint_elts function:
+ * This function pretty-prints the elements of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. I.e., it prints
  * only the elements and not the number of elements. It prints an element of the
  * list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
+ * \param[in] names Array of constraint columns names. 
  */
-void osl_relation_list_print_elts(FILE * file, osl_relation_list_p list) {
+void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
+                                   osl_names_p names) {
   int i;
   osl_relation_list_p head = list;
 
@@ -162,7 +164,7 @@ void osl_relation_list_print_elts(FILE * file, osl_relation_list_p list) {
     i = 0;
     while (head) {
       if (head->elt != NULL) {
-        osl_relation_print(file, head->elt);
+        osl_relation_pprint(file, head->elt, names);
         if (head->next != NULL)
           fprintf(file, "\n");
         i++;
@@ -177,14 +179,16 @@ void osl_relation_list_print_elts(FILE * file, osl_relation_list_p list) {
 
 
 /**
- * osl_relation_list_print function:
- * This function prints the content of a osl_relation_list_t structure
+ * osl_relation_list_pprint function:
+ * This function pretty-prints the content of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. It prints
  * an element of the list only if it is not NULL.
- * \param file  File where informations are printed.
- * \param list  The relation list whose information has to be printed.
+ * \param[in] file  File where informations are printed.
+ * \param[in] list  The relation list whose information has to be printed.
+ * \param[in] names Array of constraint columns names. 
  */
-void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
+void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
+                              osl_names_p names) {
   int i;
 
   // Count the number of elements in the list with non-NULL content.
@@ -197,9 +201,22 @@ void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
     fprintf(file,"# List of %d element \n%d\n", i, i);
 
   // Print each element of the relation list.
-  osl_relation_list_print_elts(file, list);
+  osl_relation_list_pprint_elts(file, list, names);
 }
 
+
+/**
+ * osl_relation_list_print function:
+ * This function prints the content of a osl_relation_list_t structure
+ * into a file (file, possibly stdout) in the OpenScop format. It prints
+ * an element of the list only if it is not NULL.
+ * \param file  File where informations are printed.
+ * \param list  The relation list whose information has to be printed.
+ */
+void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
+
+  osl_relation_list_pprint(file, list, NULL);
+}
 
 /*****************************************************************************
  *                               Reading function                            *
@@ -527,4 +544,51 @@ int osl_relation_list_count(osl_relation_list_p list) {
   return i;
 }
   
+
+/**
+ * osl_relation_list_get_attributes function:
+ * this function returns, through its parameters, the maximum values of the
+ * relation attributes (nb_iterators, nb_parameters etc) in the relation list,
+ * depending on its type. HOWEVER, it updates the parameter value iff the
+ * attribute is greater than the input parameter value. Hence it may be used
+ * to get the attributes as well as to find the maximum attributes for several
+ * relation lists. The array identifier 0 is used when there is no array
+ * identifier (AND this is OK), OSL_UNDEFINED is used to report it is
+ * impossible to provide the property while it should. This function is not
+ * intended for checking, the input relation list should be correct.
+ * \param[in]     list          The relation list to extract attribute values.
+ * \param[in,out] nb_parameters Number of parameter attribute.
+ * \param[in,out] nb_iterators  Number of iterators attribute.
+ * \param[in,out] nb_scattdims  Number of scattering dimensions attribute.
+ * \param[in,out] nb_localdims  Number of local dimensions attribute.
+ * \param[in,out] array_id      Maximum array identifier attribute.
+ */
+void osl_relation_list_get_attributes(osl_relation_list_p list,
+                                      int * nb_parameters,
+                                      int * nb_iterators,
+                                      int * nb_scattdims,
+                                      int * nb_localdims,
+                                      int * array_id) {
+  int local_nb_parameters = OSL_UNDEFINED;
+  int local_nb_iterators  = OSL_UNDEFINED;
+  int local_nb_scattdims  = OSL_UNDEFINED;
+  int local_nb_localdims  = OSL_UNDEFINED;
+  int local_array_id      = OSL_UNDEFINED;
+
+  while (list != NULL) {
+    osl_relation_get_attributes(list->elt,
+                                &local_nb_parameters,
+                                &local_nb_iterators,
+                                &local_nb_scattdims,
+                                &local_nb_localdims,
+                                &local_array_id);
+    // Update.
+    *nb_parameters = OSL_max(*nb_parameters, local_nb_parameters);
+    *nb_iterators  = OSL_max(*nb_iterators,  local_nb_iterators);
+    *nb_scattdims  = OSL_max(*nb_scattdims,  local_nb_scattdims);
+    *nb_localdims  = OSL_max(*nb_localdims,  local_nb_localdims);
+    *array_id      = OSL_max(*array_id,      local_array_id);
+    list = list->next;
+  }
+}
 

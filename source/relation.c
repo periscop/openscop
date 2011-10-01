@@ -238,10 +238,12 @@ static
 char * osl_relation_expression_element(void * val,
                                        int precision, int * first,
                                        int cst, char * name) {
-  char * temp = (char *)malloc(OSL_MAX_STRING * sizeof(char));
-  char * body = (char *)malloc(OSL_MAX_STRING * sizeof(char));
-  char * sval = (char *)malloc(OSL_MAX_STRING * sizeof(char));
-  
+  char * temp, * body, * sval;
+ 
+  OSL_malloc(temp, char *, OSL_MAX_STRING * sizeof(char));
+  OSL_malloc(body, char *, OSL_MAX_STRING * sizeof(char));
+  OSL_malloc(sval, char *, OSL_MAX_STRING * sizeof(char));
+
   body[0] = '\0';
   sval[0] = '\0';
 
@@ -269,7 +271,7 @@ char * osl_relation_expression_element(void * val,
       }
       else {
         sprintf(sval, "+");
-	osl_int_sprint(temp, precision, val, 0);
+	osl_int_sprint_txt(temp, precision, val, 0);
 	strcat(sval, temp);
 	sprintf(temp, "*%s", name);
 	strcat(sval, temp);
@@ -280,15 +282,15 @@ char * osl_relation_expression_element(void * val,
     if (cst) {
       if ((osl_int_zero(precision, val, 0) && (*first)) ||
           (osl_int_neg(precision, val, 0)))
-        osl_int_sprint(sval, precision, val, 0);
+        osl_int_sprint_txt(sval, precision, val, 0);
       if (osl_int_pos(precision, val, 0)) {
         if (!(*first)) {
           sprintf(sval, "+");
-          osl_int_sprint(temp, precision, val, 0);
+          osl_int_sprint_txt(temp, precision, val, 0);
 	  strcat(sval, temp);
 	}
 	else {
-          osl_int_sprint(sval, precision, val, 0);
+          osl_int_sprint_txt(sval, precision, val, 0);
         }
       }
     }
@@ -300,54 +302,128 @@ char * osl_relation_expression_element(void * val,
 }
 
 
+/**
+ * osl_relation_strings function:
+ * this function creates a NULL-terminated array of strings from an
+ * osl_names_t structure in such a way that the ith string is the "name"
+ * corresponding to the ith column of the constraint matrix.
+ * \param[in] relation The relation for which we need an array of names.
+ * \param[in] names    The set of names for each element.
+ * \return An array of strings with one string per constraint matrix column.
+ */
 static
 char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
   char ** strings;
   char temp[OSL_MAX_STRING];
   int i, offset, array_id;
   
-  OSL_malloc(strings, char **, (relation->nb_columns - 1)*sizeof(char *));
-  strings[relation->nb_columns - 2] = NULL;
+  if ((relation == NULL) || (names == NULL)) {
+    OSL_debug("no names or relation to build the name array");
+    return NULL;
+  }
 
-  // 1. Output dimensions.
+  OSL_malloc(strings, char **, (relation->nb_columns + 1)*sizeof(char *));
+  strings[relation->nb_columns] = NULL;
+
+  // 1. Equality/inequality marker.
+  OSL_strdup(strings[0], "e/i");
+  offset = 1;
+
+  // 2. Output dimensions.
   if (osl_relation_is_access(relation)) {
     // The first output dimension is the array name.
     array_id  = osl_relation_get_array_id(relation);
-    strings[0] = strdup(names->arrays->string[array_id - 1]);
+    OSL_strdup(strings[offset], names->arrays->string[array_id - 1]);
     // The other ones are the array dimensions [1]...[n]
-    for (i = 1; i < relation->nb_output_dims; i++) {
-      sprintf(temp, "[%d]", i);
-      strings[i] = strdup(temp);
+    for (i = offset + 1; i < relation->nb_output_dims + offset; i++) {
+      sprintf(temp, "[%d]", i - 1);
+      OSL_strdup(strings[i], temp);
     }
   }
   else
   if (relation->type == OSL_TYPE_SCATTERING) {
-    for (i = 0; i < relation->nb_output_dims; i++) {
-      strings[i] = strdup(names->scatt_dims->string[i]);
+    for (i = offset; i < relation->nb_output_dims + offset; i++) {
+      OSL_strdup(strings[i], names->scatt_dims->string[i - offset]);
     }
   }
   else {
-    for (i = 0; i < relation->nb_output_dims; i++) {
-      strings[i] = strdup(names->iterators->string[i]);
+    for (i = offset; i < relation->nb_output_dims + offset; i++) {
+      OSL_strdup(strings[i], names->iterators->string[i - offset]);
     }
   }
+  offset += relation->nb_output_dims;
 
-  // 2. Input dimensions.
-  offset = relation->nb_output_dims;
+  // 3. Input dimensions.
   for (i = offset; i < relation->nb_input_dims + offset; i++)
-    strings[i] = strdup(names->iterators->string[i - offset]);
-
-  // 3. Local dimensions.
+    OSL_strdup(strings[i], names->iterators->string[i - offset]);
   offset += relation->nb_input_dims;
-  for (i = offset; i < relation->nb_local_dims + offset; i++)
-    strings[i] = strdup(names->local_dims->string[i - offset]);
 
-  // 4. Parameters.
+  // 4. Local dimensions.
+  for (i = offset; i < relation->nb_local_dims + offset; i++)
+    OSL_strdup(strings[i], names->local_dims->string[i - offset]);
   offset += relation->nb_local_dims;
+
+  // 5. Parameters.
   for (i = offset; i < relation->nb_parameters + offset; i++)
-    strings[i] = strdup(names->parameters->string[i - offset]);
+    OSL_strdup(strings[i], names->parameters->string[i - offset]);
+  offset += relation->nb_parameters;
+
+  // 6. Scalar.
+  OSL_strdup(strings[offset], "1");
 
   return strings;
+}
+
+
+/**
+ * osl_relation_subexpression function:
+ * this function returns a string corresponding to an affine (sub-)expression
+ * stored at the "row"^th row of the relation pointed by "relation" between
+ * the start and stop columns. Optionnaly it may oppose the whole expression.
+ * \param[in] relation A set of linear expressions.
+ * \param[in] row     The row corresponding to the expression.
+ * \param[in] start   The first column for the expression (inclusive).
+ * \param[in] stop    The last column for the expression (inclusive).
+ * \param[in] oppose  Boolean set to 1 to negate the expression, 0 otherwise.
+ * \param[in] strings Array of textual names of the various elements.
+ * \return A string that contains the printing of an affine (sub-)expression.
+ */
+static
+char * osl_relation_subexpression(osl_relation_p relation,
+                                  int row, int start, int stop, int oppose,
+                                  char ** strings) {
+  int i, first = 1, constant;
+  char * sval;
+  char * sline;
+  
+  OSL_malloc(sline, char *, OSL_MAX_STRING * sizeof(char));
+  sline[0] = '\0';
+
+  // Create the expression. The constant is a special case.
+  for (i = start; i <= stop; i++) {
+    if (oppose) {
+      osl_int_oppose(relation->precision,
+                     relation->m[row], i, relation->m[row], i);
+    }
+
+    if (i == relation->nb_columns - 1)
+      constant = 1;
+    else
+      constant = 0;
+
+    sval = osl_relation_expression_element(
+        osl_int_address(relation->precision, relation->m[row], i),
+        relation->precision, &first, constant, strings[i]);
+    
+    if (oppose) {
+      osl_int_oppose(relation->precision,
+                     relation->m[row], i, relation->m[row], i);
+    }
+    strcat(sline, sval);
+    free(sval);
+  }
+
+  return sline;
 }
 
 
@@ -356,133 +432,67 @@ char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
  * this function returns a string corresponding to an affine expression
  * stored at the "row"^th row of the relation pointed by "relation".
  * \param[in] relation A set of linear expressions.
- * \param[in] row      The row corresponding to the expression.
- * \param[in] names    The textual names of the various elements.
- *                     Set to NULL if printing comments is not needed.
+ * \param[in] row     The row corresponding to the expression.
+ * \param[in] strings Array of textual names of the various elements.
  * \return A string that contains the printing of an affine expression.
  */
 char * osl_relation_expression(osl_relation_p relation,
-                               int row, osl_names_p names) {
-  int i, first = 1;
-  char ** strings;
-  char * sval;
-  char * sline = (char *)malloc(OSL_MAX_STRING * sizeof(char));
-  sline[0] = '\0';
+                               int row, char ** strings) {
 
-  // Create the array of element strings.
-  strings = osl_relation_strings(relation, names);
-
-  // Create the expression.
-  for (i = 1; i <= relation->nb_columns - 2; i++) {
-    sval = osl_relation_expression_element(
-        osl_int_address(relation->precision, relation->m[row], i),
-        relation->precision, &first, 0, strings[i-1]);
-    strcat(sline, sval);
-    free(sval);
-  }
-  
-  // Free the array of element strings.
-  for (i = 0; i < relation->nb_columns - 2; i++)
-    free(strings[i]);
-  free(strings);
-
-  return sline;
+  return osl_relation_subexpression(relation, row,
+                                    1, relation->nb_columns - 1, 0,
+                                    strings);
 }
 
 
 /**
- * osl_relation_properties function:
- * this function returns, through its parameters, the values of the relation
- * attributes (nb_iterators, nb_parameters etc), depending on its value and
- * its type. The array identifier 0 is used when there is no array
- * identifier (AND this is OK), OSL_UNDEFINED is used to report it
- * is impossible to provide the property while it should.
- * This function is not intended for checking, the input relation should be
- * correct.
- * \param[in]  relation      The relation to extract property values.
- * \param[out] nb_parameters Number of parameter property.
- * \param[out] nb_iterators  Number of iterators property.
- * \param[out] nb_scattdims  Number of scattering dimensions property.
- * \param[out] nb_localdims  Number of local dimensions property.
- * \param[out] array_id      Array identifier property.
+ * osl_relation_is_simple_output function:
+ * this function returns 1 or -1 if a given constraint row of a relation
+ * corresponds to an output, 0 otherwise. We call a simple output an equality
+ * constraint where exactly one output coefficient is not 0 and is either
+ * 1 (in this case the function returns 1) or -1 (in this case the function
+ * returns -1). 
+ * \param[in] relation The relation to test for simple output.
+ * \param[in] row      The row corresponding to the constraint to test.
+ * \return 1 or -1 if the row is a simple output, 0 otherwise.
  */
 static
-void osl_relation_properties(osl_relation_p relation,
-                             int * nb_parameters,
-                             int * nb_iterators,
-                             int * nb_scattdims,
-                             int * nb_localdims,
-                             int * array_id) {
-  int type;
- 
-  *nb_parameters = OSL_UNDEFINED;
-  *nb_iterators  = OSL_UNDEFINED;
-  *nb_scattdims  = OSL_UNDEFINED;
-  *nb_localdims  = OSL_UNDEFINED;
-  *array_id      = OSL_UNDEFINED;
- 
-  if (relation == NULL)
-    return;
+int osl_relation_is_simple_output(osl_relation_p relation, int row) {
+  int i;
+  int first = 1;
+  int sign  = 0;
 
-  if (osl_relation_is_access(relation))
-    type = OSL_TYPE_ACCESS;
-  else
-    type = relation->type;
+  if ((relation == NULL) ||
+      (relation->m == NULL) ||
+      (relation->nb_output_dims == 0))
+    return 0;
 
-  // There is some redundancy but I believe the code is cleaner this way.
-  switch (type) {
-    case OSL_TYPE_CONTEXT: {
-      *nb_parameters = relation->nb_parameters;
-      *nb_iterators  = 0;
-      *nb_scattdims  = 0;
-      *nb_localdims  = relation->nb_local_dims;
-      *array_id      = 0;
-      break;
-    }
-    case OSL_TYPE_DOMAIN: {
-      *nb_parameters = relation->nb_parameters;
-      *nb_iterators  = relation->nb_output_dims;
-      *nb_scattdims  = 0;
-      *nb_localdims  = relation->nb_local_dims;
-      *array_id      = 0;
-      break;
-    }
-    case OSL_TYPE_SCATTERING: {
-      *nb_parameters = relation->nb_parameters;
-      *nb_iterators  = relation->nb_input_dims;
-      *nb_scattdims  = relation->nb_output_dims;
-      *nb_localdims  = relation->nb_local_dims;
-      *array_id      = 0;
-      break;
-    }
-    case OSL_TYPE_ACCESS: {
-      *nb_parameters = relation->nb_parameters;
-      *nb_iterators  = relation->nb_input_dims;
-      *nb_scattdims  = 0;
-      *nb_localdims  = relation->nb_local_dims;
-      *array_id      = osl_relation_get_array_id(relation);
-      break;
+  if ((row < 0) || (row > relation->nb_rows))
+    OSL_error("the specified row does not exist in the relation");
+
+  // The constraint must be an equality.
+  if (!osl_int_zero(relation->precision, relation->m[row], 0))
+    return 0;
+
+  // Check the output part has one and only one non-zero +1 or -1 coefficient.
+  first = 1;
+  for (i = 1; i <= relation->nb_output_dims; i++) {
+    if (!osl_int_zero(relation->precision, relation->m[row], i)) {
+      if (first)
+        first = 0;
+      else
+        return 0;
+
+      if (osl_int_one(relation->precision, relation->m[row], i))
+        sign = 1;
+      else if (osl_int_mone(relation->precision, relation->m[row], i))
+        sign = -1;
+      else
+        return 0;
     }
   }
-}
 
-
-static
-osl_names_p osl_relation_names(osl_relation_p relation) {
-  int nb_parameters;
-  int nb_iterators;
-  int nb_scattdims;
-  int nb_localdims;
-  int array_id;
-
-  osl_relation_properties(relation, &nb_parameters, &nb_iterators,
-                          &nb_scattdims, &nb_localdims, &array_id);
-  
-  return osl_names_generate("P", nb_parameters,
-                            "i", nb_iterators,
-                            "t", nb_scattdims,
-                            "l", nb_localdims,
-                            "A", array_id);
+  return sign;
 }
 
 
@@ -495,37 +505,172 @@ osl_names_p osl_relation_names(osl_relation_p relation) {
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation for which a comment has to be printed.
  * \param[in] row      The constrain row for which a comment has to be printed.
- * \param[in] names    The textual names of the various elements.
+ * \param[in] strings  Array of textual names of the various elements.
  */ 
 static
-void osl_relation_print_comment(FILE * file,
-                                osl_relation_p relation, int row) {
+void osl_relation_print_comment(FILE * file, osl_relation_p relation,
+                                int row, char ** strings) {
   char * expression;
-  osl_names_p names = osl_relation_names(relation);
+  int sign;
 
-  expression = osl_relation_expression(relation, row, names);
-  fprintf(file, "   ## %s", expression);
-  if (osl_int_zero(relation->precision, relation->m[row], 0))
-    fprintf(file, " == 0");
-  else
-    fprintf(file, " >= 0");
-  
-  osl_names_free(names);
-  free(expression);
+  if ((relation == NULL) || (strings == NULL)) {
+    OSL_debug("no relation or names while asked to print a comment");
+    return;
+  }
+
+  if ((sign = osl_relation_is_simple_output(relation, row))) {
+    // First case : output == expression.
+
+    expression = osl_relation_subexpression(relation, row,
+                                            1, relation->nb_output_dims,
+                                            sign < 0,
+                                            strings);
+    fprintf(file, "   ## %s", expression);
+    free(expression);
+    
+    // We don't print the right hand side if it's an array identifier.
+    if (!osl_relation_is_access(relation) ||
+        osl_int_zero(relation->precision, relation->m[row], 1)) {
+      expression = osl_relation_subexpression(relation, row,
+                                              relation->nb_output_dims + 1,
+                                              relation->nb_columns - 1,
+                                              sign > 0,
+                                              strings);
+      fprintf(file, " == %s", expression);
+      free(expression);
+    }
+  }
+  else {
+    // Second case : general case.
+    
+    expression = osl_relation_expression(relation, row, strings);
+    fprintf(file, "   ## %s", expression);
+    free(expression);
+    if (osl_int_zero(relation->precision, relation->m[row], 0))
+      fprintf(file, " == 0");
+    else
+      fprintf(file, " >= 0");
+  }
 }
 
 
 /**
- * osl_relation_print function:
- * this function prints the content of an osl_relation_t structure
+ * osl_relation_column_string function:
+ * this function returns an OpenScop comment string showing all column
+ * names. It is designed to nicely fit a constraint matrix that would be
+ * printed just below this line.
+ * \param[in] relation The relation related to the comment line to build.
+ * \param[in] strings  Array of textual names of the various elements.
+ * \return A fancy comment string with all the dimension names.
+ */
+static
+char * osl_relation_column_string(osl_relation_p relation, char ** strings) {
+  int i, j;
+  int index_output_dims;
+  int index_input_dims;
+  int index_local_dims;
+  int index_parameters;
+  int index_scalar;
+  int space, length, left, right;
+  char * scolumn;
+  char temp[OSL_MAX_STRING];
+
+  OSL_malloc(scolumn, char *, OSL_MAX_STRING);
+ 
+  index_output_dims = 1;
+  index_input_dims  = index_output_dims + relation->nb_output_dims;
+  index_local_dims  = index_input_dims  + relation->nb_input_dims;
+  index_parameters  = index_local_dims  + relation->nb_local_dims;
+  index_scalar      = index_parameters  + relation->nb_parameters;
+
+  // 1. The comment part.
+  sprintf(scolumn, "#");
+  for (j = 0; j < (OSL_FMT_LENGTH - 1)/2 - 1; j++)
+    strcat(scolumn, " ");
+
+  i = 0;
+  while (strings[i] != NULL) {
+    space  = OSL_FMT_LENGTH;
+    length = (space > strlen(strings[i])) ? strlen(strings[i]) : space;
+    right  = (space - length + (OSL_FMT_LENGTH % 2)) / 2;
+    left   = space - length - right;
+
+    // 2. Spaces before the name
+    for (j = 0; j < left; j++)
+      strcat(scolumn, " ");
+
+    // 3. The (abbreviated) name
+    for (j = 0; j < length - 1; j++) {
+      sprintf(temp, "%c", strings[i][j]);
+      strcat(scolumn, temp);
+    }
+    if (length >= strlen(strings[i]))
+      sprintf(temp, "%c", strings[i][j]);
+    else 
+      sprintf(temp, ".");
+    strcat(scolumn, temp);
+
+    // 4. Spaces after the name
+    for (j = 0; j < right; j++)
+      strcat(scolumn, " ");
+    
+    i++;
+    if ((i == index_output_dims) ||
+        (i == index_input_dims)  ||
+        (i == index_local_dims)  ||
+        (i == index_parameters)  ||
+        (i == index_scalar))
+      strcat(scolumn, "|");
+    else
+      strcat(scolumn, " ");
+  }
+  strcat(scolumn, "\n");
+
+  return scolumn;
+}
+
+
+/**
+ * osl_relation_names function:
+ * this function generates as set of names for all the dimensions
+ * involved in a given relation.
+ * \param[in] relation The relation we have to generate names for.
+ * \return A set of generated names for the input relation dimensions.
+ */
+static
+osl_names_p osl_relation_names(osl_relation_p relation) {
+  int nb_parameters = OSL_UNDEFINED;
+  int nb_iterators  = OSL_UNDEFINED;
+  int nb_scattdims  = OSL_UNDEFINED;
+  int nb_localdims  = OSL_UNDEFINED;
+  int array_id      = OSL_UNDEFINED;
+
+  osl_relation_get_attributes(relation, &nb_parameters, &nb_iterators,
+                              &nb_scattdims, &nb_localdims, &array_id);
+  
+  return osl_names_generate("P", nb_parameters,
+                            "i", nb_iterators,
+                            "c", nb_scattdims,
+                            "l", nb_localdims,
+                            "A", array_id);
+}
+
+
+/**
+ * osl_relation_pprint function:
+ * this function pretty-prints the content of an osl_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information has to be printed.
+ * \param[in] names    The names of the constraint columns for comments. 
  */
-void osl_relation_print(FILE * file, osl_relation_p relation) {
+void osl_relation_pprint(FILE * file, osl_relation_p relation,
+                         osl_names_p names) {
   int i, j;
   int part, nb_parts;
-  int printable_comments;
+  int generated_names = 0;
+  char ** strings = NULL;
+  char * scolumn;
   osl_relation_p r;
 
   if (relation == NULL) {
@@ -533,8 +678,11 @@ void osl_relation_print(FILE * file, osl_relation_p relation) {
     return;
   }
 
-  //printable_comments = osl_relation_printable_comments(relation, names); 
-  printable_comments = 0;
+  // Generates the names for the comments if necessary.
+  if (names == NULL) {
+    generated_names = 1;
+    names = osl_relation_names(relation);
+  }
 
   // Count the number of parts in the union and print it if it is not 1.
   r = relation;
@@ -554,18 +702,22 @@ void osl_relation_print(FILE * file, osl_relation_p relation) {
 
   // Print each part of the union.
   for (part = 1; part <= nb_parts; part++) {
+    // Prepare the array of strings for comments.
+    strings = osl_relation_strings(relation, names);
+
     if (nb_parts > 1)
       fprintf(file, "# Union part No.%d\n", part);
-    if ((relation->nb_output_dims == OSL_UNDEFINED) && 
-        (relation->nb_input_dims  == OSL_UNDEFINED) && 
-        (relation->nb_local_dims  == OSL_UNDEFINED) && 
-        (relation->nb_parameters  == OSL_UNDEFINED)) 
-      fprintf(file, "%d %d\n", relation->nb_rows, relation->nb_columns);
-    else
-      fprintf(file, "%d %d %d %d %d %d\n",
-              relation->nb_rows,        relation->nb_columns,
-              relation->nb_output_dims, relation->nb_input_dims,
-              relation->nb_local_dims,  relation->nb_parameters);
+
+    fprintf(file, "%d %d %d %d %d %d\n",
+            relation->nb_rows,        relation->nb_columns,
+            relation->nb_output_dims, relation->nb_input_dims,
+            relation->nb_local_dims,  relation->nb_parameters);
+
+    if (relation->nb_rows > 0) {
+      scolumn = osl_relation_column_string(relation, strings);
+      fprintf(file, "%s", scolumn);
+      free(scolumn);
+    }
 
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j < relation->nb_columns; j++) {
@@ -573,12 +725,36 @@ void osl_relation_print(FILE * file, osl_relation_p relation) {
         fprintf(file, " ");
       }
 
-      //osl_relation_print_comment(file, relation, i);
-
+      if (strings != NULL)
+        osl_relation_print_comment(file, relation, i, strings);
       fprintf(file, "\n");
     }
+
+    // Free the array of strings.
+    if (strings != NULL) {
+      for (i = 0; i < relation->nb_columns; i++)
+        free(strings[i]);
+      free(strings);
+    }
+
     relation = relation->next;
   }
+  
+  if (generated_names)
+    osl_names_free(names);
+}
+
+
+/**
+ * osl_relation_print function:
+ * this function prints the content of an osl_relation_t structure
+ * (*relation) into a file (file, possibly stdout) in the OpenScop format.
+ * \param[in] file     File where informations are printed.
+ * \param[in] relation The relation whose information has to be printed.
+ */
+void osl_relation_print(FILE * file, osl_relation_p relation) {
+
+  osl_relation_pprint(file, relation, NULL);
 }
 
 
@@ -664,7 +840,7 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
   int nb_output_dims, nb_input_dims, nb_local_dims, nb_parameters;
   int nb_union_parts = 1;
   int may_read_nb_union_parts = 1;
-  int read_properties = 1;
+  int read_attributes = 1;
   int first = 1;
   int type;
   char * c, s[OSL_MAX_STRING], str[OSL_MAX_STRING];
@@ -674,11 +850,11 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
 
   // Read each part of the union (the number of parts may be updated inside)
   for (k = 0; k < nb_union_parts; k++) {
-    // Read the number of union parts or the properties of the union part
-    while (read_properties) {
-      read_properties = 0;
+    // Read the number of union parts or the attributes of the union part
+    while (read_attributes) {
+      read_attributes = 0;
 
-      // Read relation properties.
+      // Read relation attributes.
       c = osl_util_skip_blank_and_comments(foo, s);
       read = sscanf(c, " %d %d %d %d %d %d", &nb_rows, &nb_columns,
                                              &nb_output_dims, &nb_input_dims,
@@ -695,7 +871,7 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
           OSL_error("negative nb of union parts");
         
         // Allow to read the properties of the first part of the union.
-        read_properties = 1;
+        read_attributes = 1;
       }
 
       may_read_nb_union_parts = 0;
@@ -736,7 +912,7 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
     }
 
     previous = relation;
-    read_properties = 1;
+    read_attributes = 1;
   }
 
   return relation_union;
@@ -1594,4 +1770,85 @@ int osl_relation_is_access(osl_relation_p relation) {
 }
 
 
+/**
+ * osl_relation_get_attributes function:
+ * this function returns, through its parameters, the maximum values of the
+ * relation attributes (nb_iterators, nb_parameters etc), depending on its
+ * type. HOWEVER, it updates the parameter value iff the attribute is greater
+ * than the input parameter value. Hence it may be used to get the
+ * attributes as well as to find the maximum attributes for several relations.
+ * The array identifier 0 is used when there is no array identifier (AND this
+ * is OK), OSL_UNDEFINED is used to report it is impossible to provide the
+ * property while it should. This function is not intended for checking, the
+ * input relation should be correct.
+ * \param[in]     relation      The relation to extract attribute values.
+ * \param[in,out] nb_parameters Number of parameter attribute.
+ * \param[in,out] nb_iterators  Number of iterators attribute.
+ * \param[in,out] nb_scattdims  Number of scattering dimensions attribute.
+ * \param[in,out] nb_localdims  Number of local dimensions attribute.
+ * \param[in,out] array_id      Maximum array identifier attribute.
+ */
+void osl_relation_get_attributes(osl_relation_p relation,
+                                 int * nb_parameters,
+                                 int * nb_iterators,
+                                 int * nb_scattdims,
+                                 int * nb_localdims,
+                                 int * array_id) {
+  int type;
+  int local_nb_parameters = OSL_UNDEFINED;
+  int local_nb_iterators  = OSL_UNDEFINED;
+  int local_nb_scattdims  = OSL_UNDEFINED;
+  int local_nb_localdims  = OSL_UNDEFINED;
+  int local_array_id      = OSL_UNDEFINED;
+
+  while (relation != NULL) {
+    if (osl_relation_is_access(relation))
+      type = OSL_TYPE_ACCESS;
+    else
+      type = relation->type;
+
+    // There is some redundancy but I believe the code is cleaner this way.
+    switch (type) {
+      case OSL_TYPE_CONTEXT:
+        local_nb_parameters = relation->nb_parameters;
+        local_nb_iterators  = 0;
+        local_nb_scattdims  = 0;
+        local_nb_localdims  = relation->nb_local_dims;
+        local_array_id      = 0;
+        break;
+
+      case OSL_TYPE_DOMAIN:
+        local_nb_parameters = relation->nb_parameters;
+        local_nb_iterators  = relation->nb_output_dims;
+        local_nb_scattdims  = 0;
+        local_nb_localdims  = relation->nb_local_dims;
+        local_array_id      = 0;
+        break;
+
+      case OSL_TYPE_SCATTERING:
+        local_nb_parameters = relation->nb_parameters;
+        local_nb_iterators  = relation->nb_input_dims;
+        local_nb_scattdims  = relation->nb_output_dims;
+        local_nb_localdims  = relation->nb_local_dims;
+        local_array_id      = 0;
+        break;
+
+      case OSL_TYPE_ACCESS:
+        local_nb_parameters = relation->nb_parameters;
+        local_nb_iterators  = relation->nb_input_dims;
+        local_nb_scattdims  = 0;
+        local_nb_localdims  = relation->nb_local_dims;
+        local_array_id      = osl_relation_get_array_id(relation);
+        break;
+    }
+
+    // Update.
+    *nb_parameters = OSL_max(*nb_parameters, local_nb_parameters);
+    *nb_iterators  = OSL_max(*nb_iterators,  local_nb_iterators);
+    *nb_scattdims  = OSL_max(*nb_scattdims,  local_nb_scattdims);
+    *nb_localdims  = OSL_max(*nb_localdims,  local_nb_localdims);
+    *array_id      = OSL_max(*array_id,      local_array_id);
+    relation = relation->next;
+  }
+}
 

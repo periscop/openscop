@@ -77,7 +77,7 @@ extern "C"
 
 /* The "strings" type is simply a NULL-terminated array of C character
  * strings, i.e. a char **. It is encapsulated into a structure to allow
- * it manipulation through a generic type.
+ * its manipulation through a generic type.
  */
 struct osl_strings {
   char ** string; /**< NULL-terminated array of character strings */

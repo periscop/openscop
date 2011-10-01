@@ -69,6 +69,7 @@
 # include <osl/util.h>
 # include <osl/relation.h>
 # include <osl/relation_list.h>
+# include <osl/names.h>
 # include <osl/generic.h>
 
 # if defined(__cplusplus)
@@ -102,6 +103,7 @@ typedef struct osl_statement * osl_statement_p;
  *****************************************************************************/
 void            osl_statement_idump(FILE *, osl_statement_p, int);
 void            osl_statement_dump(FILE *, osl_statement_p);
+void            osl_statement_pprint(FILE *, osl_statement_p, osl_names_p);
 void            osl_statement_print(FILE *, osl_statement_p);
 
 
@@ -129,6 +131,8 @@ osl_statement_p osl_statement_clone(osl_statement_p);
 int             osl_statement_equal(osl_statement_p, osl_statement_p);
 int             osl_statement_integrity_check(osl_statement_p, int);
 int             osl_statement_get_nb_iterators(osl_statement_p);
+void            osl_statement_get_attributes(osl_statement_p, int *, int *,
+                                             int *, int *, int *);
 
 # if defined(__cplusplus)
   }

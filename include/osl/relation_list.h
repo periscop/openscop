@@ -67,6 +67,7 @@
 # include <stdio.h>
 # include <osl/macros.h>
 # include <osl/vector.h>
+# include <osl/names.h>
 # include <osl/relation.h>
 
 
@@ -92,10 +93,11 @@ typedef struct osl_relation_list * osl_relation_list_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void                osl_relation_list_idump(FILE *, osl_relation_list_p, int);
-void                osl_relation_list_dump(FILE *, osl_relation_list_p);
-void                osl_relation_list_print_elts(FILE *, osl_relation_list_p);
-void                osl_relation_list_print(FILE *, osl_relation_list_p);
+void osl_relation_list_idump(FILE *, osl_relation_list_p, int);
+void osl_relation_list_dump(FILE *, osl_relation_list_p);
+void osl_relation_list_pprint_elts(FILE *, osl_relation_list_p, osl_names_p);
+void osl_relation_list_pprint(FILE *, osl_relation_list_p, osl_names_p);
+void osl_relation_list_print(FILE *, osl_relation_list_p);
 
 
 /*****************************************************************************
@@ -126,7 +128,9 @@ int                 osl_relation_list_integrity_check(osl_relation_list_p,
 void                osl_relation_list_set_type(osl_relation_list_p, int);
 osl_relation_list_p osl_relation_list_filter(osl_relation_list_p, int);
 int                 osl_relation_list_count(osl_relation_list_p);
-
+void                osl_relation_list_get_attributes(osl_relation_list_p,
+                                                     int *, int *, int *,
+                                                     int *, int *);
 # if defined(__cplusplus)
   }
 # endif

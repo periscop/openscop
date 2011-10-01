@@ -350,7 +350,8 @@ void osl_int_print(FILE * file, int precision,
 
 /**
  * osl_int_sprint function:
- * this function prints an integer value into a string.
+ * this function prints an integer value into a string, it uses the
+ * OpenScop Library formats OSL_FMT_* to format the printing.
  * \param string    The string where the integer has to be printed.
  * \param precision The precision of the integer.
  * \param value     Address of the integer value.
@@ -373,6 +374,41 @@ void osl_int_sprint(char * string, int precision,
       char * str;
       str = mpz_get_str(0, 10, *(mpz_t *)value); //TODO: 10 -> #define
       sprintf(string, OSL_FMT_MP, str);
+      free(str);
+      break;
+    }
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+
+/**
+ * osl_int_sprint_txt function:
+ * this function is similar to osl_int_sprintf but it prints the value
+ * using OSL_TMT_TXT_* formats.
+ * \see osl_int_sprintf
+ */
+void osl_int_sprint_txt(char * string, int precision,
+                        void * value_base, int value_offset) {
+  void * value = osl_int_address(precision, value_base, value_offset);
+            
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      sprintf(string, OSL_FMT_TXT_SP, *(long int *)value);
+      break;
+
+    case OSL_PRECISION_DP:
+      sprintf(string, OSL_FMT_TXT_DP, *(long long int *)value);
+      break;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: {
+      char * str;
+      str = mpz_get_str(0, 10, *(mpz_t *)value); //TODO: 10 -> #define
+      sprintf(string, OSL_FMT_TXT_MP, str);
       free(str);
       break;
     }

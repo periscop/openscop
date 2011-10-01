@@ -64,7 +64,7 @@
 #ifndef OSL_MACROS_H
 # define OSL_MACROS_H
 
-# define OSL_DEBUG                 0
+# define OSL_DEBUG                 0       // 1 for debug mode, 0 otherwise.
 
 # define OSL_TAG_START_SCOP        "<OpenScop>"
 # define OSL_TAG_END_SCOP          "</OpenScop>"
@@ -80,12 +80,12 @@
 # define OSL_FMT_SP                "%4ld"
 # define OSL_FMT_DP                "%4lld"
 # define OSL_FMT_MP                "%4s"
+# define OSL_FMT_LENGTH            4       // Should be the same as FMT_*P.
 # define OSL_FMT_TXT_SP            "%ld"
 # define OSL_FMT_TXT_DP            "%lld"
 # define OSL_FMT_TXT_MP            "%s"
 
 
-# define OSL_DEBUG                 0    // 1 for debug mode, 0 otherwise.
 # define OSL_BACKEND_C             0
 # define OSL_BACKEND_FORTRAN       1
 # define OSL_UNDEFINED             -1
@@ -115,6 +115,12 @@
 /*+***************************************************************************
  *                               UTILITY MACROS                              *
  *****************************************************************************/
+
+# define OSL_coucou(n)                                                     \
+         do {                                                              \
+           int i = n +0;                                                   \
+           fprintf(stderr,"[OpenScop] Coucou %d (%s).\n", i, __func__);    \
+         } while (0)
 
 # define OSL_debug(msg)                                                    \
          do {                                                              \
@@ -161,6 +167,10 @@
              OSL_warning("strdup of a NULL string");                       \
            }                                                               \
          } while (0)
+
+# define OSL_max(x,y) ((x) > (y)? (x) : (y))
+
+# define OSL_min(x,y) ((x) < (y)? (x) : (y))
 
 
 #endif /* define OSL_MACROS_H */
