@@ -159,7 +159,7 @@ void osl_statement_dump(FILE * file, osl_statement_p statement) {
  * osl_statement_names function:
  * this function generates as set of names for all the dimensions
  * involved in a given statement.
- * \param[in] relation The relation we have to generate names for.
+ * \param[in] statement The statement (list) we have to generate names for.
  * \return A set of generated names for the input statement dimensions.
  */
 static
@@ -698,11 +698,11 @@ int osl_statement_get_nb_iterators(osl_statement_p statement) {
  * relation attributes (nb_iterators, nb_parameters etc) in the statement.
  * HOWEVER, it updates the parameter value iff the attribute is greater than
  * the input parameter value. Hence it may be used to get the attributes as
- * well as to find the maximum attributes for several relations. The array
- * identifier 0 is used when there is no array identifier (AND this is OK),
- * OSL_UNDEFINED is used to report it is impossible to provide the property
- * while it should. This function is not intended for checking, the input
- * relation should be correct.
+ * well as to find the maximum attributes for several statement lists. The
+ * array identifier 0 is used when there is no array identifier (AND this is
+ * OK), OSL_UNDEFINED is used to report it is impossible to provide the
+ * property while it should. This function is not intended for checking, the
+ * input statement should be correct.
  * \param[in]     statement     The statement to extract attributes values.
  * \param[in,out] nb_parameters Number of parameter attribute.
  * \param[in,out] nb_iterators  Number of iterators attribute.
