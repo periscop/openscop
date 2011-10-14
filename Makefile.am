@@ -68,7 +68,8 @@
 
 
 #############################################################################
-SUBDIRS 		= doc source include tests
+#SUBDIRS 		= doc source include tests
+SUBDIRS 		= source include tests
 
 
 #############################################################################

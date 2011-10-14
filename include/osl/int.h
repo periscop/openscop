@@ -103,7 +103,7 @@ void   osl_int_sread(char *, int, void *, int);
 void   osl_int_increment(int, void *, int, void *, int);
 void   osl_int_decrement(int, void *, int, void *, int);
 void   osl_int_add(int, void *, int, void *, int, void *, int);
-void   osl_int_add_ui(int, void *, int, void *, int, int);
+void   osl_int_add_si(int, void *, int, void *, int, int);
 void   osl_int_mul(int, void *, int, void *, int, void *, int);
 void   osl_int_mul_si(int, void *, int, void *, int, int);
 void   osl_int_sub(int, void *, int, void *, int, void *, int);

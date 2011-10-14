@@ -560,7 +560,7 @@ void osl_int_add(int precision,
 /**
  * result_base[result_offset] = value_base[value_offset] + i;
  */
-void osl_int_add_ui(int precision,
+void osl_int_add_si(int precision,
                     void * result_base, int result_offset,
                     void * value_base,  int value_offset, int i) {
   void * result = osl_int_address(precision, result_base, result_offset);
@@ -576,9 +576,13 @@ void osl_int_add_ui(int precision,
       break;
 
 #ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP:
-      mpz_add_ui(*(mpz_t *)result, *(mpz_t *)value, (long int)i);
+    case OSL_PRECISION_MP: {
+      mpz_t si;
+      mpz_init_set_si(si, i);
+      mpz_add(*(mpz_t *)result, *(mpz_t *)value, si);
+      mpz_clear(si);
       break;
+    }
 #endif
 
     default:

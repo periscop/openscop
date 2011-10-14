@@ -78,10 +78,6 @@ dnl (very) long filenames.
 AM_INIT_AUTOMAKE([1.9 tar-ustar no-define foreign dist-bzip2])
 
 
-dnl default version
-BITS="64"
-
-
 dnl /**************************************************************************
 dnl  *                              Checking                                  *
 dnl  **************************************************************************/
@@ -206,7 +202,6 @@ dnl  **************************************************************************/
 
 
 dnl Substitutions to do.
-AC_SUBST(BITS)
 AC_SUBST(ac_aux_dir)
 
 dnl Configure Makefiles.

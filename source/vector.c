@@ -233,7 +233,7 @@ osl_vector_p osl_vector_add_scalar(osl_vector_p vector, int scalar) {
   result = osl_vector_pmalloc(precision, vector->size);
   for (i = 0; i < vector->size; i++)
     osl_int_assign(precision, result->v, i, vector->v, i);
-  osl_int_add_ui(precision, result->v, last, vector->v, last, scalar);
+  osl_int_add_si(precision, result->v, last, vector->v, last, scalar);
 
   return result;
 }

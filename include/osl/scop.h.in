@@ -72,7 +72,6 @@
 # include <unistd.h>
 
 # define OSL_RELEASE "@PACKAGE_VERSION@"
-# define OSL_VERSION "@BITS@"
 
 # include <osl/macros.h>
 # include <osl/util.h>
