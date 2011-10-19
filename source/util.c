@@ -254,14 +254,10 @@ char * osl_util_tag_content(char * str, char * tag, char * endtag) {
  * \param dst pointer to the destination string (may be reallocated).
  * \param src string to concatenate to dst.
  * \param hwm pointer to the size of the *dst buffer (may be updated).
- * TODO: This function is not that safe, improve it !
  */
 void osl_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
-  if (strlen(src) >= OSL_MAX_STRING)
-    OSL_error("string to concatenate is too long");
-
-  if (strlen(*dst) + strlen(src) >= *hwm) {
+  while (strlen(*dst) + strlen(src) >= *hwm) {
     *hwm += OSL_MAX_STRING;
     OSL_realloc(*dst, char *, *hwm * sizeof(char));
   }

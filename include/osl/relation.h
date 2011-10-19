@@ -130,6 +130,8 @@ void           osl_relation_idump(FILE *, osl_relation_p, int);
 void           osl_relation_dump(FILE *, osl_relation_p);
 char *         osl_relation_expression(osl_relation_p relation,
                                        int row, char ** names);
+char *         osl_relation_spprint_polylib(osl_relation_p, osl_names_p);
+char *         osl_relation_spprint(osl_relation_p, osl_names_p);
 void           osl_relation_pprint(FILE *, osl_relation_p, osl_names_p);
 void           osl_relation_print(FILE *, osl_relation_p);
 
