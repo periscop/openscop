@@ -176,6 +176,7 @@ int            osl_relation_get_array_id(osl_relation_p);
 int            osl_relation_is_access(osl_relation_p);
 void           osl_relation_get_attributes(osl_relation_p,
                                            int *, int *, int *, int *, int *);
+osl_relation_p osl_relation_extend_output(osl_relation_p, int);
 
 
 # if defined(__cplusplus)

@@ -155,6 +155,7 @@ void       osl_scop_register_default_extensions(osl_scop_p);
 void       osl_scop_register_extension(osl_scop_p, osl_interface_p);
 void       osl_scop_get_attributes(osl_scop_p,
                                    int *, int *, int *, int *, int *);
+void       osl_scop_normalize_scattering(osl_scop_p);
 
 
 # if defined(__cplusplus)

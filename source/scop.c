@@ -729,3 +729,41 @@ void osl_scop_get_attributes(osl_scop_p scop,
   }
 }
 
+
+/**
+ * osl_scop_normalize_scattering function:
+ * this function modifies a scop such that all scattering relation have
+ * the same number of output dimensions (additional output dimensions are
+ * set as being equal to zero).
+ * \param[in,out] scop The scop to nomalize the scattering functions.
+ */
+void osl_scop_normalize_scattering(osl_scop_p scop) {
+  int max_scattering_dims = 0;
+  osl_statement_p statement;
+  osl_relation_p extended;
+
+  if ((scop != NULL) && (scop->statement != NULL)) {
+    // Get the max number of scattering dimensions.
+    statement = scop->statement;
+    while (statement != NULL) {
+      if (statement->scattering != NULL) {
+        max_scattering_dims = OSL_max(max_scattering_dims,
+                                      statement->scattering->nb_output_dims);
+      }
+      statement = statement->next;
+    }
+
+    // Normalize.
+    statement = scop->statement;
+    while (statement != NULL) {
+      if (statement->scattering != NULL) {
+        extended = osl_relation_extend_output(statement->scattering,
+                                              max_scattering_dims);
+        osl_relation_free(statement->scattering);
+        statement->scattering = extended;
+      }
+      statement = statement->next;
+    }
+  }
+}
+

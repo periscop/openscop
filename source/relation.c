@@ -590,7 +590,6 @@ char * osl_relation_sprint_comment(osl_relation_p relation,
 }
 
 
-
 /**
  * osl_relation_column_string function:
  * this function returns an OpenScop comment string showing all column
@@ -693,6 +692,13 @@ osl_names_p osl_relation_names(osl_relation_p relation) {
 }
 
 
+/**
+ * osl_relation_nb_components function:
+ * this function returns the number of component in the union of relations
+ * provided as parameter.
+ * \param[in] relation The input union of relations.
+ * \return The number of components in the input union of relations.
+ */
 int osl_relation_nb_components(osl_relation_p relation) {
   int nb_components = 0;
   
@@ -703,6 +709,7 @@ int osl_relation_nb_components(osl_relation_p relation) {
 
   return nb_components;
 }
+
 
 /**
  * osl_relation_spprint_polylib function:
@@ -1956,5 +1963,74 @@ void osl_relation_get_attributes(osl_relation_p relation,
     *array_id      = OSL_max(*array_id,      local_array_id);
     relation = relation->next;
   }
+}
+
+
+/**
+ * osl_relation_extend_output function:
+ * this function extends the number of output dimensions of a given relation. It
+ * returns a copy of the input relation with a number of output dimensions
+ * extended to "dim" for all its union components. The new output dimensions
+ * are simply set equal to 0. The extended number of dimensions must be higher
+ * than or equal to the original one (an error will be raised otherwise).
+ * \param[in] relation The input relation to extend.
+ * \param[in] dim      The number of output dimension to reach.
+ * \return A new relation: "relation" extended to "dim" output dims.
+ */
+osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
+  int i, j;
+  int first = 1;
+  int offset;
+  osl_relation_p extended = NULL, node, previous = NULL;
+
+  while (relation != NULL) {
+    if (relation->nb_output_dims > dim)
+      OSL_error("Number of output dims is greater than required extension");
+    offset = dim - relation->nb_output_dims;
+    
+    node = osl_relation_pmalloc(relation->precision,
+                                relation->nb_rows + offset,
+                                relation->nb_columns + offset);
+    
+    node->type           = relation->type;
+    node->nb_output_dims = OSL_max(relation->nb_output_dims, dim);
+    node->nb_input_dims  = relation->nb_input_dims;
+    node->nb_local_dims  = relation->nb_local_dims;
+    node->nb_parameters  = relation->nb_parameters;
+
+    // Copy of the original relation with some 0 columns for the new dimensions
+    // Note that we use the fact that the matrix is initialized with zeros.
+    for (i = 0; i < relation->nb_rows; i++) {
+      for (j = 0; j <= relation->nb_output_dims; j++)
+        osl_int_assign(relation->precision, node->m[i], j, relation->m[i], j);
+
+      for (j = relation->nb_output_dims + offset + 1;
+           j < relation->nb_columns + offset; j++)
+        osl_int_assign(relation->precision,
+                       node->m[i], j, relation->m[i], j - offset);
+    }
+
+    // New rows dedicated to the new dimensions
+    for (i = relation->nb_rows; i < relation->nb_rows + offset; i++) {
+      for (j = 0; j < relation->nb_columns + offset; j++) {
+        if ((i - relation->nb_rows) == (j - relation->nb_output_dims - 1))
+          osl_int_set_si(relation->precision, node->m[i], j, -1);
+      }
+    }
+
+    if (first) {
+      first = 0;
+      extended = node;
+      previous = node;
+    }
+    else {
+      previous->next = node;
+      previous = previous->next;
+    }
+
+    relation = relation->next;
+  }
+  
+  return extended;
 }
 
