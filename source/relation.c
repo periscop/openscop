@@ -1338,6 +1338,66 @@ void osl_relation_insert_vector(osl_relation_p relation,
 
 
 /**
+ * osl_relation_insert_blank_row function:
+ * this function inserts a new row filled with zeros o an existing relation
+ * union part (it only affects the first union part).
+ * \param[in,out] relation The relation to add a row in.
+ * \param[in]     row      The row where to insert the blank row.
+ */
+void osl_relation_insert_blank_row(osl_relation_p relation, int row) {
+  osl_vector_p vector;
+
+  if (relation != NULL) {
+    vector = osl_vector_pmalloc(relation->precision, relation->nb_columns);
+    osl_relation_insert_vector(relation, vector, row);
+    osl_vector_free(vector);
+  }
+}
+
+
+/**
+ * osl_relation_insert_blank_column function:
+ * this function inserts a new column filled with zeros to an existing
+ * relation union part (it only affects the first union part). WARNING:
+ * this function does not update the relation attributes.
+ * \param[in,out] relation The relation to add a column in.
+ * \param[in]     column   The column where to insert the blank column.
+ */
+void osl_relation_insert_blank_column(osl_relation_p relation, int column) {
+
+  int i, j;
+  osl_relation_p temp;
+
+  if (relation == NULL)
+    return;
+
+  if ((column < 0) || (column > relation->nb_columns))
+    OSL_error("bad column number");
+
+  // We use a temporary relation just to reuse existing functions. Cleaner.
+  temp = osl_relation_pmalloc(relation->precision,
+                              relation->nb_rows, relation->nb_columns + 1);
+
+  for (i = 0; i < relation->nb_rows; i++) {
+    for (j = 0; j < column; j++)
+      osl_int_assign(relation->precision, temp->m[i], j, relation->m[i], j);
+
+    for (j = column; j < relation->nb_columns; j++)
+      osl_int_assign(relation->precision, temp->m[i], j+1, relation->m[i], j);
+  }
+
+  osl_relation_free_inside(relation);
+
+  // Replace the inside of relation.
+  relation->nb_rows = temp->nb_rows;
+  relation->m = temp->m;
+
+  // Free the temp "shell".
+  free(temp);
+}
+
+
+/**
  * osl_relation_from_vector function:
  * this function converts a vector "vector" to a relation with a single row
  * and returns a pointer to that relation.
@@ -1423,6 +1483,59 @@ void osl_relation_insert_constraints(osl_relation_p r1,
   // Replace the inside of relation.
   r1->nb_rows = temp->nb_rows;
   r1->m = temp->m;
+
+  // Free the temp "shell".
+  free(temp);
+}
+
+
+/**
+ * osl_relation_insert_columns function:
+ * this function inserts new columns to an existing relation union part (it
+ * only affects the first union part). The columns are copied out from the
+ * matrix of an input relation which must have the convenient number of rows.
+ * All columns of the input matrix are copied. WARNING: this function does not 
+ * update the relation attributes of the modified matrix.
+ * \param[in,out] relation The relation to add columns in.
+ * \param[in]     insert   The relation containing the columns to add.
+ * \param[in]     column   The column where to insert the new columns.
+ */
+void osl_relation_insert_columns(osl_relation_p relation,
+                                 osl_relation_p insert, int column) {
+  int i, j;
+  osl_relation_p temp;
+
+  if ((relation == NULL) || (insert == NULL))
+    return;
+
+  if ((relation->precision != insert->precision) ||
+      (relation->nb_rows   != insert->nb_rows)   ||
+      (column < 0) || (column > relation->nb_columns))
+    OSL_error("columns cannot be inserted");
+
+  // We use a temporary relation just to reuse existing functions. Cleaner.
+  temp = osl_relation_pmalloc(relation->precision, relation->nb_rows,
+                              relation->nb_columns + insert->nb_columns);
+
+  for (i = 0; i < relation->nb_rows; i++) {
+    for (j = 0; j < column; j++)
+      osl_int_assign(relation->precision, temp->m[i], j, relation->m[i], j);
+
+    for (j = column; j < column + insert->nb_columns; j++)
+      osl_int_assign(relation->precision,
+                     temp->m[i], j, insert->m[i], j - column);
+
+    for (j = column + insert->nb_columns;
+         j < insert->nb_columns + relation->nb_columns; j++)
+      osl_int_assign(relation->precision,
+                     temp->m[i], j, relation->m[i], j - insert->nb_columns);
+  }
+
+  osl_relation_free_inside(relation);
+
+  // Replace the inside of relation.
+  relation->nb_rows = temp->nb_rows;
+  relation->m = temp->m;
 
   // Free the temp "shell".
   free(temp);
@@ -1745,6 +1858,28 @@ osl_relation_p osl_relation_union(osl_relation_p r1,
 
   tmp->next = copy2;
   return copy1;
+}
+
+
+/**
+ * osl_relation_set_attributes function:
+ * this functions sets the attributes of a relation provided as a
+ * parameter. It updates the relation directly.
+ * \param[in,out] relation The relation to set the attributes.
+ * \param[in]     nb_output_dims Number of output dimensions.
+ * \param[in]     nb_input_dims  Number of input dimensions.
+ * \param[in]     nb_local_dims  Number of local dimensions.
+ * \param[in]     nb_parameters  Number of parameters.
+ */
+void osl_relation_set_attributes(osl_relation_p relation,
+                                 int nb_output_dims, int nb_input_dims,
+                                 int nb_local_dims,  int nb_parameters) {
+  if (relation != NULL) {
+    relation->nb_output_dims = nb_output_dims;
+    relation->nb_input_dims  = nb_input_dims;
+    relation->nb_local_dims  = nb_local_dims;
+    relation->nb_parameters  = nb_parameters;
+  }
 }
 
 

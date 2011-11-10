@@ -477,8 +477,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = @top_srcdir@/source \
-                         @top_srcdir@/include/openscop
+INPUT                  = @top_srcdir@/source @top_srcdir@/include/osl
 
 # This tag can be used to specify the character encoding of the source files that 
 # doxygen parses. Internally doxygen uses the UTF-8 encoding, which is also the default 
@@ -658,7 +657,7 @@ COLS_IN_ALPHA_INDEX    = 1
 # The IGNORE_PREFIX tag can be used to specify one or more prefixes that 
 # should be ignored while generating the index headers.
 
-IGNORE_PREFIX          = openscop_
+IGNORE_PREFIX          = osl_
 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output
