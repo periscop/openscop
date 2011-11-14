@@ -1268,7 +1268,7 @@ void osl_relation_replace_vector(osl_relation_p relation,
  * by "relation" and this part only.
  * \param[in,out] relation The relation we want to add a vector to a row.
  * \param[in]     vector   The vector that will replace a row of the relation.
- * \param[in]     row      The row of the relation to be replaced.
+ * \param[in]     row      The row of the relation to add the vector.
  */
 void osl_relation_add_vector(osl_relation_p relation,
                              osl_vector_p vector, int row) {
@@ -1389,7 +1389,7 @@ void osl_relation_insert_blank_column(osl_relation_p relation, int column) {
   osl_relation_free_inside(relation);
 
   // Replace the inside of relation.
-  relation->nb_rows = temp->nb_rows;
+  relation->nb_columns = temp->nb_columns;
   relation->m = temp->m;
 
   // Free the temp "shell".
@@ -1534,7 +1534,7 @@ void osl_relation_insert_columns(osl_relation_p relation,
   osl_relation_free_inside(relation);
 
   // Replace the inside of relation.
-  relation->nb_rows = temp->nb_rows;
+  relation->nb_columns = temp->nb_columns;
   relation->m = temp->m;
 
   // Free the temp "shell".
