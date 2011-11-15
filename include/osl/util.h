@@ -83,6 +83,7 @@ char * osl_util_tag_content(char *, char *, char *);
 void   osl_util_safe_strcat(char **, char *, int *);
 int    osl_util_get_precision();
 void   osl_util_print_provided(FILE *, int, char *);
+char * osl_util_identifier_substitution(char *, char **);
 
 
 # if defined(__cplusplus)

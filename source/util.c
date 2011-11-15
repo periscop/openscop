@@ -315,3 +315,94 @@ void osl_util_print_provided(FILE * file, int provided, char * title) {
   }
 }
 
+
+/**
+ * osl_util_identifier_is_here function:
+ * this function returns 1 if the input "identifier" is found at the
+ * "index" position in the "expression" input string, 0 otherwise.
+ * \param[in] expression The input expression.
+ * \param[in] identifier The identifier to look for.
+ * \param[in] index      The position in the expression where to look.
+ * \return 1 if the identifier is found at the position in the expression.
+ */
+static
+int osl_util_identifier_is_here(char * expression, char * identifier,
+                                int index) {
+  // If there is no space enough to find the iterator: no.
+  if (strlen(identifier) + index > strlen(expression))
+    return 0;
+  
+  // If there is a character before and it is in [A-Za-z0-9]: no.
+  if ((index == 0) &&
+      (((expression[index - 1] >= 'A') && (expression[index - 1] <= 'Z')) || 
+       ((expression[index - 1] >= 'a') && (expression[index - 1] <= 'z')) || 
+       ((expression[index - 1] >= '0') && (expression[index - 1] <= '9'))))
+    return 0;
+
+  // If there is a character after and it is in [A-Za-z0-9]: no.
+  if ((strlen(identifier) + index <= strlen(expression)) &&
+      (((expression[strlen(identifier) + index] >= 'A') &&
+        (expression[strlen(identifier) + index] <= 'Z'))   || 
+       ((expression[strlen(identifier) + index] >= 'a') &&
+        (expression[strlen(identifier) + index] <= 'z'))   || 
+       ((expression[strlen(identifier) + index] >= '0') &&
+        (expression[strlen(identifier) + index] <= '9'))))
+    return 0;
+
+  // If the identifier string is not here: no.
+  if (strncmp(expression + index, identifier, strlen(identifier)))
+    return 0;
+
+  return 1;
+}
+
+
+/**
+ * osl_util_identifier_substitution function:
+ * this function replaces some identifiers in an input expression string and
+ * returns the final string. The list of identifiers to replace are provided
+ * as an array of strings. They are replaced from the input string with the
+ * new substring "@i@" where i is the rank of the identifier in the array
+ * of identifiers. For instance, let us consider the input expression
+ * "C[i+j]+=A[i]*B[j];" and the array of strings {"i", "j"}: the resulting
+ * string would be "C[@0@+@1@]+=A[@0@]*B[@1@];".
+ * \param[in] expression The original expression.
+ * \param[in] identifiers NULL-terminated array of identifiers.
+ * \return A new string where the ith identifier is replaced by @i@.
+ */
+char * osl_util_identifier_substitution(char * expression,
+                                        char ** identifiers) {
+  int index, j, found;
+  int high_water_mark = OSL_MAX_STRING;
+  char buffer[OSL_MAX_STRING];
+  char * string;
+ 
+  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  string[0] = '\0';
+
+  index = 0;
+  while (index < strlen(expression)) {
+    j = 0;
+    found = 0;
+    while (identifiers[j] != NULL) {
+      if (osl_util_identifier_is_here(expression, identifiers[j], index)) {
+        sprintf(buffer, "@%d@", j);
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        index += strlen(identifiers[j]);
+        found = 1;
+        break;
+      }
+      j++;
+    }
+    if (!found) {
+      sprintf(buffer, "%c", expression[index]);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+      index++;
+    }
+  }
+
+  return string;
+}
+
+
+
