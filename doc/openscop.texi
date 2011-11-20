@@ -20,8 +20,8 @@
 
 @set EDITION 1.0
 @set SPEC_VERSION 1.0
-@set LIB_VERSION 0.7.2
-@set UPDATED September 27 2011
+@set LIB_VERSION 0.8.0
+@set UPDATED December 2nd 2011
 @setchapternewpage odd
 
 @c % This is to ask for A4 instead of Letter size document.
@@ -175,9 +175,9 @@ This document is organized as follows. First, we provide some
 background on the polyhedral model and how it is used to represent and to
 manipulate programs (@pxref{Polyhedral Representation}). Next,
 we describe the OpenScop specification, from the file format
-(@pxref{OpenScop Core Part File Format Specification}) to the data structures
+(@pxref{OpenScop File Format Specification}) to the data structures
 and the OpenScop Library API
-(@pxref{OpenScop Core Part Data Structure Specification}).
+(@pxref{OpenScop Data Structure Specification}).
 Finally we will detail how to install the OpenScop Library
 (@pxref{Installation}).
 
@@ -1273,30 +1273,18 @@ The second part of the format, the so-called @emph{extension part},
 contains extensions to provide additional informations to some tools.
 
 @menu
-* Core Part::
-* Extension Part::
-* History::
-@end menu
-
-
-@c %/*************************************************************************
-@c % *                             CORE PART                                 *
-@c % *************************************************************************/
-
-@node Core Part
-@section Core Part
-
-@menu
 * Preliminary Example::
-* OpenScop Core Part File Format Specification::
-* OpenScop Core Part Data Structure Specification::
+* OpenScop File Format Specification::
+* OpenScop Data Structure Specification::
+* Extensions::
+* History::
 @end menu
 
 @c %/*************************************************************************
 @c % *                         PRELIMINARY EXAMPLE                           *
 @c % *************************************************************************/
 @node Preliminary Example
-@subsection Preliminary Example
+@section Preliminary Example
 OpenScop is a specification for representing static control program parts in
 the polyhedral model. Thus, we can translate some code parts to an equivalent
 OpenScop representation. As an example, let us consider the
@@ -1339,12 +1327,15 @@ C
 # Context
 CONTEXT
 1 3 0 0 0 1
+# e/i | N  | 1
    1    1   -1    ## N-1 >= 0
 
 # Parameter names are provided
 1
 # Parameter names
-N 
+<strings>
+N
+</strings>
 
 # Number of statements
 2
@@ -1356,7 +1347,7 @@ N
 # ----------------------------------------------  1.1 Domain
 DOMAIN
 4 5 2 0 0 1
-# e/i   i    j    N    1
+# e/i | i    j  | N  | 1
    1    1    0    0    0    ## i >= 0
    1   -1    0    1   -1    ## -i+N-1 >= 0
    1    0    1    0    0    ## j >= 0
@@ -1365,7 +1356,7 @@ DOMAIN
 # ----------------------------------------------  1.2 Scattering
 SCATTERING
 5 10 5 2 0 1
-# e/i  s1   s2   s3   s4   s5    i    j    N    1 
+# e/i| s1   s2   s3   s4   s5  | i    j  | N  | 1 
    0   -1    0    0    0    0    0    0    0    0    ## s1 = 0
    0    0   -1    0    0    0    1    0    0    0    ## s2 = i
    0    0    0   -1    0    0    0    0    0    0    ## s3 = 0
@@ -1375,7 +1366,7 @@ SCATTERING
 # ----------------------------------------------  1.3 Access
 WRITE
 3 8 3 2 0 1
-# e/i  Arr  [1]  [2]   i    j    N    1
+# e/i| Arr  [1]  [2] | i    j  | N  | 1
    0   -1    0    0    0    0    0    1    ## C
    0    0   -1    0    1    0    0    0    ##  [i]
    0    0    0   -1    0    1    0    0    ##     [j]
@@ -1383,11 +1374,15 @@ WRITE
 # ----------------------------------------------  1.4 Body
 # Statement body is provided
 1
+# Statement body
+<body>
+# Number of original iterators
+2
 # Original iterator names
 i j 
-# Statement body
+# Statement body expression
 C[i][j] = 0.0;
-
+</body>
 
 # =============================================== Statement 2
 # Number of relations describing the statement
@@ -1396,7 +1391,7 @@ C[i][j] = 0.0;
 # ----------------------------------------------  2.1 Domain
 DOMAIN
 6 6 3 0 0 1
-# e/i   i    j    k    N    1
+# e/i|  i    j    k  | N  | 1
    1    1    0    0    0    0    ## i >= 0
    1   -1    0    0    1   -1    ## -i+N-1 >= 0
    1    0    1    0    0    0    ## j >= 0
@@ -1407,7 +1402,7 @@ DOMAIN
 # ----------------------------------------------  2.2 Scattering
 SCATTERING
 7 13 7 3 0 1
-# e/i  s1   s2   s3   s4   s5   s6   s7    i    j    k    N    1
+# e/i| s1   s2   s3   s4   s5   s6   s7  | i    j    k  | N  | 1
    0   -1    0    0    0    0    0    0    0    0    0    0    0   ## s1 = 0
    0    0   -1    0    0    0    0    0    1    0    0    0    0   ## s2 = i
    0    0    0   -1    0    0    0    0    0    0    0    0    0   ## s3 = 0
@@ -1417,23 +1412,30 @@ SCATTERING
    0    0    0    0    0    0    0   -1    0    0    0    0    0   ## s7 = 0
 
 # ----------------------------------------------  2.3 Access
-RDWR
+WRITE
 3 9 3 3 0 1
-# e/i  Arr  [1]  [2]   i    j    k    N    1
+# e/i| Arr  [1]  [2] | i    j    k  | N  | 1
    0   -1    0    0    0    0    0    0    1    ## C
    0    0   -1    0    1    0    0    0    0    ##  [i]
    0    0    0   -1    0    1    0    0    0    ##     [j]
 
 READ
 3 9 3 3 0 1
-# e/i  Arr  [1]  [2]   i    j    k    N    1
+# e/i| Arr  [1]  [2] | i    j    k  | N  | 1
+   0   -1    0    0    0    0    0    0    1    ## C
+   0    0   -1    0    1    0    0    0    0    ##  [i]
+   0    0    0   -1    0    1    0    0    0    ##     [j]
+
+READ
+3 9 3 3 0 1
+# e/i| Arr  [1]  [2] | i    j    k  | N  | 1
    0   -1    0    0    0    0    0    0    2    ## A
    0    0   -1    0    1    0    0    0    0    ##  [i]
    0    0    0   -1    0    0    1    0    0    ##     [k]
 
 READ
 3 9 3 3 0 1
-# e/i  Arr  [1]  [2]   i    j    k    N    1
+# e/i| Arr  [1]  [2] | i    j    k  | N  | 1
    0   -1    0    0    0    0    0    0    3    ## B
    0    0   -1    0    0    0    1    0    0    ##  [k]
    0    0    0   -1    0    1    0    0    0    ##     [j]
@@ -1441,10 +1443,20 @@ READ
 # ----------------------------------------------  2.4 Body
 # Statement body is provided
 1
+# Statement body
+<body>
+# Number of original iterators
+3
 # Original iterator names
 i j k 
-# Statement body
+# Statement body expression
 C[i][j] = C[i][j] + A[i][k] * B[k][j];
+</body>
+
+# =============================================== Extensions
+<comment>
+May the power of the polyhedral model be with you. 
+</comment>
 
 </OpenScop>
 @end example
@@ -1452,7 +1464,7 @@ C[i][j] = C[i][j] + A[i][k] * B[k][j];
 
 We will not describe here precisely the structure and the components of this
 output, this is described in depth in a further section
-(@pxref{OpenScop Core Part File Format Specification}). This format
+(@pxref{OpenScop File Format Specification}). This format
 has been designed to be a possible input or output file format of most of
 polyhedral compilation tools. If you read the description of the polyhedral
 representation of programs, you should already feel familiar with this file
@@ -1460,88 +1472,107 @@ format (@pxref{Polyhedral Representation}).
 
 
 @c %/*************************************************************************
-@c % *                 CORE PART FILE FORMAT SPECIFICATION                   *
+@c % *                       FILE FORMAT SPECIFICATION                       *
 @c % *************************************************************************/
-@node OpenScop Core Part File Format Specification
-@subsection OpenScop Core Part File Format Specification
+@node OpenScop File Format Specification
+@section OpenScop File Format Specification
 
-The following grammar describes the structure of the first part of the
-OpenScop file format where terminals are preceeded by "_". There can be
-at most one terminal per line in the file. Each
-relevant part will be explained in more details momentarily:
+@menu
+* Relations::
+* Generics::
+@end menu
+
+The following grammar describes the structure of the
+OpenScop file format where terminals are preceeded by "_". Except
+stated otherwise, there can be at most one terminal per line in the file.
+Moreover, each line may finish with a comment, starting by the @samp{#}
+character. Each relevant part will be explained in more details momentarily:
 
 @example
-OpenScop            ::= Start_tag Data End_tag
-Start_tag           ::= "<OpenScop>"
-End_tag             ::= "</OpenScop>"
-Data                ::= Context Statements
-Context             ::= Language Parameter_Domain Parameter_list
-Statements          ::= Nb_statements Statement_list
-Statement_list      ::= Statement Statement_list | (void)
-String_list         ::= _String   String_list    | (void)
-Relation_list       ::= _Relation Relation_list  | (void)
-Statement           ::= Statement_relations Body
-Body                ::= "0" | "1" Iterator_list Body_text
-Parameter_list      ::= "0" | "1" String_list
-Statement_relations ::= Nb_relations Relation_List 
-Parameter_domain    ::= _Relation
-Language            ::= _String
-Body_text           ::= _Text_line
-Nb_Relations        ::= _Integer
+OpenScop              ::= Start_tag Data End_tag
+Start_tag             ::= "<OpenScop>"
+End_tag               ::= "</OpenScop>"
+Data                  ::= Context Statements Extension_list
+Context               ::= Language Parameter_Domain Parameters
+Statements            ::= Nb_statements Statement_list
+Statement_list        ::= Statement Statement_list | (void)
+Relation_list         ::= _Relation Relation_list  | (void)
+Extension_list        ::= _Generic  Extension_list | (void)
+Statement             ::= Statement_relations Body
+Body                  ::= "0" | "1" Body_information
+Parameters            ::= "0" | "1" Parameter_information
+Statement_relations   ::= Nb_relations Relation_List 
+Parameter_domain      ::= _Relation
+Language              ::= _String
+Nb_Relations          ::= _Integer
+Parameter_information ::= _Generic
+Body_information      ::= _Generic
 @end example
 
-
+The @samp{Context} and the @samp{Statements} parts compose the
+@emph{core part}, i.e., what is strictly necessary to build
+a complete source to source framework based on OpenSCop:
 @itemize @bullet
 @item  @samp{Context} represents the global information of the SCoP. It
        consists on the target language, the global constraints on the
-       parameters and optionally the parameter names which may be necessary
+       parameters and optionally the parameter information which may be necessary
        for the code generation process. The constraints on the parameters
-       are represented as a relation (@pxref{Context Domain Representation})
-       with zero input and zero output dimensions. The parameter name
-       list starts with an integer: a @samp{0} means that we don't provide
-       the names while a @samp{1} means that the name list
-       is provided afterwards. The ordering of the names in the list is
-       meaningful: it must reflect the ordering used in the relation.
+       are represented as a relation (@pxref{Context Domain Relation}).
+       The parameter information is optional. It is preceded by a
+       boolean which precises whether it is provided or not.
+       It is a generic information (@pxref{Generics}), a @code{strings}
+       (@pxref{Strings Generic}) for instance.
 @item  @samp{Statements} represents the information about the statements.
        @samp{Nb_statements} is the number of statements in the SCoP,
        i.e. the number of @samp{Statement} items in the @samp{Statement_list}.
        @samp{Statement} represents the information on a given statement.
        To each statement is associated a list of relations and,
        optionaly, a body. The list of relations may include
-       one iteration domain (@pxref{Iteration Domain Representation}),
-       one scattering relation (@pxref{Scattering Relation Representation})
-       and several access relations (@pxref{Access Relation Representation}).
+       one iteration domain (@pxref{Iteration Domain Relation}),
+       one scattering relation (@pxref{Scattering Relation})
+       and several access relations (@pxref{Access Relation}).
        There is no mandatory ordering, but for consistency reason it would
        be much appreciated that iteration domain comes first (if present)
        then scattering (if present), then accesses (if present).
        The statement body is an optional information. It is preceded by a
-       boolean which precises whether it is provided or not. It is made of two
-       parts: first, the list of surrounding loop counters in the original
-       program and second, the text string of the statement. This
-       representation allows to apply the substitution of the original
-       iterators with new iterators in the target program.
+       boolean which precises whether it is provided or not. 
+       It is a generic information (@pxref{Generics}), a @code{body}
+       (@pxref{Body Generic}) for instance.
 @end itemize
 
-The main parts of the OpenScop format (namely, iteration domains,
-scattering and access information) are detailed in the next subsections.
-
-@menu
-* Relation Representation::
-* Iteration Domain Representation::
-* Context Domain Representation::
-* Scattering Relation Representation::
-* Access Relation Representation::
-@end menu
-
-@node Relation Representation
-@subsubsection Relation Representation
+The @samp{Extension_list} represents the @emph{extension part} and may contain
+an arbitrary number of generic informations (@pxref{Generics}).
+Few examples of possible extensions are presented in a further
+section (@pxref{Extensions}).
 
 As shown by the grammar, the input file describes the various pieces of
-information based on strings, integers and @emph{relations}.
-Each relation is defined as a union of convex relations, each in turn is
-described by a set of constraints in an extended PolyLib format (@pxref{Wil93}).
-The number of elements in the union is given by an integer
-on a separate line, optionally followed by a comment starting with @samp{#}.
+information based on strings, integers, @emph{relations} and @emph{generics}.
+Relations and Generics are specific to OpenScop and are described in depth
+in the following Sections (@pxref{Relations} and @pxref{Generics}).
+
+
+@c %/*************************************************************************
+@c % *                              RELATIONS                                *
+@c % *************************************************************************/
+@node Relations
+@subsection Relations
+
+@menu
+* Iteration Domain Relation::
+* Context Domain Relation::
+* Scattering Relation::
+* Access Relation::
+@end menu
+
+@emph{Relations} are the essence of the OpenScop format and contain the
+"polyhedral" information. They are used to describe either an iteration
+domain, or a context domain, or a scattering or a memory access.
+
+We use the relation term as a shortcut to denote a
+union of convex relations, each element of the union being described by a set of
+constraints in an extended PolyLib format (@pxref{Wil93}).
+The number of elements in the union is given by an integer on the first line,
+optionally followed by a comment starting with @samp{#}.
 This number of elements can be omitted when there is only one element.
 Each element in the union has the following syntax:
 
@@ -1583,13 +1614,14 @@ Each element in the union has the following syntax:
 @end enumerate
 
 This representation is the basis for several purposes. Examples for
-iteration domains (@pxref{Iteration Domain Representation}), scattering
-relations (@pxref{Scattering Relation Representation}) and
-access relations (@pxref{Access Relation Representation}) are provided in
-further sections.
+iteration domains (@pxref{Iteration Domain Relation}), context domains
+(@pxref{Context Domain Relation}), scattering
+relations (@pxref{Scattering Relation}) and
+access relations (@pxref{Access Relation}) are provided in further sections.
 
-@node Iteration Domain Representation
-@subsubsection Iteration Domain Representation
+@c %/**************************  ITERATION DOMAIN  ****************************
+@node Iteration Domain Relation
+@subsubsection Iteration Domain Relation
 
 Iteration domain represents the set of instances of the corresponding statement.
 OpenScop iteration domains are represented as relations with the following
@@ -1629,7 +1661,7 @@ i + j - k >= 0
 DOMAIN
 1 # Number of relations in the union
 3 7 3 0 0 2                  # 3 rows, 7 cols: 3 output dims and 2 params
-# e/i  i   j   k   M   N   1
+# e/i| i   j   k | M   N | 1
    1  -1   0   0   1   0   0 #    -i + M >= 0
    1   0  -1   0   0   1   0 #    -j + N >= 0
    1   1   1  -1   0   0   0 # i + j - k >= 0
@@ -1644,7 +1676,7 @@ of relations in the union can be omitted if it is 1:
 # This is an iteration domain
 DOMAIN
 3 7 3 0 0 2                  # 3 rows, 7 cols: 3 output dims and 2 params
-# e/i  i   j   k   M   N   1
+# e/i| i   j   k | M   N | 1
    1  -1   0   0   1   0   0 #    -i + M >= 0
    1   0  -1   0   0   1   0 #    -j + N >= 0
    1   1   1  -1   0   0   0 # i + j - k >= 0
@@ -1672,13 +1704,13 @@ DOMAIN
 2 # Number of relations in the union
 # Union part No.1
 3 5 1 0 0 2          # 3 rows, 5 cols: 1 output dim and 2 params
-# e/i  i   M   N   1
+# e/i| i | M   N | 1
    1   1   0   0  -1 #  i >= 1
    1  -1   0   1   0 #  i <= N
    1   1  -1   0   0 #  i >= M
 # Union part No.2
 3 5 1 0 0 2          # 3 rows, 5 cols: 1 output dim and 2 params
-# e/i  i   M   N   1
+# e/i| i | M   N | 1
    1   1   0   0  -1 #  i >= 1
    1  -1   0   1   0 #  i <= N
    1  -1   2   0   0 #  i <= 2*M
@@ -1707,7 +1739,7 @@ be expressed as follows: there exists an integer @samp{ld} such that
 # This is an iteration domain
 DOMAIN
 3 5 1 0 1 1          # 3 rows, 5 cols: 1 output dim, 1 local dim, 1 param
-# e/i  i  ld   N   1
+# e/i| i |ld | N | 1
    0   1  -2   0   0 #  i = 2*ld
    1   1   0   0   1 #  i >= 1
    1  -1   0   1   0 #  i <= N
@@ -1715,11 +1747,12 @@ DOMAIN
 @end example
 
 
-@node Context Domain Representation
-@subsubsection Context Domain Representation
+@c %/**************************  CONTEXT DOMAIN  ******************************
+@node Context Domain Relation
+@subsubsection Context Domain Relation
 
 The context domain is a particular case of iteration domain
-(@pxref{Iteration Domain Representation}) where there are only
+(@pxref{Iteration Domain Relation}) where there are only
 constraints about parameters (no loop iterators). Hence it is the same
 as an iteration domain, with the following conventions:
 @itemize @bullet
@@ -1729,13 +1762,14 @@ as an iteration domain, with the following conventions:
 @end itemize
 
 
-@node Scattering Relation Representation
-@subsubsection Scattering Relation Representation
+@c %/*************************  SCATTERING RELATION  **************************
+@node Scattering Relation
+@subsubsection Scattering Relation
 
 Scattering relation maps an iteration domain to a logical time and/or
 space (and/or) anything.
 OpenScop scattering information is represented as relations
-(@pxref{Relation Representation}) with the following conventions:
+(@pxref{Relations}) with the following conventions:
 
 @itemize @bullet
 @item the type is @code{SCATTERING},
@@ -1762,20 +1796,21 @@ We can represent it in the following way:
 SCATTERING
 # 3 rows, 10 columns: 3 scattering dimensions, 3 iterators, 2 parameters
 3 10 3 3 0 2
-# e/i s1  s2  s3   i   j   k   M   N   1
+# e/i|s1  s2  s3 | i   j   k | M   N | 1
    0  -1   0   0   0   1   0   0   0   2 # s1 = j+2
    0   0  -1   0   3   1   0   0   0   0 # s2 = 3*i+j
    0   0   0  -1   0   0   1   0   1   1 # s3 = k+N+1
 @end group
 @end example
 
-@node Access Relation Representation
-@subsubsection Access Relation Representation
+@c %/**************************  ACCESS RELATION  *****************************
+@node Access Relation
+@subsubsection Access Relation
 
 Access relation maps an iteration domain to an array space.
 Each array accessed in the SCoP has a unique identification number.
 OpenScop relation information is represented as relations
-(@pxref{Relation Representation}) with the following conventions:
+(@pxref{Relations}) with the following conventions:
 
 @itemize @bullet
 @item the type is one of the following:
@@ -1803,7 +1838,7 @@ following:
 READ
 # 4 rows, 11 columns: 4 array dimensions, 3 iterators, 2 parameters
 4 11 4 3 0 2
-# e/i Arr [1] [2] [3]  i   j   k   M   N   1
+# e/i|Arr [1] [2] [3]| i   j   k | M   N | 1
    0  -1   0   0   0   0   0   0   0   0  42   # A
    0   0  -1   0   0   2   1   0   0   0   0   #  [2*i+j]
    0   0   0  -1   0   0   1   0   0   0   0   #         [j]
@@ -1821,10 +1856,106 @@ refer at the same array identifier, and the number of dimensions must be
 consistent.
 
 @c %/*************************************************************************
-@c % *                 CORE PART DATA STRUCTURE SPECIFICATION                *
+@c % *                               GENERICS                                *
 @c % *************************************************************************/
-@node OpenScop Core Part Data Structure Specification
-@subsection OpenScop Core Part Data Structure Specification
+@node Generics
+@subsection Generics
+@menu
+* Strings Generic::
+* Body Generic::
+@end menu
+
+@emph{Generics} represent any elaborated non-polyhedral information in the
+OpenScop format. They are used to represent the parameter information, the
+statement body information as well as the extensions. Each generic information
+is delimited using XML-like tags corresponding to its URI (Unique Resource
+Identifier), For instance, if the generic has the URI @code{foo}, the begin
+tag is @code{<foo>} and the end tag is @code{</foo>}).
+
+Two generics, namely @code{strings} (@pxref{Strings Generic}) and
+@code{body} (@pxref{Body Generic}) are part of the OpenScop
+specification to provide the minimum, stricly necessary information to
+build a complete source-to-source polyhedral framework based on OpenScop.
+However, generics can be basically @emph{anything} as long as they are
+properly delimited. OpenScop implementations will simply ignore
+non-supported generics and warn the user with the mention of the
+non-supported URIs. Support of new generics will be added throught the
+extension mechanism.
+
+@c ---------------------------------------------------------------------------
+
+@node Strings Generic
+@subsubsection Strings Generic
+
+The purpose of the @code{strings} generic is to represent a list of
+textual strings on one line (which may be used, e.g., to represent the list of
+parameter names in the order used in the relation). Its URI is @code{strings}
+and its file format respects the following grammar:
+@example
+Strings_generic     ::= "<strings>" Strings "</strings>"
+Strings             ::= _String String_list  | (void)
+@end example
+
+@noindent A possible example of textual @code{strings} is the following:
+@example
+@group
+<strings>
+Not one sentence but 6 strings!
+</strings>
+@end group
+@end example
+
+@c ---------------------------------------------------------------------------
+
+@node Body Generic
+@subsubsection Body Generic
+
+The purpose of the @code{body} generic is to represent the textual
+information about a statement. It contains the number of original iterators on
+the first line, the list of original iterators on the second
+line (the loop counters of the statement surrounding loops in the original
+program) and the original textual body expression on the third line.
+Its URI is @code{body} and its file format respects the following grammar
+(the @code{String} rule is reused, @pxref{Strings Generic}):
+@example
+Body_generic        ::= "<body>" Body "</body>"
+Body                ::= Nb_iterators Iterator_list Expression
+Nb_iterators        ::= _Integer
+Iterator_list       ::= Strings
+Expression          ::= Strings
+@end example
+
+@noindent A possible example of textual @code{body} is the following:
+@example
+@group
+<body>
+# Number of original iterators
+2
+# Original iterators
+i j
+# Original statement expression
+A[i+j] += B[i] * C[j];
+</body>
+@end group
+@end example
+
+
+@c %/*************************************************************************
+@c % *                      DATA STRUCTURE SPECIFICATION                     *
+@c % *************************************************************************/
+@node OpenScop Data Structure Specification
+@section OpenScop Data Structure Specification
+
+@menu
+* osl_relation_t::
+* osl_relation_list_t::
+* osl_interface_t::
+* osl_generic_t::
+* osl_strings_t::
+* osl_body_t::
+* osl_statement_t::
+* osl_scop_t::
+@end menu
 
 The OpenScop specification offers a small set of C data structures devoted to
 represent a SCoP in memory in a convenient way. Using them in some tool or
@@ -1836,7 +1967,7 @@ not present. Contrary to engineering time, memory is cheap today, so it's much
 probably not a big deal that some fields are left empty. Every field may not
 be enough for a given tool or library. In this case it is much recommended
 to provide a new extension which may be reused by other users
-(@pxref{Extension Part}).
+(@pxref{Extensions}).
 
 Each tool or library may have its own implementation of the OpenScop
 data structures. The type names should not be the same as those provided
@@ -1846,19 +1977,11 @@ way, the interaction between tools and libraries should be as simple as a cast.
 
 Before reading at the OpenScop data structures, it is much recommended to
 read at the OpenScop file format description, as it is quite close to this
-representation (@pxref{OpenScop Core Part File Format Specification}).
+representation (@pxref{OpenScop File Format Specification}).
 
-@menu
-* osl_relation_t::
-* osl_relation_list_t::
-* osl_interface_t::
-* osl_generic_t::
-* osl_statement_t::
-* osl_scop_t::
-@end menu
 
 @node osl_relation_t
-@subsubsection osl_relation_t
+@subsection osl_relation_t
 
 @example
 @group
@@ -1893,7 +2016,7 @@ may provide some information about what the relation is encoding:
 @item 8: may write access relation (@code{OSL_TYPE_MAY_WRITE}),
 @end itemize
 The various numbers provide the details on the relation itself
-(@pxref{Relation Representation}) while the @code{m} field points to
+(@pxref{Relations}) while the @code{m} field points to
 the constraint matrix. The precision of the constraint matrix elements is
 provided by the @code{precision} field. It can take the following
 values:
@@ -1906,8 +2029,10 @@ values:
       @code{mpz_t} (@code{OSL_PRECISION_MP}).
 @end itemize
 
+@c ---------------------------------------------------------------------------
+
 @node osl_relation_list_t
-@subsubsection osl_relation_list_t
+@subsection osl_relation_list_t
 
 @example
 @group
@@ -1925,8 +2050,10 @@ linked list of @code{osl_relation_t} data structures.
 @code{elt} is a relation element of the list and @code{next} is the pointer to
 the next element of the list.
 
+@c ---------------------------------------------------------------------------
+
 @node osl_interface_t
-@subsubsection osl_interface_t
+@subsection osl_interface_t
 
 @example
 @group
@@ -1963,15 +2090,17 @@ functions in the OpenScop Library description (@pxref{Base Functions})
 and the section dedicated to writing extensions
 (@pxref{Extension Development}).
 
+@c ---------------------------------------------------------------------------
+
 @node osl_generic_t
-@subsubsection osl_generic_t
+@subsection osl_generic_t
 
 @example
 @group
 struct osl_generic @{
-  void * data;               /* Pointer to some data. */
-  osl_interface_p interface; /* Interface to work with the data. */
-  struct osl_generic * next; /* Pointer to the next generic. */
+  void * data;                 /* Pointer to some data */
+  osl_interface_p interface;   /* Interface to work with the data */
+  struct osl_generic * next;   /* Pointer to the next generic */
 @};
 typedef struct osl_generic   osl_generic_t;
 typedef struct osl_generic * osl_generic_p;
@@ -1986,8 +2115,51 @@ accessible through the @code{interface} pointer. It is used to represent
 data that are allowed to differ in implementations, such as symbols and
 extensions.
 
+@c ---------------------------------------------------------------------------
+
+@node osl_strings_t
+@subsection osl_strings_t
+
+@example
+@group
+struct osl_string @{
+  char ** string;              /* NULL-terminated array of strings */
+@};
+typedef struct osl_strings   osl_strings_t;
+typedef struct osl_strings * osl_strings_p;
+@end group
+@end example
+
+@noindent The @code{osl_strings_t} structure represents a NULL-terminated
+list of C character strings. It is encapsulated into a structure to allow
+its manipulation through a generic type.
+
+@c ---------------------------------------------------------------------------
+
+@node osl_body_t
+@subsection osl_body_t
+
+@example
+@group
+struct osl_body @{
+  osl_strings_p iterators;     /* Original iterators */
+  osl_strings_p expression;    /* Original statement expression */
+@};
+typedef struct osl_body   osl_body_t;
+typedef struct osl_body * osl_body_p;
+@end group
+@end example
+
+@noindent The @code{osl_body_t} structure stores a statement body in a
+textual form. The complete original expression (directly copy-pasted
+from the original code) is in the expression field while the textual forms
+of the original iterators are in the iterators field. They may be used for
+substitutions inside the expression.
+
+@c ---------------------------------------------------------------------------
+
 @node osl_statement_t
-@subsubsection osl_statement_t
+@subsection osl_statement_t
 
 @example
 @group
@@ -1995,7 +2167,6 @@ struct osl_statement @{
   osl_relation_p domain;       /* Iteration domain */
   osl_relation_p scattering;   /* Scattering relation */
   osl_relation_list_p access;  /* List of array access relations */
-  osl_generic_p iterators;     /* Original iterators */
   osl_generic_p body;          /* Original statement body */
   void * usr;                  /* A user-defined field */
   struct osl_statement * next; /* Next statement in the list */
@@ -2013,20 +2184,16 @@ framework. The order in the list may matter for naming conventions
 and the scattering are represented using an @code{osl_relation_p}
 structure while the accesses are using a list of
 relations: one for each memory access in the statement.
-The @code{body} and @code{iterators} provide information about
-the statement body. Since they are generic types, the specification
-is not strict about how they are used. The recommendation is that the
-@code{body} field should contain the information about the statement
-expression in the original program. The @code{iterators}
-field should contain the information about the iterators surrounding
-the original statement in the original program. The rationale behind this
-is the code generation step should replace the original iterators
-from the original statement expression with the generated iterators.
+The @code{body} field should provide information about the statement body
+(since it has a generic type, the specification is not strict about how it
+is used), e.g., using the @code{osl_body_t} data structure (@pxref{osl_body_t}).
 It is also possible to use the @code{usr} field, but it has to be
 totally managed by the user.
 
+@c ---------------------------------------------------------------------------
+
 @node osl_scop_t
-@subsubsection osl_scop_t
+@subsection osl_scop_t
 @example
 @group
 struct osl_scop @{
@@ -2051,13 +2218,15 @@ of a static control part of a program to process it within a polyhedral
 framework. To prepare OpenScop specification evolution, the @code{version}
 field tells the version of the data structure. It should be set to 1 for
 now (and hopefully a very, very, long time).
-It contains the informations about the context: the target language
-in the @code{language} field, the constraints on the
-global parameters in the @code{context} field and the parameters
-in the @code{parameters} field. The parameter information is generic
-and may be manipulated during the code generation step. 
+First, it contains the informations about the context. The target language
+in expressed in the @code{language} field. The constraints on the
+global parameters are detailed in the @code{context} field.
+The @code{paremeters} field should provide information about the
+parameters (since it has a generic type, the specification is not strict
+about how it is used), e.g., using the @code{osl_strings_t} data structure
+(@pxref{osl_strings_t}).
 Finally, it contains the list of statements @code{statement}, the list
-of registered extension interfaces @code{registry} and the list of
+of registered interfaces for generic types @code{registry} and the list of
 extentions @code{extension}.
 It is also possible to use the @code{usr} field, but it has to be
 totally managed by the user.
@@ -2118,14 +2287,9 @@ specification but to the OpenScop Library implementation:
 |    |    |    
 |    |    +-- osl_generic_t
 |    |    |    |    
-|    |    |    +-- osl_interface_t: URI = strings
+|    |    |    +-- osl_interface_t: URI = body
 |    |    |    |    
 |    |    |    +-- osl_strings_t: i j
-|    |    |    |    
-|    |    |    
-|    |    +-- osl_generic_t
-|    |    |    |    
-|    |    |    +-- osl_interface_t: URI = strings
 |    |    |    |    
 |    |    |    +-- osl_strings_t: C[i][j] = 0.0;
 |    |    |    |    
@@ -2190,14 +2354,9 @@ specification but to the OpenScop Library implementation:
 |    |    |    
 |    |    +-- osl_generic_t
 |    |    |    |    
-|    |    |    +-- osl_interface_t: URI = strings
+|    |    |    +-- osl_interface_t: URI = body
 |    |    |    |    
 |    |    |    +-- osl_strings_t: i j k
-|    |    |    |    
-|    |    |    
-|    |    +-- osl_generic_t
-|    |    |    |    
-|    |    |    +-- osl_interface_t: URI = strings
 |    |    |    |    
 |    |    |    +-- osl_strings_t: C[i][j] = C[i][j] + A[i][k]*B[k][j];
 |    |    |    |    
@@ -2213,11 +2372,10 @@ specification but to the OpenScop Library implementation:
 
 
 @c %/*************************************************************************
-@c % *                           EXTENSION PART                              *
+@c % *                              EXTENSIONS                               *
 @c % *************************************************************************/
-
-@node Extension Part
-@section Extension Part
+@node Extensions
+@section Extensions
 
 The core part of the OpenScop representation embeds what is strictly
 necessary to build a complete source-to-source polyhedral framework.
@@ -2240,8 +2398,8 @@ XML-like tags corresponding to its URI (e.g., if the extension has the URI
 @code{foo}, the begin tag is @code{<foo>} and the end tag is @code{</foo>}).
 There is no specification or preferred way to write the extension body.
 Extensions in an OpenScop data structure must be accessible through one
-pointer. This pointer will be stored in the @code{data}
-field of an @code{osl_generic_t} container. There must be only
+pointer. This pointer will be stored in the @code{data} field of an
+@code{osl_generic_t} container (@pxref{osl_generic_t}). There must be only
 one extension with the same URI in an OpenScop file or data structure.
 
 Extension writers may write a short documentation about their extension to
@@ -2249,8 +2407,8 @@ be added to this document. For consistency reason, this
 documentation should comply to the documentation of the
 @code{comment} option (@pxref{Comment Extension}). To describe the
 file format, it is allowed to reuse the existing rules and terminals
-present in the OpenScop core part file format without defining them
-(@pxref{OpenScop Core Part File Format Specification}). By sending a
+present in the OpenScop file format description without defining them
+(@pxref{OpenScop File Format Specification}). By sending a
 documentation, you accept it to be added to this document. In
 particular, the sender fully accepts the license and copyright notice.
 
@@ -2266,27 +2424,20 @@ particular, the sender fully accepts the license and copyright notice.
 @node Comment Extension
 @subsection Comment Extension
 
+@noindent @strong{Description}
 @itemize @bullet
 @item URI: @code{comment}.
 @item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
 @item Purpose: the @code{comment} extension stores a textual string.
 @end itemize
 
-@menu
-* Comment Extension File Format::
-* Comment Extension Data Structure Format::
-@end menu
+@noindent @strong{File Format}
 
-@node Comment Extension File Format
-@subsubsection Comment Extension File Format
-
-The @code{comment} extension file format respects the following
+@noindent The @code{comment} extension file format respects the following
 grammar:
 @example
-Comment             ::= Begin_tag Body End_tag
-Body                ::= _Text
-Begin_tag           ::= "<comment>"
-End_tag             ::= "</comment>"
+Comment_generic     ::= "<comment>" Comment "</comment>"
+Comment             ::= _Text
 @end example
 
 @noindent An example of textual @code{comment} extension is the following:
@@ -2298,10 +2449,9 @@ This is a comment string.
 @end group
 @end example
 
-@node Comment Extension Data Structure Format
-@subsubsection Comment Extension Data Structure Format
+@noindent @strong{Data Structure}
 
-The @code{comment} extension data structure is the following:
+@noindent The @code{comment} extension data structure is the following:
 @example
 @group
 struct osl_comment @{
@@ -2318,6 +2468,7 @@ typedef struct osl_comment * osl_comment_p;
 @node Arrays Extension
 @subsection Arrays Extension
 
+@noindent @strong{Description}
 @itemize @bullet
 @item URI: @code{arrays}.
 @item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
@@ -2325,30 +2476,22 @@ typedef struct osl_comment * osl_comment_p;
 names corresponding to the array identifiers used in the access relations.
 @end itemize
 
-@menu
-* Arrays Extension File Format::
-* Arrays Extension Data Structure Format::
-@end menu
+@noindent @strong{File Format}
 
-@node Arrays Extension File Format
-@subsubsection Arrays Extension File Format
-
-The @code{arrays} extension file format respects the following
+@noindent The @code{arrays} extension file format respects the following
 grammar:
 @example
-Arrays              ::= Begin_tag Body End_tag
-Body                ::= Nb_items Item_list
+Arrays_generic      ::= "<arrays>" Arrays "</arrays>"
+Arrays              ::= Nb_items Item_list
 Item_List           ::= Item Item_list | (void)
 Item                ::= Identifier Name
 Nb_items            ::= _Integer
 Identifier          ::= _Integer
 Name                ::= _String
-Begin_tag           ::= "<arrays>"
-End_tag             ::= "</arrays>"
 @end example
 
 @noindent The number of array names is provided on the first line,
-then each following line contains a pair identifier-name.
+then each following line contains a couple identifier-name.
 For instance, the following example is a correct textual @code{arrays}
 extension. It corresponds to the array names of the preliminary example
 (@pxref{Preliminary Example}):
@@ -2365,10 +2508,9 @@ extension. It corresponds to the array names of the preliminary example
 @end group
 @end example
 
-@node Arrays Extension Data Structure Format
-@subsubsection Arrays Extension Data Structure Format
+@noindent @strong{Data Structure}
 
-The @code{arrays} extension data structure is the following:
+@noindent The @code{arrays} extension data structure is the following:
 
 @example
 @group
@@ -2391,33 +2533,11 @@ string @code{names[i]} and identifier @code{id[i]}.
 @node Lines Extension
 @subsection Lines Extension
 
-@menu
-* Lines Extension File Format::
-* Lines Extension Data Structure Format::
-@end menu
-
-@node Lines Extension File Format
-@subsubsection Lines Extension File Format
-
-@node Lines Extension Data Structure Format
-@subsubsection Lines Extension Data Structure Format
-
 @c ---------------------------------------------------------------------------
 
 @node Irregular Extension
 @subsection Irregular Extension
 
-@menu
-* Irregular Extension File Format::
-* Irregular Extension Data Structure Format::
-@end menu
-
-
-@node Irregular Extension File Format
-@subsubsection Irregular Extension File Format
-
-@node Irregular Extension Data Structure Format
-@subsubsection Irregular Extension Data Structure Format
 
 @c ---------------------------------------------------------------------------
 
@@ -2442,8 +2562,8 @@ OpenScop's genesis are:
 @node OpenScop Library
 @chapter OpenScop Library
 
-The OpenScop Library is an example implementation of the OpenScop specification.
-Its API is not part of the OpenScop specification. 
+The OpenScop Library, or OSL for short, is an example implementation of the
+OpenScop specification. Its API is not part of the OpenScop specification. 
 It offers basic functionalities to manipulate the OpenScop data structures
 (allocate, free, copy, dump, etc.) and file format (read, print, etc.).
 The OpenScop Library is @emph{not} a polyhedral library. OpenScop is an
@@ -2557,7 +2677,7 @@ void osl_@emph{structure}_print(FILE * output, osl_@emph{structure}_p s);
 as shown above. It prints the content of the data
 structure pointed by @code{s} (and its fields recursively)
 according to the OpenScop file format
-(@pxref{OpenScop Core Part File Format Specification}) to the
+(@pxref{OpenScop File Format Specification}) to the
 @code{output} file (the file, possibly @code{stdout}, has to be open
 for writing).
 
@@ -2573,7 +2693,7 @@ osl_@emph{structure}_p osl_@emph{structure}_read(FILE * input);
 @noindent Each OpenScop data structure has a reading function
 as shown above. It reads the content of an OpenScop
 data structure written according to the OpenScop file format 
-(@pxref{OpenScop Core Part File Format Specification}) from 
+(@pxref{OpenScop File Format Specification}) from 
 the @code{input} file (the file, possibly @code{stdin}, has to be open
 for reading). It returns a pointer to a freshly allocated 
 @code{osl_@emph{structure}_t} structure containing the
@@ -2597,7 +2717,7 @@ the corresponding data structure, it initializes the pointer fields to
 An exception to this base description is the
 @code{osl_relation_malloc()} function which requires two
 parameters: the number of rows and columns of the constraint
-matrix (@pxref{Relation Representation}):
+matrix (@pxref{Relations}):
 
 @example
 @group
@@ -2934,16 +3054,16 @@ placed in @code{include/osl/macros.h}, macros are prefixed with
 
 The core code itself has to be written according to the Google C++ Coding Style:
 @url{http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml} (for
-what can apply to C), plus the naming conventions discussed above.
-The extension parts must only respect the naming convention, but a consistent
-coding style is much appreciated.
+what can apply to C), plus the naming conventions discussed above with
+highest priority. The extension parts must only respect the naming convention,
+but a consistent coding style is much appreciated.
 
 @node Extension Development
 @subsection Extension Development
 
 It's fairly easy to integrate a new extension to OpenScop and the OpenScop
 Library. Developing a new extension is very much like adding a new "object":
-it requires writing a data structure for the extension data and the base
+it requires writing a data structure for the extension data and the 7 base
 functions to manage this extension. Here is how developers should proceed
 to add an extension called @code{foo} (beware that the naming convention is
 strict):
@@ -2954,9 +3074,9 @@ strict):
       word, or words separated with underscores "_") should be
       suggested by the extension developers to the OpenScop development
       mailing list @email{openscop-development@@googlegroups.com}). It
-      should not correspond to an existing extension
-      (see @code{include/osl/scop.h} for the list).The
-      maintainer will update @code{include/osl/scop.h} in the development
+      should not correspond to an existing structure name
+      (see @code{include/osl/osl.h} for the list). The
+      maintainer will update @code{include/osl/osl.h} in the development
       version accordingly.
 @item Look at the @code{comment} extension. The @code{comment} extension
       (@pxref{Comment Extension}) has been written to be used as a basic
@@ -2965,8 +3085,8 @@ strict):
       @code{source/extensions/comment.c} will be a great help to do it right.
 @item Create the extension data structure: it is necessary that the
       extension data can be accessible through only one pointer.
-@item Code the base functions for the extension. Any extension must provide
-      a small set of functions (naming convention apply only if the
+@item Code the 7 base functions for the extension. Any extension must provide
+      this set of functions (naming convention apply only if the
       extension is planed to be integrated to the OpenScop Library
       default extensions):
       @itemize @bullet
@@ -2984,13 +3104,15 @@ char * osl_@emph{structure}_sprint(osl_@emph{structure}_p s);
       @item @code{osl_foo_sread} has the following prototype:
 @example
 @group
-osl_@emph{structure}_p osl_@emph{structure}_sread(char * string);
+osl_@emph{structure}_p osl_@emph{structure}_sread(char ** string);
 @end group
 @end example
            It corresponds to the reading functions of the core
            data structures (@pxref{Reading}) with the
            difference that the OpenScop textual representation is read
            from a string (provided as a parameter) instead of a file.
+           The address of the string to read is passed as a parameter and
+           is updated to point immediately after what has been actually read.
       @item @code{osl_foo_malloc} (@pxref{Allocating}) 
       @item @code{osl_foo_free} (@pxref{Deallocating}) 
       @item @code{osl_foo_clone} (@pxref{Cloning}) 
@@ -3009,8 +3131,8 @@ extension and have a look at the function
 a new extension interface to an existing @code{osl_scop_t}.
 
 Second scenario, the extension will integrate the set of default
-OpenScop Library extensions (this would be cool so it will be easier
-for users to use it). In this case, a few additional
+OpenScop Library extensions (the best solution to share it to other
+potential users). In this case, a few additional
 things have to be done:
 @enumerate
 @item Create the extension header
@@ -3028,7 +3150,7 @@ things have to be done:
       @code{#include <osl/extensions/foo.h>} in the
       @code{include/scop.h.in} file.
 @item Add the new extension in the
-      @code{osl_scop_register_default_extensions()} function.
+      @code{osl_interface_get_default_registry()} function.
 @item You are done! Prepare a single commit or patch corresponding to the
       integration of the new extension and ask the maintainer to merge it
       to the master branch.

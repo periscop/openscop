@@ -61,11 +61,15 @@
  *****************************************************************************/
 
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <ctype.h>
-# include <osl/relation_list.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/relation.h>
+#include <osl/relation_list.h>
 
 
 /*+***************************************************************************

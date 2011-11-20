@@ -60,9 +60,15 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <osl/int.h>
+#include <stdlib.h>
+#include <stdio.h>
+#ifdef OSL_GMP_IS_HERE
+# include <gmp.h>
+#endif
+
+#include <osl/macros.h>
+#include <osl/int.h>
+
 
 
 /*+***************************************************************************
@@ -335,9 +341,10 @@ void osl_int_free(int precision, void * value_base, int value_offset) {
 /**
  * osl_int_print function:
  * this function displays an integer value into a file (file, possibly stdout).
- * \param file      The file where the integer has to be printed.
- * \param precision The precision of the integer.
- * \param value     Address of the integer value.
+ * \param file         The file where the integer has to be printed.
+ * \param precision    The precision of the integer.
+ * \param value_base   Address of the base integer value.
+ * \param value_offset Offset in number of values from the base integer value.
  */
 void osl_int_print(FILE * file, int precision,
                    void * value_base, int value_offset) {
@@ -352,9 +359,10 @@ void osl_int_print(FILE * file, int precision,
  * osl_int_sprint function:
  * this function prints an integer value into a string, it uses the
  * OpenScop Library formats OSL_FMT_* to format the printing.
- * \param string    The string where the integer has to be printed.
- * \param precision The precision of the integer.
- * \param value     Address of the integer value.
+ * \param string       The string where the integer has to be printed.
+ * \param precision    The precision of the integer.
+ * \param value_base   Address of the base integer value.
+ * \param value_offset Offset in number of values from the base integer value.
  */
 void osl_int_sprint(char * string, int precision,
                     void * value_base, int value_offset) {
@@ -420,20 +428,20 @@ void osl_int_sprint_txt(char * string, int precision,
 }
 
 
-void osl_int_sread(char * string, int precision,
+void osl_int_sread(char ** string, int precision,
                    void * value_base, int value_offset) {
   void * value = osl_int_address(precision, value_base, value_offset);
-  int nb_read;
+  int nb_read = 0;
 
   switch (precision) {
     case OSL_PRECISION_SP:
-      nb_read = sscanf(string, OSL_FMT_TXT_SP, (long int *)value);
+      nb_read = sscanf(*string, OSL_FMT_TXT_SP, (long int *)value);
       if (nb_read == 0)
         OSL_error("failed to read an integer");
       break;
 
     case OSL_PRECISION_DP:
-      nb_read = sscanf(string, OSL_FMT_TXT_DP, (long long int *)value);
+      nb_read = sscanf(*string, OSL_FMT_TXT_DP, (long long int *)value);
       if (nb_read == 0)
         OSL_error("failed to read an integer");
       break;
@@ -441,7 +449,7 @@ void osl_int_sread(char * string, int precision,
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       long long int tmp;
-      nb_read = sscanf(string, OSL_FMT_TXT_DP, &tmp);
+      nb_read = sscanf(*string, OSL_FMT_TXT_DP, &tmp);
       if (nb_read == 0)
         OSL_error("failed to read an integer");
       mpz_set_si(*(mpz_t *)value, tmp);
@@ -452,6 +460,9 @@ void osl_int_sread(char * string, int precision,
     default:
       OSL_error("unknown precision");
   }
+
+  // Update the position in the input string.
+  *string = *string + nb_read;
 }
 
 

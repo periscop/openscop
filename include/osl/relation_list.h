@@ -65,9 +65,6 @@
 # define OSL_RELATION_LIST_H
 
 # include <stdio.h>
-# include <osl/macros.h>
-# include <osl/vector.h>
-# include <osl/names.h>
 # include <osl/relation.h>
 
 

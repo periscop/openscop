@@ -64,11 +64,7 @@
 #ifndef OSL_INT_H
 # define OSL_INT_H
 
-# include <osl/macros.h>
-# ifdef OSL_GMP_IS_HERE
-#  include <gmp.h>
-# endif
-
+#include <stdio.h>
 
 typedef void * osl_int_p;
 
@@ -92,7 +88,7 @@ void   osl_int_free(int, void *, int);
 void   osl_int_print(FILE *, int, void *, int);
 void   osl_int_sprint(char *, int, void *, int);
 void   osl_int_sprint_txt(char *, int, void *, int);
-void   osl_int_sread(char *, int, void *, int);
+void   osl_int_sread(char **, int, void *, int);
 
 
 /*+***************************************************************************

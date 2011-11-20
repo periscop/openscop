@@ -65,13 +65,8 @@
 # define OSL_RELATION_H
 
 # include <stdio.h>
-# include <osl/macros.h>
-# include <osl/int.h>
-# include <osl/util.h>
-# include <osl/vector.h>
-# include <osl/strings.h>
 # include <osl/names.h>
-
+# include <osl/vector.h>
 
 # if defined(__cplusplus)
 extern "C"

@@ -60,10 +60,14 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/extensions/lines.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/interface.h>
+#include <osl/extensions/lines.h>
 
 
 /*+***************************************************************************
@@ -171,12 +175,15 @@ char * osl_lines_sprint(osl_lines_p lines) {
  * \param  extensions The input string where to find a lines structure.
  * \return A pointer to the lines structure that has been read.
  */
-osl_lines_p osl_lines_sread(char * extensions) {
+osl_lines_p osl_lines_sread(char ** extensions_fixme) {
   char * content, *tmp;
   osl_lines_p lines;
 
-  content = osl_util_tag_content(extensions, OSL_TAG_LINES_START,
-                                             OSL_TAG_LINES_STOP);
+  // FIXME: this is a quick and dirty thing to accept char ** instead
+  //        of char * in the parameter: really do it and update the
+  //        pointer to after what has been read.
+  content = *extensions_fixme;
+
   if (content == NULL) {
     OSL_debug("no lines optional tag");
     return NULL;

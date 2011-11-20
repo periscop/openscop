@@ -64,7 +64,16 @@
 # include <stdio.h>
 # include <ctype.h>
 # include <string.h>
-# include <osl/scop.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/extensions/textual.h>
+#include <osl/strings.h>
+#include <osl/relation.h>
+#include <osl/interface.h>
+#include <osl/generic.h>
+#include <osl/statement.h>
+#include <osl/scop.h>
 
 
 /*+***************************************************************************
@@ -288,18 +297,18 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
  * dimensions and number of parameters) are undefined, it will define them
  * according to the available information. 
  * \param[in] file      The file where the scop has to be read.
+ * \param[in] registry  The list of known interfaces (others are ignored).
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the scop structure that has been read.
  */
-osl_scop_p osl_scop_pread(FILE * file, int precision) {
+osl_scop_p osl_scop_pread(FILE * file, osl_interface_p registry,
+                          int precision) {
   osl_scop_p list = NULL, current = NULL, scop;
   osl_statement_p stmt = NULL;
   osl_statement_p prev = NULL;
-  osl_interface_p interface;
   osl_strings_p language;
   int nb_statements;
-  char buffer[OSL_MAX_STRING];
-  char * tmp, * start;
+  char * tmp;
   int first = 1;
   int i;
 
@@ -311,14 +320,16 @@ osl_scop_p osl_scop_pread(FILE * file, int precision) {
     // I. START TAG
     //
     tmp = osl_util_read_uptotag(file, OSL_TAG_START_SCOP);
-    free(tmp);
-    if (feof(file)) {
+    if (tmp == NULL) {
       OSL_debug("no more scop in the file");
       break;
     }
+    else {
+      free(tmp);
+    }
 
     scop = osl_scop_malloc();
-    osl_scop_register_default_extensions(scop);
+    scop->registry = osl_interface_clone(registry);
 
     //
     // II. CONTEXT PART
@@ -341,13 +352,8 @@ osl_scop_p osl_scop_pread(FILE * file, int precision) {
     scop->context = osl_relation_pread(file, precision);
 
     // Read the parameters.
-    scop->parameter_type = OSL_TYPE_STRING;
-    if (osl_util_read_int(file, NULL) > 0) {
-      interface = osl_strings_interface();
-      start = osl_util_skip_blank_and_comments(file, buffer);
-      scop->parameters = osl_generic_sread(start, interface);
-      osl_interface_free(interface);
-    }
+    if (osl_util_read_int(file, NULL) > 0)
+      scop->parameters = osl_generic_read_one(file, scop->registry);
 
     //
     // III. STATEMENT PART
@@ -358,7 +364,7 @@ osl_scop_p osl_scop_pread(FILE * file, int precision) {
 
     for (i = 0; i < nb_statements; i++) {
       // Read each statement.
-      stmt = osl_statement_pread(file, precision);
+      stmt = osl_statement_pread(file, scop->registry, precision);
       if (scop->statement == NULL)
         scop->statement = stmt;
       else
@@ -394,13 +400,18 @@ osl_scop_p osl_scop_pread(FILE * file, int precision) {
 /**
  * osl_scop_read function:
  * this function is equivalent to osl_scop_pread() except that
- * the precision corresponds to the precision environment variable or
- * to the highest available precision if it is not defined.
+ * (1) the precision corresponds to the precision environment variable or
+ *     to the highest available precision if it is not defined, and
+ * (2) the list of known interface is set to the default one.
  * \see{osl_scop_pread}
  */
 osl_scop_p osl_scop_read(FILE * foo) {
   int precision = osl_util_get_precision();
-  return osl_scop_pread(foo, precision);
+  osl_interface_p registry = osl_interface_get_default_registry();
+  osl_scop_p scop = osl_scop_pread(foo, registry, precision);
+
+  osl_interface_free(registry);
+  return scop;
 }
 
 
@@ -423,7 +434,6 @@ osl_scop_p osl_scop_malloc() {
   scop->version        = 1;
   scop->language       = NULL;
   scop->context        = NULL;
-  scop->parameter_type = OSL_UNDEFINED;
   scop->parameters     = NULL;
   scop->statement      = NULL;
   scop->registry       = NULL;
@@ -465,27 +475,11 @@ void osl_scop_free(osl_scop_p scop) {
 
 
 /**
- * osl_scop_register_default_extensions function:
- * this function registers the default OpenScop Library extensions to an
- * existing scop.
- * \param scop The scop for which default options have to be registered.
- */
-void osl_scop_register_default_extensions(osl_scop_p scop) {
-  
-  osl_interface_add(&(scop->registry), osl_textual_interface());
-  osl_interface_add(&(scop->registry), osl_comment_interface());
-  osl_interface_add(&(scop->registry), osl_arrays_interface());
-  osl_interface_add(&(scop->registry), osl_lines_interface());
-  osl_interface_add(&(scop->registry), osl_irregular_interface());
-}
-
-
-/**
  * osl_scop_clone function:
  * This functions builds and returns a "hard copy" (not a pointer copy)
  * of a osl_statement_t data structure provided as parameter.
  * Note that the usr field is not touched by this function.
- * \param statement The pointer to the scop we want to clone.
+ * \param scop The pointer to the scop we want to clone.
  * \return A pointer to the full clone of the scop provided as parameter.
  */
 osl_scop_p osl_scop_clone(osl_scop_p scop) {
@@ -498,7 +492,6 @@ osl_scop_p osl_scop_clone(osl_scop_p scop) {
     if (scop->language != NULL)
       node->language     = strdup(scop->language);
     node->context        = osl_relation_clone(scop->context);
-    node->parameter_type = scop->parameter_type;
     node->parameters     = osl_generic_clone(scop->parameters);
     node->statement      = osl_statement_clone(scop->statement);
     node->registry       = osl_interface_clone(scop->registry);
@@ -547,11 +540,6 @@ int osl_scop_equal(osl_scop_p s1, osl_scop_p s2) {
 
     if (!osl_relation_equal(s1->context, s2->context)) {
       OSL_info("contexts are not the same"); 
-      return 0;
-    }
-
-    if (s1->parameter_type != s2->parameter_type) {
-      OSL_info("parameter types are not the same"); 
       return 0;
     }
 

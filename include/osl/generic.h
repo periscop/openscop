@@ -64,8 +64,6 @@
 #ifndef OSL_generic_H
 # define OSL_generic_H
 
-# include <osl/macros.h>
-# include <osl/util.h>
 # include <osl/interface.h>
 
 # if defined(__cplusplus)
@@ -101,6 +99,7 @@ void          osl_generic_print(FILE *, osl_generic_p);
  *                               Reading function                            *
  *****************************************************************************/
 osl_generic_p osl_generic_sread(char *, osl_interface_p);
+osl_generic_p osl_generic_read_one(FILE *, osl_interface_p);
 osl_generic_p osl_generic_read(FILE *, osl_interface_p);
 
 

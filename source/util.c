@@ -60,11 +60,13 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <ctype.h>
-# include <string.h>
-# include <osl/util.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
 
 
 /*+***************************************************************************
@@ -73,17 +75,17 @@
 
 
 /**
- * osl_util_skip_blank_and_comments internal function.
- * This function reads the open file 'file' line by line and skips
+ * osl_util_skip_blank_and_comments "file skip" function:
+ * this function reads the open file 'file' line by line and skips
  * blank/comment lines and spaces. The first line where there is some
  * useful information is stored at the address 'str' (the memory to
  * store the line must be allocated before the call to this function
- * and must be at least OSL_MAX_STRING*sizeof(char)). The pointer
+ * and must be at least OSL_MAX_STRING * sizeof(char)). The pointer
  * to the first useful information in this line is returned by the
  * function.
- * \param file The (opened) file to read.
- * \param str  Address of an allocated space to store the first line
- *             that contains useful information.
+ * \param[in] file The (opened) file to read.
+ * \param[in] str  Address of an allocated space to store the first line
+ *                 that contains useful information.
  * \return The address of the the first useful digit in str.
  */
 char * osl_util_skip_blank_and_comments(FILE * file, char * str) {
@@ -101,23 +103,47 @@ char * osl_util_skip_blank_and_comments(FILE * file, char * str) {
 
 
 /**
- * osl_util_read_int internal function.
- * Read an int on the input 'file' or the input string 'str' depending on
+ * osl_util_sskip_blank_and_comments "string skip" function:
+ * this function updates the str pointer, which initialy points to a string,
+ * to the first character in this string which is not a space or a comment
+ * (comments start at '#' and end at '\n'), or to the end of string.
+ * \param[in,out] str Address of a string, updated to the address of
+ *                    the first non-space or comment character.
+ */
+void osl_util_sskip_blank_and_comments(char ** str) {
+  do {
+    // Skip spaces/blanc lines.
+    while (*str && **str && isspace(**str))
+      (*str)++;
+
+    // Skip the comment if any.
+    if (*str && **str && **str == '#') {
+      while (**str && **str != '\n') {
+        (*str)++;
+      }
+    }
+  }
+  while (*str && **str && **str == '\n');
+}
+
+
+/**
+ * osl_util_read_int function:
+ * reads an int on the input 'file' or the input string 'str' depending on
  * which one is not NULL (exactly one of them must not be NULL).
- * \param file The file where to read an int (if not NULL).
- * \param str  The string where to read an int (if not NULL). This pointer
- *             is updated to reflect the read and points after the int.
- * \return The int that have been read.
+ * \param[in]     file The file where to read an int (if not NULL).
+ * \param[in,out] str  The string where to read an int (if not NULL). This
+ *                     pointer is updated to reflect the read and points
+ *                     after the int in the input string.
+ * \return The int that has been read.
  */
 int osl_util_read_int(FILE * file, char ** str) {
   char s[OSL_MAX_STRING], * start;
   int res;
   int i = 0;
-  int read_int = 0;
 
   if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
-    OSL_error("one and only one of the two parameters"
-                   " of util_read_int can be non-NULL");
+    OSL_error("one and only one of the two parameters can be non-NULL");
 
   if (file != NULL) {
     // Parse from a file.
@@ -125,28 +151,79 @@ int osl_util_read_int(FILE * file, char ** str) {
     if (sscanf(start, " %d", &res) != 1)
       OSL_error("an int was expected");
   }
-  if (str != NULL) {
+  else {
     // Parse from a string.
     // Skip blank/commented lines.
-    do {
-      while (*str && **str && isspace(**str))
-        ++(*str);
-      if (**str == '#') {
-        while (**str && **str != '\n')
-          ++(*str);
-      }
-      else {
-        // Build the chain to analyze.
-        while (**str && !isspace(**str) && **str != '\n')
-          s[i++] = *((*str)++);
-        s[i] = '\0';
-        if (sscanf(s, "%d", &res) != 1)
-          OSL_error("an int was expected");
-        read_int = 1;
-      }
-    }
-    while (! read_int);
+    osl_util_sskip_blank_and_comments(str);
+    
+    // Build the chain to analyze.
+    while (**str && !isspace(**str) && **str != '\n')
+      s[i++] = *((*str)++);
+    s[i] = '\0';
+    if (sscanf(s, "%d", &res) != 1)
+      OSL_error("an int was expected");
   }
+
+  return res;
+}
+
+
+/**
+ * osl_util_read_int internal function:
+ * reads a tag (the form of a tag with name "name" is \<name\>) on the input
+ * 'file' or the input string 'str' depending on which one is not NULL (exactly
+ * one of them must not be NULL). It returns the name of the tag (thus without
+ * the < and > as a string. Note that in the case of an ending tag, e.g.,
+ * \</foo\>, the slash is returned as a part of the name, e.g., /foo.
+ * \param[in]     file The file where to read a tag (if not NULL).
+ * \param[in,out] str  The string where to read a tag (if not NULL). This
+ *                     pointer is updated to reflect the read and points
+ *                     after the tag in the input string.
+ * \return The tag name that has been read.
+ */
+char * osl_util_read_tag(FILE * file, char ** str) {
+  char s[OSL_MAX_STRING], * start;
+  char * res;
+  int i = 0;
+
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
+    OSL_error("one and only one of the two parameters can be non-NULL");
+
+  // Skip blank/commented lines.
+  if (file != NULL) {
+    start = osl_util_skip_blank_and_comments(file, s);
+    str = &start;
+  }
+  else {
+    osl_util_sskip_blank_and_comments(str);
+  }
+
+  // Pass the starting '<'.
+  if (**str != '<')
+    OSL_error("a \"<\" to start a tag was expected");
+  (*str)++;
+
+  // Read the tag.
+  OSL_malloc(res, char *, (OSL_MAX_STRING + 1) * sizeof(char));
+  res[OSL_MAX_STRING] = '\0';
+  
+  while (**str && **str != '>') {
+    if (((**str >= 'A') && (**str <= 'Z')) ||
+        ((**str >= 'a') && (**str <= 'z')) ||
+        ((**str == '/') && (i == 0))       ||
+        (**str == '_')) {
+      res[i++] = *((*str)++);
+      res[i] = '\0';
+    }
+    else {
+      OSL_error("illegal character in the tag name");
+    }
+  }
+
+  // Check we actually end up with a '>' and pass it.
+  if (**str != '>')
+    OSL_error("a \">\" to end a tag was expected");
+  (*str)++;
 
   return res;
 }
@@ -155,7 +232,8 @@ int osl_util_read_int(FILE * file, char ** str) {
 /**
  * osl_util_read_uptotag function:
  * this function reads a file up to a given tag (the tag is read) or the
- * end of file. It puts everything it reads in a string which is returned.
+ * end of file. It puts everything it reads, except the tag, in a string 
+ * which is returned. However ot returns NULL is the tag is not found.
  * \param[in] file The file where to read the tail.
  * \param[in] tag  The tag which, when reached, stops the file reading.
  * \return The string that has been read from the file.
@@ -169,7 +247,7 @@ char * osl_util_read_uptotag(FILE * file, char * tag) {
 
   OSL_malloc(res, char *, high_water_mark * sizeof(char));
 
-  // - Copy everything else to the res string.
+  // - Copy everything to the res string.
   while (!feof(file)) {
     res[nb_chars] = fgetc(file); 
     nb_chars++;
@@ -186,35 +264,60 @@ char * osl_util_read_uptotag(FILE * file, char * tag) {
     }
   }
 
-  if (!tag_found)
+  if (!tag_found) {
     OSL_debug("tag was not found, end of file reached");
+    free(res);
+    return NULL;
+  }
 
   // - 0-terminate the string.
-  OSL_realloc(res, char *, (nb_chars + 1) * sizeof(char));
-  res[nb_chars] = '\0';
+  OSL_realloc(res, char *, (nb_chars - strlen(tag) + 1) * sizeof(char));
+  res[nb_chars - strlen(tag)] = '\0';
 
   return res;
 }
 
 
 /**
- * osl_util_tag_content function:
- * This function returns a freshly allocated string containing the
- * content, in the given string 'str', between the tag 'tag' and
- * the tag 'endtag'. If the tag 'tag' is not found, returns NULL.
- * \param str    The string where to find a given content.
- * \param tag    The string that marks the beginning of the content.
- * \param endtag The string that marks the end of the content.
- * \return The string between 'tag' and 'endtag' in 'str'.
+ * osl_util_read_uptoendtag function:
+ * this function reads a file up to a given end tag (this end tag is read)
+ * or the end of file. The name of the tag is provided as parameter (hence
+ * without the starting "</" end the closing ">"). It puts everything it reads
+ * in a string which is returned.
+ * \param[in] file The file where to read the tail.
+ * \param[in] name The name of the end tag to the file reading.
+ * \return The string that has been read from the file.
  */
-char * osl_util_tag_content(char * str, char * tag, char * endtag) {
+char * osl_util_read_uptoendtag(FILE * file, char * name) {
+  char tag[strlen(name) + 4];
+  
+  sprintf(tag, "</%s>", name);
+  return osl_util_read_uptotag(file, tag);
+}
+
+
+/**
+ * osl_util_tag_content function:
+ * this function returns a freshly allocated string containing the
+ * content, in the given string 'str', between the tag '\<name\>' and
+ * the tag '\</name\>'. If the tag '\<name\>' is not found, it returns NULL.
+ * \param[in] str    The string where to find a given content.
+ * \param[in] name   The name of the tag we are looking for.
+ * \return The string between '\<name\>' and '\</name\>' in 'str'.
+ */
+char * osl_util_tag_content(char * str, char * name) {
   int i;
   char * start;
   char * stop;
+  char tag[strlen(name) + 3];
+  char endtag[strlen(name) + 4];
   int size = 0;
   int lentag;
   char * res = NULL;
 
+  sprintf(tag, "<%s>", name);
+  sprintf(endtag, "</%s>", name);
+  
   if (str) {
     start = str;
     lentag = strlen(tag);
@@ -251,9 +354,9 @@ char * osl_util_tag_content(char * str, char * tag, char * endtag) {
  * and reallocates *dst if necessary. The current size of the
  * *dst buffer must be *hwm (high water mark), if there is some
  * reallocation, this value is updated.
- * \param dst pointer to the destination string (may be reallocated).
- * \param src string to concatenate to dst.
- * \param hwm pointer to the size of the *dst buffer (may be updated).
+ * \param[in,out] dst pointer to the destination string (may be reallocated).
+ * \param[in]     src string to concatenate to dst.
+ * \param[in,out] hwm pointer to the size of the *dst buffer (may be updated).
  */
 void osl_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
@@ -368,7 +471,7 @@ int osl_util_identifier_is_here(char * expression, char * identifier,
  * string would be "C[@0@+@1@]+=A[@0@]*B[@1@];".
  * \param[in] expression The original expression.
  * \param[in] identifiers NULL-terminated array of identifiers.
- * \return A new string where the ith identifier is replaced by @i@.
+ * \return A new string where the ith identifier is replaced by \@i\@.
  */
 char * osl_util_identifier_substitution(char * expression,
                                         char ** identifiers) {

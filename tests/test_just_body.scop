@@ -30,7 +30,12 @@ CONTEXT
 # ----------------------------------------------  1.4 Body
 # Statement body is provided
 1
+<body>
+# Number of original iterators
+0
+# Statement body
 foo = bar;
+</body>
 
 </OpenScop>
 

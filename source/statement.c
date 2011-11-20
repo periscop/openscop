@@ -61,11 +61,21 @@
  *****************************************************************************/
 
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <ctype.h>
-# include <osl/statement.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/strings.h>
+#include <osl/body.h>
+#include <osl/relation.h>
+#include <osl/relation_list.h>
+#include <osl/names.h>
+#include <osl/interface.h>
+#include <osl/generic.h>
+#include <osl/statement.h>
 
 
 /*+***************************************************************************
@@ -118,9 +128,6 @@ void osl_statement_idump(FILE * file, osl_statement_p statement, int level) {
 
     // Print the array access information of the statement.
     osl_relation_list_idump(file, statement->access, level + 1);
-
-    // Print the original iterator names.
-    osl_generic_idump(file, statement->iterators, level + 1);
 
     // Print the original body expression.
     osl_generic_idump(file, statement->body, level + 1);
@@ -205,11 +212,12 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
 
   while (statement != NULL) {
     // If possible, replace iterator names with statement iterator names.
-    if (osl_generic_has_URI(statement->iterators, OSL_URI_STRINGS)) {
+    if (osl_generic_has_URI(statement->body, OSL_URI_BODY) &&
+        (((osl_body_p)(statement->body->data))->iterators != NULL)) {
       iterators_backedup = 1;
       iterators_backup = names->iterators;
-      names->iterators = statement->iterators->data;
-    }   
+      names->iterators = ((osl_body_p)(statement->body->data))->iterators;
+    }
 
     nb_relations = 0;
 
@@ -243,14 +251,9 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
-    if (osl_generic_has_URI(statement->body, OSL_URI_STRINGS)) {
+    if (statement->body != NULL) {
       fprintf(file, "# Statement body is provided\n");
       fprintf(file, "1\n");
-      if (osl_generic_has_URI(statement->iterators, OSL_URI_STRINGS)) {
-        fprintf(file, "# Original iterators\n");
-        osl_generic_print(file, statement->iterators);
-      }
-      fprintf(file, "# Body expression\n");
       osl_generic_print(file, statement->body);
     }
     else {
@@ -258,7 +261,7 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
       fprintf(file, "0\n");
     }
 
-    fprintf(file, "\n\n");
+    fprintf(file, "\n");
 
     // If necessary, switch back iterator names.
     if (iterators_backedup) {
@@ -354,16 +357,15 @@ void osl_statement_dispatch(osl_statement_p stmt, osl_relation_list_p list) {
  * osl_statement_pread function ("precision read"):
  * this function reads an osl_statement_t structure from an input stream
  * (possibly stdin).
- * \param[in] file The input stream.
+ * \param[in] file      The input stream.
+ * \param[in] registry  The list of known interfaces (others are ignored).
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the statement structure that has been read.
  */
-osl_statement_p osl_statement_pread(FILE * file, int precision) {
-  int nb_iterators;
-  char buffer[OSL_MAX_STRING], * start, * end;
+osl_statement_p osl_statement_pread(FILE * file, osl_interface_p registry,
+                                    int precision) {
   osl_statement_p stmt = osl_statement_malloc();
   osl_relation_list_p list;
-  osl_interface_p interface;
 
   if (file) {
     // Read all statement relations.
@@ -373,38 +375,8 @@ osl_statement_p osl_statement_pread(FILE * file, int precision) {
     osl_statement_dispatch(stmt, list);
 
     // Read the body information.
-    if (stmt->domain != NULL) {
-      nb_iterators = stmt->domain->nb_output_dims;
-    }
-    else {
-      OSL_warning("no domain, assuming 0 original iterator");
-      nb_iterators = 0;
-    }
-
-    if (osl_util_read_int(file, NULL) > 0) {
-      // Read the original iterator names.
-      if (nb_iterators > 0) {
-        interface = osl_strings_interface();
-        start = osl_util_skip_blank_and_comments(file, buffer);
-        stmt->iterators = osl_generic_sread(start, interface);
-        osl_interface_free(interface);
-      }
-      
-      // Read the body:
-      // - Skip blank/commented lines and spaces before the body.
-      start = osl_util_skip_blank_and_comments(file, buffer);
-      
-      // - Remove the comments after the body.
-      end = start;
-      while ((*end != '#') && (*end != '\n'))
-        end++;
-      *end = '\0';
-      
-      // - Build the body.
-      stmt->body = osl_generic_malloc();
-      stmt->body->interface = osl_strings_interface();
-      stmt->body->data = osl_strings_encapsulate(strdup(start));
-    }
+    if (osl_util_read_int(file, NULL) > 0)
+      stmt->body = osl_generic_read_one(file, registry); 
   }
 
   return stmt;
@@ -414,15 +386,19 @@ osl_statement_p osl_statement_pread(FILE * file, int precision) {
 /**
  * osl_statement_read function:
  * this function is equivalent to osl_statement_pread() except that
- * the precision corresponds to the precision environment variable or
- * to the highest available precision if it is not defined.
+ * (1) the precision corresponds to the precision environment variable or
+ *     to the highest available precision if it is not defined, and
+ * (2) the list of known interface is set to the default one.
  * \see{osl_statement_pread}
  */
 osl_statement_p osl_statement_read(FILE * foo) {
   int precision = osl_util_get_precision();
-  return osl_statement_pread(foo, precision);
-}
+  osl_interface_p registry = osl_interface_get_default_registry();
+  osl_statement_p statement = osl_statement_pread(foo, registry, precision);
 
+  osl_interface_free(registry);
+  return statement;
+}
 
 
 /*+***************************************************************************
@@ -444,7 +420,6 @@ osl_statement_p osl_statement_malloc() {
   statement->domain     = NULL;
   statement->scattering = NULL;
   statement->access     = NULL;
-  statement->iterators  = NULL;
   statement->body       = NULL;
   statement->next       = NULL;
 
@@ -466,7 +441,6 @@ void osl_statement_free(osl_statement_p statement) {
     osl_relation_free(statement->domain);
     osl_relation_free(statement->scattering);
     osl_relation_list_free(statement->access);
-    osl_generic_free(statement->iterators);
     osl_generic_free(statement->body);
 
     free(statement);
@@ -530,7 +504,6 @@ osl_statement_p osl_statement_clone(osl_statement_p statement) {
     node->domain     = osl_relation_clone(statement->domain);
     node->scattering = osl_relation_clone(statement->scattering);
     node->access     = osl_relation_list_clone(statement->access);
-    node->iterators  = osl_generic_clone(statement->iterators);
     node->body       = osl_generic_clone(statement->body);
     node->next       = NULL;
     
@@ -589,11 +562,6 @@ int osl_statement_equal(osl_statement_p s1, osl_statement_p s2) {
 
   if (!osl_relation_list_equal(s1->access, s2->access)) {
     OSL_info("statement accesses are not the same"); 
-    return 0;
-  }
-
-  if (!osl_generic_equal(s1->iterators, s2->iterators)) {
-    OSL_info("statement original iterators are not the same"); 
     return 0;
   }
 
@@ -656,12 +624,10 @@ int osl_statement_integrity_check(osl_statement_p statement,
 
     // Check the statement body.
     if ((expected_nb_iterators != OSL_UNDEFINED) &&
-        (statement->iterators != NULL) &&
-        (statement->iterators->interface != NULL) &&
-        (statement->iterators->interface->URI != NULL) &&
-        (strcmp(statement->iterators->interface->URI, OSL_URI_STRINGS) == 0) &&
-        (expected_nb_iterators !=
-         osl_strings_size(statement->iterators->data))) {
+        (osl_generic_has_URI(statement->body, OSL_URI_BODY)) &&
+        (((osl_body_p)(statement->body->data))->iterators != NULL) &&
+        (expected_nb_iterators != osl_strings_size(
+            ((osl_body_p)(statement->body->data))->iterators))) {
       OSL_warning("unexpected number of original iterators");
       return 0;
     }

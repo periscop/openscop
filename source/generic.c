@@ -60,10 +60,14 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/generic.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/interface.h>
+#include <osl/generic.h>
 
 
 /*+***************************************************************************
@@ -100,8 +104,9 @@ void osl_generic_idump(FILE * file, osl_generic_p generic, int level) {
         fprintf(file, "|\t");
       fprintf(file, "|   osl_generic_t\n");
     }
-    else
+    else {
       first = 0;
+    }
 
     // A blank line
     for(j = 0; j <= level + 1; j++)
@@ -159,7 +164,9 @@ void osl_generic_print(FILE * file, osl_generic_p generic) {
     if (generic->interface != NULL) {
       string = generic->interface->sprint(generic->data);
       if (string != NULL) {
+        fprintf(file, "<%s>\n", generic->interface->URI);
         fprintf(file, "%s", string);
+        fprintf(file, "</%s>\n", generic->interface->URI);
         free(string);
       }
     }
@@ -184,21 +191,68 @@ void osl_generic_print(FILE * file, osl_generic_p generic) {
  */
 osl_generic_p osl_generic_sread(char * string, osl_interface_p registry) {
   osl_generic_p generic = NULL, new;
-  osl_interface_p interface;
-  void * x;
+  char * content, * start;
+  void * data;
 
   while (registry != NULL) {
-    x = registry->sread(string);
-    if (x != NULL) {
-      interface = osl_interface_nclone(registry, 1);
-      new = osl_generic_malloc();
-      new->interface = interface;
-      new->data = x;
-      osl_generic_add(&generic, new);
+    content = osl_util_tag_content(string, registry->URI);
+    if (content != NULL) {
+      start = content;
+      data = registry->sread(&content);
+      if (data != NULL) {
+        new = osl_generic_malloc();
+        new->interface = osl_interface_nclone(registry, 1);
+        new->data = data;
+        osl_generic_add(&generic, new);
+      }
+      free(start);
     }
     registry = registry->next;
   }
   
+  return generic;
+}
+
+
+/**
+ * osl_generic_read_one function:
+ * this function reads one generic from a file (possibly stdin)
+ * complying to the OpenScop textual format and a list of known interfaces.
+ * It returns a pointer to the corresponding generic structure. If no
+ * tag is found, an error is reported, in the case of an empty or closing tag
+ * name the function returns the NULL pointer.
+ * \param[in] file     The input file where to read a list of data.
+ * \param[in] registry The list of known interfaces (others are ignored).
+ * \return A pointer to the generic that has been read.
+ */
+osl_generic_p osl_generic_read_one(FILE * file, osl_interface_p registry) {
+  char * tag;
+  char * content, * temp;
+  osl_generic_p generic = NULL;
+  osl_interface_p interface;
+
+  tag = osl_util_read_tag(file, NULL);
+  if ((tag == NULL) || (strlen(tag) < 1) || (tag[0] == '/')) {
+    OSL_debug("empty tag name or closing tag instead of an opening one");
+    return NULL;
+  }
+
+  content = osl_util_read_uptoendtag(file, tag);
+  interface = osl_interface_lookup(registry, tag);
+
+  temp = content;
+  if (interface == NULL) {
+    OSL_warning("unsupported generic");
+    fprintf(stderr, "[osl] Warning: unknown URI \"%s\".\n", tag);
+  }
+  else {
+    generic = osl_generic_malloc();
+    generic->interface = osl_interface_nclone(interface, 1);
+    generic->data = interface->sread(&temp);
+  }
+
+  free(content);
+  free(tag);
   return generic;
 }
 
@@ -214,7 +268,7 @@ osl_generic_p osl_generic_sread(char * string, osl_interface_p registry) {
  */
 osl_generic_p osl_generic_read(FILE * file, osl_interface_p registry) {
   char * generic_string;
-  void * generic_list;
+  osl_generic_p generic_list;
 
   generic_string = osl_util_read_uptotag(file, OSL_TAG_END_SCOP);
   generic_list = osl_generic_sread(generic_string, registry);

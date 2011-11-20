@@ -65,11 +65,10 @@
 # define OSL_STATEMENT_H
 
 # include <stdio.h>
-# include <osl/macros.h>
-# include <osl/util.h>
 # include <osl/relation.h>
 # include <osl/relation_list.h>
 # include <osl/names.h>
+# include <osl/interface.h>
 # include <osl/generic.h>
 
 # if defined(__cplusplus)
@@ -88,7 +87,6 @@ struct osl_statement {
   osl_relation_p domain;       /**< Iteration domain of the statement */
   osl_relation_p scattering;   /**< Scattering relation of the statement*/
   osl_relation_list_p access;  /**< Access information */
-  osl_generic_p iterators;     /**< Original iterators */
   osl_generic_p body;          /**< Original statement body */
   void * usr;                  /**< A user-defined field, not touched
 				    AT ALL by the OpenScop Library. */
@@ -110,7 +108,7 @@ void            osl_statement_print(FILE *, osl_statement_p);
 /*****************************************************************************
  *                              Reading function                             *
  *****************************************************************************/
-osl_statement_p osl_statement_pread(FILE *, int);
+osl_statement_p osl_statement_pread(FILE *, osl_interface_p, int);
 osl_statement_p osl_statement_read(FILE *);
 
 

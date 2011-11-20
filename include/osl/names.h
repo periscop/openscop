@@ -64,8 +64,7 @@
 #ifndef OSL_NAMES_H
 # define OSL_NAMES_H
 
-# include <osl/macros.h>
-# include <osl/util.h>
+# include <stdio.h>
 # include <osl/strings.h>
 
 # if defined(__cplusplus)

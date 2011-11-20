@@ -64,6 +64,7 @@
 #ifndef OSL_IRREGULAR_H
 # define OSL_IRREGULAR_H
 
+# include <stdio.h>
 # include <osl/macros.h>
 # include <osl/strings.h>
 # include <osl/interface.h>
@@ -120,7 +121,7 @@ char *          osl_irregular_sprint(osl_irregular_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_irregular_p osl_irregular_sread(char *);
+osl_irregular_p osl_irregular_sread(char **);
 
 
 /*+***************************************************************************

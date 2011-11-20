@@ -60,10 +60,13 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/names.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/strings.h>
+#include <osl/names.h>
 
 
 /*+***************************************************************************
@@ -191,7 +194,7 @@ void osl_names_free(osl_names_p names) {
  * \param[in] parameter_prefix Prefix for parameter names.
  * \param[in] nb_parameters    Number of parameters names to generate.
  * \param[in] iterator_prefix  Prefix for iterator names.
- * \param[in] nb_iteratorrs    Number of iterators names to generate.
+ * \param[in] nb_iterators     Number of iterators names to generate.
  * \param[in] scatt_dim_prefix Prefix for scattering dimension names.
  * \param[in] nb_scatt_dims    Number of scattering dim names to generate.
  * \param[in] local_dim_prefix Prefix for local dimension names.

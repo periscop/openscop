@@ -60,10 +60,14 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/extensions/textual.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/interface.h>
+#include <osl/extensions/textual.h>
 
 
 /* CAUTION : TEXTUAL IS A VERY SPECIAL CASE: DO NOT USE IT AS AN EXAMPLE !!! */
@@ -80,9 +84,9 @@
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * print_structure functions.
- * \param file    The file where the information has to be printed.
- * \param textual The textual structure whose information has to be printed.
- * \param level   Number of spaces before printing, for each line.
+ * \param[in] file    The file where the information has to be printed.
+ * \param[in] textual The textual structure to be printed.
+ * \param[in] level   Number of spaces before printing, for each line.
  */
 void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
   int j;
@@ -129,8 +133,8 @@ void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
  * osl_textual_dump function:
  * this function prints the content of an osl_textual_t structure
  * (*textual) into a file (file, possibly stdout).
- * \param file    The file where the information has to be printed.
- * \param textual The textual structure whose information has to be printed.
+ * \param[in] file    The file where the information has to be printed.
+ * \param[in] textual The textual structure to be printed.
  */
 void osl_textual_dump(FILE * file, osl_textual_p textual) {
   osl_textual_idump(file, textual, 0);
@@ -143,7 +147,7 @@ void osl_textual_dump(FILE * file, osl_textual_p textual) {
  * osl_textual_sprint function:
  * this function prints the content of an osl_textual_t structure
  * (*textual) into a string (returned) in the OpenScop textual format.
- * \param  textual The textual structure whose information has to be printed.
+ * \param[in]  textual The textual structure to be printed.
  * \return A string containing the OpenScop dump of the textual structure.
  */
 char * osl_textual_sprint(osl_textual_p textual) {
@@ -166,7 +170,7 @@ char * osl_textual_sprint(osl_textual_p textual) {
  * this function returns NULL. This is part of the special behavior of
  * the textual option (printing it along with other options would double
  * the options...).
- * \param  textual The textual structure whose information has to be printed.
+ * \param[in]  textual The textual structure to be printed.
  * \return NULL.
  */
 char * osl_textual_sprint(osl_textual_p textual) {
@@ -180,25 +184,26 @@ char * osl_textual_sprint(osl_textual_p textual) {
  *                               Reading function                            *
  *****************************************************************************/
 
+
 /**
  * osl_textual_sread function:
  * this function reads a textual structure from a string complying to the
  * OpenScop textual format and returns a pointer to this textual structure.
  * The string should contain only one textual format of a textual structure.
- * \param  extensions The input string where to find a textual structure.
+ * \param[in,out] extensions The input string where to find a textual struct.
+ *                           Updated to the position after what has been read.
  * \return A pointer to the textual structure that has been read.
  */
-osl_textual_p osl_textual_sread(char * extensions) {
+osl_textual_p osl_textual_sread(char ** extensions) {
   osl_textual_p textual = NULL;
 
-  if (extensions != NULL) {
-    if (strlen(extensions) > OSL_MAX_STRING) 
-      OSL_error("textual too long");
-
+  if (*extensions != NULL) {
     textual = osl_textual_malloc();
-    textual->textual = strdup(extensions);
-    if (textual->textual == NULL)
-      OSL_error("memory overflow");
+    OSL_strdup(textual->textual, *extensions);
+    
+    // Update the input string pointer to the end of the string (since
+    // everything has been read).
+    *extensions = *extensions + strlen(*extensions);
   }
 
   return textual;
@@ -212,7 +217,7 @@ osl_textual_p osl_textual_sread(char * extensions) {
 
 /**
  * osl_textual_malloc function:
- * This function allocates the memory space for an osl_textual_t
+ * this function allocates the memory space for an osl_textual_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty textual structure with fields set to
@@ -230,9 +235,9 @@ osl_textual_p osl_textual_malloc() {
 
 /**
  * osl_textual_free function:
- * This function frees the allocated memory for an osl_textual_t
+ * this function frees the allocated memory for an osl_textual_t
  * structure.
- * \param textual The pointer to the textual structure we want to free.
+ * \param[in,out] textual The pointer to the textual structure to be freed.
  */
 void osl_textual_free(osl_textual_p textual) {
   if (textual != NULL) {
@@ -250,21 +255,21 @@ void osl_textual_free(osl_textual_p textual) {
 
 /**
  * osl_textual_clone function:
- * This function builds and returns a "hard copy" (not a pointer copy) of an
+ * this function builds and returns a "hard copy" (not a pointer copy) of an
  * osl_textual_t data structure.
- * \param textual The pointer to the textual structure we want to copy.
- * \return A pointer to the copy of the textual structure.
+ * \param[in] textual The pointer to the textual structure we want to clone.
+ * \return A pointer to the clone of the textual structure.
  */
 osl_textual_p osl_textual_clone(osl_textual_p textual) {
-  osl_textual_p copy;
+  osl_textual_p clone;
 
   if (textual == NULL)
     return NULL;
 
-  copy = osl_textual_malloc();
-  OSL_strdup(copy->textual, textual->textual);
+  clone = osl_textual_malloc();
+  OSL_strdup(clone->textual, textual->textual);
 
-  return copy;
+  return clone;
 }
 
 
@@ -296,8 +301,8 @@ int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
  * this function returns 1. This is part of the special behavior of
  * the textual option (the text string can be easily different while the
  * options are actually identical.
- * \param f1  The first textual structure.
- * \param ff  The second textual structure. 
+ * \param[in] f1  The first textual structure.
+ * \param[in] f2  The second textual structure. 
  * \return 1.
  */
 int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {

@@ -97,6 +97,7 @@ libosl_la_SOURCES 	=      \
 	vector.c               \
 	names.c                \
 	strings.c              \
+	body.c                 \
 	int.c                  \
 	util.c
 

@@ -63,10 +63,9 @@
 
 #ifndef OSL_LINES_H
 # define OSL_LINES_H
-# include <osl/interface.h>
 
-# include <osl/macros.h>
-# include <osl/util.h>
+# include <stdio.h>
+# include <osl/interface.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -103,7 +102,7 @@ char *          osl_lines_sprint(osl_lines_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_lines_p     osl_lines_sread(char *);
+osl_lines_p     osl_lines_sread(char **);
 
 
 /*+***************************************************************************

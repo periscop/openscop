@@ -64,6 +64,10 @@
 # include <stdio.h>
 # include <ctype.h>
 # include <string.h>
+
+# include <osl/macros.h>
+# include <osl/util.h>
+# include <osl/interface.h>
 # include <osl/strings.h>
 
 
@@ -128,14 +132,12 @@ char * osl_strings_sprint(osl_strings_p strings) {
   int i;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
-  char * buffer;
+  char buffer[OSL_MAX_STRING];
 
-  if (strings != NULL) {
-    OSL_malloc(string, char *, high_water_mark * sizeof(char));
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
-    string[0] = '\0';
+  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  string[0] = '\0';
    
-    // Print the begin tag.
+  if (strings != NULL) {
     for (i = 0; i < osl_strings_size(strings); i++) {
       sprintf(buffer, "%s", strings->string[i]);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -144,7 +146,10 @@ char * osl_strings_sprint(osl_strings_p strings) {
     }
     sprintf(buffer, "\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    free(buffer);
+  }
+  else {
+    sprintf(buffer, "# NULL strings\n");
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
   }
 
   return string;
@@ -155,8 +160,8 @@ char * osl_strings_sprint(osl_strings_p strings) {
  * osl_strings_print function:
  * this function prints the content of an osl_strings_t structure
  * (*body) into a file (file, possibly stdout) in the OpenScop format.
- * \param file[in]    File where informations are printed.
- * \param strings[in] The strings whose information has to be printed.
+ * \param[in] file    File where informations are printed.
+ * \param[in] strings The strings whose information has to be printed.
  */
 void osl_strings_print(FILE * file, osl_strings_p strings) {
   char * string;
@@ -179,11 +184,15 @@ void osl_strings_print(FILE * file, osl_strings_p strings) {
  * this function reads a strings structure from a string complying to the
  * OpenScop textual format and returns a pointer to this strings structure.
  * The input string should only contain the list of strings this function
- * has to read (comments at the end of the line are accepted).
- * \param[in] input The input string where to find a strings structure.
+ * has to read (comments at the end of the line are accepted). The input
+ * parameter is updated to the position in the input string this function
+ * reach right after reading the strings structure (or NULL if all the
+ * string has been read).
+ * \param[in,out] input The input string where to find a strings structure.
+ *                      Updated to the position after what has been read.
  * \return A pointer to the strings structure that has been read.
  */
-osl_strings_p osl_strings_sread(char * input) {
+osl_strings_p osl_strings_sread(char ** input) {
   char tmp[OSL_MAX_STRING];
   char * s;
   char ** string = NULL;
@@ -191,11 +200,14 @@ osl_strings_p osl_strings_sread(char * input) {
   int i, count;
   osl_strings_p strings = NULL;
 
+  // Skip blank/commented lines and spaces before the strings.
+  osl_util_sskip_blank_and_comments(input);
+  
   // Count the actual number of strings.
   nb_strings = 0;
-  s = input;
+  s = *input;
   while (1) {
-    for (count = 0; *s && ! isspace(*s) && *s != '#'; count++)
+    for (count = 0; *s && !isspace(*s) && *s != '#'; count++)
       s++;
     
     if (count != 0)
@@ -204,7 +216,7 @@ osl_strings_p osl_strings_sread(char * input) {
     if ((*s == '#') || (*s == '\n'))
       break;
     else
-      ++s;
+      s++;
   }
 
   if (nb_strings > 0) {
@@ -213,17 +225,18 @@ osl_strings_p osl_strings_sread(char * input) {
     string[nb_strings] = NULL;
 
     // Read the desired number of strings.
-    s = input;
+    s = *input;
     for (i = 0; i < nb_strings; i++) {
-      for (count = 0; *s && ! isspace(*s) && *s != '#'; count++)
+      for (count = 0; *s && !isspace(*s) && *s != '#'; count++)
 	tmp[count] = *(s++);
       tmp[count] = '\0';
-      string[i] = strdup(tmp);
-      if (string[i] == NULL)
-        OSL_error("memory overflow");
+      OSL_strdup(string[i], tmp);
       if (*s != '#')
-	++s;
+	s++;
     }
+
+    // Update the input pointer to the end of the strings structure.
+    *input = s;
 
     // Build the strings structure
     strings = osl_strings_malloc();
@@ -248,7 +261,7 @@ osl_strings_p osl_strings_read(FILE * file) {
   osl_strings_p strings;
 
   start = osl_util_skip_blank_and_comments(file, buffer);
-  strings = osl_strings_sread(start);
+  strings = osl_strings_sread(&start);
 
   return strings;
 }

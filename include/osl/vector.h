@@ -65,9 +65,7 @@
 # define OSL_VECTOR_H
 
 # include <stdio.h>
-# include <osl/macros.h>
 # include <osl/int.h>
-# include <osl/util.h>
 
 
 # if defined(__cplusplus)
@@ -84,8 +82,8 @@ extern "C"
  * different than 0 is the array identifier.
  */
 struct osl_vector {
-  int size;      /**< Number of vector entries */
   int precision; /**< Precision of the integer elements. */
+  int size;      /**< Number of vector entries */
   void * v;      /**< An array of values */
 };
 typedef struct osl_vector   osl_vector_t;

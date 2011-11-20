@@ -64,8 +64,7 @@
 #ifndef OSL_ARRAYS_H
 # define OSL_ARRAYS_H
 
-# include <osl/macros.h>
-# include <osl/strings.h>
+# include <stdio.h>
 # include <osl/interface.h>
 
 # if defined(__cplusplus)
@@ -105,7 +104,7 @@ char *          osl_arrays_sprint(osl_arrays_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_arrays_p    osl_arrays_sread(char *);
+osl_arrays_p    osl_arrays_sread(char **);
 
 
 /*+***************************************************************************

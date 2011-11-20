@@ -60,10 +60,15 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/extensions/irregular.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/strings.h>
+#include <osl/interface.h>
+#include <osl/extensions/irregular.h>
 
 
 /*+***************************************************************************
@@ -222,13 +227,16 @@ char * osl_irregular_sprint(osl_irregular_p irregular) {
  * \param  extensions The input string where to find a irregular structure.
  * \return A pointer to the irregular structure that has been read.
  */
-osl_irregular_p osl_irregular_sread(char * extensions) {
+osl_irregular_p osl_irregular_sread(char ** extensions_fixme) {
   char * content,*tok;
   int i,j;
   osl_irregular_p irregular;
 
-  content = osl_util_tag_content(extensions, OSL_TAG_IRREGULAR_START,
-                                             OSL_TAG_IRREGULAR_STOP);
+  // FIXME: this is a quick and dirty thing to accept char ** instead
+  //        of char * in the parameter: really do it and update the
+  //        pointer to after what has been read.
+  content = *extensions_fixme;
+
   if (content == NULL) {
     OSL_debug("no irregular optional tag");
     return NULL;

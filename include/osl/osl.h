@@ -64,11 +64,30 @@
 #ifndef OSL_OSL_H
 # define OSL_OSL_H
 
+/* List of reserved OpenScop URIs:
+ * - arrays
+ * - body
+ * - comment
+ * - generic
+ * - int
+ * - interface
+ * - irregular
+ * - lines
+ * - openscop
+ * - relation
+ * - relation_list
+ * - scop
+ * - statement
+ * - strings
+ * - textual
+ * - vector
+ */
 
 # include <osl/macros.h>
 # include <osl/int.h>
 # include <osl/util.h>
 # include <osl/strings.h>
+# include <osl/body.h>
 # include <osl/vector.h>
 # include <osl/relation.h>
 # include <osl/relation_list.h>

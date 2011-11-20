@@ -64,8 +64,7 @@
 #ifndef OSL_TEXTUAL_H
 # define OSL_TEXTUAL_H
 
-# include <osl/macros.h>
-# include <osl/util.h>
+# include <stdio.h>
 # include <osl/interface.h>
 
 # if defined(__cplusplus)
@@ -75,8 +74,6 @@ extern "C"
 
 
 # define OSL_URI_TEXTUAL       "textual"
-# define OSL_TAG_TEXTUAL_START ""
-# define OSL_TAG_TEXTUAL_STOP  ""
 
 
 /**
@@ -102,7 +99,7 @@ char *          osl_textual_sprint(osl_textual_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_textual_p   osl_textual_sread(char *);
+osl_textual_p   osl_textual_sread(char **);
 
 
 /*+***************************************************************************

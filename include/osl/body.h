@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/comment.h                        **
+     **                            body.h                               **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 25/06/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,10 +61,11 @@
  *****************************************************************************/
 
 
-#ifndef OSL_COMMENT_H
-# define OSL_COMMENT_H
+#ifndef OSL_BODY_H
+# define OSL_BODY_H
 
 # include <stdio.h>
+# include <osl/strings.h>
 # include <osl/interface.h>
 
 # if defined(__cplusplus)
@@ -72,52 +73,53 @@ extern "C"
   {
 # endif
 
-
-# define OSL_URI_COMMENT        "comment"
-
+# define OSL_URI_BODY "body"
 
 /**
- * The osl_comment_t structure stores a comment extention to the core
- * OpenScop representation. It is simply a 0-terminated string.
+ * The osl_body_t structure stores a statement body in a textual form.
+ * The complete original expression (directly copy-pasted from the original
+ * code) is in the expression field while the textual forms of the original
+ * iterators are in the iterators field. They may be used for substitutions
+ * inside the expression.
  */
-struct osl_comment {
-  char * comment;  /**< A comment message as a 0-terminated string. */
+struct osl_body {
+  osl_strings_p iterators;  /**< Original iterators */
+  osl_strings_p expression; /**< Original statement expression */
 };
-typedef struct osl_comment   osl_comment_t;
-typedef struct osl_comment * osl_comment_p;
+typedef struct osl_body   osl_body_t;
+typedef struct osl_body * osl_body_p;
 
 
-/*+***************************************************************************
- *                          Structure display function                       *
- *****************************************************************************/
-void            osl_comment_idump(FILE *, osl_comment_p, int);
-void            osl_comment_dump(FILE *, osl_comment_p);
-char *          osl_comment_sprint(osl_comment_p);
+/*---------------------------------------------------------------------------+
+ |                          Structure display function                       |
+ +---------------------------------------------------------------------------*/
+void            osl_body_idump(FILE *, osl_body_p, int);
+void            osl_body_dump(FILE *, osl_body_p);
+char *          osl_body_sprint(osl_body_p);
+void            osl_body_print(FILE *, osl_body_p);
 
 
 /*****************************************************************************
- *                               Reading function                            *
+ *                              Reading function                             *
  *****************************************************************************/
-osl_comment_p   osl_comment_sread(char **);
+osl_body_p      osl_body_sread(char **);
 
 
 /*+***************************************************************************
- *                    Memory allocation/deallocation function                *
+ *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-osl_comment_p   osl_comment_malloc();
-void            osl_comment_free(osl_comment_p);
+osl_body_p      osl_body_malloc();
+void            osl_body_free(osl_body_p);
 
 
 /*+***************************************************************************
- *                            Processing functions                           *
+ *                           Processing functions                            *
  *****************************************************************************/
-osl_comment_p   osl_comment_clone(osl_comment_p);
-int             osl_comment_equal(osl_comment_p, osl_comment_p);
-osl_interface_p osl_comment_interface();
-
+osl_body_p      osl_body_clone(osl_body_p);
+int             osl_body_equal(osl_body_p, osl_body_p);
+osl_interface_p osl_body_interface();
 
 # if defined(__cplusplus)
   }
 # endif
-
-#endif /* define OSL_COMMENT_H */
+#endif /* define OSL_BODY_H */

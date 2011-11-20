@@ -61,10 +61,14 @@
  *****************************************************************************/
 
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <ctype.h>
-# include <osl/vector.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/int.h>
+#include <osl/vector.h>
 
 
 /*+***************************************************************************

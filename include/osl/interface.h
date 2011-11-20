@@ -64,7 +64,7 @@
 #ifndef OSL_INTERFACE_H
 # define OSL_INTERFACE_H
 
-# include <osl/macros.h>
+# include <stdio.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -74,7 +74,7 @@ extern "C"
 
 typedef void   (*osl_idump_f) (FILE *, void *, int);
 typedef char * (*osl_sprint_f)(void *);
-typedef void * (*osl_sread_f) (char *);
+typedef void * (*osl_sread_f) (char **);
 typedef void * (*osl_malloc_f)();
 typedef void   (*osl_free_f)  (void *);
 typedef void * (*osl_clone_f) (void *);
@@ -128,6 +128,7 @@ osl_interface_p osl_interface_nclone(osl_interface_p, int);
 osl_interface_p osl_interface_clone(osl_interface_p);
 int             osl_interface_equal(osl_interface_p, osl_interface_p);
 osl_interface_p osl_interface_lookup(osl_interface_p, char *);
+osl_interface_p osl_interface_get_default_registry();
 
 # if defined(__cplusplus)
   }

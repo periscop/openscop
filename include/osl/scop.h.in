@@ -73,19 +73,8 @@
 
 # define OSL_RELEASE "@PACKAGE_VERSION@"
 
-# include <osl/macros.h>
-# include <osl/util.h>
-# include <osl/strings.h>
-# include <osl/vector.h>
 # include <osl/relation.h>
 # include <osl/interface.h>
-
-# include <osl/extensions/textual.h>
-# include <osl/extensions/comment.h>
-# include <osl/extensions/arrays.h>
-# include <osl/extensions/lines.h>
-# include <osl/extensions/irregular.h>
-
 # include <osl/generic.h>
 # include <osl/statement.h>
 
@@ -109,7 +98,6 @@ struct osl_scop {
   int version;               /**< Version of the data structure */
   char * language;           /**< Target language (backend) */
   osl_relation_p context;    /**< Constraints on the SCoP parameters */
-  int parameter_type;        /**< Parameter type */
   osl_generic_p parameters;  /**< NULL-terminated array of parameters */
   osl_statement_p statement; /**< Statement list of the SCoP */
   osl_interface_p registry;  /**< Registered extensions interfaces */
@@ -133,7 +121,7 @@ void       osl_scop_print(FILE *, osl_scop_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_scop_p osl_scop_pread(FILE *, int);
+osl_scop_p osl_scop_pread(FILE *, osl_interface_p, int);
 osl_scop_p osl_scop_read(FILE *);
 
 
@@ -151,7 +139,6 @@ osl_scop_p osl_scop_clone(osl_scop_p);
 int        osl_scop_equal(osl_scop_p, osl_scop_p);
 int        osl_scop_integrity_check(osl_scop_p);
 int        osl_scop_get_nb_parameters(osl_scop_p);
-void       osl_scop_register_default_extensions(osl_scop_p);
 void       osl_scop_register_extension(osl_scop_p, osl_interface_p);
 void       osl_scop_get_attributes(osl_scop_p,
                                    int *, int *, int *, int *, int *);

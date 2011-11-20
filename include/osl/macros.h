@@ -119,28 +119,28 @@
 # define OSL_coucou(n)                                                     \
          do {                                                              \
            int i = n +0;                                                   \
-           fprintf(stderr,"[OpenScop] Coucou %d (%s).\n", i, __func__);    \
+           fprintf(stderr,"[osl] Coucou %d (%s).\n", i, __func__);         \
          } while (0)
 
 # define OSL_debug(msg)                                                    \
          do {                                                              \
            if (OSL_DEBUG)                                                  \
-             fprintf(stderr,"[OpenScop] Debug: "msg" (%s).\n", __func__);  \
+             fprintf(stderr,"[osl] Debug: "msg" (%s).\n", __func__);       \
          } while (0)
 
 # define OSL_info(msg)                                                     \
          do {                                                              \
-           fprintf(stderr,"[OpenScop] Info: "msg" (%s).\n", __func__);     \
+           fprintf(stderr,"[osl] Info: "msg" (%s).\n", __func__);          \
          } while (0)
 
 # define OSL_warning(msg)                                                  \
          do {                                                              \
-           fprintf(stderr,"[OpenScop] Warning: "msg" (%s).\n", __func__);  \
+           fprintf(stderr,"[osl] Warning: "msg" (%s).\n", __func__);       \
          } while (0)
 
 # define OSL_error(msg)                                                    \
          do {                                                              \
-           fprintf(stderr,"[OpenScop] Error: "msg" (%s).\n", __func__);    \
+           fprintf(stderr,"[osl] Error: "msg" (%s).\n", __func__);         \
            exit(1);                                                        \
          } while (0)
 

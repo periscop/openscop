@@ -40,7 +40,9 @@ CONTEXT
 # Parameter names are provided
 1
 # Parameter names
+<strings>
 N
+</strings>
 
 # Number of statements
 1
@@ -104,11 +106,15 @@ WRITE
 # ----------------------------------------------  1.4 Body
 # Statement body is provided
 1
+
+<body>
+# Number of original iterators
+2
 # Original iterator names
 i j 
 # Statement body
 C[i+j]+=A[i]*B[j];
-
+</body>
 
 # =============================================== Options
 <arrays>

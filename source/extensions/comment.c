@@ -60,10 +60,14 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/extensions/comment.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/interface.h>
+#include <osl/extensions/comment.h>
 
 
 /*+***************************************************************************
@@ -144,18 +148,10 @@ char * osl_comment_sprint(osl_comment_p comment) {
     OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
-    // Print the begin tag.
-    sprintf(buffer, OSL_TAG_COMMENT_START);
-    osl_util_safe_strcat(&string, buffer, &high_water_mark);
-
     // Print the comment.
-    sprintf(buffer, "\n%s", comment->comment);
+    sprintf(buffer, "%s", comment->comment);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    // Print the end tag.
-    sprintf(buffer, OSL_TAG_COMMENT_STOP"\n");
-    osl_util_safe_strcat(&string, buffer, &high_water_mark);
-  
     // Keep only the memory space we need.
     OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
@@ -177,12 +173,15 @@ char * osl_comment_sprint(osl_comment_p comment) {
  * \param  extensions The input string where to find a comment structure.
  * \return A pointer to the comment structure that has been read.
  */
-osl_comment_p osl_comment_sread(char * extensions) {
+osl_comment_p osl_comment_sread(char ** extensions_fixme) {
   char * content;
   osl_comment_p comment;
 
-  content = osl_util_tag_content(extensions, OSL_TAG_COMMENT_START,
-                                             OSL_TAG_COMMENT_STOP);
+  // FIXME: this is a quick and dirty thing to accept char ** instead
+  //        of char * in the parameter: really do it and update the
+  //        pointer to after what has been read.
+  content = *extensions_fixme;
+
   if (content == NULL) {
     OSL_debug("no comment optional tag");
     return NULL;
@@ -192,7 +191,7 @@ osl_comment_p osl_comment_sread(char * extensions) {
     OSL_error("comment too long");
 
   comment = osl_comment_malloc();
-  comment->comment = content;
+  OSL_strdup(comment->comment, content);
 
   return comment;
 }

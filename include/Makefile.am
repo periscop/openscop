@@ -87,6 +87,7 @@ pkginclude_HEADERS 	=             \
 	osl/int.h                     \
 	osl/names.h                   \
 	osl/strings.h                 \
+	osl/body.h                    \
 	osl/util.h                    \
 	osl/scop.h
 

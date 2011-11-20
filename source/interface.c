@@ -60,10 +60,17 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <osl/interface.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <osl/extensions/textual.h>
+#include <osl/extensions/comment.h>
+#include <osl/extensions/arrays.h>
+#include <osl/extensions/lines.h>
+#include <osl/extensions/irregular.h>
+#include <osl/strings.h>
+#include <osl/body.h>
+#include <osl/interface.h>
 
 
 /*+***************************************************************************
@@ -99,7 +106,11 @@ void osl_interface_idump(FILE * file, osl_interface_p interface, int level) {
       // Go to the right level.
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
-      fprintf(file, "|   osl_interface_t: URI = %s\n", interface->URI);
+
+      if (interface->URI != NULL)
+        fprintf(file, "|   osl_interface_t: URI = %s\n", interface->URI);
+      else
+        fprintf(file, "|   osl_interface_t: URI = (NULL)\n");
     }
     else
       first = 0;
@@ -128,8 +139,8 @@ void osl_interface_idump(FILE * file, osl_interface_p interface, int level) {
  * osl_interface_dump function:
  * this function prints the content of a osl_interface_t structure
  * (*interface) into a file (file, possibly stdout).
- * \param file  File where informations are printed.
- * \param extension The extension idstructure to print.
+ * \param file      File where informations are printed.
+ * \param interface The interface structure to print.
  */
 void osl_interface_dump(FILE * file, osl_interface_p interface) {
   osl_interface_idump(file, interface, 0); 
@@ -154,8 +165,7 @@ void osl_interface_dump(FILE * file, osl_interface_p interface) {
  * \param list      The list of interfaces to add a node (NULL if empty).
  * \param interface The interface to add to the list.
  */
-void osl_interface_add(osl_interface_p * list,
-                            osl_interface_p interface) {
+void osl_interface_add(osl_interface_p * list, osl_interface_p interface) {
   osl_interface_p tmp = *list, check_interface;
 
   if (interface != NULL) {
@@ -213,7 +223,7 @@ osl_interface_p osl_interface_malloc() {
  * osl_interface_free function:
  * this function frees the allocated memory for an osl_interface_t
  * structure, and all the interfaces stored in the list.
- * \param[in] id The pointer to the interface we want to free.
+ * \param[in] interface The pointer to the interface we want to free.
  */
 void osl_interface_free(osl_interface_p interface) {
   osl_interface_p tmp;
@@ -335,4 +345,30 @@ osl_interface_lookup(osl_interface_p list, char * URI) {
 
   return NULL;
 }
+
+
+/**
+ * osl_interface_get_default_registry function:
+ * this function creates the list of known interfaces (of all generic types,
+ * including extensions) and returns it.
+ * \return The list of known interfaces.
+ */
+osl_interface_p osl_interface_get_default_registry() {
+  osl_interface_p registry = NULL;
+
+  // Internal generics
+  osl_interface_add(&registry, osl_strings_interface());
+  osl_interface_add(&registry, osl_body_interface());
+  
+  // Extensions
+  osl_interface_add(&registry, osl_textual_interface());
+  osl_interface_add(&registry, osl_comment_interface());
+  //osl_interface_add(&registry, osl_arrays_interface());
+  //osl_interface_add(&registry, osl_lines_interface());
+  //osl_interface_add(&registry, osl_irregular_interface());
+  
+  return registry;
+}
+
+
 

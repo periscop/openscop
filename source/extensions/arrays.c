@@ -60,11 +60,16 @@
  *                                                                           *
  *****************************************************************************/
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <ctype.h>
-# include <osl/extensions/arrays.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#include <osl/macros.h>
+#include <osl/util.h>
+#include <osl/strings.h>
+#include <osl/interface.h>
+#include <osl/extensions/arrays.h>
 
 
 /*+***************************************************************************
@@ -176,14 +181,14 @@ char * osl_arrays_sprint(osl_arrays_p arrays) {
 
 
 /**
- * osl_arrays_read function:
+ * osl_arrays_sread function:
  * this function reads an arrays structure from a string complying to the
  * OpenScop textual format and returns a pointer to this arrays structure.
  * The string should contain only one textual format of an arrays structure.
  * \param  extensions The input string where to find an arrays structure.
  * \return A pointer to the arrays structure that has been read.
  */
-osl_arrays_p osl_arrays_sread(char * extensions) {
+osl_arrays_p osl_arrays_sread(char ** extensions_fixme) {
   int i, k, array_id;
   int  nb_names;
   int  *  id;
@@ -192,8 +197,10 @@ osl_arrays_p osl_arrays_sread(char * extensions) {
   char buff[OSL_MAX_STRING];
   osl_arrays_p arrays;
 
-  content = osl_util_tag_content(extensions, OSL_TAG_ARRAYS_START,
-                                             OSL_TAG_ARRAYS_STOP);
+  // FIXME: this is a quick and dirty thing to accept char ** instead
+  //        of char * in the parameter: really do it and update the
+  //        pointer to after what has been read.
+  content = *extensions_fixme;
 
   if (content == NULL) {
     OSL_debug("no arrays optional tag");

@@ -61,11 +61,18 @@
  *****************************************************************************/
 
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <ctype.h>
-# include <osl/relation.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#include <osl/macros.h>
+#include <osl/int.h>
+#include <osl/util.h>
+#include <osl/vector.h>
+#include <osl/strings.h>
+#include <osl/names.h>
+#include <osl/relation.h>
 
 
 /*+***************************************************************************
@@ -77,7 +84,6 @@
  * osl_relation_sprint_type function:
  * this function prints the textual type of an osl_relation_t structure into
  * a string, according to the OpenScop specification, and returns that string.
- * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose type has to be printed.
  * \return A string containing the relation type.
  */
@@ -943,7 +949,7 @@ return_type:
  * this function reads a relation into a file (foo, posibly stdin) and
  * returns a pointer this relation. The relation is set to the maximum
  * available precision.
- * \param[in] file      The input stream.
+ * \param[in] foo       The input stream.
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the relation structure that has been read.
  */
@@ -956,7 +962,7 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
   int read_attributes = 1;
   int first = 1;
   int type;
-  char * c, s[OSL_MAX_STRING], str[OSL_MAX_STRING];
+  char * c, s[OSL_MAX_STRING], str[OSL_MAX_STRING], *tmp;
   osl_relation_p relation, relation_union = NULL, previous = NULL;
 
   type = osl_relation_read_type(foo);
@@ -1010,7 +1016,9 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
         if (sscanf(c, "%s%n", str, &n) == 0)
           OSL_error("not enough rows");
 
-        osl_int_sread(str, precision, relation->m[i], j);
+        // TODO: remove this tmp (sread updates the pointer).
+        tmp = str;
+        osl_int_sread(&tmp, precision, relation->m[i], j);
         c += n;
       }
     }
@@ -1703,8 +1711,8 @@ int osl_relation_check_nb_columns(osl_relation_p relation,
  * that we do not expect a specific value) and what the relation is supposed
  * to represent. It returns 0 if the check failed or 1 if no problem has been
  * detected.
- * \param[in] relation  The relation we want to check.
- * \param[in] type      Semantics about this relation (domain, access...).
+ * \param[in] relation      The relation we want to check.
+ * \param[in] expected_type Semantics about this relation (domain, access...).
  * \param[in] expected_nb_output_dims Expected number of output dimensions.
  * \param[in] expected_nb_input_dims  Expected number of input dimensions.
  * \param[in] expected_nb_parameters  Expected number of parameters.

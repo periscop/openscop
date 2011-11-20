@@ -64,8 +64,7 @@
 #ifndef OSL_STRINGS_H
 # define OSL_STRINGS_H
 
-# include <osl/macros.h>
-# include <osl/util.h>
+# include <stdio.h>
 # include <osl/interface.h>
 
 # if defined(__cplusplus)
@@ -98,7 +97,7 @@ void            osl_strings_print(FILE *, osl_strings_p);
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_strings_p   osl_strings_sread(char *);
+osl_strings_p   osl_strings_sread(char **);
 osl_strings_p   osl_strings_read(FILE *);
 
 /*+***************************************************************************
