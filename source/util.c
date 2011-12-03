@@ -431,12 +431,12 @@ void osl_util_print_provided(FILE * file, int provided, char * title) {
 static
 int osl_util_identifier_is_here(char * expression, char * identifier,
                                 int index) {
-  // If there is no space enough to find the iterator: no.
+  // If there is no space enough to find the identifier: no.
   if (strlen(identifier) + index > strlen(expression))
     return 0;
   
   // If there is a character before and it is in [A-Za-z0-9]: no.
-  if ((index == 0) &&
+  if ((index > 0) &&
       (((expression[index - 1] >= 'A') && (expression[index - 1] <= 'Z')) || 
        ((expression[index - 1] >= 'a') && (expression[index - 1] <= 'z')) || 
        ((expression[index - 1] >= '0') && (expression[index - 1] <= '9'))))
