@@ -156,7 +156,7 @@ void osl_relation_print_type(FILE * file, osl_relation_p relation) {
  * this function displays a osl_relation_t structure (*relation) into a
  * file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
- * print_structure functions.
+ * idump functions.
  * \param[in] file     File where informations are printed.
  * \param[in] relation The relation whose information has to be printed.
  * \param[in] level    Number of spaces before printing, for each line.

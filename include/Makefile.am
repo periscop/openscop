@@ -95,6 +95,7 @@ pkgextensionsincludedir = $(pkgincludedir)/extensions
 pkgextensionsinclude_HEADERS =        \
 	osl/extensions/textual.h      \
 	osl/extensions/comment.h      \
+	osl/extensions/scatnames.h    \
 	osl/extensions/arrays.h       \
 	osl/extensions/lines.h        \
 	osl/extensions/irregular.h

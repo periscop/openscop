@@ -2415,6 +2415,7 @@ particular, the sender fully accepts the license and copyright notice.
 @menu
 * Comment Extension::
 * Arrays Extension::
+* Scatnames Extension::
 * Lines Extension::
 * Irregular Extension::
 @end menu
@@ -2461,6 +2462,59 @@ typedef struct osl_comment   osl_comment_t;
 typedef struct osl_comment * osl_comment_p;
 @end group
 @end example
+
+@c ---------------------------------------------------------------------------
+
+
+@node Scatnames Extension
+@subsection Scatnames Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{scatnames}.
+@item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
+@item Purpose: the @code{scatnames} extension provides a list of textual
+scattering dimension names.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{scatnames} extension file format respects the following
+grammar. It reuses the @code{Strings} description (@pxref{Strings Generic}):
+@example
+Scatnames_generic   ::= "<scatnames>" Scatnames "</scatnames>"
+Scatnames           ::= Strings
+@end example
+
+@noindent The list of scattering dimension names is provided on one single
+line. The names are separated with spaces. A possible
+example of such an extension is the following:
+
+@example
+@group
+<scatnames>
+# List of scattering dimension names:
+beta_0 i beta_1 j beta_2
+</scatnames>
+@end group
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{scatnames} extension data structure is the following:
+
+@example
+@group
+struct osl_scatnames @{
+  osl_strings_p names;  /* List of textual scattering dimension names. */
+@};
+typedef struct osl_scatnames   osl_scatnames_t;
+typedef struct osl_scatnames * osl_scatnames_p;
+@end group
+@end example
+
+@noindent The order of the scattering dimension names in the list corresponds
+to the order of the scattering dimensions.
 
 @c ---------------------------------------------------------------------------
 

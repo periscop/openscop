@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          osl.h                             **
+     **                    extensions/scatnames.h                       **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 03/12/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,49 +61,67 @@
  *****************************************************************************/
 
 
-#ifndef OSL_OSL_H
-# define OSL_OSL_H
+#ifndef OSL_SCATNAMES_H
+# define OSL_SCATNAMES_H
 
-/* List of reserved OpenScop URIs:
- * - arrays
- * - body
- * - comment
- * - generic
- * - int
- * - interface
- * - irregular
- * - lines
- * - openscop
- * - relation
- * - relation_list
- * - scatnames
- * - scop
- * - statement
- * - strings
- * - textual
- * - vector
- */
-
-# include <osl/macros.h>
-# include <osl/int.h>
-# include <osl/util.h>
-# include <osl/strings.h>
-# include <osl/body.h>
-# include <osl/vector.h>
-# include <osl/relation.h>
-# include <osl/relation_list.h>
+# include <stdio.h>
 # include <osl/interface.h>
+# include <osl/strings.h>
 
-# include <osl/extensions/textual.h>
-# include <osl/extensions/comment.h>
-# include <osl/extensions/scatnames.h>
-# include <osl/extensions/arrays.h>
-# include <osl/extensions/lines.h>
-# include <osl/extensions/irregular.h>
-
-# include <osl/generic.h>
-# include <osl/statement.h>
-# include <osl/scop.h>
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OSL_OSL_H */
+# define OSL_URI_SCATNAMES        "scatnames"
+
+
+/**
+ * The osl_scatnames_t structure stores a scatnames extention to the core
+ * OpenScop representation. It is devoted to store the scattering dimension
+ * names in a textual form. The names are stored using an osl_strings_t
+ * structure and their order in the array corresponds to their dimension
+ * order.
+ */
+struct osl_scatnames {
+  osl_strings_p names;  /**< List of textual scattering dimension names. */
+};
+typedef struct osl_scatnames   osl_scatnames_t;
+typedef struct osl_scatnames * osl_scatnames_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void            osl_scatnames_idump(FILE *, osl_scatnames_p, int);
+void            osl_scatnames_dump(FILE *, osl_scatnames_p);
+char *          osl_scatnames_sprint(osl_scatnames_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+osl_scatnames_p osl_scatnames_sread(char **);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+osl_scatnames_p osl_scatnames_malloc();
+void            osl_scatnames_free(osl_scatnames_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+osl_scatnames_p osl_scatnames_clone(osl_scatnames_p);
+int             osl_scatnames_equal(osl_scatnames_p, osl_scatnames_p);
+osl_interface_p osl_scatnames_interface();
+
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OSL_SCATNAMES_H */

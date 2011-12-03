@@ -80,7 +80,7 @@
  * this function displays an osl_generic_t structure (*generic) into
  * a file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
- * print_structure functions.
+ * idump functions.
  * \param[in] file    File where informations are printed.
  * \param[in] generic The generic whose information has to be printed.
  * \param[in] level   Number of spaces before printing, for each line.

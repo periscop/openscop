@@ -79,7 +79,7 @@
  * this function displays an osl_names_t structure (*names) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
- * print_structure functions.
+ * idump functions.
  * \param[in] file  The file where the information has to be printed.
  * \param[in] names The names structure whose information has to be printed.
  * \param[in] level Number of spaces before printing, for each line.

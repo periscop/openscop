@@ -81,8 +81,7 @@
  * Displays a osl_vector_t structure (*vector) into a file (file, possibly
  * stdout) in a way that trends to be understandable without falling in a deep
  * depression or, for the lucky ones, getting a headache... It includes an
- * indentation level (level) in order to work with others print_structure
- * functions.
+ * indentation level (level) in order to work with others idump functions.
  * \param[in] file   File where informations are printed.
  * \param[in] vector The vector whose information have to be printed.
  * \param[in] level  Number of spaces before printing, for each line.

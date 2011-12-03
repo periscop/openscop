@@ -65,6 +65,7 @@
 #include <string.h>
 #include <osl/extensions/textual.h>
 #include <osl/extensions/comment.h>
+#include <osl/extensions/scatnames.h>
 #include <osl/extensions/arrays.h>
 #include <osl/extensions/lines.h>
 #include <osl/extensions/irregular.h>
@@ -83,7 +84,7 @@
  * this function displays an osl_interface_t structure (*interface) into
  * a file (file, possibly stdout) in a way that trends to be understandable.
  * It includes an indentation level (level) in order to work with others
- * print_structure functions.
+ * idump functions.
  * \param file      The file where the information has to be printed.
  * \param interface The interface structure which has to be printed.
  * \param level     Number of spaces before printing, for each line.
@@ -363,6 +364,7 @@ osl_interface_p osl_interface_get_default_registry() {
   // Extensions
   osl_interface_add(&registry, osl_textual_interface());
   osl_interface_add(&registry, osl_comment_interface());
+  osl_interface_add(&registry, osl_scatnames_interface());
   //osl_interface_add(&registry, osl_arrays_interface());
   //osl_interface_add(&registry, osl_lines_interface());
   //osl_interface_add(&registry, osl_irregular_interface());

@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/comment.c                        **
+     **                    extensions/scatnames.c                       **
      **-----------------------------------------------------------------**
-     **                   First version: 07/12/2010                     **
+     **                   First version: 03/12/2011                     **
      **-----------------------------------------------------------------**
 
  
@@ -67,7 +67,8 @@
 #include <osl/macros.h>
 #include <osl/util.h>
 #include <osl/interface.h>
-#include <osl/extensions/comment.h>
+#include <osl/strings.h>
+#include <osl/extensions/scatnames.h>
 
 
 /*+***************************************************************************
@@ -76,40 +77,35 @@
 
 
 /**
- * osl_comment_idump function:
- * this function displays an osl_comment_t structure (*comment) into a
+ * osl_scatnames_idump function:
+ * this function displays an osl_scatnames_t structure (*scatnames) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * idump functions.
- * \param[in] file    The file where the information has to be printed.
- * \param[in] comment The comment structure to print.
- * \param[in] level   Number of spaces before printing, for each line.
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] scatnames Scatnames structure to print.
+ * \param[in] level     Number of spaces before printing, for each line.
  */
-void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
+void osl_scatnames_idump(FILE * file, osl_scatnames_p scatnames, int level) {
   int j;
-  char * tmp;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (comment != NULL)
-    fprintf(file, "+-- osl_comment_t\n");
+  if (scatnames != NULL)
+    fprintf(file, "+-- osl_scatnames_t\n");
   else
-    fprintf(file, "+-- NULL comment\n");
+    fprintf(file, "+-- NULL scatnames\n");
 
-  if (comment != NULL) {
+  if (scatnames != NULL) {
     // Go to the right level.
-    for(j = 0; j <= level; j++)
+    for(j = 0; j <= level + 1; j++)
       fprintf(file, "|\t");
+    fprintf(file, "\n");
   
-    // Display the comment message (without any carriage return).
-    tmp = strdup(comment->comment);
-    for (j = 0; j < strlen(tmp); j++)
-      if (tmp[j] == '\n')
-	tmp[j] = ' ';
-    fprintf(file, "comment: %s\n", tmp);
-    free(tmp);
+    // Display the list of scattering names.
+    osl_strings_idump(file, scatnames->names, level + 1);
   }
 
   // The last line.
@@ -120,44 +116,26 @@ void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
 
 
 /**
- * osl_comment_dump function:
- * this function prints the content of an osl_comment_t structure
- * (*comment) into a file (file, possibly stdout).
- * \param[in] file    The file where the information has to be printed.
- * \param[in] comment The comment structure to print.
+ * osl_scatnames_dump function:
+ * this function prints the content of an osl_scatnames_t structure
+ * (*scatnames) into a file (file, possibly stdout).
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] scatnames The scatnames structure to print.
  */
-void osl_comment_dump(FILE * file, osl_comment_p comment) {
-  osl_comment_idump(file, comment, 0);
+void osl_scatnames_dump(FILE * file, osl_scatnames_p scatnames) {
+  osl_scatnames_idump(file, scatnames, 0);
 }
 
 
 /**
- * osl_comment_sprint function:
- * this function prints the content of an osl_comment_t structure
- * (*comment) into a string (returned) in the OpenScop textual format.
- * \param[in] comment The comment structure to print.
- * \return A string containing the OpenScop dump of the comment structure.
+ * osl_scatnames_sprint function:
+ * this function prints the content of an osl_scatnames_t structure
+ * (*scatnames) into a string (returned) in the OpenScop textual format.
+ * \param[in] scatnames The scatnames structure to print.
+ * \return A string containing the OpenScop dump of the scatnames structure.
  */
-char * osl_comment_sprint(osl_comment_p comment) {
-  int high_water_mark = OSL_MAX_STRING;
-  char * string = NULL;
-  char * buffer;
-
-  if (comment != NULL) {
-    OSL_malloc(string, char *, high_water_mark * sizeof(char));
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
-    string[0] = '\0';
-   
-    // Print the comment.
-    sprintf(buffer, "%s", comment->comment);
-    osl_util_safe_strcat(&string, buffer, &high_water_mark);
-
-    // Keep only the memory space we need.
-    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
-    free(buffer);
-  }
-
-  return string;
+char * osl_scatnames_sprint(osl_scatnames_p scatnames) {
+  return osl_strings_sprint(scatnames->names);
 }
 
 
@@ -165,35 +143,30 @@ char * osl_comment_sprint(osl_comment_p comment) {
  *                               Reading function                            *
  *****************************************************************************/
 
+
 /**
- * osl_comment_sread function:
- * this function reads a comment structure from a string complying to the
- * OpenScop textual format and returns a pointer to this comment structure.
+ * osl_scatnames_sread function:
+ * this function reads a scatnames structure from a string complying to the
+ * OpenScop textual format and returns a pointer to this scatnames structure.
  * The input parameter is updated to the position in the input string this
- * function reach right after reading the comment structure.
- * \param[in,out] input The input string where to find a comment.
+ * function reach right after reading the scatnames structure.
+ * \param[in,out] input The input string where to find a scatnames.
  *                      Updated to the position after what has been read.
- * \return A pointer to the comment structure that has been read.
+ * \return A pointer to the scatnames structure that has been read.
  */
-osl_comment_p osl_comment_sread(char ** input) {
-  osl_comment_p comment;
+osl_scatnames_p osl_scatnames_sread(char ** input) {
+  osl_scatnames_p scatnames;
 
   if (*input == NULL) {
-    OSL_debug("no comment optional tag");
+    OSL_debug("no scatnames optional tag");
     return NULL;
   }
 
-  if (strlen(*input) > OSL_MAX_STRING) 
-    OSL_error("comment too long");
+  // Build the scatnames structure
+  scatnames = osl_scatnames_malloc();
+  scatnames->names = osl_strings_sread(input);
 
-  // Build the comment structure
-  comment = osl_comment_malloc();
-  OSL_strdup(comment->comment, *input);
-
-  // Update the input pointer (everything has been read).
-  input += strlen(*input);
-
-  return comment;
+  return scatnames;
 }
 
 
@@ -203,34 +176,33 @@ osl_comment_p osl_comment_sread(char ** input) {
 
 
 /**
- * osl_comment_malloc function:
- * this function allocates the memory space for an osl_comment_t
+ * osl_scatnames_malloc function:
+ * this function allocates the memory space for an osl_scatnames_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
- * \return A pointer to an empty comment structure with fields set to
+ * \return A pointer to an empty scatnames structure with fields set to
  *         default values.
  */
-osl_comment_p osl_comment_malloc() {
-  osl_comment_p comment;
+osl_scatnames_p osl_scatnames_malloc() {
+  osl_scatnames_p scatnames;
 
-  OSL_malloc(comment, osl_comment_p, sizeof(osl_comment_t));
-  comment->comment = NULL;
+  OSL_malloc(scatnames, osl_scatnames_p, sizeof(osl_scatnames_t));
+  scatnames->names = NULL;
 
-  return comment;
+  return scatnames;
 }
 
 
 /**
- * osl_comment_free function:
- * this function frees the allocated memory for an osl_comment_t
+ * osl_scatnames_free function:
+ * this function frees the allocated memory for an osl_scatnames_t
  * structure.
- * \param[in,out] comment The pointer to the comment structure to free.
+ * \param[in,out] scatnames The pointer to the scatnames structure to free.
  */
-void osl_comment_free(osl_comment_p comment) {
-  if (comment != NULL) {
-    if(comment->comment != NULL)
-      free(comment->comment);
-    free(comment);
+void osl_scatnames_free(osl_scatnames_p scatnames) {
+  if (scatnames != NULL) {
+    osl_strings_free(scatnames->names);
+    free(scatnames);
   }
 }
 
@@ -241,42 +213,42 @@ void osl_comment_free(osl_comment_p comment) {
 
 
 /**
- * osl_comment_clone function:
- * this function builds and returns a "hard copy" (not a pointer copy) of an
- * osl_comment_t data structure.
- * \param[in] comment The pointer to the comment structure to clone.
- * \return A pointer to the clone of the comment structure.
+ * osl_scatnames_clone function:
+ * This function builds and returns a "hard copy" (not a pointer copy) of an
+ * osl_scatnames_t data structure.
+ * \param[in] scatnames The pointer to the scatnames structure to clone.
+ * \return A pointer to the clone of the scatnames structure.
  */
-osl_comment_p osl_comment_clone(osl_comment_p comment) {
-  osl_comment_p clone;
+osl_scatnames_p osl_scatnames_clone(osl_scatnames_p scatnames) {
+  osl_scatnames_p clone;
 
-  if (comment == NULL)
+  if (scatnames == NULL)
     return NULL;
 
-  clone = osl_comment_malloc();
-  OSL_strdup(clone->comment, comment->comment);
+  clone = osl_scatnames_malloc();
+  clone->names = osl_strings_clone(scatnames->names);
 
   return clone;
 }
 
 
 /**
- * osl_comment_equal function:
- * this function returns true if the two comment structures are the same
+ * osl_scatnames_equal function:
+ * this function returns true if the two scatnames structures are the same
  * (content-wise), false otherwise.
- * \param[in] c1  The first comment structure.
- * \param[in] c2  The second comment structure.
- * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
+ * \param[in] s1 The first scatnames structure.
+ * \param[in] s2 The second scatnames structure.
+ * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
+int osl_scatnames_equal(osl_scatnames_p s1, osl_scatnames_p s2) {
   
-  if (c1 == c2)
+  if (s1 == s2)
     return 1;
 
-  if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
+  if (((s1 == NULL) && (s2 != NULL)) || ((s1 != NULL) && (s2 == NULL)))
     return 0;
 
-  if (strcmp(c1->comment, c2->comment))
+  if (!osl_strings_equal(s1->names, s2->names))
     return 0;
 
   return 1;
@@ -284,23 +256,22 @@ int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
 
 
 /**
- * osl_comment_interface function:
- * this function creates an interface structure corresponding to the comment
+ * osl_scatnames_interface function:
+ * this function creates an interface structure corresponding to the scatnames
  * extension and returns it).
- * \return An interface structure for the comment extension.
+ * \return An interface structure for the scatnames extension.
  */
-osl_interface_p osl_comment_interface() {
+osl_interface_p osl_scatnames_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_COMMENT);
-  interface->idump  = (osl_idump_f)osl_comment_idump;
-  interface->sprint = (osl_sprint_f)osl_comment_sprint;
-  interface->sread  = (osl_sread_f)osl_comment_sread;
-  interface->malloc = (osl_malloc_f)osl_comment_malloc;
-  interface->free   = (osl_free_f)osl_comment_free;
-  interface->clone  = (osl_clone_f)osl_comment_clone;
-  interface->equal  = (osl_equal_f)osl_comment_equal;
+  interface->URI    = strdup(OSL_URI_SCATNAMES);
+  interface->idump  = (osl_idump_f)osl_scatnames_idump;
+  interface->sprint = (osl_sprint_f)osl_scatnames_sprint;
+  interface->sread  = (osl_sread_f)osl_scatnames_sread;
+  interface->malloc = (osl_malloc_f)osl_scatnames_malloc;
+  interface->free   = (osl_free_f)osl_scatnames_free;
+  interface->clone  = (osl_clone_f)osl_scatnames_clone;
+  interface->equal  = (osl_equal_f)osl_scatnames_equal;
 
   return interface;
 }
-

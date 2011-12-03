@@ -87,6 +87,7 @@ libosl_la_SOURCES 	=      \
 	statement.c            \
 	extensions/textual.c   \
 	extensions/comment.c   \
+	extensions/scatnames.c \
 	extensions/arrays.c    \
 	extensions/lines.c     \
 	extensions/irregular.c \

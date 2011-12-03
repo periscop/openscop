@@ -82,7 +82,7 @@
  * this function displays a osl_arrays_t structure (*arrays) into a file
  * (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
- * print_structure functions.
+ * idump functions.
  * \param file   The file where the information has to be printed.
  * \param arrays The arrays structure whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
