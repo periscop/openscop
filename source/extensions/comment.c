@@ -169,29 +169,29 @@ char * osl_comment_sprint(osl_comment_p comment) {
  * osl_comment_sread function:
  * this function reads a comment structure from a string complying to the
  * OpenScop textual format and returns a pointer to this comment structure.
- * The string should contain only one textual format of a comment structure.
- * \param  extensions The input string where to find a comment structure.
+ * The input parameter is updated to the position in the input string this
+ * function reach right after reading the comment structure.
+ * \param[in,out] input The input string where to find a comment.
+ *                      Updated to the position after what has been read.
  * \return A pointer to the comment structure that has been read.
  */
-osl_comment_p osl_comment_sread(char ** extensions_fixme) {
-  char * content;
+osl_comment_p osl_comment_sread(char ** input) {
   osl_comment_p comment;
 
-  // FIXME: this is a quick and dirty thing to accept char ** instead
-  //        of char * in the parameter: really do it and update the
-  //        pointer to after what has been read.
-  content = *extensions_fixme;
-
-  if (content == NULL) {
+  if (*input == NULL) {
     OSL_debug("no comment optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OSL_MAX_STRING) 
+  if (strlen(*input) > OSL_MAX_STRING) 
     OSL_error("comment too long");
 
+  // Build the comment structure
   comment = osl_comment_malloc();
-  OSL_strdup(comment->comment, content);
+  OSL_strdup(comment->comment, *input);
+
+  // Update the input pointer (everything has been read).
+  input += strlen(*input);
 
   return comment;
 }

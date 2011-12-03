@@ -186,8 +186,7 @@ void osl_strings_print(FILE * file, osl_strings_p strings) {
  * The input string should only contain the list of strings this function
  * has to read (comments at the end of the line are accepted). The input
  * parameter is updated to the position in the input string this function
- * reach right after reading the strings structure (or NULL if all the
- * string has been read).
+ * reach right after reading the strings structure.
  * \param[in,out] input The input string where to find a strings structure.
  *                      Updated to the position after what has been read.
  * \return A pointer to the strings structure that has been read.
