@@ -443,7 +443,7 @@ int osl_util_identifier_is_here(char * expression, char * identifier,
     return 0;
 
   // If there is a character after and it is in [A-Za-z0-9]: no.
-  if ((strlen(identifier) + index <= strlen(expression)) &&
+  if ((strlen(identifier) + index < strlen(expression)) &&
       (((expression[strlen(identifier) + index] >= 'A') &&
         (expression[strlen(identifier) + index] <= 'Z'))   || 
        ((expression[strlen(identifier) + index] >= 'a') &&
@@ -461,14 +461,73 @@ int osl_util_identifier_is_here(char * expression, char * identifier,
 
 
 /**
+ * osl_util_lazy_isolated_identifier function:
+ * this function returns 1 if the identifier at the "index" position in the
+ * "expression" is guaranteed not to need parenthesis around is we
+ * substitute it with anything. For instance the identifier "i" can be
+ * always substituted in "A[i]" with no need of parenthesis but not in
+ * "A[2*i]". This function is lazy in the sense that it just check obvious
+ * cases, not all of them. The identifier must already be at the indicated
+ * position, this function does not check that.
+ * \param[in] expression The input expression.
+ * \param[in] identifier The identifier to check.
+ * \param[in] index      The position of the identifier in the expression.
+ * \return 1 if the identifier is isolated, 0 if unsure.
+ */
+static
+int osl_util_lazy_isolated_identifier(char * expression, char * identifier,
+                                      int index) {
+  int look;
+
+  // If the first non-space character before is not in [\[(,\+=]: no. 
+  look = index - 1;
+  while (look >= 0) {
+    if (isspace(expression[look]))
+      look--;
+    else
+      break;
+  }
+
+  if ((look >= 0) &&
+      (expression[look] != '[') &&
+      (expression[look] != '(') &&
+      (expression[look] != '+') &&
+      (expression[look] != '=') &&
+      (expression[look] != ','))
+    return 0;
+        
+  // If the first non-space character after is not in [\]),;\+]: no. 
+  look = index + strlen(identifier);
+  while (look < strlen(expression)) {
+    if (isspace(expression[look]))
+      look++;
+    else
+      break;
+  }
+
+  if ((look < strlen(expression)) &&
+      (expression[look] != ']')   &&
+      (expression[look] != ')')   &&
+      (expression[look] != '+')   &&
+      (expression[look] != ',')   &&
+      (expression[look] != ';'))
+    return 0;
+
+  return 1;
+}
+
+
+/**
  * osl_util_identifier_substitution function:
  * this function replaces some identifiers in an input expression string and
  * returns the final string. The list of identifiers to replace are provided
  * as an array of strings. They are replaced from the input string with the
- * new substring "@i@" where i is the rank of the identifier in the array
- * of identifiers. For instance, let us consider the input expression
- * "C[i+j]+=A[i]*B[j];" and the array of strings {"i", "j"}: the resulting
- * string would be "C[@0@+@1@]+=A[@0@]*B[@1@];".
+ * new substring "@i@" or "(@i@)" where i is the rank of the identifier in the
+ * array of identifiers. The parentheses are added when it is not obvious that
+ * the identifier can be replaced with an arbitrary expression without the
+ * need of parentheses. For instance, let us consider the input expression
+ * "C[i+j]+=A[2*i]*B[j];" and the array of strings {"i", "j"}: the resulting
+ * string would be "C[@0@+@1@]+=A[2*(@0@)]*B[@1@];".
  * \param[in] expression The original expression.
  * \param[in] identifiers NULL-terminated array of identifiers.
  * \return A new string where the ith identifier is replaced by \@i\@.
@@ -489,7 +548,10 @@ char * osl_util_identifier_substitution(char * expression,
     found = 0;
     while (identifiers[j] != NULL) {
       if (osl_util_identifier_is_here(expression, identifiers[j], index)) {
-        sprintf(buffer, "@%d@", j);
+        if (osl_util_lazy_isolated_identifier(expression,identifiers[j],index))
+          sprintf(buffer, "@%d@", j);
+        else
+          sprintf(buffer, "(@%d@)", j);
         osl_util_safe_strcat(&string, buffer, &high_water_mark);
         index += strlen(identifiers[j]);
         found = 1;
