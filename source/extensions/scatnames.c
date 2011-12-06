@@ -149,13 +149,15 @@ char * osl_scatnames_sprint(osl_scatnames_p scatnames) {
  * this function reads a scatnames structure from a string complying to the
  * OpenScop textual format and returns a pointer to this scatnames structure.
  * The input parameter is updated to the position in the input string this
- * function reach right after reading the scatnames structure.
+ * function reach right after reading the scatnames structure. If there
+ * is nothing to read, the function returns NULL.
  * \param[in,out] input The input string where to find a scatnames.
  *                      Updated to the position after what has been read.
  * \return A pointer to the scatnames structure that has been read.
  */
 osl_scatnames_p osl_scatnames_sread(char ** input) {
-  osl_scatnames_p scatnames;
+  osl_scatnames_p scatnames = NULL;
+  osl_strings_p names = NULL;
 
   if (*input == NULL) {
     OSL_debug("no scatnames optional tag");
@@ -163,8 +165,11 @@ osl_scatnames_p osl_scatnames_sread(char ** input) {
   }
 
   // Build the scatnames structure
-  scatnames = osl_scatnames_malloc();
-  scatnames->names = osl_strings_sread(input);
+  names = osl_strings_sread(input);
+  if (names != NULL) {
+    scatnames = osl_scatnames_malloc();
+    scatnames->names = names;
+  }
 
   return scatnames;
 }

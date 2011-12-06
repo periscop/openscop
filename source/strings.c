@@ -212,7 +212,7 @@ osl_strings_p osl_strings_sread(char ** input) {
     if (count != 0)
       nb_strings++;
 
-    if ((*s == '#') || (*s == '\n'))
+    if ((!*s) || (*s == '#') || (*s == '\n'))
       break;
     else
       s++;
