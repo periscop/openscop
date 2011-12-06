@@ -628,7 +628,7 @@ int osl_scop_integrity_check(osl_scop_p scop) {
 int osl_scop_get_nb_parameters(osl_scop_p scop) {
 
   if (scop->context == NULL) {
-    OSL_warning("no context domain, assuming 0 parameters");
+    OSL_debug("no context domain, assuming 0 parameters");
     return 0;
   }
   else {
