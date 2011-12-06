@@ -329,12 +329,17 @@ void osl_relation_list_free(osl_relation_list_p list) {
  * osl_relation_list_node function:
  * This function builds an osl_relation_list_t node and sets its
  * relation element as a copy of the one provided as parameter.
+ * If the relation provided as an argument is NULL, NULL is returned.
  * \param r The pointer to the relation to copy/paste in a list node.
  * \return A pointer to a relation list node containing a copy of "relation".
  */
 osl_relation_list_p osl_relation_list_node(osl_relation_p r) {
-  osl_relation_list_p new = osl_relation_list_malloc();
-  new->elt = osl_relation_clone(r);
+  osl_relation_list_p new = NULL;
+  
+  if (r != NULL) {
+    new = osl_relation_list_malloc();
+    new->elt = osl_relation_clone(r);
+  }
   return new;
 }
 
