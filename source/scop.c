@@ -67,6 +67,7 @@
 
 #include <osl/macros.h>
 #include <osl/util.h>
+#include <osl/extensions/arrays.h>
 #include <osl/extensions/textual.h>
 #include <osl/strings.h>
 #include <osl/relation.h>
@@ -216,9 +217,13 @@ osl_names_p osl_scop_names(osl_scop_p scop) {
  * \param scop The scop structure whose information has to be printed.
  */
 void osl_scop_print(FILE * file, osl_scop_p scop) {
+  int i;
   int parameters_backedup = 0;
+  int arrays_backedup = 0;
   osl_strings_p parameters_backup = NULL;
+  osl_strings_p arrays_backup = NULL;
   osl_names_p names;
+  osl_arrays_p arrays;
 
   if (scop == NULL) {
     fprintf(file, "# NULL scop\n");
@@ -230,18 +235,29 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
   }
 
   if (osl_scop_integrity_check(scop) == 0)
-    OSL_warning("OpenScop integrity check failed. "
-                     "Something may go wrong.");
+    OSL_warning("OpenScop integrity check failed. Something may go wrong.");
   
   // Generate the names for the various dimensions.
   names = osl_scop_names(scop);
 
   while (scop != NULL) {
-    // If possible, replace parameter names with scop iterator names.
+    // If possible, replace parameter names with scop parameter names.
     if (osl_generic_has_URI(scop->parameters, OSL_URI_STRINGS)) {
       parameters_backedup = 1;
       parameters_backup = names->parameters;
       names->parameters = scop->parameters->data;
+    }
+
+    // If possible, replace array names with arrays extension names.
+    arrays = osl_generic_lookup(scop->extension, OSL_URI_ARRAYS);
+    if (arrays != NULL) {
+      arrays_backedup = 1;
+      arrays_backup = names->arrays;
+      names->arrays = osl_strings_clone(arrays_backup);
+      for (i = 0; i < arrays->nb_names; i++) {
+        free(names->arrays->string[arrays->id[i] - 1]);
+        OSL_strdup(names->arrays->string[arrays->id[i] - 1], arrays->names[i]);
+      }
     }
     
     fprintf(file, "\n"OSL_TAG_START_SCOP"\n\n");
@@ -275,6 +291,13 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
     if (parameters_backedup) {
       parameters_backedup = 0;
       names->parameters = parameters_backup;
+    }
+
+    // If necessary, switch back array names.
+    if (arrays_backedup) {
+      arrays_backedup = 0;
+      osl_strings_free(names->arrays);
+      names->arrays = arrays_backup;
     }
 
     scop = scop->next;

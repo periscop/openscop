@@ -141,11 +141,10 @@ void osl_comment_dump(FILE * file, osl_comment_p comment) {
 char * osl_comment_sprint(osl_comment_p comment) {
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
-  char * buffer;
+  char buffer[OSL_MAX_STRING];
 
   if (comment != NULL) {
     OSL_malloc(string, char *, high_water_mark * sizeof(char));
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
     // Print the comment.
@@ -154,7 +153,6 @@ char * osl_comment_sprint(osl_comment_p comment) {
 
     // Keep only the memory space we need.
     OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
-    free(buffer);
   }
 
   return string;

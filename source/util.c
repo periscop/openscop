@@ -157,13 +157,56 @@ int osl_util_read_int(FILE * file, char ** str) {
     osl_util_sskip_blank_and_comments(str);
     
     // Build the chain to analyze.
-    while (**str && !isspace(**str) && **str != '\n')
+    while (**str && !isspace(**str) && **str != '\n' && **str != '#')
       s[i++] = *((*str)++);
     s[i] = '\0';
     if (sscanf(s, "%d", &res) != 1)
       OSL_error("an int was expected");
   }
 
+  return res;
+}
+
+
+/**
+ * osl_util_read_string function:
+ * reads a string on the input 'file' or the input string 'str' depending on
+ * which one is not NULL (exactly one of them must not be NULL).
+ * \param[in]     file The file where to read a string (if not NULL).
+ * \param[in,out] str  The string where to read a string (if not NULL). This
+ *                     pointer is updated to reflect the read and points
+ *                     after the string in the input string.
+ * \return The string that has been read.
+ */
+char * osl_util_read_string(FILE * file, char ** str) {
+  char s[OSL_MAX_STRING], * start;
+  char * res;
+  int i = 0;
+
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
+    OSL_error("one and only one of the two parameters can be non-NULL");
+
+  OSL_malloc(res, char *, OSL_MAX_STRING * sizeof(char));
+  if (file != NULL) {
+    // Parse from a file.
+    start = osl_util_skip_blank_and_comments(file, s);
+    if (sscanf(start, " %s", res) != 1)
+      OSL_error("a string was expected");
+  }
+  else {
+    // Parse from a string.
+    // Skip blank/commented lines.
+    osl_util_sskip_blank_and_comments(str);
+    
+    // Build the chain to analyze.
+    while (**str && !isspace(**str) && **str != '\n' && **str != '#')
+      s[i++] = *((*str)++);
+    s[i] = '\0';
+    if (sscanf(s, "%s", res) != 1)
+      OSL_error("a string was expected");
+  }
+
+  OSL_realloc(res, char *, strlen(res) + 1);
   return res;
 }
 

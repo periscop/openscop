@@ -78,14 +78,14 @@
 
 
 /**
- * osl_arrays_print_structure function:
- * this function displays a osl_arrays_t structure (*arrays) into a file
+ * osl_arrays_idump function:
+ * this function displays an osl_arrays_t structure (*arrays) into a file
  * (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * idump functions.
- * \param file   The file where the information has to be printed.
- * \param arrays The arrays structure whose information has to be printed.
- * \param level  Number of spaces before printing, for each line.
+ * \param[in] file   The file where the information has to be printed.
+ * \param[in] arrays The arrays structure to print.
+ * \param[in] level  Number of spaces before printing, for each line.
  */
 void osl_arrays_idump(FILE * file, osl_arrays_p arrays, int level) {
   int i, j;
@@ -125,11 +125,11 @@ void osl_arrays_idump(FILE * file, osl_arrays_p arrays, int level) {
 
 
 /**
- * osl_arrays_print function:
+ * osl_arrays_dump function:
  * this function prints the content of an osl_arrays_t structure
  * (*arrays) into a file (file, possibly stdout).
- * \param file   The file where the information has to be printed.
- * \param arrays The arrays structure whose information has to be printed.
+ * \param[in] file   The file where the information has to be printed.
+ * \param[in] arrays The arrays structure to print.
  */
 void osl_arrays_dump(FILE * file, osl_arrays_p arrays) {
   osl_arrays_idump(file, arrays, 0);
@@ -137,38 +137,38 @@ void osl_arrays_dump(FILE * file, osl_arrays_p arrays) {
 
 
 /**
- * osl_arrays_print_openscop function:
+ * osl_arrays_sprint function:
  * this function prints the content of an osl_arrays_t structure
  * (*arrays) into a string (returned) in the OpenScop textual format.
- * \param  arrays The arrays structure whose information has to be printed.
+ * \param[in] arrays The arrays structure to print.
  * \return A string containing the OpenScop dump of the arrays structure.
  */
 char * osl_arrays_sprint(osl_arrays_p arrays) {
   int i;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
-  char * buffer;
+  char buffer[OSL_MAX_STRING];
 
   if (arrays != NULL) {
     OSL_malloc(string, char *, high_water_mark * sizeof(char));
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
 
-    sprintf(buffer, OSL_TAG_ARRAYS_START);
+    sprintf(buffer, "# Number of array names\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    sprintf(buffer, "\n%d\n", arrays->nb_names);
+    sprintf(buffer, "%d\n", arrays->nb_names);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
+    if (arrays->nb_names) {
+      sprintf(buffer, "# Correspondence array-ids array-names\n");
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    }
     for (i = 0; i < arrays->nb_names; i++) {
       sprintf(buffer, "%d %s\n", arrays->id[i], arrays->names[i]);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
-    sprintf(buffer, OSL_TAG_ARRAYS_STOP"\n");
-    osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
-    free(buffer);
   }
 
   return string;
@@ -185,74 +185,41 @@ char * osl_arrays_sprint(osl_arrays_p arrays) {
  * this function reads an arrays structure from a string complying to the
  * OpenScop textual format and returns a pointer to this arrays structure.
  * The string should contain only one textual format of an arrays structure.
- * \param  extensions The input string where to find an arrays structure.
+ * The input parameter is updated to the position in the input string this
+ * function reach right after reading the comment structure.
+ * \param[in,out] input The input string where to find an arrays structure.
+ *                      Updated to the position after what has been read.
  * \return A pointer to the arrays structure that has been read.
  */
-osl_arrays_p osl_arrays_sread(char ** extensions_fixme) {
-  int i, k, array_id;
-  int  nb_names;
-  int  *  id;
-  char ** names;
-  char * content, * content_backup;
-  char buff[OSL_MAX_STRING];
+osl_arrays_p osl_arrays_sread(char ** input) {
+  int i, k;
+  int nb_names;
   osl_arrays_p arrays;
 
-  // FIXME: this is a quick and dirty thing to accept char ** instead
-  //        of char * in the parameter: really do it and update the
-  //        pointer to after what has been read.
-  content = *extensions_fixme;
-
-  if (content == NULL) {
+  if (input == NULL) {
     OSL_debug("no arrays optional tag");
     return NULL;
   }
-  content_backup = content;
 
   // Find the number of names provided.
-  nb_names = osl_util_read_int(NULL, &content);
+  nb_names = osl_util_read_int(NULL, input);
 
   // Allocate the array of id and names.
-  id = (int *)malloc(nb_names * sizeof(int));
-  names = (char **)malloc(nb_names * sizeof(char *));
-  for (i = 0; i < nb_names; i++)
-    names[i] = NULL;
-
-  // Get each array name.
-  for (k = 0; k < nb_names; k++) { 
-    // Skip blank or commented lines.
-    while (*content == '#' || *content == '\n') {
-      for (; *content != '\n'; ++content)
-        continue;
-      ++content;
-    }
-
-    // Get the array name id.
-    for (i = 0; *content && ! isspace(*content); ++i, ++content)
-      buff[i] = *content;
-    buff[i] = '\0';
-    sscanf(buff, "%d", &array_id);
-    if (array_id <= 0)
-      OSL_error("array id must be > 0");
-    id[k] = array_id;
-
-    // Get the array name string.
-    while (*content && isspace(*content))
-      ++content;
-    for (i = 0; *content && ! isspace(*content); ++i, ++content)
-      buff[i] = *content;
-    buff[i] = '\0';
-    names[k] = strdup(buff);
-
-    // Go to the end of line.
-    while (*content && *content != '\n')
-      ++content;
-  }
-  free(content_backup);
-
   arrays = osl_arrays_malloc();
+  OSL_malloc(arrays->id, int *, nb_names * sizeof(int));
+  OSL_malloc(arrays->names, char **, nb_names * sizeof(char *));
   arrays->nb_names = nb_names;
-  arrays->id       = id;
-  arrays->names    = names;
+  for (i = 0; i < nb_names; i++)
+    arrays->names[i] = NULL;
+
+  // Get each array id/name.
+  for (k = 0; k < nb_names; k++) { 
+    // Get the array name id.
+    arrays->id[k] = osl_util_read_int(NULL, input);
+    
+    // Get the array name string.
+    arrays->names[k] = osl_util_read_string(NULL, input);
+  }
 
   return arrays;
 }
@@ -265,7 +232,7 @@ osl_arrays_p osl_arrays_sread(char ** extensions_fixme) {
 
 /**
  * osl_arrays_malloc function:
- * This function allocates the memory space for an osl_arrays_t
+ * this function allocates the memory space for an osl_arrays_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
  * \return A pointer to an empty arrays structure with fields set to
@@ -285,20 +252,17 @@ osl_arrays_p osl_arrays_malloc() {
 
 /**
  * osl_arrays_free function:
- * This function frees the allocated memory for an arrays structure.
- * \param arrays The pointer to the arrays structure we want to free.
+ * this function frees the allocated memory for an arrays structure.
+ * \param[in,out] arrays The pointer to the arrays structure we want to free.
  */
 void osl_arrays_free(osl_arrays_p arrays) {
   int i;
 
   if (arrays != NULL) {
-    if (arrays->names != NULL) {
-      free(arrays->id);
-      for (i = 0; i < arrays->nb_names; i++)
-        free(arrays->names[i]);
-      free(arrays->names);
-    }
-
+    free(arrays->id);
+    for (i = 0; i < arrays->nb_names; i++)
+      free(arrays->names[i]);
+    free(arrays->names);
     free(arrays);
   }
 }
@@ -311,33 +275,29 @@ void osl_arrays_free(osl_arrays_p arrays) {
 
 /**
  * osl_arrays_clone function:
- * This function builds and returns a "hard copy" (not a pointer copy) of an
+ * this function builds and returns a "hard copy" (not a pointer copy) of an
  * osl_arrays_t data structure.
- * \param arrays The pointer to the arrays structure we want to copy.
- * \return A pointer to the copy of the arrays structure.
+ * \param[in] arrays The pointer to the arrays structure to clone.
+ * \return A pointer to the clone of the arrays structure.
  */
 osl_arrays_p osl_arrays_clone(osl_arrays_p arrays) {
-  osl_arrays_p copy;
   int i;
+  osl_arrays_p clone;
 
   if (arrays == NULL)
     return NULL;
 
-  copy = osl_arrays_malloc();
-  if (copy != NULL) {
-    copy->nb_names = arrays->nb_names;
-    copy->id = (int *)malloc(arrays->nb_names * sizeof(int));
-    OSL_malloc(copy->names, char **, arrays->nb_names * sizeof(char*));
-    
-    for (i = 0; i < arrays->nb_names; i++) {
-      copy->id[i] = arrays->id[i];
-      copy->names[i] = strdup(arrays->names[i]);
-      if ((copy->names[i] == NULL) && (arrays->names[i] != NULL))
-        OSL_error("memory overflow");
-    }
+  clone = osl_arrays_malloc();
+  clone->nb_names = arrays->nb_names;
+  OSL_malloc(clone->id, int *, arrays->nb_names * sizeof(int));
+  OSL_malloc(clone->names, char **, arrays->nb_names * sizeof(char*));
+
+  for (i = 0; i < arrays->nb_names; i++) {
+    clone->id[i] = arrays->id[i];
+    OSL_strdup(clone->names[i], arrays->names[i]);
   }
 
-  return copy;
+  return clone;
 }
 
 
@@ -347,8 +307,8 @@ osl_arrays_p osl_arrays_clone(osl_arrays_p arrays) {
  * (content-wise), false otherwise. This functions considers two arrays
  * structures as equal if the order of the array names differ, however the
  * identifiers and names must be the same.
- * \param a1  The first arrays structure.
- * \param a2  The second arrays structure.
+ * \param[in] a1 The first arrays structure.
+ * \param[in] a2 The second arrays structure.
  * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
 int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
@@ -379,56 +339,6 @@ int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
   }
 
   return 1;
-}
-
-
-/**
- * osl_arrays_generate_names function:
- * This function generates an array of strings corresponding to array names.
- * The ith string will correspond to the array name with identifier i in the
- * arrays structure. If some identifiers are missing, the corresponding names
- * will be generated. The size of the array of strings corresponds to the
- * maximum identifier, it is returned using the parameter nb_names.
- * \param arrays   The source of some array names.
- * \param nb_names Pointer to the location to store the number of names.
- * \return An array of strings corresponding to the array names.
- */
-char ** osl_arrays_generate_names(osl_arrays_p arrays, int * nb_names) {
-  char ** names = NULL;
-  char ** tmpnames;
-  int i;
-
-  *nb_names = 0;
-
-  if (arrays != NULL) {
-    // Get the maximum id (it will be nb_names).
-    for (i = 0; i < arrays->nb_names; i++)
-      if (arrays->id[i] > *nb_names)
-	*nb_names = arrays->id[i];
-  
-    // Allocate the array of names and store the existing names.
-    OSL_malloc(names, char **, *nb_names * sizeof(char *));
-    for (i = 0; i < arrays->nb_names; i++) {
-      names[arrays->id[i] - 1] = strdup(arrays->names[i]);
-      if (names[arrays->id[i] - 1] == NULL)
-	OSL_error("memory overflow");
-    }
-
-    // Fill the missing names.
-    // TODO : update this with the new osl_strings_t
-    /*
-    tmpnames = osl_strings_generate("A_", *nb_names);
-    for (i = 0; i < *nb_names; i++) {
-      if (names[i] == NULL || names[i][0] == '\0')
-	names[i] = tmpnames[i]; // Use a generated name.
-      else
-	free(tmpnames[i]);      // Use a read name.
-    }
-    free(tmpnames);
-    */
-  }
-
-  return names;
 }
 
 

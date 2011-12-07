@@ -74,15 +74,13 @@ extern "C"
 
 
 # define OSL_URI_ARRAYS        "arrays"
-# define OSL_TAG_ARRAYS_START  "<"OSL_URI_ARRAYS">"
-# define OSL_TAG_ARRAYS_STOP   "</"OSL_URI_ARRAYS">"
 
 
 /**
- * The osl_arrays_t structure stores a set of array names in
- * the extension part of the OpenScop representation. Each name
- * has a name string and an identifier: the ith name as name
- * string names[i] and identifier id[i].
+ * The osl_arrays_t structure stores a set of array textual names in
+ * the extension part of the OpenScop representation. Each name has a
+ * name string and an identifier: the ith name as name string names[i]
+ * and identifier id[i].
  */
 struct osl_arrays {
   int nb_names;      /**< Number of names. */
@@ -119,7 +117,6 @@ void            osl_arrays_free(osl_arrays_p);
  *****************************************************************************/
 osl_arrays_p    osl_arrays_clone(osl_arrays_p);
 int             osl_arrays_equal(osl_arrays_p, osl_arrays_p);
-char **         osl_arrays_generate_names(osl_arrays_p, int *);
 osl_interface_p osl_arrays_interface();
 
 # if defined(__cplusplus)

@@ -171,6 +171,8 @@ void osl_generic_print(FILE * file, osl_generic_p generic) {
       }
     }
     generic = generic->next;
+    if (generic != NULL)
+      fprintf(file, "\n");
   }
 }
 

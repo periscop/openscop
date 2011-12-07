@@ -361,7 +361,7 @@ char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
   if (osl_relation_is_access(relation)) {
     // The first output dimension is the array name.
     array_id  = osl_relation_get_array_id(relation);
-    OSL_strdup(strings[offset], names->arrays->string[array_id - 1]);
+    OSL_strdup(strings[offset], "Arr");
     // The other ones are the array dimensions [1]...[n]
     for (i = offset + 1; i < relation->nb_output_dims + offset; i++) {
       sprintf(temp, "[%d]", i - 1);
@@ -407,7 +407,7 @@ char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
  * osl_relation_subexpression function:
  * this function returns a string corresponding to an affine (sub-)expression
  * stored at the "row"^th row of the relation pointed by "relation" between
- * the start and stop columns. Optionnaly it may oppose the whole expression.
+ * the start and stop columns. Optionally it may oppose the whole expression.
  * \param[in] relation A set of linear expressions.
  * \param[in] row     The row corresponding to the expression.
  * \param[in] start   The first column for the expression (inclusive).
@@ -534,11 +534,12 @@ int osl_relation_is_simple_output(osl_relation_p relation, int row) {
  * \param[in] relation The relation for which a comment has to be printed.
  * \param[in] row      The constrain row for which a comment has to be printed.
  * \param[in] strings  Array of textual names of the various elements.
+ * \param[in] arrays   Array of textual identifiers of the arrays.
  * \return A string which contains the comment for the row.
  */ 
 static
-char * osl_relation_sprint_comment(osl_relation_p relation,
-                                   int row, char ** strings) {
+char * osl_relation_sprint_comment(osl_relation_p relation, int row,
+                                   char ** strings, char ** arrays) {
   int sign;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
@@ -575,6 +576,11 @@ char * osl_relation_sprint_comment(osl_relation_p relation,
       snprintf(buffer, OSL_MAX_STRING, " == %s", expression);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
       free(expression);
+    }
+    else {
+      snprintf(buffer, OSL_MAX_STRING, " == %s",
+               arrays[osl_relation_get_array_id(relation) - 1]);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
   }
   else {
@@ -790,7 +796,8 @@ char * osl_relation_spprint_polylib(osl_relation_p relation,
       }
 
       if (name_array != NULL) {
-        comment = osl_relation_sprint_comment(relation, i, name_array);
+        comment = osl_relation_sprint_comment(relation, i, name_array,
+                                              names->arrays->string);
         osl_util_safe_strcat(&string, comment, &high_water_mark);
         free(comment);
       }

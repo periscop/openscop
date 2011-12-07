@@ -365,7 +365,7 @@ osl_interface_p osl_interface_get_default_registry() {
   osl_interface_add(&registry, osl_textual_interface());
   osl_interface_add(&registry, osl_comment_interface());
   osl_interface_add(&registry, osl_scatnames_interface());
-  //osl_interface_add(&registry, osl_arrays_interface());
+  osl_interface_add(&registry, osl_arrays_interface());
   //osl_interface_add(&registry, osl_lines_interface());
   //osl_interface_add(&registry, osl_irregular_interface());
   
