@@ -153,14 +153,14 @@ char * osl_arrays_sprint(osl_arrays_p arrays) {
     OSL_malloc(string, char *, high_water_mark * sizeof(char));
     string[0] = '\0';
 
-    sprintf(buffer, "# Number of array names\n");
+    sprintf(buffer, "# Number of arrays\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     sprintf(buffer, "%d\n", arrays->nb_names);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     if (arrays->nb_names) {
-      sprintf(buffer, "# Correspondence array-ids array-names\n");
+      sprintf(buffer, "# Mapping array-identifiers/array-names\n");
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
     for (i = 0; i < arrays->nb_names; i++) {

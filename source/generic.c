@@ -425,10 +425,9 @@ int osl_generic_count(osl_generic_p x) {
  * osl_generic_equal function:
  * this function returns true if the two generic structures are the same,
  * false otherwise. This functions considers two generic structures as equal
- * independently of the order of the nodes. TODO: make it dependent on the
- * order.
- * \param x1 The first generic structure.
- * \param x2 The second generic structure.
+ * independently of the order of the nodes.
+ * \param[in] x1 The first generic structure.
+ * \param[in] x2 The second generic structure.
  * \return 1 if x1 and x2 are the same (content-wise), 0 otherwise.
  */
 int osl_generic_equal(osl_generic_p x1, osl_generic_p x2) {
@@ -483,8 +482,8 @@ int osl_generic_equal(osl_generic_p x1, osl_generic_p x2) {
  * osl_generic_has_URI function:
  * this function returns 1 if the generic provided as parameter has
  * a given URI, 0 other wise.
- * \param x   The generic structure to test.
- * \param URI The URI value to test.
+ * \param[in] x   The generic structure to test.
+ * \param[in] URI The URI value to test.
  * \return 1 if x has the provided URI, 0 otherwise.
  */
 int osl_generic_has_URI(osl_generic_p x, char * URI) {
@@ -504,8 +503,8 @@ int osl_generic_has_URI(osl_generic_p x, char * URI) {
  * this function returns the first generic with a given URI in the
  * generic list provided as parameter and NULL if it doesn't find such
  * a generic.
- * \param x   The generic list where to search a given generic URI.
- * \param URI The URI of the generic we are looking for.
+ * \param[in] x   The generic list where to search a given generic URI.
+ * \param[in] URI The URI of the generic we are looking for.
  * \return The first generic of the requested URI in the list.
  */
 void * osl_generic_lookup(osl_generic_p x, char * URI) {
@@ -517,4 +516,25 @@ void * osl_generic_lookup(osl_generic_p x, char * URI) {
   }
 
   return NULL;
+}
+
+
+/**
+ * osl_generic_shell function:
+ * this function creates and returns a generic structure "shell" which
+ * embed the data and interface provided as parameters.
+ * \param[in] data      Data to put in the generic shell.
+ * \param[in] interface Interface to put in the generic shell.
+ * \return A new generic structure containing the data and interface.
+ */
+osl_generic_p osl_generic_shell(void * data, osl_interface_p interface) {
+  osl_generic_p generic = NULL;
+
+  if ((data == NULL) || (interface == NULL))
+    OSL_warning("shell created with some empty elements inside");
+
+  generic = osl_generic_malloc();
+  generic->data = data;
+  generic->interface = interface;
+  return generic;
 }
