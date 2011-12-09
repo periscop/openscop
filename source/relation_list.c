@@ -407,27 +407,19 @@ osl_relation_list_p osl_relation_list_concat(osl_relation_list_p l1,
 
 
 /**
- * osl_relation_list_concat_inplace function:
- * this function concatenates a relation list to another. No new list is
- * created: this functions links the two input lists. If the first relation
- * list is NULL, it is set to the second relation list.
- * two lists sent as parameters.
+ * osl_relation_list_add function:
+ * this function adds a relation list at the end of the relation list
+ * pointed by l1. No new list is created: this functions links the two
+ * input lists. If the first relation list is NULL, it is set to the
+ * second relation list.
  * \param[in,out] l1  Pointer to the first relation list.
  * \param[in]     l2  The second relation list.
  */
-void osl_relation_list_concat_inplace(osl_relation_list_p *l1,
-                                      osl_relation_list_p l2) {
-  osl_relation_list_p temp;
+void osl_relation_list_add(osl_relation_list_p *l1, osl_relation_list_p l2) {
+  while (*l1 != NULL)
+    l1 = &((*l1)->next);
 
-  if (*l1 == NULL) {
-    *l1 = l2;
-    return;
-  }
-  
-  temp = *l1;
-  while (temp->next != NULL)
-    temp = temp->next;
-  temp->next = l2;
+  *l1 = l2;
 }
 
 

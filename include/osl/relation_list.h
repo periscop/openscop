@@ -118,8 +118,8 @@ osl_relation_list_p osl_relation_list_node(osl_relation_p);
 osl_relation_list_p osl_relation_list_clone(osl_relation_list_p);
 osl_relation_list_p osl_relation_list_concat(osl_relation_list_p,
                                              osl_relation_list_p);
-void                osl_relation_list_concat_inplace(osl_relation_list_p *,
-                                                     osl_relation_list_p);
+void                osl_relation_list_add(osl_relation_list_p *,
+                                          osl_relation_list_p);
 int                 osl_relation_list_equal(osl_relation_list_p,
                                             osl_relation_list_p);
 int                 osl_relation_list_integrity_check(osl_relation_list_p,
