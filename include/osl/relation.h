@@ -155,6 +155,7 @@ osl_relation_p osl_relation_nclone(osl_relation_p, int);
 osl_relation_p osl_relation_clone(osl_relation_p);
 void           osl_relation_replace_vector(osl_relation_p, osl_vector_p, int);
 void           osl_relation_insert_vector(osl_relation_p, osl_vector_p, int);
+osl_relation_p osl_relation_concat_vector(osl_relation_p, osl_vector_p);
 void           osl_relation_insert_blank_row(osl_relation_p, int);
 void           osl_relation_insert_blank_column(osl_relation_p, int);
 void           osl_relation_add_vector(osl_relation_p, osl_vector_p, int);

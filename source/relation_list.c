@@ -424,6 +424,90 @@ void osl_relation_list_add(osl_relation_list_p *l1, osl_relation_list_p l2) {
 
 
 /**
+ * osl_relation_list_push function:
+ * this function sees a list of relations as a stack of relations and
+ * performs the push operation onto this stack.
+ * \param[in,out] head Pointer to the head of the relation stack.
+ * \param[in,out] node Relation node to add to the stack. Its next field is
+ *                     updated to the previous head of the stack.
+ */
+void osl_relation_list_push(osl_relation_list_p *head,
+                            osl_relation_list_p node) {
+  if (node != NULL) {
+    node->next = *head;
+    *head = node;
+  }
+}
+
+
+/**
+ * osl_relation_list_pop function:
+ * this function sees a list of relations as a stack of relations and
+ * performs the pop operation onto this stack.
+ * \param[in,out] head Pointer to the head of the relation stack. It is
+ *                     updated to the previous element in the stack (NULL
+ *                     if there is none).
+ * \return The top element of the stack (detached from the list).
+ */
+osl_relation_list_p osl_relation_list_pop(osl_relation_list_p *head) {
+  osl_relation_list_p top = NULL;
+  
+  if (*head != NULL) {
+    top = *head;
+    *head = (*head)->next;
+    top->next = NULL;
+  }
+
+  return top;
+}
+
+
+/**
+ * osl_relation_list_dup function:
+ * this function sees a list of relations as a stack of relations and
+ * performs the dup operation (duplicate the top element) onto
+ * this stack.
+ * \param[in,out] head Pointer to the head of the relation stack. It is
+ *                     updated to the new element after duplication.
+ */
+void osl_relation_list_dup(osl_relation_list_p *head) {
+  osl_relation_list_p top = osl_relation_list_pop(head);
+  osl_relation_list_push(head, osl_relation_list_clone(top));
+  osl_relation_list_push(head, top);
+}
+
+
+/**
+ * osl_relation_list_drop function:
+ * this function sees a list of relations as a stack of relations and
+ * performs the drop operation (pop and destroy popped element) onto
+ * this stack.
+ * \param[in,out] head Pointer to the head of the relation stack. It is
+ *                     updated to the previous element in the stack (NULL
+ *                     if there is none).
+ */
+void osl_relation_list_drop(osl_relation_list_p *head) {
+  osl_relation_list_p top = osl_relation_list_pop(head);
+  osl_relation_list_free(top);
+}
+
+
+/**
+ * osl_relation_list_destroy function:
+ * this function sees a list of relations as a stack of relations and
+ * performs the destroy operation onto this stack, i.e., it completely
+ * free it.
+ * \param[in,out] head Pointer to the head of the relation stack.
+ *                     Updated to NULL.
+ */
+void osl_relation_list_destroy(osl_relation_list_p *head) {
+  
+  while (*head != NULL)
+    osl_relation_list_drop(head);
+}
+
+
+/**
  * osl_relation_list_equal function:
  * This function returns true if the two relation lists are the same, false
  * otherwise..

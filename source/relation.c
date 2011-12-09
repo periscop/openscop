@@ -1335,12 +1335,15 @@ void osl_relation_sub_vector(osl_relation_p relation,
 /**
  * osl_relation_insert_vector function:
  * this function inserts a new row corresponding to the vector "vector" to
- * the relation "relation" by inserting it at the "row"^th row. It directly
- * updates the relation union part pointed by "relation" and this part only.
- * If "vector" (or "relation") is NULL, the relation is left unmodified.
+ * the relation "relation" by inserting it at the "row"^th row of
+ * "relation" (-1 is a shortcut to insert the vector after the constraints
+ * of the relation). It directly updates the relation union part pointed
+ * by "relation" and this part only. If "vector" (or "relation") is NULL,
+ * the relation is left unmodified.
  * \param[in,out] relation The relation we want to extend.
  * \param[in]     vector   The vector that will be added relation.
- * \param[in]     row      The row where to insert the vector.
+ * \param[in]     row      The row where to insert the vector (-1 to
+ *                         insert it after the relation constraints).
  */
 void osl_relation_insert_vector(osl_relation_p relation,
                                 osl_vector_p vector, int row) {
@@ -1349,6 +1352,28 @@ void osl_relation_insert_vector(osl_relation_p relation,
   temp = osl_relation_from_vector(vector);
   osl_relation_insert_constraints(relation, temp, row);
   osl_relation_free(temp);
+}
+
+
+/**
+ * osl_relation_concat_vector function:
+ * this function builds a new relation from one relation and a vector sent as
+ * parameters. The new set of constraints is built as the concatenation
+ * of the rows of the first part of the relation and of the vector
+ * constraint. This means, there is no next field in the result.
+ * \param[in] r The input relation.
+ * \param[in] v The input vector.
+ * \return A pointer to the relation resulting from the concatenation of
+ *         the constraints of the relation and of the vector.
+ */
+osl_relation_p osl_relation_concat_vector(osl_relation_p relation,
+                                          osl_vector_p vector) {
+  osl_relation_p new, temp;
+
+  temp = osl_relation_from_vector(vector);
+  new = osl_relation_concat_constraints(relation, temp);
+  osl_relation_free(temp);
+  return new;
 }
 
 
@@ -1458,13 +1483,15 @@ void osl_relation_replace_constraints(osl_relation_p r1,
 
 /**
  * osl_relation_insert_constraints function:
- * this function adds new rows corresponding to the relation "r1" to
- * the relation "r2" by inserting it at the "row"^th row. It directly
- * updates the relation union part pointed by "r1" and this part only.
- * If "r2" (or "r1") is NULL, the relation is left unmodified.
+ * this function inserts the rows of the relation "r2" to the relation
+ * "r1", starting from the "row"^th row of "r1" (-1 is a
+ * shortcut to insert the "r2" constraints after the constraints of r1).
+ * It directly updates the relation union part pointed by "r1" and this
+ * part only. If "r2" (or "r1") is NULL, the relation is left unmodified.
  * \param[in,out] r1  The relation we want to extend.
  * \param[in]     r2  The relation to be inserted.
- * \param[in]     row The row where to insert the relation
+ * \param[in]     row The row where to insert the constraints (-1 to
+ *                    insert them after those of "r1").
  */
 void osl_relation_insert_constraints(osl_relation_p r1,
                                      osl_relation_p r2, int row) {
@@ -1473,6 +1500,9 @@ void osl_relation_insert_constraints(osl_relation_p r1,
 
   if ((r1 == NULL) || (r2 == NULL))
     return;
+
+  if (row == -1)
+    row = r1->nb_rows;
 
   if ((r1->nb_columns != r2->nb_columns) ||
       (r1->precision != r2->precision)   ||
@@ -1584,7 +1614,7 @@ osl_relation_p osl_relation_concat_constraints(
   
   if (r1->next || r2->next)
     OSL_warning("relation concatenation is done on the first elements "
-                     "of union only");
+                "of union only");
 
   new = osl_relation_pmalloc(r1->precision,
                              r1->nb_rows + r2->nb_rows, r1->nb_columns);

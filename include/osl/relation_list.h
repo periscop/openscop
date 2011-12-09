@@ -120,6 +120,12 @@ osl_relation_list_p osl_relation_list_concat(osl_relation_list_p,
                                              osl_relation_list_p);
 void                osl_relation_list_add(osl_relation_list_p *,
                                           osl_relation_list_p);
+void                osl_relation_list_push(osl_relation_list_p *,
+                                           osl_relation_list_p);
+osl_relation_list_p osl_relation_list_pop(osl_relation_list_p *);
+void                osl_relation_list_dup(osl_relation_list_p *);
+void                osl_relation_list_drop(osl_relation_list_p *);
+void                osl_relation_list_destroy(osl_relation_list_p *);
 int                 osl_relation_list_equal(osl_relation_list_p,
                                             osl_relation_list_p);
 int                 osl_relation_list_integrity_check(osl_relation_list_p,
