@@ -286,7 +286,7 @@ char * osl_relation_expression_element(void * val,
           sprintf(sval, "-%s", name);
         }
 	else {                                      // default case
-	  osl_int_sprint(sval, precision, val, 0);
+	  osl_int_sprint_txt(sval, precision, val, 0);
 	  sprintf(temp, "*%s", name);
 	  strcat(sval, temp);
         }

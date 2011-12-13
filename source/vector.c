@@ -359,9 +359,29 @@ osl_vector_p osl_vector_mul_scalar(osl_vector_p v, int scalar) {
   int i;
   osl_vector_p result = osl_vector_pmalloc(v->precision, v->size);
   
-  for(i = 0; i < v->size; i++)
+  for (i = 0; i < v->size; i++)
     osl_int_mul_si(v->precision, result->v, i, v->v, i, scalar);
 
   return result;
+}
+
+
+/**
+ * osl_vector_is_scalar function:
+ * this function returns 1 if the vector represents a scalar value
+ * (all but its last element is 0), 0 otherwise.
+ * \param[in] vector The vector to check whether it is scalar or not.
+ * \return 1 if the vector is scalar, 0 otherwise.
+ */
+int osl_vector_is_scalar(osl_vector_p vector) {
+  int i;
+
+  if (vector == NULL)
+    return 0;
+
+  for (i = 0; i < vector->size - 1; i++)
+    if (!osl_int_zero(vector->precision, vector->v, i))
+      return 0;
+  return 1;
 }
 

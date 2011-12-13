@@ -115,6 +115,7 @@ osl_vector_p osl_vector_sub(osl_vector_p, osl_vector_p);
 void         osl_vector_tag_inequality(osl_vector_p);
 void         osl_vector_tag_equality(osl_vector_p);
 int          osl_vector_equal(osl_vector_p, osl_vector_p);
+int          osl_vector_is_scalar(osl_vector_p);
 
 # if defined(__cplusplus)
   }
