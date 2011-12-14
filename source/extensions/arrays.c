@@ -343,6 +343,41 @@ int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
 
 
 /**
+ * osl_arrays_to_strings function:
+ * this function creates a strings structure containing the textual names
+ * contained in a names structure. Each name is placed according to its
+ * id in the strings array. The "empty" strings cells are filled with
+ * dummy names.
+ * \param[in] arrays The arrays structure to convert to a strings.
+ * \return A strings structure containing all the array names.
+ */
+osl_strings_p osl_arrays_to_strings(osl_arrays_p arrays) {
+  int i, max_id = 0;
+  osl_strings_p strings = NULL;
+
+  if (arrays == NULL)
+    return NULL;
+
+  // Find the maximum array id.
+  if (arrays->nb_names >= 1) {
+    max_id = arrays->id[0];
+    for (i = 1; i < arrays->nb_names; i++)
+      if (arrays->id[i] > max_id)
+        max_id = arrays->id[i];
+  }
+
+  // Build a strings structure for this number of ids.
+  strings = osl_strings_generate("Dummy", max_id);
+  for (i = 0; i < arrays->nb_names; i++) {
+    free(strings->string[arrays->id[i] - 1]);
+    OSL_strdup(strings->string[arrays->id[i] - 1], arrays->names[i]);
+  }
+
+  return strings;
+}
+
+
+/**
  * osl_arrays_interface function:
  * this function creates an interface structure corresponding to the arrays
  * extension and returns it).

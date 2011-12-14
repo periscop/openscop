@@ -300,7 +300,7 @@ void osl_strings_free(osl_strings_p strings) {
   if (strings != NULL) {
     if (strings->string != NULL) {
       i = 0;
-      while(strings->string[i] != NULL) {
+      while (strings->string[i] != NULL) {
         free(strings->string[i]);
         i++;
       }
@@ -336,11 +336,8 @@ osl_strings_p osl_strings_clone(osl_strings_p strings) {
 
   OSL_malloc(clone->string, char **, (nb_strings + 1) * sizeof(char *));
   clone->string[nb_strings] = NULL;
-  for (i = 0; i < nb_strings; i++) {
-    clone->string[i] = strdup(strings->string[i]);
-    if (clone->string[i] == NULL)
-      OSL_error("memory overflow");
-  }
+  for (i = 0; i < nb_strings; i++)
+    OSL_strdup(clone->string[i], strings->string[i]);
 
   return clone;
 }

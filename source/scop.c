@@ -217,7 +217,6 @@ osl_names_p osl_scop_names(osl_scop_p scop) {
  * \param scop The scop structure whose information has to be printed.
  */
 void osl_scop_print(FILE * file, osl_scop_p scop) {
-  int i;
   int parameters_backedup = 0;
   int arrays_backedup = 0;
   osl_strings_p parameters_backup = NULL;
@@ -253,13 +252,9 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
     if (arrays != NULL) {
       arrays_backedup = 1;
       arrays_backup = names->arrays;
-      names->arrays = osl_strings_clone(arrays_backup);
-      for (i = 0; i < arrays->nb_names; i++) {
-        free(names->arrays->string[arrays->id[i] - 1]);
-        OSL_strdup(names->arrays->string[arrays->id[i] - 1], arrays->names[i]);
-      }
+      names->arrays = osl_arrays_to_strings(arrays);
     }
-    
+
     fprintf(file, "\n"OSL_TAG_START_SCOP"\n\n");
     fprintf(file, "# =============================================== "
                   "Global\n");

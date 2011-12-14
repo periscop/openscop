@@ -65,6 +65,7 @@
 # define OSL_ARRAYS_H
 
 # include <stdio.h>
+# include <osl/strings.h>
 # include <osl/interface.h>
 
 # if defined(__cplusplus)
@@ -117,6 +118,7 @@ void            osl_arrays_free(osl_arrays_p);
  *****************************************************************************/
 osl_arrays_p    osl_arrays_clone(osl_arrays_p);
 int             osl_arrays_equal(osl_arrays_p, osl_arrays_p);
+osl_strings_p   osl_arrays_to_strings(osl_arrays_p);
 osl_interface_p osl_arrays_interface();
 
 # if defined(__cplusplus)
