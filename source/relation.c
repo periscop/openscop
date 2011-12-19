@@ -1253,6 +1253,47 @@ osl_relation_p osl_relation_clone(osl_relation_p relation) {
 
 
 /**
+ * osl_relation_add function:
+ * this function adds a relation (union) at the end of the relation (union)
+ * pointed by r1. No new relation is created: this functions links the two
+ * input unions. If the first relation is NULL, it is set to the
+ * second relation.
+ * \param[in,out] r1  Pointer to the first relation (union).
+ * \param[in]     r2  The second relation (union).
+ */
+void osl_relation_add(osl_relation_p *r1, osl_relation_p r2) {
+  while (*r1 != NULL)
+    r1 = &((*r1)->next);
+
+  *r1 = r2;
+}
+
+
+/**
+ * osl_relation_union function:
+ * this function builds a new relation from two relations provided
+ * as parameters. The new relation is built as an union of the
+ * two relations: the list of constraint sets are linked together.
+ * \param[in] r1 The first relation.
+ * \param[in] r2 The second relation.
+ * \return A new relation corresponding to the union of r1 and r2.
+ */
+osl_relation_p osl_relation_union(osl_relation_p r1,
+                                  osl_relation_p r2) {
+  osl_relation_p copy1, copy2;
+  
+  if ((r1 == NULL) && (r2 == NULL))
+    return NULL;
+  
+  copy1 = osl_relation_clone(r1);
+  copy2 = osl_relation_clone(r2);
+  osl_relation_add(&copy1, copy2);
+  
+  return copy1;
+}
+
+
+/**
  * osl_relation_replace_vector function:
  * this function replaces the "row"^th row of a relation "relation" with the
  * vector "vector". It directly updates the relation union part pointed
@@ -1869,40 +1910,6 @@ int osl_relation_integrity_check(osl_relation_p relation,
   }
 
   return 1;
-}
-
-
-/**
- * osl_relation_union function:
- * this function builds a new relation from two relations provided
- * as parameters. The new relation is built as an union of the
- * two relations: the list of constraint sets are linked together.
- * \param[in] r1 The first relation.
- * \param[in] r2 The second relation.
- * \return A new relation corresponding to the union of r1 and r2.
- */
-osl_relation_p osl_relation_union(osl_relation_p r1,
-                                  osl_relation_p r2) {
-  osl_relation_p copy1, copy2, tmp;
-  
-  if ((r1 == NULL) && (r2 == NULL))
-    return NULL;
-  
-  copy1 = osl_relation_clone(r1);
-  copy2 = osl_relation_clone(r2);
-
-  if ((r1 != NULL) && (r2 == NULL))
-    return copy1;
-    
-  if ((r1 == NULL) && (r2 != NULL))
-    return copy2;
-
-  tmp = copy1;
-  while (tmp->next != NULL)
-    tmp = tmp->next;
-
-  tmp->next = copy2;
-  return copy1;
 }
 
 
