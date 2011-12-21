@@ -1576,6 +1576,86 @@ void osl_relation_insert_constraints(osl_relation_p r1,
 
 
 /**
+ * osl_relation_remove_row function:
+ * this function removes a given row to the relation "r". It directly
+ * updates the relation union part pointed by "r" and this part only.
+ * \param[in,out] r   The relation to remove a row.
+ * \param[in]     row The row number to remove.
+ */
+void osl_relation_remove_row(osl_relation_p r, int row) {
+  int i, j;
+  osl_relation_p temp;
+
+  if (r == NULL)
+    return;
+
+  if ((row < 0) || (row >= r->nb_rows))
+    OSL_error("bad row number");
+
+  // We use a temporary relation just to reuse existing functions. Cleaner.
+  temp = osl_relation_pmalloc(r->precision,
+                              r->nb_rows - 1, r->nb_columns);
+
+  for (i = 0; i < row; i++)
+    for (j = 0; j < r->nb_columns; j++)
+      osl_int_assign(r->precision, temp->m[i], j, r->m[i], j);
+
+  for (i = row + 1; i < r->nb_rows; i++)
+    for (j = 0; j < r->nb_columns; j++)
+      osl_int_assign(r->precision, temp->m[i - 1], j, r->m[i], j);
+
+  osl_relation_free_inside(r);
+
+  // Replace the inside of relation.
+  r->nb_rows = temp->nb_rows;
+  r->m = temp->m;
+
+  // Free the temp "shell".
+  free(temp);
+}
+
+
+/**
+ * osl_relation_remove_column function:
+ * this function removes a given column to the relation "r". It directly
+ * updates the relation union part pointed by "r" and this part only.
+ * \param[in,out] r      The relation to remove a column.
+ * \param[in]     column The column number to remove.
+ */
+void osl_relation_remove_column(osl_relation_p r, int column) {
+  int i, j;
+  osl_relation_p temp;
+
+  if (r == NULL)
+    return;
+
+  if ((column < 0) || (column >= r->nb_columns))
+    OSL_error("bad column number");
+
+  // We use a temporary relation just to reuse existing functions. Cleaner.
+  temp = osl_relation_pmalloc(r->precision,
+                              r->nb_rows, r->nb_columns - 1);
+
+  for (i = 0; i < r->nb_rows; i++) {
+    for (j = 0; j < column; j++)
+      osl_int_assign(r->precision, temp->m[i], j, r->m[i], j);
+
+    for (j = column + 1; j < r->nb_columns; j++)
+      osl_int_assign(r->precision, temp->m[i], j - 1, r->m[i], j);
+  }
+
+  osl_relation_free_inside(r);
+
+  // Replace the inside of relation.
+  r->nb_rows = temp->nb_rows;
+  r->m = temp->m;
+
+  // Free the temp "shell".
+  free(temp);
+}
+
+
+/**
  * osl_relation_insert_columns function:
  * this function inserts new columns to an existing relation union part (it
  * only affects the first union part). The columns are copied out from the
@@ -1914,10 +1994,32 @@ int osl_relation_integrity_check(osl_relation_p relation,
 
 
 /**
- * osl_relation_set_attributes function:
- * this functions sets the attributes of a relation provided as a
+ * osl_relation_set_attributes_one function:
+ * this functions sets the attributes of a relation part provided as a
  * parameter. It updates the relation directly.
- * \param[in,out] relation The relation to set the attributes.
+ * \param[in,out] relation The relation (union part) to set the attributes.
+ * \param[in]     nb_output_dims Number of output dimensions.
+ * \param[in]     nb_input_dims  Number of input dimensions.
+ * \param[in]     nb_local_dims  Number of local dimensions.
+ * \param[in]     nb_parameters  Number of parameters.
+ */
+void osl_relation_set_attributes_one(osl_relation_p relation,
+                                     int nb_output_dims, int nb_input_dims,
+                                     int nb_local_dims,  int nb_parameters) {
+  if (relation != NULL) {
+    relation->nb_output_dims = nb_output_dims;
+    relation->nb_input_dims  = nb_input_dims;
+    relation->nb_local_dims  = nb_local_dims;
+    relation->nb_parameters  = nb_parameters;
+  }
+}
+
+
+/**
+ * osl_relation_set_attributes function:
+ * this functions sets the attributes of a relation (union) provided
+ * as a parameter. It updates the relation directly.
+ * \param[in,out] relation The relation (union) to set the attributes.
  * \param[in]     nb_output_dims Number of output dimensions.
  * \param[in]     nb_input_dims  Number of input dimensions.
  * \param[in]     nb_local_dims  Number of local dimensions.
@@ -1926,11 +2028,11 @@ int osl_relation_integrity_check(osl_relation_p relation,
 void osl_relation_set_attributes(osl_relation_p relation,
                                  int nb_output_dims, int nb_input_dims,
                                  int nb_local_dims,  int nb_parameters) {
-  if (relation != NULL) {
-    relation->nb_output_dims = nb_output_dims;
-    relation->nb_input_dims  = nb_input_dims;
-    relation->nb_local_dims  = nb_local_dims;
-    relation->nb_parameters  = nb_parameters;
+  while (relation != NULL) {
+    osl_relation_set_attributes_one(relation,
+                                    nb_output_dims, nb_input_dims,
+                                    nb_local_dims,  nb_parameters);
+    relation = relation->next;
   }
 }
 

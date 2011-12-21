@@ -167,10 +167,14 @@ void           osl_relation_replace_constraints(osl_relation_p,
                                                 osl_relation_p, int);
 void           osl_relation_insert_constraints(osl_relation_p,
                                                osl_relation_p, int);
+void           osl_relation_remove_row(osl_relation_p, int);
+void           osl_relation_remove_column(osl_relation_p, int);
 void           osl_relation_insert_columns(osl_relation_p, osl_relation_p,int);
 osl_relation_p osl_relation_concat_constraints(osl_relation_p, osl_relation_p);
 int            osl_relation_equal(osl_relation_p, osl_relation_p);    
 int            osl_relation_integrity_check(osl_relation_p, int, int, int,int);
+void           osl_relation_set_attributes_one(osl_relation_p,
+                                               int, int, int, int);
 void           osl_relation_set_attributes(osl_relation_p, int, int, int, int);
 void           osl_relation_set_type(osl_relation_p, int);
 int            osl_relation_get_array_id(osl_relation_p);
