@@ -163,6 +163,7 @@ char * osl_comment_sprint(osl_comment_p comment) {
  *                               Reading function                            *
  *****************************************************************************/
 
+
 /**
  * osl_comment_sread function:
  * this function reads a comment structure from a string complying to the

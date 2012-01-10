@@ -245,28 +245,10 @@ osl_body_p osl_body_sread(char ** input) {
     }
 
     // Read the body:
-    // - Skip blank/commented lines and spaces before the body.
-    osl_util_sskip_blank_and_comments(input);
-      
-    // - Remove the comments after the body.
-    expression = *input;
-    while (*input && **input != '#' && **input != '\n')
-      (*input)++;
-    
-    if (*input && **input == '#') {
-      **input = '\0';
-      while (**input != '\n')
-        (*input)++;
-    }
-    else {
-      if (*input && **input == '\n') {
-        **input = '\0';
-        (*input)++;
-      }
-    }
+    expression = osl_util_read_line(NULL, input);
 
-    // - Copy the body.
-    body->expression = osl_strings_encapsulate(strdup(expression));
+    // Insert the body.
+    body->expression = osl_strings_encapsulate(expression);
   }
 
   return body;

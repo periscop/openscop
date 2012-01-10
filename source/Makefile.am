@@ -82,24 +82,24 @@ INCLUDES		= -I$(top_builddir) -I$(top_srcdir)  \
 lib_LTLIBRARIES 	= libosl.la
 
 
-libosl_la_SOURCES 	=      \
-	scop.c                 \
-	statement.c            \
-	extensions/textual.c   \
-	extensions/comment.c   \
-	extensions/scatnames.c \
-	extensions/arrays.c    \
-	extensions/lines.c     \
-	extensions/irregular.c \
-	interface.c            \
-	generic.c              \
-	relation.c             \
-	relation_list.c        \
-	vector.c               \
-	names.c                \
-	strings.c              \
-	body.c                 \
-	int.c                  \
+libosl_la_SOURCES 	=        \
+	scop.c                   \
+	statement.c              \
+	extensions/textual.c     \
+	extensions/comment.c     \
+	extensions/scatnames.c   \
+	extensions/arrays.c      \
+	extensions/coordinates.c \
+	extensions/irregular.c   \
+	interface.c              \
+	generic.c                \
+	relation.c               \
+	relation_list.c          \
+	vector.c                 \
+	names.c                  \
+	strings.c                \
+	body.c                   \
+	int.c                    \
 	util.c
 
 AM_CFLAGS = -Wall -fomit-frame-pointer -g

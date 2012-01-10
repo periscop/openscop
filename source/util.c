@@ -86,7 +86,7 @@
  * \param[in] file The (opened) file to read.
  * \param[in] str  Address of an allocated space to store the first line
  *                 that contains useful information.
- * \return The address of the the first useful digit in str.
+ * \return The address of the first useful digit in str.
  */
 char * osl_util_skip_blank_and_comments(FILE * file, char * str) {
   char * start;
@@ -206,6 +206,46 @@ char * osl_util_read_string(FILE * file, char ** str) {
       OSL_error("a string was expected");
   }
 
+  OSL_realloc(res, char *, strlen(res) + 1);
+  return res;
+}
+
+
+/**
+ * osl_util_read_line function:
+ * reads a line on the input 'file' or the input string 'str' depending on
+ * which one is not NULL (exactly one of them must not be NULL). A line
+ * is defined as the array of characters before the comment tag or the end of
+ * line (it may include spaces).
+ * \param[in]     file The file where to read a line (if not NULL).
+ * \param[in,out] str  The string where to read a line (if not NULL). This
+ *                     pointer is updated to reflect the read and points
+ *                     after the line in the input string.
+ * \return The line that has been read.
+ */
+char * osl_util_read_line(FILE * file, char ** str) {
+  char s[OSL_MAX_STRING], * start;
+  char * res;
+  int i = 0;
+
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
+    OSL_error("one and only one of the two parameters can be non-NULL");
+
+  OSL_malloc(res, char *, OSL_MAX_STRING * sizeof(char));
+  if (file != NULL) {
+    // Parse from a file.
+    start = osl_util_skip_blank_and_comments(file, s);
+    while (*start && *start != '\n' && *start != '#' && i < OSL_MAX_STRING)
+      res[i++] = (*start)++;
+  }
+  else {
+    // Parse from a string.
+    osl_util_sskip_blank_and_comments(str);
+    while (**str && **str != '\n' && **str != '#' && i < OSL_MAX_STRING)
+      res[i++] = *((*str)++);
+  }
+
+  res[i] = '\0';
   OSL_realloc(res, char *, strlen(res) + 1);
   return res;
 }

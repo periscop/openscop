@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/lines.h                        **
+     **                     extensions/coordinates.h                        **
      **-----------------------------------------------------------------**
      **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
@@ -61,8 +61,8 @@
  *****************************************************************************/
 
 
-#ifndef OSL_LINES_H
-# define OSL_LINES_H
+#ifndef OSL_COORDINATES_H
+# define OSL_COORDINATES_H
 
 # include <stdio.h>
 # include <osl/interface.h>
@@ -73,55 +73,55 @@ extern "C"
 # endif
 
 
-# define OSL_URI_LINES        "lines"
-# define OSL_TAG_LINES_START  "<"OSL_URI_LINES">"
-# define OSL_TAG_LINES_STOP   "</"OSL_URI_LINES">"
+# define OSL_URI_COORDINATES "coordinates"
 
 
 /**
- * The osl_lines_t structure stores a lines extention to the core
- * OpenScop representation. It provides information about the line
- * numbers of the SCoP in the original source file.
+ * The osl_coordinates_t structure stores a coordinates extention to the core
+ * OpenScop representation. It provides information about the SCoP location
+ * (file name, starting and ending lines, indentation level).
  */
-struct osl_lines {
-  int start; /**< First line of the SCoP in the original source file. */
-  int end;   /**< Last line of the SCoP in the original source file. */
+struct osl_coordinates {
+  char * name;   /**< File name (may include the fils path as well). */
+  int    start;  /**< First line of the SCoP in the original source file. */
+  int    end;    /**< Last line of the SCoP in the original source file. */
+  int    indent; /**< Indentation (number of spaces starting each line). */
 };
-typedef struct osl_lines   osl_lines_t;
-typedef struct osl_lines * osl_lines_p;
+typedef struct osl_coordinates   osl_coordinates_t;
+typedef struct osl_coordinates * osl_coordinates_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_lines_idump(FILE *, osl_lines_p, int);
-void            osl_lines_dump(FILE *, osl_lines_p);
-char *          osl_lines_sprint(osl_lines_p);
+void              osl_coordinates_idump(FILE *, osl_coordinates_p, int);
+void              osl_coordinates_dump(FILE *, osl_coordinates_p);
+char *            osl_coordinates_sprint(osl_coordinates_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_lines_p     osl_lines_sread(char **);
+osl_coordinates_p osl_coordinates_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_lines_p     osl_lines_malloc();
-void            osl_lines_free(osl_lines_p);
+osl_coordinates_p osl_coordinates_malloc();
+void              osl_coordinates_free(osl_coordinates_p);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_lines_p     osl_lines_clone(osl_lines_p);
-int             osl_lines_equal(osl_lines_p, osl_lines_p);
-osl_interface_p osl_lines_interface();
+osl_coordinates_p osl_coordinates_clone(osl_coordinates_p);
+int               osl_coordinates_equal(osl_coordinates_p, osl_coordinates_p);
+osl_interface_p   osl_coordinates_interface();
 
 
 # if defined(__cplusplus)
   }
 # endif
 
-#endif /* define OSL_LINES_H */
+#endif /* define OSL_COORDINATES_H */

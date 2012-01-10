@@ -2,7 +2,7 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                     extensions/lines.c                        **
+     **                    extensions/coordinates.c                     **
      **-----------------------------------------------------------------**
      **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
@@ -67,7 +67,7 @@
 #include <osl/macros.h>
 #include <osl/util.h>
 #include <osl/interface.h>
-#include <osl/extensions/lines.h>
+#include <osl/extensions/coordinates.h>
 
 
 /*+***************************************************************************
@@ -76,34 +76,53 @@
 
 
 /**
- * osl_lines_idump function:
- * this function displays an osl_lines_t structure (*lines) into a
+ * osl_coordinates_idump function:
+ * this function displays an osl_coordinates_t structure (*coordinates) into a
  * file (file, possibly stdout) in a way that trends to be understandable. It
  * includes an indentation level (level) in order to work with others
  * idump functions.
- * \param file  The file where the information has to be printed.
- * \param lines The lines structure whose information has to be printed.
- * \param level Number of spaces before printing, for each line.
+ * \param file        The file where the information has to be printed.
+ * \param coordinates The coordinates structure to print.
+ * \param level       Number of spaces before printing, for each line.
  */
-void osl_lines_idump(FILE * file, osl_lines_p lines, int level) {
+void osl_coordinates_idump(FILE * file, osl_coordinates_p coordinates,
+                           int level) {
   int j;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
     fprintf(file, "|\t");
 
-  if (lines != NULL)
-    fprintf(file, "+-- osl_lines_t\n");
+  if (coordinates != NULL)
+    fprintf(file, "+-- osl_coordinates_t\n");
   else
-    fprintf(file, "+-- NULL lines\n");
+    fprintf(file, "+-- NULL coordinates\n");
 
-  if (lines != NULL) {
+  if (coordinates != NULL) {
+    // Go to the right level.
+    for(j = 0; j <= level; j++)
+      fprintf(file, "|\t");
+
+    // Display the file name.
+    if (coordinates->name != NULL)
+      fprintf(file, "File name__: %s\n", coordinates->name);
+    else
+      fprintf(file, "NULL file name\n");
+
+    // Go to the right level.
+    for(j = 0; j <= level; j++)
+      fprintf(file, "|\t");
+
+    // Display the lines.
+    fprintf(file, "Lines______: [%d, %d]\n",
+            coordinates->start, coordinates->end);
+
     // Go to the right level.
     for(j = 0; j <= level; j++)
       fprintf(file, "|\t");
   
-    // Display the lines content.
-    fprintf(file, "lines: %d - %d\n", lines->start,lines->end);
+    // Display the indentation.
+    fprintf(file, "Indentation: %d\n", coordinates->indent);
   }
 
   // The last line.
@@ -114,49 +133,48 @@ void osl_lines_idump(FILE * file, osl_lines_p lines, int level) {
 
 
 /**
- * osl_lines_dump function:
- * this function prints the content of an osl_lines_t structure
- * (*lines) into a file (file, possibly stdout).
- * \param file    The file where the information has to be printed.
- * \param lines The lines structure whose information has to be printed.
+ * osl_coordinates_dump function:
+ * this function prints the content of an osl_coordinates_t structure
+ * (*coordinates) into a file (file, possibly stdout).
+ * \param file        The file where the information has to be printed.
+ * \param coordinates The coordinates structure to print.
  */
-void osl_lines_dump(FILE * file, osl_lines_p lines) {
-  osl_lines_idump(file, lines, 0);
+void osl_coordinates_dump(FILE * file, osl_coordinates_p coordinates) {
+  osl_coordinates_idump(file, coordinates, 0);
 }
 
 
 /**
- * osl_lines_sprint function:
- * this function prints the content of an osl_lines_t structure
- * (*lines) into a string (returned) in the OpenScop textual format.
- * \param  lines The lines structure whose information has to be printed.
- * \return A string containing the OpenScop dump of the lines structure.
+ * osl_coordinates_sprint function:
+ * this function prints the content of an osl_coordinates_t structure
+ * (*coordinates) into a string (returned) in the OpenScop textual format.
+ * \param  coordinates The coordinates structure to be print.
+ * \return A string containing the OpenScop dump of the coordinates structure.
  */
-char * osl_lines_sprint(osl_lines_p lines) {
+char * osl_coordinates_sprint(osl_coordinates_p coordinates) {
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
-  char * buffer;
+  char buffer[OSL_MAX_STRING];
 
-  if (lines != NULL) {
+  if (coordinates != NULL) {
     OSL_malloc(string, char *, high_water_mark * sizeof(char));
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
    
-    // Print the begin tag.
-    sprintf(buffer, OSL_TAG_LINES_START);
+    // Print the coordinates content.
+    sprintf(buffer, "# File name\n%s\n", coordinates->name);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    // Print the lines content.
-    sprintf(buffer, "\n%d - %d\n", lines->start, lines->end);
+    sprintf(buffer, "# Starting line\n%d\n", coordinates->start);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    // Print the end tag.
-    sprintf(buffer, OSL_TAG_LINES_STOP"\n");
+    sprintf(buffer, "# Ending line\n%d\n", coordinates->end);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+
+    sprintf(buffer, "# Indentation\n%d\n", coordinates->indent);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
     OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
-    free(buffer);
   }
 
   return string;
@@ -167,43 +185,41 @@ char * osl_lines_sprint(osl_lines_p lines) {
  *                               Reading function                            *
  *****************************************************************************/
 
+
 /**
- * osl_lines_sread function:
- * this function reads a lines structure from a string complying to the
- * OpenScop textual format and returns a pointer to this lines structure.
- * The string should contain only one textual format of a lines structure.
- * \param  extensions The input string where to find a lines structure.
- * \return A pointer to the lines structure that has been read.
+ * osl_coordinates_sread function:
+ * this function reads a coordinates structure from a string complying to the
+ * OpenScop textual format and returns a pointer to this structure.
+ * The input parameter is updated to the position in the input string this
+ * function reach right after reading the coordinates structure.
+ * \param[in,out] input The input string where to find coordinates.
+ *                      Updated to the position after what has been read.
+ * \return A pointer to the coordinates structure that has been read.
  */
-osl_lines_p osl_lines_sread(char ** extensions_fixme) {
-  char * content, *tmp;
-  osl_lines_p lines;
+osl_coordinates_p osl_coordinates_sread(char ** input) {
+  osl_coordinates_p coordinates;
 
-  // FIXME: this is a quick and dirty thing to accept char ** instead
-  //        of char * in the parameter: really do it and update the
-  //        pointer to after what has been read.
-  content = *extensions_fixme;
-
-  if (content == NULL) {
-    OSL_debug("no lines optional tag");
+  if (*input == NULL) {
+    OSL_debug("no coordinates optional tag");
     return NULL;
   }
 
-  if (strlen(content) > OSL_MAX_STRING) 
-    OSL_error("lines too long");
+  // Build the coordinates structure.
+  coordinates = osl_coordinates_malloc();
   
-  lines = osl_lines_malloc();
-  tmp = strtok(content," -");
-  lines->start = atoi(tmp);
-  if(lines->start == -1)
-    OSL_error("lines start NaN");
+  // Read the file name (and path).
+  coordinates->name = osl_util_read_line(NULL, input);
+
+  // Read the number of the starting line.
+  coordinates->start = osl_util_read_int(NULL, input);
+
+  // Read the number of the ending line.
+  coordinates->end = osl_util_read_int(NULL, input);
+
+  // Read the indentation level.
+  coordinates->indent = osl_util_read_int(NULL, input);
   
-  tmp = strtok(NULL," -");
-  lines->end = atoi(tmp);
-  if(lines->end == -1)
-    OSL_error("lines end NaN");
-  
-  return lines;
+  return coordinates;
 }
 
 
@@ -213,33 +229,36 @@ osl_lines_p osl_lines_sread(char ** extensions_fixme) {
 
 
 /**
- * osl_lines_malloc function:
- * This function allocates the memory space for an osl_lines_t
+ * osl_coordinates_malloc function:
+ * this function allocates the memory space for an osl_coordinates_t
  * structure and sets its fields with default values. Then it returns a
  * pointer to the allocated space.
- * \return A pointer to an empty lines structure with fields set to
+ * \return A pointer to an empty coordinates structure with fields set to
  *         default values.
  */
-osl_lines_p osl_lines_malloc() {
-  osl_lines_p lines;
+osl_coordinates_p osl_coordinates_malloc() {
+  osl_coordinates_p coordinates;
   
-  OSL_malloc(lines, osl_lines_p, sizeof(osl_lines_t));
-  lines->start = OSL_UNDEFINED;
-  lines->end   = OSL_UNDEFINED;
+  OSL_malloc(coordinates, osl_coordinates_p, sizeof(osl_coordinates_t));
+  coordinates->name   = NULL;
+  coordinates->start  = OSL_UNDEFINED;
+  coordinates->end    = OSL_UNDEFINED;
+  coordinates->indent = OSL_UNDEFINED;
 
-  return lines;
+  return coordinates;
 }
 
 
 /**
- * osl_lines_free function:
- * This function frees the allocated memory for an osl_lines_t
+ * osl_coordinates_free function:
+ * this function frees the allocated memory for an osl_coordinates_t
  * structure.
- * \param lines The pointer to the lines structure we want to free.
+ * \param coordinates The pointer to the coordinates structure to free.
  */
-void osl_lines_free(osl_lines_p lines) {
-  if (lines != NULL) {
-    free(lines);
+void osl_coordinates_free(osl_coordinates_p coordinates) {
+  if (coordinates != NULL) {
+    free(coordinates->name);
+    free(coordinates);
   }
 }
 
@@ -250,65 +269,79 @@ void osl_lines_free(osl_lines_p lines) {
 
 
 /**
- * osl_lines_clone function:
- * This function builds and returns a "hard copy" (not a pointer copy) of an
- * osl_lines_t data structure.
- * \param lines The pointer to the lines structure we want to copy.
- * \return A pointer to the copy of the lines structure.
+ * osl_coordinates_clone function:
+ * this function builds and returns a "hard copy" (not a pointer copy) of an
+ * osl_coordinates_t data structure.
+ * \param coordinates The pointer to the coordinates structure to clone.
+ * \return A pointer to the clone of the coordinates structure.
  */
-osl_lines_p osl_lines_clone(osl_lines_p lines) {
-  osl_lines_p copy;
+osl_coordinates_p osl_coordinates_clone(osl_coordinates_p coordinates) {
+  osl_coordinates_p clone;
 
-  if (lines == NULL)
+  if (coordinates == NULL)
     return NULL;
 
-  copy = osl_lines_malloc();
-  copy->start = lines->start;
-  copy->end = lines->end;
+  clone = osl_coordinates_malloc();
+  OSL_strdup(clone->name, coordinates->name);
+  clone->start  = coordinates->start;
+  clone->end    = coordinates->end;
+  clone->indent = coordinates->indent;
 
-  return copy;
+  return clone;
 }
 
 
 /**
- * osl_lines_equal function:
- * this function returns true if the two lines structures are the same
- * (content-wise), false otherwise. This functions considers two lines
- * \param c1  The first lines structure.
- * \param c2  The second lines structure.
+ * osl_coordinates_equal function:
+ * this function returns true if the two coordinates structures are the same
+ * (content-wise), false otherwise. This functions considers two coordinates
+ * \param c1  The first coordinates structure.
+ * \param c2  The second coordinates structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_lines_equal(osl_lines_p c1, osl_lines_p c2) {
+int osl_coordinates_equal(osl_coordinates_p c1, osl_coordinates_p c2) {
   if (c1 == c2)
     return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
     return 0;
 
-  if ((c1->start != c2->start) || (c1->end != c2->end))
+  if (strcmp(c1->name, c2->name)) {
+    OSL_info("file names are not the same");
     return 0;
+  }
+
+  if (c1->start != c2->start) {
+    OSL_info("starting lines are not the same");
+    return 0;
+  }
+
+  if (c1->indent != c2->indent) {
+    OSL_info("indentations are not the same");
+    return 0;
+  }
 
   return 1;
 }
 
 
 /**
- * osl_lines_interface function:
- * this function creates an interface structure corresponding to the lines
+ * osl_coordinates_interface function:
+ * this function creates an interface structure corresponding to the coordinates
  * extension and returns it).
- * \return An interface structure for the lines extension.
+ * \return An interface structure for the coordinates extension.
  */
-osl_interface_p osl_lines_interface() {
+osl_interface_p osl_coordinates_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_LINES);
-  interface->idump  = (osl_idump_f)osl_lines_idump;
-  interface->sprint = (osl_sprint_f)osl_lines_sprint;
-  interface->sread  = (osl_sread_f)osl_lines_sread;
-  interface->malloc = (osl_malloc_f)osl_lines_malloc;
-  interface->free   = (osl_free_f)osl_lines_free;
-  interface->clone  = (osl_clone_f)osl_lines_clone;
-  interface->equal  = (osl_equal_f)osl_lines_equal;
+  interface->URI    = strdup(OSL_URI_COORDINATES);
+  interface->idump  = (osl_idump_f)osl_coordinates_idump;
+  interface->sprint = (osl_sprint_f)osl_coordinates_sprint;
+  interface->sread  = (osl_sread_f)osl_coordinates_sread;
+  interface->malloc = (osl_malloc_f)osl_coordinates_malloc;
+  interface->free   = (osl_free_f)osl_coordinates_free;
+  interface->clone  = (osl_clone_f)osl_coordinates_clone;
+  interface->equal  = (osl_equal_f)osl_coordinates_equal;
 
   return interface;
 }

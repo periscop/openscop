@@ -67,7 +67,7 @@
 #include <osl/extensions/comment.h>
 #include <osl/extensions/scatnames.h>
 #include <osl/extensions/arrays.h>
-#include <osl/extensions/lines.h>
+#include <osl/extensions/coordinates.h>
 #include <osl/extensions/irregular.h>
 #include <osl/strings.h>
 #include <osl/body.h>
@@ -366,7 +366,7 @@ osl_interface_p osl_interface_get_default_registry() {
   osl_interface_add(&registry, osl_comment_interface());
   osl_interface_add(&registry, osl_scatnames_interface());
   osl_interface_add(&registry, osl_arrays_interface());
-  //osl_interface_add(&registry, osl_lines_interface());
+  osl_interface_add(&registry, osl_coordinates_interface());
   //osl_interface_add(&registry, osl_irregular_interface());
   
   return registry;

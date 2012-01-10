@@ -80,6 +80,7 @@ char * osl_util_skip_blank_and_comments(FILE *, char *);
 void   osl_util_sskip_blank_and_comments(char **);
 int    osl_util_read_int(FILE *, char **);
 char * osl_util_read_string(FILE *, char **);
+char * osl_util_read_line(FILE *, char **);
 char * osl_util_read_tag(FILE *, char **);
 char * osl_util_read_tail(FILE *);
 char * osl_util_read_uptotag(FILE *, char *);

@@ -72,7 +72,7 @@
  * - int
  * - interface
  * - irregular
- * - lines
+ * - coordinates
  * - openscop
  * - relation
  * - relation_list
@@ -98,7 +98,7 @@
 # include <osl/extensions/comment.h>
 # include <osl/extensions/scatnames.h>
 # include <osl/extensions/arrays.h>
-# include <osl/extensions/lines.h>
+# include <osl/extensions/coordinates.h>
 # include <osl/extensions/irregular.h>
 
 # include <osl/generic.h>

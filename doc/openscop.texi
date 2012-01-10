@@ -2416,7 +2416,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Comment Extension::
 * Arrays Extension::
 * Scatnames Extension::
-* Lines Extension::
+* Coordinates Extension::
 * Irregular Extension::
 @end menu
 
@@ -2584,8 +2584,71 @@ string @code{names[i]} and identifier @code{id[i]}.
 
 @c ---------------------------------------------------------------------------
 
-@node Lines Extension
-@subsection Lines Extension
+@node Coordinates Extension
+@subsection Coordinates Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{coordinates}.
+@item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
+@item Purpose: the @code{coordinates} extension provides the information
+about the SCoP location in the original code: the original file name/path,
+the starting and ending lines of the SCoP in this file (inclusives) and
+the indentation level.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{coordinates} extension file format respects the following
+grammar:
+@example
+Coordinates_generic ::= "<coordinates>" Coordinates "</coordinates>"
+Coordinates         ::= File_name Start_line End_line Indentation
+File_name           ::= _String
+Start_line          ::= _Integer
+End_line            ::= _Integer
+Indentation         ::= _Integer
+@end example
+
+@noindent The original file name where the SCoP has been extracted is
+provided on the first line, then the starting line number of the SCoP,
+then the ending line number of the SCoP, and lastly the indentation level
+(the number of spaces characters each line of the SCoP starts with).
+For instance, the following example is a correct textual
+@code{coordinates} extension:
+
+@example
+@group
+<coordinates>
+# File name
+./test/ax-do.c
+# Starting line
+9
+# Ending line
+15
+# Indentation
+2
+</coordinates>
+@end group
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{coordinates} extension data structure is the following:
+
+@example
+@group
+struct osl_coordinates @{
+  char * name;   /* File name */
+  int    start;  /* First line of the SCoP in the source file */
+  int    end;    /* Last line of the SCoP in the source file */
+  int    indent; /* Indentation */
+@};
+typedef struct osl_coordinates   osl_coordinates_t;
+typedef struct osl_coordinates * osl_coordinates_p;
+@end group
+@end example
+
 
 @c ---------------------------------------------------------------------------
 
