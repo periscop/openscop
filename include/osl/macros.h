@@ -64,7 +64,7 @@
 #ifndef OSL_MACROS_H
 # define OSL_MACROS_H
 
-# define OSL_DEBUG                 1       // 1 for debug mode, 0 otherwise.
+# define OSL_DEBUG                 0       // 1 for debug mode, 0 otherwise.
 
 # define OSL_TAG_START_SCOP        "<OpenScop>"
 # define OSL_TAG_END_SCOP          "</OpenScop>"
