@@ -493,6 +493,21 @@ void osl_scop_free(osl_scop_p scop) {
 
 
 /**
+ * osl_scop_add function:
+ * this function adds a scop "scop" at the end of the scop list pointed
+ * by "location".
+ * \param[in,out] location  Address of the first element of the scop list.
+ * \param[in]     scop      The scop to add to the list.
+ */
+void osl_scop_add(osl_scop_p * location, osl_scop_p scop) {
+  while (*location != NULL)
+    location = &((*location)->next);
+
+  *location = scop;
+}
+
+
+/**
  * osl_scop_clone function:
  * This functions builds and returns a "hard copy" (not a pointer copy)
  * of a osl_statement_t data structure provided as parameter.
