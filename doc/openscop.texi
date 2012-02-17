@@ -3075,16 +3075,17 @@ OpenScop Library top-level directory.
 The user can specify an installation prefix other than @code{/usr/local} by
 giving @code{configure} the option @code{--prefix=PATH}.
 
-@item By default, The OpenScop Library is built in 64bits version.
-If the user gives to @code{configure} the option
-@code{--enable-int-version}, the 32bits version of the OpenScop Library
-will be compiled. In the same way, the option @code{--enable-mp-version}
-has to be used to build the multiple precision version.
-
-@item By default, @code{configure} will look for the GMP library
-(necessary to build the multiple precision version) in standard
-locations. If necessary, the user can specify the GMP path by giving
-@code{configure} the option @code{--with-gmp=PATH}.
+@item By default, The OpenScop Library supports 32 bits, 64 bits and GMP if
+it is installed in the standard locations. Using the @code{--with-gmp} option
+of @code{configure} the user can specify that no GMP (@code{--with-gmp=no}),
+a previously installed (@code{--with-gmp=system}, the default) GMP or a
+build GMP (@code{--with-gmp=build}) GMP should be used.
+In case of an installed GMP, the installation location can be specified
+using the @code{--with-isl-prefix=PATH} and if different, the installation
+of the library can be specified using the
+@code{--with-isl-exec-prefix=PATH} options of @code{configure}.
+In the case of a build GMP, the user can also specify the build location
+using @code{--with-isl-builddir=PATH}.
 @end itemize
 
 @node Uninstallation

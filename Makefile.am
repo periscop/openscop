@@ -68,14 +68,67 @@
 
 
 #############################################################################
-SUBDIRS 		= doc source include tests
 
+SUBDIRS = . doc tests
+ACLOCAL_AMFLAGS = -I m4
 
 #############################################################################
-ACLOCAL_AMFLAGS		= -I autoconf
 
-m4datadir		= $(datadir)/aclocal
+lib_LTLIBRARIES = libosl.la
 
+#############################################################################
+
+pkginclude_HEADERS = \
+	include/osl/osl.h \
+	include/osl/statement.h \
+	include/osl/interface.h \
+	include/osl/generic.h \
+	include/osl/vector.h \
+	include/osl/relation.h \
+	include/osl/relation_list.h \
+	include/osl/macros.h \
+	include/osl/int.h \
+	include/osl/names.h \
+	include/osl/strings.h \
+	include/osl/body.h \
+	include/osl/util.h \
+	include/osl/scop.h
+
+pkgextensionsincludedir = $(pkgincludedir)/extensions
+pkgextensionsinclude_HEADERS = \
+	include/osl/extensions/textual.h \
+	include/osl/extensions/comment.h \
+	include/osl/extensions/scatnames.h \
+	include/osl/extensions/arrays.h \
+	include/osl/extensions/coordinates.h \
+	include/osl/extensions/irregular.h
+
+DEFAULT_INCLUDES = -I.
+INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+AM_CFLAGS = $(CFLAGS_WARN)
+
+#############################################################################
+
+libosl_la_CPPFLAGS = -g
+libosl_la_SOURCES = \
+	source/scop.c \
+	source/statement.c \
+	source/extensions/textual.c \
+	source/extensions/comment.c \
+	source/extensions/scatnames.c \
+	source/extensions/arrays.c \
+	source/extensions/coordinates.c \
+	source/extensions/irregular.c \
+	source/interface.c \
+	source/generic.c \
+	source/relation.c \
+	source/relation_list.c \
+	source/vector.c \
+	source/names.c \
+	source/strings.c \
+	source/body.c \
+	source/int.c \
+	source/util.c
 
 MAINTAINERCLEANFILES 	=			\
 	autoconf/texinfo.tex			\
@@ -85,8 +138,9 @@ MAINTAINERCLEANFILES 	=			\
 	source/stamp-h.in			\
 	$(AUX_DIST)
 
-
 #############################################################################
+
 ctags:
 	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q -f$(HOME)/.ctags .
+
 #############################################################################

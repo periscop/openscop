@@ -97,7 +97,8 @@ int test_file(char * input_name, int verbose) {
   int cloning = 0;
   int dumping = 0;
   int equal   = 0;
-  char * output_name;
+  int output_desc;
+  char output_name[] = "/tmp/osl_test_XXXXXX";
   FILE * input_file, * output_file;
   osl_scop_p input_scop;
   osl_scop_p output_scop;
@@ -124,18 +125,21 @@ int test_file(char * input_name, int verbose) {
     printf("- cloning failed\n");
 
   // PART III. Dump to file and test.
-  output_name = tmpnam(NULL);
-  output_file = fopen(output_name, "w");
+  output_desc = mkstemp(output_name);
+  if ((output_file = fdopen(output_desc, "w")) == NULL)
+    OSL_error("cannot open temporary output file for writing");
   //osl_scop_dump(stdout, input_scop);
   //osl_scop_print(stdout, input_scop);
   osl_scop_print(output_file, input_scop);
   fclose(output_file);
   
   // Raise the generated file to data structures.
-  output_file = fopen(output_name, "r");
+  if ((output_file = fopen(output_name, "r")) == NULL)
+    OSL_error("cannot open temporary output file for reading");
   output_scop = osl_scop_read(output_file);
   //osl_scop_dump(stdout, output_scop);
   fclose(output_file);
+  close(output_desc);
 
   if (verbose) {
     printf("\n\n*************************************************\n\n");

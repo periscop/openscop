@@ -81,7 +81,7 @@ TESTS = osl_test
 
 osl_test_CPPFLAGS = -I$(top_srcdir)/include -static
 
-osl_test_LDFLAGS  = -L$(top_srcdir)/source
+osl_test_LDFLAGS  = -L$(top_srcdir)
 
 osl_test_LDADD    = -losl
 

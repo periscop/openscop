@@ -472,10 +472,17 @@ int osl_util_get_precision() {
       precision = OSL_PRECISION_SP;
     else if (!strcmp(precision_env, OSL_PRECISION_ENV_DP))
       precision = OSL_PRECISION_DP;
-    else if (!strcmp(precision_env, OSL_PRECISION_ENV_MP))
+    else if (!strcmp(precision_env, OSL_PRECISION_ENV_MP)) {
+#ifndef OSL_GMP_IS_HERE
+      OSL_warning("$OSL_PRECISION says GMP but osl not compiled with "
+                  "GMP support, switching to double precision");
+      precision = OSL_PRECISION_DP;
+#else
       precision = OSL_PRECISION_MP;
+#endif
+    }
     else
-      OSL_warning("bad precision environment value");
+      OSL_warning("bad OSL_PRECISION environment value, see osl's manual");
   }
 
   return precision;

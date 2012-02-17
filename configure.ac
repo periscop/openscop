@@ -64,18 +64,24 @@ dnl **************************************************************************/
 dnl
 dnl Input file for autoconf to build a configuration shellscript.
 
+m4_define([version_major], [0])
+m4_define([version_minor], [8])
+m4_define([version_revision], [2])
 
-AC_PREREQ(2.13)
+AC_PREREQ(2.53)
 dnl Fill here the @bug email adress.
-AC_INIT([osl], [0.8.2], [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
+AC_INIT([osl], [version_major.version_minor.version_revision],
+        [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
 dnl A common file, which serve as a test.
 AC_CONFIG_SRCDIR([include/osl/macros.h])
 dnl Put as most as possible configuration files to an auxialiry
 dnl directory.
 AC_CONFIG_AUX_DIR([autoconf])
-dnl Initialize automake. Here, a special tar version that enables
-dnl (very) long filenames.
-AM_INIT_AUTOMAKE([1.9 tar-ustar no-define foreign dist-bzip2])
+AC_CONFIG_MACRO_DIR([m4])
+
+dnl Initialize automake.
+AM_INIT_AUTOMAKE([foreign])
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 
 dnl /**************************************************************************
@@ -88,8 +94,13 @@ AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(CD, cd)
+AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_CHECK_PROGS(DOXYGEN,doxygen,doxygen)
+  
+AX_CC_MAXOPT
+AC_SUBST(CFLAGS_WARN)
+AX_CFLAGS_WARN_ALL(CFLAGS_WARN)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -107,93 +118,40 @@ dnl /**************************************************************************
 dnl  *                             Option setting                             *
 dnl  **************************************************************************/
 
-dnl Some default values cause I'm not sure whether autoconf set them, while
-dnl documentation says it does...
-gmp_package="yes"
-gmp_include_package="yes"
-gmp_library_package="yes"
-gmp_flag="OSL_GMP_IS_HERE"
-
-ASKED_FOR_GMP="no"
-
-dnl --with-gmp=gmp-path
-AC_ARG_WITH(gmp,
-        [  --with-gmp=DIR          DIR where the gmp package is installed],
-	[ echo "Package gmp : $withval" &&
-	  gmp_package=$withval &&
-          GMP_INC=$gmp_package/include &&
-          GMP_LIB=$gmp_package/lib &&
-          ASKED_FOR_GMP="yes"])
-
-AC_ARG_WITH(gmp-include,
-        [  --with-gmp-include=DIR  DIR where gmp.h is installed],
-	[ echo "Package gmp-include : $withval" &&
-	  gmp_include_package=$withval &&
-          GMP_INC=$gmp_include_package &&
-	  ASKED_FOR_GMP="yes"])
-
-AC_ARG_WITH(gmp-library,
-        [  --with-gmp-library=DIR  DIR where the gmp library is installed],
-	[ echo "Package gmp-library : $withval" &&
-	  gmp_library_package=$withval &&
-          GMP_LIB=$gmp_library_package &&
-	  ASKED_FOR_GMP="yes"])
-
-
 dnl /**************************************************************************
 dnl  *                            Where is GMP?                               *
 dnl  **************************************************************************/
 
+gmp_flag="OSL_GMP_IS_HERE"
+AX_SUBMODULE(gmp,no|system|build,system)
 
-dnl Checking for gmp
-AC_MSG_CHECKING(whether gmp works)
-if test "$gmp_package" = "no"; then
-  echo "GMP package not defined"
-  AC_MSG_RESULT(no)
-else
-  if test "$ASKED_FOR_GMP" = "no"; then
-    echo "Mode normal GMP"
-    AC_CHECK_HEADER(gmp.h,
-                    [AC_CHECK_LIB(gmp,
-		                  __gmpz_init,
-		                  [LIBS="$LIBS -lgmp" &&
-                                   CPPFLAGS="-D$gmp_flag $CPPFLAGS"],
-				  [echo "Cannot find gmp library." &&
-				   echo "MP precision will not be supported."])],
-		    [echo "Can't find gmp headers." &&
-		     echo "MP precision will not be supported."])
-  else
-    dnl Default given by --with-X is "yes", --without-X is "no". We also
-    dnl initialized manually all gmp_package* variables to "yes" (thus they are
-    dnl supposed to be "yes" except if the user set them himself).
-
-    if test "$gmp_package" != "yes" ; then
-      echo "(GMP path has been set by user)"
-      GMP_DIR=$gmp_package
-      CPPFLAGS="-I$GMP_DIR/include $CPPFLAGS"
-      LDFLAGS="-L$GMP_DIR/lib $LDFLAGS"
+case "$with_gmp" in
+build)
+    CPPFLAGS="-D$gmp_flag -I$with_gmp_builddir $CPPFLAGS"
+    LDFLAGS="-L$with_gmp_builddir/$lt_cv_objdir $LDFLAGS"
+    ;;
+system)
+    CPPFLAGS="-D$gmp_flag $CPPFLAGS"
+    if test "x$with_gmp_prefix" != "x"; then
+	CPPFLAGS="-I$with_gmp_prefix/include $CPPFLAGS"
     fi
-
-    if test "$gmp_include_package" != "yes" ; then
-      CPPFLAGS="-I$GMP_INC $CPPFLAGS"
+    
+    if test "$with_gmp_exec_prefix" != "yes" ; then
+	LDFLAGS="-L$with_gmp_exec_prefix/lib $LDFLAGS"
     fi
-
-    if test "$gmp_library_package" != "yes" ; then
-      LDFLAGS="-L$GMP_LIB $LDFLAGS"
-    fi
-
+    ;;
+esac
+case "$with_gmp" in
+build|system)
     AC_CHECK_HEADER(gmp.h,
                     [],
-                    [AC_MSG_ERROR("Cannot find gmp headers.")])
+                    [AC_MSG_ERROR("Can't find gmp headers.")])
     AC_CHECK_LIB(gmp,
                  __gmpz_init,
-                 [LIBS="$LIBS -lgmp" &&
-                  CPPFLAGS="-D$gmp_flag $CPPFLAGS"],
-                 [AC_MSG_ERROR("Cannot find gmp library.")])
-
-    AC_MSG_RESULT(yes)
-  fi
-fi
+                 [LIBS="$LIBS -lgmp"],
+                 [AC_MSG_ERROR("Can't find gmp library.")])
+    ;;
+esac
 
 
 dnl /**************************************************************************
@@ -203,15 +161,18 @@ dnl  **************************************************************************/
 
 dnl Substitutions to do.
 AC_SUBST(ac_aux_dir)
+AC_SUBST(abs_top_srcdir)
+
+AC_SUBST(VERSION_MAJOR)
+AC_SUBST(VERSION_MINOR)
+AC_SUBST(VERSION_REVISION)
 
 dnl Configure Makefiles.
 AC_CONFIG_FILES([
 	Makefile
 	doc/Makefile
 	doc/Doxyfile
-	include/Makefile
 	include/osl/scop.h
-	source/Makefile
 	tests/Makefile
 	],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > source/stamp-h.in])
