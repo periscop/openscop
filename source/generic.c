@@ -148,6 +148,44 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
 
 
 /**
+ * osl_generic_sprint function:
+ * this function prints the content of an osl_generic_t structure
+ * (*strings) into a string (returned) in the OpenScop textual format.
+ * \param[in] generic  The generic structure which has to be printed.
+ * \return A string containing the OpenScop dump of the generic structure.
+ */
+char * osl_generic_sprint(osl_generic_p generic) {
+  int high_water_mark = OSL_MAX_STRING;
+  char * string = NULL, * content;
+  char buffer[OSL_MAX_STRING];
+
+  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  string[0] = '\0';
+
+  while (generic != NULL) {
+    if (generic->interface != NULL) {
+      content = generic->interface->sprint(generic->data);
+      if (content != NULL) {
+        sprintf(buffer, "<%s>\n", generic->interface->URI);
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        osl_util_safe_strcat(&string, content, &high_water_mark);
+        free(content);
+        sprintf(buffer, "</%s>\n", generic->interface->URI);
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+      }
+    }
+    generic = generic->next;
+    if (generic != NULL) {
+      sprintf(buffer, "\n");
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    }
+  }
+
+  return string;
+}
+
+
+/**
  * osl_generic_print function:
  * this function prints the content of an osl_generic_t structure
  * (*generic) into a string (returned) in the OpenScop format.
@@ -157,22 +195,10 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
 void osl_generic_print(FILE * file, osl_generic_p generic) {
   char * string;
   
-  if (generic == NULL)
-    return;
-
-  while (generic != NULL) {
-    if (generic->interface != NULL) {
-      string = generic->interface->sprint(generic->data);
-      if (string != NULL) {
-        fprintf(file, "<%s>\n", generic->interface->URI);
-        fprintf(file, "%s", string);
-        fprintf(file, "</%s>\n", generic->interface->URI);
-        free(string);
-      }
-    }
-    generic = generic->next;
-    if (generic != NULL)
-      fprintf(file, "\n");
+  string = osl_generic_sprint(generic);
+  if (string != NULL) {
+    fprintf(file, "%s", string);
+    free(string);
   }
 }
 
