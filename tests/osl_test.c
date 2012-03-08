@@ -155,7 +155,7 @@ int test_file(char * input_name, int verbose) {
     printf("- dumping failed\n");
 
   // PART IV. Report.
-  if (equal = (cloning + dumping > 0) ? 1 : 0)
+  if (equal = (cloning + dumping > 1) ? 1 : 0)
     printf("Success :-)\n");
   else
     printf("Failure :-(\n");

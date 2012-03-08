@@ -210,34 +210,66 @@ void osl_generic_print(FILE * file, osl_generic_p generic) {
 
 /**
  * osl_generic_sread function:
- * this function reads a list of generics from a string complying to the
- * OpenScop textual format and a list of known interfaces. It returns a
- * pointer to the corresponding list of generic structures.
- * \param[in] string   The string where to read a list of data.
- * \param[in] registry The list of known interfaces (others are ignored).
+ * this function reads a list of generic structure from a string complying to
+ * the OpenScop textual format and returns a pointer to this generic structure.
+ * The input parameter is updated to the position in the input string this
+ * function reach right after reading the generic structure.
+ * \param[in,out] input    The input string where to find a list of generic.
+ *                         Updated to the position after what has been read.
+ * \param[in]     registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic information list that has been read.
  */
-osl_generic_p osl_generic_sread(char * string, osl_interface_p registry) {
+osl_generic_p osl_generic_sread(char ** input, osl_interface_p registry) {
   osl_generic_p generic = NULL, new;
-  char * content, * start;
-  void * data;
 
-  while (registry != NULL) {
-    content = osl_util_tag_content(string, registry->URI);
-    if (content != NULL) {
-      start = content;
-      data = registry->sread(&content);
-      if (data != NULL) {
-        new = osl_generic_malloc();
-        new->interface = osl_interface_nclone(registry, 1);
-        new->data = data;
-        osl_generic_add(&generic, new);
-      }
-      free(start);
-    }
-    registry = registry->next;
+  while (**input != '\0') {
+    new = osl_generic_sread_one(input, registry);
+    osl_generic_add(&generic, new);
   }
   
+  return generic;
+}
+
+
+/**
+ * osl_generic_sread_one function:
+ * this function reads one generic structure from a string complying to the
+ * OpenScop textual format and returns a pointer to this generic structure.
+ * The input parameter is updated to the position in the input string this
+ * function reach right after reading the generic structure.
+ * \param[in,out] input    The input string where to find a generic.
+ *                         Updated to the position after what has been read.
+ * \param[in]     registry The list of known interfaces (others are ignored).
+ * \return A pointer to the generic structure that has been read.
+ */
+osl_generic_p osl_generic_sread_one(char ** input, osl_interface_p registry) {
+  char * tag;
+  char * content, * temp;
+  osl_generic_p generic = NULL;
+  osl_interface_p interface;
+
+  tag = osl_util_read_tag(NULL, input);
+  if ((tag == NULL) || (strlen(tag) < 1) || (tag[0] == '/')) {
+    OSL_debug("empty tag name or closing tag instead of an opening one");
+    return NULL;
+  }
+
+  content = osl_util_read_uptoendtag(NULL, input, tag);
+  interface = osl_interface_lookup(registry, tag);
+
+  temp = content;
+  if (interface == NULL) {
+    OSL_warning("unsupported generic");
+    fprintf(stderr, "[osl] Warning: unknown URI \"%s\".\n", tag);
+  }
+  else {
+    generic = osl_generic_malloc();
+    generic->interface = osl_interface_nclone(interface, 1);
+    generic->data = interface->sread(&temp);
+  }
+
+  free(content);
+  free(tag);
   return generic;
 }
 
@@ -265,7 +297,7 @@ osl_generic_p osl_generic_read_one(FILE * file, osl_interface_p registry) {
     return NULL;
   }
 
-  content = osl_util_read_uptoendtag(file, tag);
+  content = osl_util_read_uptoendtag(file, NULL, tag);
   interface = osl_interface_lookup(registry, tag);
 
   temp = content;
@@ -295,11 +327,12 @@ osl_generic_p osl_generic_read_one(FILE * file, osl_interface_p registry) {
  * \return A pointer to the generic information list that has been read.
  */
 osl_generic_p osl_generic_read(FILE * file, osl_interface_p registry) {
-  char * generic_string;
+  char * generic_string, * temp;
   osl_generic_p generic_list;
 
-  generic_string = osl_util_read_uptotag(file, OSL_TAG_END_SCOP);
-  generic_list = osl_generic_sread(generic_string, registry);
+  generic_string = osl_util_read_uptoendtag(file, NULL, OSL_URI_SCOP);
+  temp = generic_string;
+  generic_list = osl_generic_sread(&temp, registry);
   free(generic_string);
   return generic_list;
 }

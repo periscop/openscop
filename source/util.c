@@ -257,7 +257,8 @@ char * osl_util_read_line(FILE * file, char ** str) {
  * 'file' or the input string 'str' depending on which one is not NULL (exactly
  * one of them must not be NULL). It returns the name of the tag (thus without
  * the < and > as a string. Note that in the case of an ending tag, e.g.,
- * \</foo\>, the slash is returned as a part of the name, e.g., /foo.
+ * \</foo\>, the slash is returned as a part of the name, e.g., /foo. If no
+ * tag is found the function returns NULL.
  * \param[in]     file The file where to read a tag (if not NULL).
  * \param[in,out] str  The string where to read a tag (if not NULL). This
  *                     pointer is updated to reflect the read and points
@@ -281,6 +282,11 @@ char * osl_util_read_tag(FILE * file, char ** str) {
     osl_util_sskip_blank_and_comments(str);
   }
 
+  // If the end of the input has been reached, return NULL.
+  if (((file != NULL) && (feof(file))) ||
+      ((str  != NULL) && (**str == '\0')))
+    return NULL;
+  
   // Pass the starting '<'.
   if (**str != '<')
     OSL_error("a \"<\" to start a tag was expected");
@@ -313,31 +319,40 @@ char * osl_util_read_tag(FILE * file, char ** str) {
 
 
 /**
- * osl_util_read_uptotag function:
- * this function reads a file up to a given tag (the tag is read) or the
- * end of file. It puts everything it reads, except the tag, in a string 
- * which is returned. However ot returns NULL is the tag is not found.
- * \param[in] file The file where to read the tail.
- * \param[in] tag  The tag which, when reached, stops the file reading.
- * \return The string that has been read from the file.
+ * osl_util_read_uptoflag function:
+ * this function reads a string up to a given flag (the flag is read)
+ * on the input 'file' or the input string 'str' depending on which one is
+ * not NULL (exactly one of them must not be NULL) and returns that string
+ * without the flag. It returns NULL if the flag is not found.
+ * \param[in]     file The file where to read up to flag (if not NULL).
+ * \param[in,out] str  The string where to read up to flag (if not NULL). This
+ *                     pointer is updated to reflect the read and points
+ *                     after the flag in the input string.
+ * \param[in]     flag The flag which, when reached, stops the reading.
+ * \return The string that has been read.
  */
-char * osl_util_read_uptotag(FILE * file, char * tag) {
+char * osl_util_read_uptoflag(FILE * file, char ** str, char * flag) {
   int high_water_mark = OSL_MAX_STRING;
   int nb_chars = 0;
-  int lentag = strlen(tag);
-  int tag_found = 0;
+  int lenflag = strlen(flag), lenstr;
+  int flag_found = 0;
   char * res;
 
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
+    OSL_error("one and only one of the two parameters can be non-NULL");
+  
   OSL_malloc(res, char *, high_water_mark * sizeof(char));
 
-  // - Copy everything to the res string.
-  while (!feof(file)) {
-    res[nb_chars] = fgetc(file); 
-    nb_chars++;
+  // Copy everything to the res string.
+  if (str != NULL)
+    lenstr = strlen(*str);
+  while (((str  != NULL) && (nb_chars != lenstr)) ||
+         ((file != NULL) && (!feof(file)))) {
+    res[nb_chars++] = (str != NULL) ? *((*str)++) : fgetc(file);
 
-    if ((nb_chars >= lentag) &&
-        (!strncmp(&res[nb_chars - lentag], tag, lentag))) {
-      tag_found = 1;
+    if ((nb_chars >= lenflag) &&
+        (!strncmp(&res[nb_chars - lenflag], flag, lenflag))) {
+      flag_found = 1;
       break;
     }
 
@@ -347,35 +362,59 @@ char * osl_util_read_uptotag(FILE * file, char * tag) {
     }
   }
 
-  if (!tag_found) {
-    OSL_debug("tag was not found, end of file reached");
+  if (!flag_found) {
+    OSL_debug("flag was not found, end of input reached");
     free(res);
     return NULL;
   }
 
   // - 0-terminate the string.
-  OSL_realloc(res, char *, (nb_chars - strlen(tag) + 1) * sizeof(char));
-  res[nb_chars - strlen(tag)] = '\0';
+  OSL_realloc(res, char *, (nb_chars - strlen(flag) + 1) * sizeof(char));
+  res[nb_chars - strlen(flag)] = '\0';
 
   return res;
 }
 
 
 /**
- * osl_util_read_uptoendtag function:
- * this function reads a file up to a given end tag (this end tag is read)
- * or the end of file. The name of the tag is provided as parameter (hence
- * without the starting "</" end the closing ">"). It puts everything it reads
- * in a string which is returned.
- * \param[in] file The file where to read the tail.
- * \param[in] name The name of the end tag to the file reading.
+ * osl_util_read_uptotag function:
+ * this function reads a string up to a given (start) tag (the tag is read)
+ * on the input 'file' or the input string 'str' depending on which one is
+ * not NULL (exactly one of them must not be NULL) and returns that string
+ * without the tag. It returns NULL if the tag is not found.
+ * \param[in]     file The file where to read up to tag (if not NULL).
+ * \param[in,out] str  The string where to read up to tag (if not NULL).
+ *                     This pointer is updated to reflect the read and points
+ *                     after the tag in the input string.
+ * \param[in]     name The name of the tag to the file reading.
  * \return The string that has been read from the file.
  */
-char * osl_util_read_uptoendtag(FILE * file, char * name) {
-  char tag[strlen(name) + 4];
+char * osl_util_read_uptotag(FILE * file, char ** str, char * name) {
+  char tag[strlen(name) + 3];
   
-  sprintf(tag, "</%s>", name);
-  return osl_util_read_uptotag(file, tag);
+  sprintf(tag, "<%s>", name);
+  return osl_util_read_uptoflag(file, str, tag);
+}
+
+
+/**
+ * osl_util_read_uptoendtag function:
+ * this function reads a string up to a given end tag (the end tag is read)
+ * on the input 'file' or the input string 'str' depending on which one is
+ * not NULL (exactly one of them must not be NULL) and returns that string
+ * without the end tag. It returns NULL if the end tag is not found.
+ * \param[in]     file The file where to read up to end tag (if not NULL).
+ * \param[in,out] str  The string where to read up to end tag (if not NULL).
+ *                     This pointer is updated to reflect the read and points
+ *                     after the end tag in the input string.
+ * \param[in]     name The name of the end tag to the file reading.
+ * \return The string that has been read from the file.
+ */
+char * osl_util_read_uptoendtag(FILE * file, char ** str, char * name) {
+  char endtag[strlen(name) + 4];
+  
+  sprintf(endtag, "</%s>", name);
+  return osl_util_read_uptoflag(file, str, endtag);
 }
 
 

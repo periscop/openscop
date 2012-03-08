@@ -255,7 +255,7 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
       names->arrays = osl_arrays_to_strings(arrays);
     }
 
-    fprintf(file, "\n"OSL_TAG_START_SCOP"\n\n");
+    fprintf(file, "\n<"OSL_URI_SCOP">\n\n");
     fprintf(file, "# =============================================== "
                   "Global\n");
     fprintf(file, "# Language\n");
@@ -280,7 +280,7 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
                     "Extensions\n");
       osl_generic_print(file, scop->extension);
     }
-    fprintf(file, "\n"OSL_TAG_END_SCOP"\n\n");
+    fprintf(file, "\n</"OSL_URI_SCOP">\n\n");
     
     // If necessary, switch back parameter names.
     if (parameters_backedup) {
@@ -337,7 +337,7 @@ osl_scop_p osl_scop_pread(FILE * file, osl_interface_p registry,
     //
     // I. START TAG
     //
-    tmp = osl_util_read_uptotag(file, OSL_TAG_START_SCOP);
+    tmp = osl_util_read_uptotag(file, NULL, OSL_URI_SCOP);
     if (tmp == NULL) {
       OSL_debug("no more scop in the file");
       break;
@@ -689,7 +689,7 @@ void osl_scop_register_extension(osl_scop_p scop, osl_interface_p interface) {
     textual = osl_generic_lookup(scop->extension, interface->URI);
     if (textual != NULL) {
       extension_string = ((osl_textual_p)textual->data)->textual;
-      new = osl_generic_sread(extension_string, interface);
+      new = osl_generic_sread(&extension_string, interface);
       osl_generic_add(&scop->extension, new);
     }
   }

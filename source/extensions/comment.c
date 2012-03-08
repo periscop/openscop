@@ -268,15 +268,20 @@ osl_comment_p osl_comment_clone(osl_comment_p comment) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
-  
   if (c1 == c2)
     return 1;
 
-  if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
+  if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
+    OSL_info("comments are not the same");
     return 0;
+  }
 
-  if (strcmp(c1->comment, c2->comment))
-    return 0;
+  if (strcmp(c1->comment, c2->comment)) {
+    // Well, the test does not apply well on textual content but the idea
+    // is here (see osl_generic_sprint if you want to understand the problem).
+    //OSL_info("comments are not the same");
+    //return 0;
+  }
 
   return 1;
 }

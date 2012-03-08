@@ -66,8 +66,7 @@
 
 # define OSL_DEBUG                 0       // 1 for debug mode, 0 otherwise.
 
-# define OSL_TAG_START_SCOP        "<OpenScop>"
-# define OSL_TAG_END_SCOP          "</OpenScop>"
+# define OSL_URI_SCOP              "OpenScop"
 
 # define OSL_PRECISION_ENV         "OSL_PRECISION"
 # define OSL_PRECISION_ENV_SP      "32"

@@ -317,12 +317,16 @@ int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
   if (a1 == a2)
     return 1;
 
-  if (((a1 == NULL) && (a2 != NULL)) || ((a1 != NULL) && (a2 == NULL)))
+  if (((a1 == NULL) && (a2 != NULL)) || ((a1 != NULL) && (a2 == NULL))) {
+    OSL_info("arrays are not the same");
     return 0;
+  }
 
   // Check whether the number of names is the same.
-  if (a1->nb_names != a2->nb_names)
+  if (a1->nb_names != a2->nb_names) {
+    OSL_info("arrays are not the same");
     return 0;
+  }
 
   // We accept a different order of the names, as long as the identifiers
   // are the same.
@@ -334,8 +338,10 @@ int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
         break;
       }
     }
-    if (found != 1)
+    if (found != 1) {
+      OSL_info("arrays are not the same");
       return 0;
+    }
   }
 
   return 1;
