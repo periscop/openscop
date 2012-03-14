@@ -872,6 +872,19 @@ void osl_relation_pprint(FILE * file, osl_relation_p relation,
 
 
 /**
+ * osl_relation_sprint function:
+ * this function prints the content of an osl_relation_t structure
+ * (*relation) into a string (returned) in the OpenScop textual format.
+ * \param[in] relation  The relation structure to print.
+ * \return A string containing the OpenScop dump of the relation structure.
+ */
+char * osl_relation_sprint(osl_relation_p relation) {
+
+  return osl_relation_spprint(relation, NULL);
+}
+
+
+/**
  * osl_relation_print function:
  * this function prints the content of an osl_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
