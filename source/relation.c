@@ -904,17 +904,28 @@ void osl_relation_print(FILE * file, osl_relation_p relation) {
 
 /**
  * osl_relation_read_type function:
- * this function reads a textual relation type and returns its integer
- * counterpart.
- * \param[in] file The input stream.
+ * this function reads a textual relation type on the input 'file' or the
+ * input string 'str' depending on which one is not NULL (exactly
+ * one of them must not be NULL). It returns its integer counterpart.
+ * \param[in]     file The file where to read a relation type (if not NULL).
+ * \param[in,out] str  The string where to read a relation type (if not NULL).
+ *                     This pointer is updated to reflect the read and points
+ *                     after the tag in the input string.
  * \return The relation type.
  */
 static
-int osl_relation_read_type(FILE * file) {
+int osl_relation_read_type(FILE * file, char ** str) {
   int type;
   osl_strings_p strings;
   
-  strings = osl_strings_read(file);
+  if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
+    OSL_error("one and only one of the two parameters can be non-NULL");
+
+  if (file != NULL)
+    strings = osl_strings_read(file);
+  else
+    strings = osl_strings_sread(str);
+  
   if (osl_strings_size(strings) > 1) {
     OSL_warning("uninterpreted information (after the relation type)");
   }
@@ -967,8 +978,7 @@ return_type:
 /**
  * osl_relation_pread function ("precision read"):
  * this function reads a relation into a file (foo, posibly stdin) and
- * returns a pointer this relation. The relation is set to the maximum
- * available precision.
+ * returns a pointer this relation.
  * \param[in] foo       The input stream.
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the relation structure that has been read.
@@ -985,7 +995,7 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
   char * c, s[OSL_MAX_STRING], str[OSL_MAX_STRING], *tmp;
   osl_relation_p relation, relation_union = NULL, previous = NULL;
 
-  type = osl_relation_read_type(foo);
+  type = osl_relation_read_type(foo, NULL);
 
   // Read each part of the union (the number of parts may be updated inside)
   for (k = 0; k < nb_union_parts; k++) {
@@ -1057,6 +1067,120 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
   }
 
   return relation_union;
+}
+
+
+/**
+ * osl_relation_psread function ("precision read"):
+ * this function reads a relation from a string complying to the OpenScop
+ * textual format and returns a pointer this relation. The input parameter
+ * is updated to the position in the input string this function reach right
+ * after reading the generic structure.
+ * \param[in,out] input     The input string where to find a relation.
+ *                          Updated to the position after what has been read.
+ * \param[in]     precision The precision of the relation elements.
+ * \return A pointer to the relation structure that has been read.
+ */
+osl_relation_p osl_relation_psread(char ** input, int precision) {
+  int i, j, k, n, read = 0;
+  int nb_rows, nb_columns;
+  int nb_output_dims, nb_input_dims, nb_local_dims, nb_parameters;
+  int nb_union_parts = 1;
+  int may_read_nb_union_parts = 1;
+  int read_attributes = 1;
+  int first = 1;
+  int type;
+  char str[OSL_MAX_STRING], *tmp;
+  osl_relation_p relation, relation_union = NULL, previous = NULL;
+
+  type = osl_relation_read_type(NULL, input);
+
+  // Read each part of the union (the number of parts may be updated inside)
+  for (k = 0; k < nb_union_parts; k++) {
+    // Read the number of union parts or the attributes of the union part
+    while (read_attributes) {
+      read_attributes = 0;
+
+      // Read relation attributes.
+      osl_util_sskip_blank_and_comments(input);
+      
+      read = sscanf(*input, " %d %d %d %d %d %d%n",
+          &nb_rows, &nb_columns,
+          &nb_output_dims, &nb_input_dims,
+          &nb_local_dims, &nb_parameters, &n);
+      *input += n;
+
+      if (((read != 1) && (read != 6)) ||
+          ((read == 1) && (may_read_nb_union_parts != 1)))
+        OSL_error("not 1 or 6 integers on the first relation line");
+
+      if (read == 1) {
+        // Only one number means a union and is the number of parts.
+        nb_union_parts = nb_rows;
+        if (nb_union_parts < 1)
+          OSL_error("negative nb of union parts");
+        
+        // Allow to read the properties of the first part of the union.
+        read_attributes = 1;
+      }
+
+      may_read_nb_union_parts = 0;
+    }
+
+    // Allocate the union part and fill its properties.
+    relation = osl_relation_pmalloc(precision, nb_rows, nb_columns);
+    relation->type           = type;
+    relation->nb_output_dims = nb_output_dims;
+    relation->nb_input_dims  = nb_input_dims;
+    relation->nb_local_dims  = nb_local_dims;
+    relation->nb_parameters  = nb_parameters;
+
+    // Read the matrix of constraints.
+    for (i = 0; i < relation->nb_rows; i++) {
+      osl_util_sskip_blank_and_comments(input);
+      if (!(*input))
+        OSL_error("not enough rows");
+
+      for (j = 0; j < relation->nb_columns; j++) {
+        if (*input == NULL || **input == '#' || **input == '\n')
+          OSL_error("not enough columns");
+        if (sscanf(*input, "%s%n", str, &n) == 0)
+          OSL_error("not enough rows");
+
+        // TODO: remove this tmp (sread updates the pointer).
+        tmp = str;
+        osl_int_sread(&tmp, precision, relation->m[i], j);
+        *input += n;
+      }
+    }
+    
+    // Build the linked list of union parts.
+    if (first == 1) {
+      relation_union = relation;
+      first = 0;
+    }
+    else {
+      previous->next = relation;
+    }
+
+    previous = relation;
+    read_attributes = 1;
+  }
+
+  return relation_union;
+}
+
+
+/**
+ * osl_relation_sread function:
+ * this function is equivalent to osl_relation_psread() except that
+ * the precision corresponds to the precision environment variable or
+ * to the highest available precision if it is not defined.
+ * \see{osl_relation_psread}
+ */
+osl_relation_p osl_relation_sread(char ** input) {
+  int precision = osl_util_get_precision();
+  return osl_relation_psread(input, precision);
 }
 
 
