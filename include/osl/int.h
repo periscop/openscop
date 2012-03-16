@@ -83,6 +83,7 @@ void   osl_int_assign(int, void *, int, void *, int);
 void   osl_int_set_si(int, void *, int, int);
 int    osl_int_get_si(int, void *, int);
 void   osl_int_init_set_si(int, void *, int, int);
+void   osl_int_swap(int, void *, int, void *, int);
 void   osl_int_clear(int, void *, int);
 void   osl_int_free(int, void *, int);
 void   osl_int_print(FILE *, int, void *, int);

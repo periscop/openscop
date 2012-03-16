@@ -167,6 +167,7 @@ void           osl_relation_replace_constraints(osl_relation_p,
                                                 osl_relation_p, int);
 void           osl_relation_insert_constraints(osl_relation_p,
                                                osl_relation_p, int);
+void           osl_relation_swap_constraints(osl_relation_p, int, int);
 void           osl_relation_remove_row(osl_relation_p, int);
 void           osl_relation_remove_column(osl_relation_p, int);
 void           osl_relation_insert_columns(osl_relation_p, osl_relation_p,int);

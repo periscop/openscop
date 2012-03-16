@@ -304,6 +304,48 @@ void osl_int_init_set_si(int precision,
 
 
 /**
+ * val1_base[val1_offset] <=> val2_base[val2_offset];
+ */
+void osl_int_swap(int precision,
+                  void * val1_base,   int val1_offset,
+                  void * val2_base,   int val2_offset) {
+  void * val1 = osl_int_address(precision, val1_base, val1_offset);
+  void * val2 = osl_int_address(precision, val2_base, val2_offset);
+
+  switch (precision) {
+    case OSL_PRECISION_SP: {
+      long int temp = *(long int *)val1;
+      *(long int *)val1 = *(long int *)val2;
+      *(long int *)val2 = temp;
+      break;
+    }
+
+    case OSL_PRECISION_DP: {
+      long long int temp = *(long long int *)val1;
+      *(long long int *)val1 = *(long long int *)val2;
+      *(long long int *)val2 = temp;
+      break;
+    }
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: {
+      mpz_t temp;
+      mpz_init(temp);
+      mpz_set(temp, *(mpz_t *)val1);
+      mpz_set(*(mpz_t *)val1, *(mpz_t *)val2);
+      mpz_set(*(mpz_t *)val2, temp);
+      mpz_clear(temp);
+      break;
+    }
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+
+/**
  * value_base[value_offset] = 0; // Including cleaning for GMP
  */
 void osl_int_clear(int precision, void * value_base, int value_offset) {

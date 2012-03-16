@@ -1576,6 +1576,29 @@ void osl_relation_insert_constraints(osl_relation_p r1,
 
 
 /**
+ * osl_relation_swap_constraints function:
+ * this function swaps two constraints (i.e., rows) of the relation matrix.
+ * This function updates the relation directly.
+ * \param[in,out] relation The relation to swap two rows (modified).
+ * \param[in]     c1       The row corresponding to the first constraint.
+ * \param[in]     c2       The row corresponding to the second constraint.
+ */
+void osl_relation_swap_constraints(osl_relation_p relation, int c1, int c2) {
+  int i;
+    
+  if ((relation == NULL) || (c1 == c2))
+    return;
+
+  if ((c1 >= relation->nb_rows) || (c1 < 0) ||
+      (c2 >= relation->nb_rows) || (c2 < 0))
+    OSL_error("bad constraint rows");
+
+  for (i = 0; i < relation->nb_columns; i++)
+    osl_int_swap(relation->precision, relation->m[c1], i, relation->m[c2], i);
+}
+
+
+/**
  * osl_relation_remove_row function:
  * this function removes a given row to the relation "r". It directly
  * updates the relation union part pointed by "r" and this part only.
