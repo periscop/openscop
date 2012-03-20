@@ -105,6 +105,7 @@ void   osl_int_mul(int, void *, int, void *, int, void *, int);
 void   osl_int_mul_si(int, void *, int, void *, int, int);
 void   osl_int_sub(int, void *, int, void *, int, void *, int);
 void   osl_int_oppose(int, void *, int, void *, int);
+void   osl_int_abs(int, void *, int, void *, int);
 
 
 /*+***************************************************************************

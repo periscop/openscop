@@ -1907,34 +1907,55 @@ osl_relation_p osl_relation_concat_constraints(
 
 
 /**
+ * osl_relation_part_equal function:
+ * this function returns true if the two relations parts provided as
+ * parameters are the same, false otherwise. In the case of relation
+ * unions, only the first part of the two relations are tested.
+ * \param[in] r1 The first relation.
+ * \param[in] r2 The second relation.
+ * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
+ */
+int osl_relation_part_equal(osl_relation_p r1, osl_relation_p r2) {
+  int i, j;
+
+  if (r1 == r2)
+    return 1;
+
+  if (((r1 == NULL) && (r2 != NULL)) ||
+      ((r1 != NULL) && (r2 == NULL)))
+    return 0;
+
+  if ((r1->type           != r2->type)           ||
+      (r1->precision      != r2->precision)      ||
+      (r1->nb_rows        != r2->nb_rows)        ||
+      (r1->nb_columns     != r2->nb_columns)     ||
+      (r1->nb_output_dims != r2->nb_output_dims) ||
+      (r1->nb_input_dims  != r2->nb_input_dims)  ||
+      (r1->nb_local_dims  != r2->nb_local_dims)  ||
+      (r1->nb_parameters  != r2->nb_parameters))
+    return 0;
+
+  for (i = 0; i < r1->nb_rows; ++i)
+    for (j = 0; j < r1->nb_columns; ++j)
+      if (osl_int_ne(r1->precision, r1->m[i], j, r2->m[i], j))
+        return 0;
+
+  return 1;
+}
+
+
+/**
  * osl_relation_equal function:
  * this function returns true if the two relations provided as parameters
  * are the same, false otherwise.
- * \param[in] r1  The first relation.
- * \param[in] r2  The second relation.
+ * \param[in] r1 The first relation.
+ * \param[in] r2 The second relation.
  * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
  */
 int osl_relation_equal(osl_relation_p r1, osl_relation_p r2) {
-  int i, j;
-
   while ((r1 != NULL) && (r2 != NULL)) {
-    if (r1 == r2)
-      return 1;
-
-    if ((r1->type           != r2->type)           ||
-        (r1->precision      != r2->precision)      ||
-        (r1->nb_rows        != r2->nb_rows)        ||
-        (r1->nb_columns     != r2->nb_columns)     ||
-        (r1->nb_output_dims != r2->nb_output_dims) ||
-        (r1->nb_input_dims  != r2->nb_input_dims)  ||
-        (r1->nb_local_dims  != r2->nb_local_dims)  ||
-        (r1->nb_parameters  != r2->nb_parameters))
+    if (!osl_relation_part_equal(r1, r2))
       return 0;
-
-    for (i = 0; i < r1->nb_rows; ++i)
-      for (j = 0; j < r1->nb_columns; ++j)
-        if (osl_int_ne(r1->precision, r1->m[i], j, r2->m[i], j))
-          return 0;
 
     r1 = r1->next;
     r2 = r2->next;

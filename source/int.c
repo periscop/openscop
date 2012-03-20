@@ -770,6 +770,38 @@ void osl_int_oppose(int precision,
 }
 
 
+/**
+ * result_base[result_offset] = | value_base[value_offset] |;
+ */
+void osl_int_abs(int precision,
+                 void * result_base, int result_offset,
+                 void * value_base,  int value_offset) {
+  void * result = osl_int_address(precision, result_base, result_offset);
+  void * value  = osl_int_address(precision, value_base, value_offset);
+
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      *(long int *)result = (*(long int *)value > 0) ?
+          *(long int *)value : -(*(long int *)value);
+      break;
+
+    case OSL_PRECISION_DP:
+      *(long long int *)result = (*(long long int *)value > 0) ?
+          *(long long int *)value : -(*(long long int *)value);
+      break;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      mpz_abs(*(mpz_t *)result, *(mpz_t *)value);
+      break;
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+
 /*+***************************************************************************
  *                            Conditional Operations                         *
  *****************************************************************************/
