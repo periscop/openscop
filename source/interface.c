@@ -69,6 +69,7 @@
 #include <osl/extensions/arrays.h>
 #include <osl/extensions/coordinates.h>
 #include <osl/extensions/clay.h>
+#include <osl/extensions/symbols.h>
 #include <osl/extensions/irregular.h>
 #include <osl/strings.h>
 #include <osl/body.h>
@@ -367,7 +368,7 @@ osl_interface_p osl_interface_get_default_registry() {
   // Internal generics
   osl_interface_add(&registry, osl_strings_interface());
   osl_interface_add(&registry, osl_body_interface());
-  
+
   // Extensions
   osl_interface_add(&registry, osl_textual_interface());
   osl_interface_add(&registry, osl_comment_interface());
@@ -375,8 +376,9 @@ osl_interface_p osl_interface_get_default_registry() {
   osl_interface_add(&registry, osl_arrays_interface());
   osl_interface_add(&registry, osl_coordinates_interface());
   osl_interface_add(&registry, osl_clay_interface());
+  osl_interface_add(&registry, osl_symbols_interface());
   //osl_interface_add(&registry, osl_irregular_interface());
-  
+
   return registry;
 }
 

@@ -89,6 +89,7 @@
 # define OSL_BACKEND_FORTRAN       1
 # define OSL_UNDEFINED             -1
 # define OSL_MAX_STRING            2048
+# define OSL_MIN_STRING		   100
 # define OSL_MAX_ARRAYS            128
 
 # define OSL_TYPE_GENERIC          0
@@ -102,6 +103,11 @@
 # define OSL_TYPE_MAY_WRITE        8
 
 # define OSL_FAKE_ARRAY            "fakearray"
+
+# define OSL_SYMBOL_TYPE_ITERATOR	1
+# define OSL_SYMBOL_TYPE_PARAMETER	2
+# define OSL_SYMBOL_TYPE_ARRAY		3
+# define OSL_SYMBOL_TYPE_FUNCTION	4
 
 # define OSL_STRING_UNDEFINED      "UNDEFINED"
 # define OSL_STRING_CONTEXT        "CONTEXT"

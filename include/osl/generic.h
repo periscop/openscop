@@ -93,6 +93,7 @@ typedef struct osl_generic * osl_generic_p;
 void          osl_generic_idump(FILE *, osl_generic_p, int);
 void          osl_generic_dump(FILE *, osl_generic_p);
 void          osl_generic_print(FILE *, osl_generic_p);
+char*         osl_generic_sprint(osl_generic_p );
 
 
 /*****************************************************************************
