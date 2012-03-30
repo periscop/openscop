@@ -154,6 +154,7 @@ void           osl_relation_free(osl_relation_p);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_relation_p osl_relation_nclone(osl_relation_p, int);
+osl_relation_p osl_relation_clone_nconstraints(osl_relation_p, int);
 osl_relation_p osl_relation_clone(osl_relation_p);
 void           osl_relation_add(osl_relation_p *, osl_relation_p);
 osl_relation_p osl_relation_union(osl_relation_p, osl_relation_p);

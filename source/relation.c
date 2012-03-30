@@ -1219,6 +1219,14 @@ osl_relation_p osl_relation_pmalloc(int precision,
   void ** p, * q;
   int i, j;
 
+  if ((precision != OSL_PRECISION_SP) &&
+      (precision != OSL_PRECISION_DP) &&
+      (precision != OSL_PRECISION_MP))
+    OSL_error("unknown precision");
+
+  if ((nb_rows < 0) || (nb_columns < 0))
+    OSL_error("negative sizes");
+
   OSL_malloc(relation, osl_relation_p, sizeof(osl_relation_t));
   relation->type           = OSL_UNDEFINED;
   relation->nb_rows        = nb_rows;
@@ -1321,6 +1329,56 @@ void osl_relation_free(osl_relation_p relation) {
 
 /**
  * osl_relation_nclone function:
+ * this functions builds and returns a "hard copy" (not a pointer copy) of the
+ * first n parts of a relation union.
+ * \param[in] relation The pointer to the relation we want to clone.
+ * \param[in] n        The number of union parts of the relation we want to
+ *                     clone (the special value -1 means "all the parts").
+ * \return A pointer to the clone of the relation union restricted to the
+ *         first n parts of the relation union.
+ */
+osl_relation_p osl_relation_nclone(osl_relation_p relation, int n) {
+  int i, j, k;
+  int first = 1, nb_components, nb_parts;
+  osl_relation_p clone = NULL, node, previous = NULL;
+
+  nb_components = osl_relation_nb_components(relation);
+  nb_parts = (n == -1) ? nb_components : n;
+  if (nb_components < nb_parts)
+    OSL_error("not enough union parts to clone");
+
+  for (k = 0; k < nb_parts; k++) {
+    node = osl_relation_pmalloc(relation->precision,
+                                relation->nb_rows, relation->nb_columns);
+    node->type           = relation->type;
+    node->nb_output_dims = relation->nb_output_dims;
+    node->nb_input_dims  = relation->nb_input_dims;
+    node->nb_local_dims  = relation->nb_local_dims;
+    node->nb_parameters  = relation->nb_parameters;
+
+    for (i = 0; i < relation->nb_rows; i++)
+      for (j = 0; j < relation->nb_columns; j++)
+        osl_int_assign(relation->precision, node->m[i], j, relation->m[i], j);
+  
+    if (first) {
+      first = 0;
+      clone = node;
+      previous = node;
+    }
+    else {
+      previous->next = node;
+      previous = previous->next;
+    }
+
+    relation = relation->next;
+  }
+
+  return clone;
+}
+
+
+/**
+ * osl_relation_clone_nconstraints function:
  * this functions builds and returns a "hard copy" (not a pointer copy) of a
  * osl_relation_t data structure such that the clone is restricted to the
  * "n" first rows of the relation. This applies to all the parts in the case
@@ -1331,7 +1389,8 @@ void osl_relation_free(osl_relation_p relation) {
  * \return A pointer to the clone of the relation union restricted to the
  *         first n rows of constraint matrix for each part of the union.
  */
-osl_relation_p osl_relation_nclone(osl_relation_p relation, int n) {
+osl_relation_p osl_relation_clone_nconstraints(osl_relation_p relation,
+                                               int n) {
   int i, j;
   int first = 1, all_rows = 0;
   osl_relation_p clone = NULL, node, previous = NULL;
