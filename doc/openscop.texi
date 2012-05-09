@@ -2417,6 +2417,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Arrays Extension::
 * Scatnames Extension::
 * Coordinates Extension::
+* Clay Extension::
 * Irregular Extension::
 @end menu
 
@@ -2651,6 +2652,54 @@ typedef struct osl_coordinates * osl_coordinates_p;
 
 
 @c ---------------------------------------------------------------------------
+
+
+@node Clay Extension
+@subsection Clay Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{clay}.
+@item Author: C@'edric Bastoul <cedric.bastoul@@u-psud.fr>.
+@item Purpose: the @code{clay} extension stores a Clay script.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{clay} extension file format respects the following
+grammar:
+@example
+Clay_generic        ::= "<clay>" Clay "</clay>"
+Clay                ::= _Text
+@end example
+
+@noindent An example of a @code{clay} extension is the following:
+@example
+@group
+<clay>
+fission([2,1], 1);
+stripmine([2], 32, 1);
+unroll([3], 4);
+</clay>
+@end group
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{clay} extension data structure is the following:
+@example
+@group
+struct osl_clay @{
+  char * script;  /* Clay script as a 0-terminated string */
+@};
+typedef struct osl_clay   osl_clay_t;
+typedef struct osl_clay * osl_clay_p;
+@end group
+@end example
+
+
+@c ---------------------------------------------------------------------------
+
 
 @node Irregular Extension
 @subsection Irregular Extension

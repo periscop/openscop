@@ -85,17 +85,18 @@ osl_test_LDFLAGS  = -L$(top_srcdir)
 
 osl_test_LDADD    = -losl
 
-osl_test_SOURCES  =                 \
-	osl_test.c                  \
-	polynom.scop                \
-	test_empty_statement.scop   \
-	test_just_access.scop       \
-	test_just_body.scop         \
-	test_just_domain.scop       \
-	test_just_scattering.scop   \
-	test_coordinates.scop       \
-	test_matmult.scop           \
-	test_no_statement.scop      \
+osl_test_SOURCES  = \
+	osl_test.c \
+	polynom.scop \
+	test_empty_statement.scop \
+	test_just_access.scop \
+	test_just_body.scop \
+	test_just_domain.scop \
+	test_just_scattering.scop \
+	test_coordinates.scop \
+	test_matmult.scop \
+	test_clay.scop \
+	test_no_statement.scop \
 	test_scop_list.scop
 
 
