@@ -489,24 +489,25 @@ int osl_statement_number(osl_statement_p statement) {
 
 
 /**
- * osl_statement_clone function:
- * This functions builds and returns a "hard copy" (not a pointer copy) of an
- * osl_statement_t data structure provided as parameter.
- * \param[in] statement The pointer to the statement we want to clone.
- * \return A pointer to the clone of the statement provided as parameter.
+ * osl_statement_nclone function:
+ * This function builds and returns a "hard copy" (not a pointer copy) of the
+ * n first elements of an osl_statement_t list.
+ * \param statement The pointer to the statement structure we want to clone.
+ * \param n         The number of nodes we want to copy (-1 for infinity).
+ * \return The clone of the n first nodes of the statement list.
  */
-osl_statement_p osl_statement_clone(osl_statement_p statement) {
-  int first = 1;
+osl_statement_p osl_statement_nclone(osl_statement_p statement, int n) {
+  int first = 1, i = 0;
   osl_statement_p clone = NULL, node, previous = NULL;
 
-  while (statement != NULL) {
+  while ((statement != NULL) && ((n == -1) || (i < n))) {
     node             = osl_statement_malloc();
     node->domain     = osl_relation_clone(statement->domain);
     node->scattering = osl_relation_clone(statement->scattering);
     node->access     = osl_relation_list_clone(statement->access);
     node->body       = osl_generic_clone(statement->body);
     node->next       = NULL;
-    
+
     if (first) {
       first = 0;
       clone = node;
@@ -517,10 +518,23 @@ osl_statement_p osl_statement_clone(osl_statement_p statement) {
       previous = previous->next;
     }
 
+    i++;
     statement = statement->next;
   }
 
   return clone;
+}
+
+
+/**
+ * osl_statement_clone function:
+ * This functions builds and returns a "hard copy" (not a pointer copy) of an
+ * osl_statement_t data structure provided as parameter.
+ * \param[in] statement The pointer to the statement we want to clone.
+ * \return A pointer to the clone of the statement provided as parameter.
+ */
+osl_statement_p osl_statement_clone(osl_statement_p statement) {
+  return osl_statement_nclone(statement, -1);
 }
 
 
