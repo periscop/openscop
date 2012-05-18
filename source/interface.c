@@ -68,6 +68,7 @@
 #include <osl/extensions/scatnames.h>
 #include <osl/extensions/arrays.h>
 #include <osl/extensions/coordinates.h>
+#include <osl/extensions/clay.h>
 #include <osl/extensions/irregular.h>
 #include <osl/strings.h>
 #include <osl/body.h>
@@ -337,11 +338,17 @@ int osl_interface_equal(osl_interface_p interface1,
  */
 osl_interface_p
 osl_interface_lookup(osl_interface_p list, char * URI) {
-  while (list != NULL) {
-    if ((list->URI != NULL) && (!strcmp(list->URI, URI)))
-      return list;
 
-    list = list->next;
+  if (URI == NULL) {
+    OSL_warning("lookup for a NULL URI");
+  }
+  else {
+    while (list != NULL) {
+      if ((list->URI != NULL) && (!strcmp(list->URI, URI)))
+        return list;
+
+      list = list->next;
+    }
   }
 
   return NULL;
