@@ -279,6 +279,90 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
 
 
 /**
+ * osl_statement_pprint_scoplib function:
+ * this function pretty-prints the content of an osl_statement_t structure
+ * (*statement) into a file (file, possibly stdout) in the SCoPLib format.
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
+ * \param[in] names     The names of the constraint columns for comments. 
+ */
+void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
+                          osl_names_p names) {
+  int nb_relations, number = 1;
+  int generated_names = 0;
+  int iterators_backedup = 0;
+  osl_strings_p iterators_backup = NULL;
+
+  // Generate the dimension names if necessary and replace iterators with
+  // statement iterators if possible.
+  if (names == NULL) {
+    generated_names = 1;
+    names = osl_statement_names(statement);
+  }
+
+  while (statement != NULL) {
+    // If possible, replace iterator names with statement iterator names.
+    if (osl_generic_has_URI(statement->body, OSL_URI_BODY) &&
+        (((osl_body_p)(statement->body->data))->iterators != NULL)) {
+      iterators_backedup = 1;
+      iterators_backup = names->iterators;
+      names->iterators = ((osl_body_p)(statement->body->data))->iterators;
+    }
+
+    fprintf(file, "# =============================================== ");
+    fprintf(file, "Statement %d\n", number);
+    
+    nb_relations = osl_relation_nb_components(statement->domain); 
+
+    fprintf(file, "# ---------------------------------------------- ");
+    fprintf(file, "%2d.1 Domain\n", number);
+    fprintf(file, "# Iteration domain");
+    osl_relation_pprint_scoplib(file, statement->domain, names, 1);
+    fprintf(file, "\n");
+
+    fprintf(file, "# ---------------------------------------------- ");
+    fprintf(file, "%2d.2 Scattering\n", number);
+    fprintf(file,"# Scattering function is provided\n1");
+    osl_relation_pprint_scoplib(file, statement->scattering, names, 0);
+    fprintf(file, "\n");
+
+    fprintf(file, "# ---------------------------------------------- ");
+    fprintf(file, "%2d.3 Access\n", number);
+    fprintf(file,"# Access informations are provided\n1\n");
+    
+    osl_relation_list_pprint_elts_scoplib(file, statement->access, names);
+    fprintf(file, "\n");
+
+    fprintf(file, "# ---------------------------------------------- ");
+    fprintf(file, "%2d.4 Body\n", number);
+    if (statement->body != NULL) {
+      fprintf(file, "# Statement body is provided\n");
+      fprintf(file, "1\n");
+      osl_body_print_scoplib(file, statement->body->data);
+    }
+    else {
+      fprintf(file, "# Statement body is not provided\n");
+      fprintf(file, "0\n");
+    }
+
+    fprintf(file, "\n");
+
+    // If necessary, switch back iterator names.
+    if (iterators_backedup) {
+      iterators_backedup = 0;
+      names->iterators = iterators_backup;
+    }
+
+    statement = statement->next;
+    number++;
+  }
+
+  if (generated_names)
+    osl_names_free(names);
+}
+
+
+/**
  * osl_statement_print function:
  * this function prints the content of an osl_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.

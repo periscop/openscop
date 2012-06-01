@@ -131,6 +131,12 @@ void           osl_relation_pprint(FILE *, osl_relation_p, osl_names_p);
 char *         osl_relation_sprint(osl_relation_p);
 void           osl_relation_print(FILE *, osl_relation_p);
 
+// SCoPLib Compatibility
+char *         osl_relation_spprint_polylib_scoplib(osl_relation_p,
+                                                    osl_names_p, int);
+char *         osl_relation_spprint_scoplib(osl_relation_p, osl_names_p, int);
+void           osl_relation_pprint_scoplib(FILE *, osl_relation_p,
+                                           osl_names_p, int);
 
 /*****************************************************************************
  *                               Reading function                            *
@@ -153,6 +159,7 @@ void           osl_relation_free(osl_relation_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+int            osl_relation_nb_components(osl_relation_p relation);
 osl_relation_p osl_relation_nclone(osl_relation_p, int);
 osl_relation_p osl_relation_clone_nconstraints(osl_relation_p, int);
 osl_relation_p osl_relation_clone(osl_relation_p);

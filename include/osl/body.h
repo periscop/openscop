@@ -98,6 +98,8 @@ void            osl_body_dump(FILE *, osl_body_p);
 char *          osl_body_sprint(osl_body_p);
 void            osl_body_print(FILE *, osl_body_p);
 
+// SCoPLib Compatibility
+void            osl_body_print_scoplib(FILE * file, osl_body_p body);
 
 /*****************************************************************************
  *                              Reading function                             *

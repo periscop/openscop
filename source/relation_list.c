@@ -183,6 +183,70 @@ void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
 
 
 /**
+ * osl_relation_list_pprint_elts_scoplib function:
+ * This function pretty-prints the elements of a osl_relation_list_t structure
+ * into a file (file, possibly stdout) in the SCoPLib format. I.e., it prints
+ * only the elements and not the number of elements. It prints an element of the
+ * list only if it is not NULL.
+ * \param file  File where informations are printed.
+ * \param list  The relation list whose information has to be printed.
+ * \param[in] names Array of constraint columns names. 
+ */
+void osl_relation_list_pprint_elts_scoplib(FILE * file, osl_relation_list_p list,
+                                           osl_names_p names) {
+  int i;
+  int nb_rows_read = 0, nb_columns_read = 0;
+  int nb_rows_write = 0, nb_columns_write = 0;
+  osl_relation_list_p head ;
+
+  // Count the number of elements in the list with non-NULL content.
+  i = osl_relation_list_count(list);
+  
+  // Print each element of the relation list.
+  if (i > 0) {
+  
+    // Read/Write arrays size
+    head = list;
+    while (head) {
+      if (head->elt != NULL) {
+        if (head->elt->type == OSL_TYPE_READ) {
+          nb_rows_read += head->elt->nb_rows - 1;
+          nb_columns_read = head->elt->nb_columns - head->elt->nb_output_dims;
+        } else if (head->elt->type == OSL_TYPE_WRITE) {
+          nb_rows_write++;
+          nb_columns_write = head->elt->nb_columns - head->elt->nb_output_dims;
+        }
+      }
+      head = head->next;
+    }
+    
+    fprintf(file, "# Read access informations\n%d %d",
+            nb_rows_read, nb_columns_read);
+    head = list;
+    while (head) {
+      if (head->elt != NULL && head->elt->type == OSL_TYPE_READ) {
+        osl_relation_pprint_scoplib(file, head->elt, names, 0);
+      }
+      head = head->next;
+    }
+    
+    fprintf(file, "\n# Write access informations\n%d %d",
+            nb_rows_write, nb_columns_write);
+    head = list;
+    while (head) {
+      if (head->elt != NULL && head->elt->type == OSL_TYPE_WRITE) {
+        osl_relation_pprint_scoplib(file, head->elt, names, 0);
+      }
+      head = head->next;
+    }
+  }
+  else {
+    fprintf(file, "# NULL relation list\n");
+  }
+}
+
+
+/**
  * osl_relation_list_pprint function:
  * This function pretty-prints the content of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. It prints

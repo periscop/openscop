@@ -679,6 +679,87 @@ char * osl_relation_column_string(osl_relation_p relation, char ** strings) {
 
 
 /**
+ * osl_relation_column_string_scoplib function:
+ * this function returns an OpenScop comment string showing all column
+ * names. It is designed to nicely fit a constraint matrix that would be
+ * printed just below this line.
+ * \param[in] relation The relation related to the comment line to build.
+ * \param[in] strings  Array of textual names of the various elements.
+ * \return A fancy comment string with all the dimension names.
+ */
+static
+char * osl_relation_column_string_scoplib(osl_relation_p relation,
+                                          char ** strings) {
+  int i, j;
+  int index_output_dims;
+  int index_input_dims;
+  int index_local_dims;
+  int index_parameters;
+  int index_scalar;
+  int space, length, left, right;
+  char * scolumn;
+  char temp[OSL_MAX_STRING];
+
+  OSL_malloc(scolumn, char *, OSL_MAX_STRING);
+ 
+  index_output_dims = 1;
+  index_input_dims  = index_output_dims + relation->nb_output_dims;
+  index_local_dims  = index_input_dims  + relation->nb_input_dims;
+  index_parameters  = index_local_dims  + relation->nb_local_dims;
+  index_scalar      = index_parameters  + relation->nb_parameters;
+
+  // 1. The comment part.
+  sprintf(scolumn, "#");
+  for (j = 0; j < (OSL_FMT_LENGTH - 1)/2 - 1; j++)
+    strcat(scolumn, " ");
+
+  i = 0;
+  while (strings[i] != NULL) {
+    
+    if (i == 0 || i >= index_input_dims) {
+      space  = OSL_FMT_LENGTH;
+      length = (space > strlen(strings[i])) ? strlen(strings[i]) : space;
+      right  = (space - length + (OSL_FMT_LENGTH % 2)) / 2;
+      left   = space - length - right;
+
+      // 2. Spaces before the name
+      for (j = 0; j < left; j++)
+        strcat(scolumn, " ");
+
+      // 3. The (abbreviated) name
+      for (j = 0; j < length - 1; j++) {
+        sprintf(temp, "%c", strings[i][j]);
+        strcat(scolumn, temp);
+      }
+      if (length >= strlen(strings[i]))
+        sprintf(temp, "%c", strings[i][j]);
+      else 
+        sprintf(temp, ".");
+      strcat(scolumn, temp);
+
+      // 4. Spaces after the name
+      for (j = 0; j < right; j++)
+        strcat(scolumn, " ");
+        
+      if ((i == index_output_dims-1) ||
+          (i == index_input_dims-1)  ||
+          (i == index_local_dims-1)  ||
+          (i == index_parameters-1)  ||
+          (i == index_scalar-1))
+        strcat(scolumn, "|");
+      else
+        strcat(scolumn, " ");
+    }
+    
+    i++;
+  }
+  strcat(scolumn, "\n");
+
+  return scolumn;
+}
+
+
+/**
  * osl_relation_names function:
  * this function generates as set of names for all the dimensions
  * involved in a given relation.
@@ -823,6 +904,150 @@ char * osl_relation_spprint_polylib(osl_relation_p relation,
 
 
 /**
+ * osl_relation_spprint_polylib_scoplib function:
+ * this function pretty-prints the content of an osl_relation_t structure
+ * (*relation) into a string in the extended polylib format, and returns this
+ * string.
+ * \param[in] relation        The relation whose information has to be printed.
+ * \param[in] names           The names of the constraint columns for comments.
+ * \param[in] print_nth_part  Print the value of `n' (used for domain union)
+ * \return A string containing the relation pretty-printing.
+ */
+char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
+                                            osl_names_p names,
+                                            int print_nth_part) {
+  int i, j;
+  int part, nb_parts;
+  int generated_names = 0;
+  int is_access_array;
+  int high_water_mark = OSL_MAX_STRING;
+  int start_row; // for removing the first line in the access matrix
+  char * string = NULL;
+  char buffer[OSL_MAX_STRING];
+  char ** name_array = NULL;
+  char * scolumn;
+  char * comment;
+    
+
+  if (relation == NULL)
+    return strdup("# NULL relation\n");
+
+  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  string[0] = '\0';
+
+  // Generates the names for the comments if necessary.
+  if (names == NULL) {
+    generated_names = 1;
+    names = osl_relation_names(relation);
+  }
+  
+  nb_parts = osl_relation_nb_components(relation);
+  if (nb_parts > 1) {
+    snprintf(buffer, OSL_MAX_STRING, "# Union with %d parts\n%d\n",
+             nb_parts, nb_parts);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+  }
+  
+  is_access_array = (relation->type == OSL_TYPE_READ ||
+                     relation->type == OSL_TYPE_WRITE ? 1 : 0);
+    
+  // Print each part of the union.
+
+  for (part = 1; part <= nb_parts; part++) {
+    
+    // Prepare the array of strings for comments.
+    name_array = osl_relation_strings(relation, names);
+
+    if (nb_parts > 1) {
+      snprintf(buffer, OSL_MAX_STRING, "# Union part No.%d\n", part);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    }
+    
+    if (print_nth_part) {
+      snprintf(buffer, OSL_MAX_STRING, "%d\n", part);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    }
+    
+    // Don't print the array size for access
+    // (the total size is printed in osl_relation_list_pprint_elts_scoplib)
+    if (!is_access_array) {
+      snprintf(buffer, OSL_MAX_STRING, "%d %d\n",
+               relation->nb_rows, relation->nb_columns - relation->nb_output_dims);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+      
+      // Print column names comment
+      if (relation->nb_rows > 0) {
+        scolumn = osl_relation_column_string_scoplib(relation, name_array);
+        snprintf(buffer, OSL_MAX_STRING, "%s", scolumn);
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        free(scolumn);
+      }
+      
+      start_row = 0;
+      
+    } else {
+    
+      start_row = 1; // Remove the 'Arr' line
+    }
+    
+    for (i = start_row; i < relation->nb_rows; i++) {
+      
+      if (!is_access_array) {
+      
+        osl_int_sprint(buffer, relation->precision, relation->m[i], 0);
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        snprintf(buffer, OSL_MAX_STRING, " ");
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        
+      } else {
+        // The first column represents the array index name
+        if (i == start_row)
+          osl_int_sprint(buffer, relation->precision, relation->m[0],
+                         relation->nb_columns-1);
+        else
+          snprintf(buffer, OSL_MAX_STRING, "   0");
+          
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        snprintf(buffer, OSL_MAX_STRING, " ");
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+      }
+      
+      // Jmp output_dims
+      for (j = relation->nb_output_dims+1; j < relation->nb_columns; j++) {
+        osl_int_sprint(buffer, relation->precision, relation->m[i], j);
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+        snprintf(buffer, OSL_MAX_STRING, " ");
+        osl_util_safe_strcat(&string, buffer, &high_water_mark);
+      }
+
+      if (name_array != NULL) {
+        comment = osl_relation_sprint_comment(relation, i, name_array,
+                                              names->arrays->string);
+        osl_util_safe_strcat(&string, comment, &high_water_mark);
+        free(comment);
+      }
+      snprintf(buffer, OSL_MAX_STRING, "\n");
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    }
+
+    // Free the array of strings.
+    if (name_array != NULL) {
+      for (i = 0; i < relation->nb_columns; i++)
+        free(name_array[i]);
+      free(name_array);
+    }
+    
+    relation = relation->next;
+  }
+  
+  if (generated_names)
+    osl_names_free(names);
+
+  return string;
+}
+
+
+/**
  * osl_relation_spprint function:
  * this function pretty-prints the content of an osl_relation_t structure
  * (*relation) into a string in the OpenScop format, and returns this string.
@@ -856,6 +1081,39 @@ char * osl_relation_spprint(osl_relation_p relation, osl_names_p names) {
 
 
 /**
+ * osl_relation_spprint_scoplib function:
+ * this function pretty-prints the content of an osl_relation_t structure
+ * (*relation) into a string in the SCoPLib format, and returns this string.
+ * \param[in] relation        The relation whose information has to be printed.
+ * \param[in] names           The names of the constraint columns for comments.
+ * \param[in] print_nth_part  Print the value of `n' (used for domain union)
+ * \return A string 
+ */
+char * osl_relation_spprint_scoplib(osl_relation_p relation, osl_names_p names,
+                                    int print_nth_part) {
+  int high_water_mark = OSL_MAX_STRING;
+  char * string = NULL;
+  char * temp;
+  char buffer[OSL_MAX_STRING];
+  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  string[0] = '\0';
+
+  if (relation) {
+    
+    snprintf(buffer, OSL_MAX_STRING, "\n");
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+
+    temp = osl_relation_spprint_polylib_scoplib(relation, names,
+                                                print_nth_part);
+    osl_util_safe_strcat(&string, temp, &high_water_mark);
+    free(temp);
+  }
+
+  return string;
+}
+
+
+/**
  * osl_relation_pprint function:
  * this function pretty-prints the content of an osl_relation_t structure
  * (*relation) into a file (file, possibly stdout) in the OpenScop format.
@@ -866,6 +1124,22 @@ char * osl_relation_spprint(osl_relation_p relation, osl_names_p names) {
 void osl_relation_pprint(FILE * file, osl_relation_p relation,
                          osl_names_p names) {
   char * string = osl_relation_spprint(relation, names);
+  fprintf(file, "%s", string);
+  free(string);
+}
+
+
+/**
+ * osl_relation_pprint_scoplib function:
+ * this function pretty-prints the content of an osl_relation_t structure
+ * (*relation) into a file (file, possibly stdout) in the SCoPLibformat.
+ * \param[in] file     File where informations are printed.
+ * \param[in] relation The relation whose information has to be printed.
+ * \param[in] names    The names of the constraint columns for comments. 
+ */
+void osl_relation_pprint_scoplib(FILE * file, osl_relation_p relation,
+                                 osl_names_p names, int print_nth_part) {
+  char * string = osl_relation_spprint_scoplib(relation, names, print_nth_part);
   fprintf(file, "%s", string);
   free(string);
 }

@@ -117,6 +117,9 @@ void       osl_scop_idump(FILE *, osl_scop_p, int);
 void       osl_scop_dump(FILE *, osl_scop_p);
 void       osl_scop_print(FILE *, osl_scop_p);
 
+// SCoPLib Compatibility
+void       osl_scop_print_scoplib(FILE *, osl_scop_p);
+
 
 /*****************************************************************************
  *                               Reading function                            *
