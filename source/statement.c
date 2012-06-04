@@ -292,6 +292,7 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
   int generated_names = 0;
   int iterators_backedup = 0;
   osl_strings_p iterators_backup = NULL;
+  int add_fakeiter;
 
   // Generate the dimension names if necessary and replace iterators with
   // statement iterators if possible.
@@ -308,7 +309,10 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
       iterators_backup = names->iterators;
       names->iterators = ((osl_body_p)(statement->body->data))->iterators;
     }
-
+    
+    add_fakeiter = statement->domain->nb_rows == 0 &&
+                   statement->scattering->nb_rows == 1;
+    
     fprintf(file, "# =============================================== ");
     fprintf(file, "Statement %d\n", number);
     
@@ -316,33 +320,33 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
-    fprintf(file, "# Iteration domain");
-    osl_relation_pprint_scoplib(file, statement->domain, names, 1);
+    fprintf(file, "# Iteration domain\n");
+    osl_relation_pprint_scoplib(file, statement->domain, names, 1, add_fakeiter);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.2 Scattering\n", number);
-    fprintf(file,"# Scattering function is provided\n1");
-    osl_relation_pprint_scoplib(file, statement->scattering, names, 0);
+    fprintf(file,"# Scattering function is provided\n1\n");
+    osl_relation_pprint_scoplib(file, statement->scattering, names, 0,
+                                add_fakeiter);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.3 Access\n", number);
     fprintf(file,"# Access informations are provided\n1\n");
     
-    osl_relation_list_pprint_elts_scoplib(file, statement->access, names);
+    osl_relation_list_pprint_access_array_scoplib(file, statement->access,
+                                                  names, add_fakeiter);
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
     if (statement->body != NULL) {
-      fprintf(file, "# Statement body is provided\n");
-      fprintf(file, "1\n");
+      fprintf(file, "# Statement body is provided\n1\n");
       osl_body_print_scoplib(file, statement->body->data);
     }
     else {
-      fprintf(file, "# Statement body is not provided\n");
-      fprintf(file, "0\n");
+      fprintf(file, "# Statement body is not provided\n0\n");
     }
 
     fprintf(file, "\n");

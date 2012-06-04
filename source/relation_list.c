@@ -183,7 +183,7 @@ void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
 
 
 /**
- * osl_relation_list_pprint_elts_scoplib function:
+ * osl_relation_list_pprint_access_array_scoplib function:
  * This function pretty-prints the elements of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the SCoPLib format. I.e., it prints
  * only the elements and not the number of elements. It prints an element of the
@@ -191,12 +191,14 @@ void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
  * \param[in] names Array of constraint columns names. 
+ * \param[in] add_fakeiter True of False
  */
-void osl_relation_list_pprint_elts_scoplib(FILE * file, osl_relation_list_p list,
-                                           osl_names_p names) {
+void osl_relation_list_pprint_access_array_scoplib(FILE * file,
+              osl_relation_list_p list, osl_names_p names, int add_fakeiter) {
   int i;
   int nb_rows_read = 0, nb_columns_read = 0;
   int nb_rows_write = 0, nb_columns_write = 0;
+  int nb_rows_may_write = 0, nb_columns_may_write = 0;
   osl_relation_list_p head ;
 
   // Count the number of elements in the list with non-NULL content.
@@ -210,34 +212,70 @@ void osl_relation_list_pprint_elts_scoplib(FILE * file, osl_relation_list_p list
     while (head) {
       if (head->elt != NULL) {
         if (head->elt->type == OSL_TYPE_READ) {
-          nb_rows_read += head->elt->nb_rows - 1;
+          if (head->elt->nb_rows == 1)
+            nb_rows_read++;
+          else
+            nb_rows_read += head->elt->nb_rows - 1; // remove the 'Arr'
+            
           nb_columns_read = head->elt->nb_columns - head->elt->nb_output_dims;
+          
         } else if (head->elt->type == OSL_TYPE_WRITE) {
-          nb_rows_write++;
+          if (head->elt->nb_rows == 1)
+            nb_rows_write++;
+          else
+            nb_rows_write += head->elt->nb_rows - 1; // remove the 'Arr'
+            
           nb_columns_write = head->elt->nb_columns - head->elt->nb_output_dims;
+          
+        } else if (head->elt->type == OSL_TYPE_MAY_WRITE) {
+          if (head->elt->nb_rows == 1)
+            nb_rows_may_write++;
+          else
+            nb_rows_may_write += head->elt->nb_rows - 1; // remove the 'Arr'
+            
+          nb_columns_may_write = head->elt->nb_columns -
+                                 head->elt->nb_output_dims;
         }
       }
       head = head->next;
     }
     
-    fprintf(file, "# Read access informations\n%d %d",
+    if (add_fakeiter) {
+      nb_columns_read++;
+      nb_columns_write++;
+      nb_columns_may_write++;
+    }
+    
+    fprintf(file, "# Read access informations\n%d %d\n",
             nb_rows_read, nb_columns_read);
     head = list;
     while (head) {
       if (head->elt != NULL && head->elt->type == OSL_TYPE_READ) {
-        osl_relation_pprint_scoplib(file, head->elt, names, 0);
+        osl_relation_pprint_scoplib(file, head->elt, names, 0, add_fakeiter);
       }
       head = head->next;
     }
     
-    fprintf(file, "\n# Write access informations\n%d %d",
+    fprintf(file, "# Write access informations\n%d %d\n",
             nb_rows_write, nb_columns_write);
     head = list;
     while (head) {
       if (head->elt != NULL && head->elt->type == OSL_TYPE_WRITE) {
-        osl_relation_pprint_scoplib(file, head->elt, names, 0);
+        osl_relation_pprint_scoplib(file, head->elt, names, 0, add_fakeiter);
       }
       head = head->next;
+    }
+    
+    if (nb_rows_may_write > 0) {
+      fprintf(file, "# May Write access informations\n%d %d\n",
+              nb_rows_may_write, nb_columns_may_write);
+      head = list;
+      while (head) {
+        if (head->elt != NULL && head->elt->type == OSL_TYPE_MAY_WRITE) {
+          osl_relation_pprint_scoplib(file, head->elt, names, 0, add_fakeiter);
+        }
+        head = head->next;
+      }
     }
   }
   else {

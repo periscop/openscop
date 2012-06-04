@@ -133,10 +133,11 @@ void           osl_relation_print(FILE *, osl_relation_p);
 
 // SCoPLib Compatibility
 char *         osl_relation_spprint_polylib_scoplib(osl_relation_p,
-                                                    osl_names_p, int);
-char *         osl_relation_spprint_scoplib(osl_relation_p, osl_names_p, int);
+                                                    osl_names_p, int, int);
+char *         osl_relation_spprint_scoplib(osl_relation_p, osl_names_p,
+                                            int, int);
 void           osl_relation_pprint_scoplib(FILE *, osl_relation_p,
-                                           osl_names_p, int);
+                                           osl_names_p, int, int);
 
 /*****************************************************************************
  *                               Reading function                            *

@@ -357,16 +357,19 @@ void osl_scop_print_scoplib(FILE * file, osl_scop_p scop) {
     fprintf(file, "# Language\n");
     fprintf(file, "%s\n\n", scop->language);
 
-    fprintf(file, "# Context");
+    fprintf(file, "# Context\n");
 
-    osl_relation_pprint_scoplib(file, scop->context, names, 0);
+    osl_relation_pprint_scoplib(file, scop->context, names, 0, 0);
     fprintf(file, "\n");
 
     osl_util_print_provided(file,
         osl_generic_has_URI(scop->parameters, OSL_URI_STRINGS),
         "Parameters are");
-
-    osl_strings_print(file, scop->parameters->data);
+        
+    if (scop->parameters) {
+      fprintf(file, "# Parameter names\n");
+      osl_strings_print(file, scop->parameters->data);
+    }
 
     fprintf(file, "\n# Number of statements\n");
     fprintf(file, "%d\n\n",osl_statement_number(scop->statement));

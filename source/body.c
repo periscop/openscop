@@ -174,11 +174,13 @@ void osl_body_print_scoplib(FILE * file, osl_body_p body) {
     nb_iterators = osl_strings_size(body->iterators);
 
     if (nb_iterators > 0) {
-      fprintf(file, "\n# List of original iterators\n");
+      fprintf(file, "# List of original iterators\n");
       osl_strings_print(file, body->iterators);
+    } else {
+      fprintf(file, "fakeiter\n");
     }
 
-    fprintf(file, "\n# Statement body expression\n");
+    fprintf(file, "# Statement body expression\n");
     osl_strings_print(file, body->expression);
   }
   else {
