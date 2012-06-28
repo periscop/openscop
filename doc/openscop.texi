@@ -1995,6 +1995,7 @@ struct osl_relation @{
   int nb_local_dims;          /* Number of local dimensions */
   int nb_parameters;          /* Number of parameters */
   void ** m;                  /* Matrix of constraints */
+  void * usr;                 /* User-managed field */
   struct osl_relation * next; /* Next relation in the union */
 @};
 typedef struct osl_relation   osl_relation_t;
@@ -2028,6 +2029,7 @@ values:
 @item 0: multiple precision, elements are GNU GMP Library's
       @code{mpz_t} (@code{OSL_PRECISION_MP}).
 @end itemize
+Finally, the @code{usr} field is provided for user's convenience.
 
 @c ---------------------------------------------------------------------------
 
