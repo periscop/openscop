@@ -369,14 +369,15 @@ char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
     }
   }
   else
-  if (relation->type == OSL_TYPE_SCATTERING) {
+  if ((relation->type == OSL_TYPE_DOMAIN) ||
+      (relation->type == OSL_TYPE_CONTEXT)) {
     for (i = offset; i < relation->nb_output_dims + offset; i++) {
-      OSL_strdup(strings[i], names->scatt_dims->string[i - offset]);
+      OSL_strdup(strings[i], names->iterators->string[i - offset]);
     }
   }
   else {
     for (i = offset; i < relation->nb_output_dims + offset; i++) {
-      OSL_strdup(strings[i], names->iterators->string[i - offset]);
+      OSL_strdup(strings[i], names->scatt_dims->string[i - offset]);
     }
   }
   offset += relation->nb_output_dims;
@@ -2479,6 +2480,13 @@ void osl_relation_get_attributes(osl_relation_p relation,
         local_nb_localdims  = relation->nb_local_dims;
         local_array_id      = osl_relation_get_array_id(relation);
         break;
+
+      default:
+        local_nb_parameters = relation->nb_parameters;
+        local_nb_iterators  = relation->nb_input_dims;
+        local_nb_scattdims  = relation->nb_output_dims;
+        local_nb_localdims  = relation->nb_local_dims;
+        local_array_id      = 0;
     }
 
     // Update.

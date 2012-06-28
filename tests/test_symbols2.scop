@@ -61,7 +61,7 @@ double **
 </null>
 # 2.7 Extent
 <relation>
-DOMAIN
+WRITE
 5 6 3 0 0 1
 # e/i  Arr  [1]  [2]   N    1
    0   -1    0    0    0    1  ## Arr = A
