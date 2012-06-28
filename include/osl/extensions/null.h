@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          osl.h                             **
+     **                       extensions/null.h                         **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 28/06/2012                     **
      **-----------------------------------------------------------------**
 
  
@@ -61,55 +61,62 @@
  *****************************************************************************/
 
 
-#ifndef OSL_OSL_H
-# define OSL_OSL_H
+#ifndef OSL_NULL_H
+# define OSL_NULL_H
 
-/* List of reserved OpenScop URIs:
- * - arrays
- * - body
- * - clay
- * - comment
- * - coordinates
- * - generic
- * - int
- * - interface
- * - irregular
- * - null
- * - openscop
- * - relation
- * - relation_list
- * - scatnames
- * - scop
- * - statement
- * - strings
- * - symbols
- * - textual
- * - vector
- */
-
-# include <osl/macros.h>
-# include <osl/int.h>
-# include <osl/util.h>
-# include <osl/strings.h>
-# include <osl/body.h>
-# include <osl/vector.h>
-# include <osl/relation.h>
-# include <osl/relation_list.h>
+# include <stdio.h>
 # include <osl/interface.h>
 
-# include <osl/extensions/textual.h>
-# include <osl/extensions/comment.h>
-# include <osl/extensions/null.h>
-# include <osl/extensions/clay.h>
-# include <osl/extensions/scatnames.h>
-# include <osl/extensions/arrays.h>
-# include <osl/extensions/coordinates.h>
-# include <osl/extensions/irregular.h>
-# include <osl/extensions/symbols.h>
-
-# include <osl/generic.h>
-# include <osl/statement.h>
-# include <osl/scop.h>
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OSL_OSL_H */
+# define OSL_URI_NULL        "null"
+
+
+/**
+ * The osl_null_t structure stores a null extention to the core
+ * OpenScop representation. It contains simply nothing.
+ */
+struct osl_null {
+};
+typedef struct osl_null   osl_null_t;
+typedef struct osl_null * osl_null_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void            osl_null_idump(FILE *, osl_null_p, int);
+void            osl_null_dump(FILE *, osl_null_p);
+char *          osl_null_sprint(osl_null_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+osl_null_p      osl_null_sread(char **);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+osl_null_p      osl_null_malloc();
+void            osl_null_free(osl_null_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+osl_null_p      osl_null_clone(osl_null_p);
+int             osl_null_equal(osl_null_p, osl_null_p);
+osl_interface_p osl_null_interface();
+
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OSL_NULL_H */

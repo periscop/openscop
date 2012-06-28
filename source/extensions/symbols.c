@@ -67,8 +67,10 @@
 
 #include <osl/macros.h>
 #include <osl/util.h>
+#include <osl/relation.h>
 #include <osl/interface.h>
 #include <osl/extensions/symbols.h>
+
 
 /*+***************************************************************************
  *                          Structure display function                       *
@@ -104,64 +106,16 @@ void osl_symbols_idump(FILE * file, osl_symbols_p symbols, int level) {
       for (j = 0; j < level; j++)
         fprintf(file, "|\t");
       fprintf(file, "|   osl_symbol_t (node %d)\n", number);
-    }
-    else
+    } else {
       first = 0;
+    }
 
     // A blank line.
     for (j = 0; j <= level+1; j++)
       fprintf(file, "|\t");
     fprintf(file, "\n");
 
-
-    // Print the identifier.
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    if (symbols->identifier != NULL) {
-      fprintf(file, "+-- Identifier: ");
-      osl_generic_idump(file, symbols->identifier, level);
-    }
-    else
-      fprintf(file, "+-- Unknown identifier\n");
-
-    // A blank line.
-    for(j = 0; j <= level + 1; j++)
-      fprintf(file, "|\t") ;
-    fprintf(file, "\n") ;
-
-    // Print the data type of identifier.
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    if (symbols->datatype != NULL) {
-      fprintf(file, "+-- Datatype: ");
-      osl_generic_idump(file, symbols->datatype, level);
-    }
-    else
-      fprintf(file, "+-- Unknown datatype\n");
-
-
-    // A blank line.
-    for(j = 0; j <= level + 1; j++)
-      fprintf(file, "|\t") ;
-    fprintf(file, "\n") ;
-
-    // Print the type of identifier.
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    if (symbols->scope != NULL) {
-      fprintf(file, "+-- scope: ");
-      osl_generic_idump(file, symbols->scope, level);
-    }
-    else
-      fprintf(file, "+-- Unknown scope\n");
-
-
-    // A blank line.
-    for(j = 0; j <= level + 1; j++)
-      fprintf(file, "|\t") ;
-    fprintf(file, "\n") ;
-
-    // Print the type of identifier.
+    // 1. Print the symbol kind.
     for (i = 0; i <= level; i++)
       fprintf(file, "|\t");
     if (symbols->type != OSL_UNDEFINED) {
@@ -173,60 +127,61 @@ void osl_symbols_idump(FILE * file, osl_symbols_p symbols, int level) {
         case OSL_SYMBOL_TYPE_FUNCTION : fprintf(file, "Function\n");  break;
         default : fprintf(file, "Unknown\n") ;
       }
+    } else {
+      fprintf(file, "+-- NULL type\n");
     }
-    else
-      fprintf(file, "+-- Unknown type\n");
 
     // A blank line.
     for(j = 0; j <= level + 1; j++)
       fprintf(file, "|\t") ;
     fprintf(file, "\n") ;
 
-    // Print the Number of dimensions in identifier.
+    // 2. Print the origin of the symbol.
     for (i = 0; i <= level; i++)
       fprintf(file, "|\t");
-    if (symbols->nb_dims != OSL_UNDEFINED) {
-      fprintf(file, "+-- Number of Dimensions: %d\n ", symbols->nb_dims);
-    }
+    if (symbols->generated != OSL_UNDEFINED)
+      fprintf(file, "+-- Origin: %d\n", symbols->generated);
     else
-      fprintf(file, "+-- Unknown number of dimensions\n");
+      fprintf(file, "+-- Undefined origin\n");
 
     // A blank line.
     for(j = 0; j <= level + 1; j++)
       fprintf(file, "|\t") ;
     fprintf(file, "\n") ;
 
-    // Print the origin identifier.
+    // 3. Print the number of array dimensions for the symbol.
     for (i = 0; i <= level; i++)
       fprintf(file, "|\t");
-    if (symbols->generated != OSL_UNDEFINED) {
-      fprintf(file, "+-- Origin: %d\n ", symbols->generated);
-    }
+    if (symbols->nb_dims != OSL_UNDEFINED)
+      fprintf(file, "+-- Number of Dimensions: %d\n", symbols->nb_dims);
     else
-      fprintf(file, "+-- Unknown origin\n");
+      fprintf(file, "+-- Undefined number of dimensions\n");
 
     // A blank line.
     for(j = 0; j <= level + 1; j++)
       fprintf(file, "|\t") ;
     fprintf(file, "\n") ;
 
-    // Print the extent of identifier.
-    for (i = 0; i <= level; i++)
-      fprintf(file, "|\t");
-    if (symbols->extent != NULL) {
-      fprintf(file, "+-- Extent: ");
-      osl_relation_idump(file, symbols->extent, level);
-    }
-    else
-      fprintf(file, "+-- Unknown extent\n");
+    // 4. Print the symbol identifier.
+    osl_generic_idump(file, symbols->identifier, level + 1);
 
-    // A blank line.
-    for(j = 0; j <= level + 1; j++)
-      fprintf(file, "|\t") ;
-    fprintf(file, "\n") ;
+    // 5. Print the data type of the symbol.
+    osl_generic_idump(file, symbols->datatype, level + 1);
+
+    // 6. Print the scope of the symbol.
+    osl_generic_idump(file, symbols->scope, level + 1);
+
+    // 7. Print the extent of the symbol.
+    osl_generic_idump(file, symbols->extent, level + 1);
 
     symbols = symbols->next;
     number++;
+    // Next line.
+    if (symbols != NULL) {
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
+      fprintf(file, "V\n");
+    }
   } 
 
   // The last line.
@@ -256,153 +211,81 @@ void osl_symbols_dump(FILE * file, osl_symbols_p symbols) {
  * \return A string containing the OpenScop dump of the symbols structure.
  */
 char * osl_symbols_sprint(osl_symbols_p symbols) {
-
-  int nb_symbols = 0;
   int i = 1;
   int high_water_mark = OSL_MAX_STRING;
-  int low_water_mark  = OSL_MIN_STRING;
-  char * string = NULL;
+  char* string = NULL, *temp;
   char buffer[OSL_MAX_STRING];
-
-  if (symbols == NULL) {
-    OSL_malloc(string, char *, low_water_mark * sizeof(char));
-    string[0] = '\0';
-
-    sprintf(buffer, "# Number of symbols\n");
-    osl_util_safe_strcat(&string, buffer, &low_water_mark);
-
-    sprintf(buffer, "%d\n", 0);
-    osl_util_safe_strcat(&string, buffer, &low_water_mark);
-
-    return string;
-  }
-
-  osl_symbols_p temp_symbols = symbols;
-  while(temp_symbols != NULL) {
-    nb_symbols++;
-    temp_symbols = temp_symbols->next;
-  }
-  temp_symbols = symbols;
 
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
 
-  sprintf(buffer, "# Number of symbols\n");
+  sprintf(buffer, "# Number of symbols\n%d\n",
+          osl_symbols_get_nb_symbols(symbols));
   osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-  sprintf(buffer, "%d\n", nb_symbols);
-  osl_util_safe_strcat(&string, buffer, &high_water_mark);
-
-  while(temp_symbols != NULL) {
-
-    int inner_detail_count = 1;
-
+  while (symbols != NULL) {
     sprintf(buffer, "# ===========================================\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-
     sprintf(buffer, "# %d Data for symbol number %d \n", i, i);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    if (temp_symbols->type == OSL_UNDEFINED) {
-      sprintf(buffer, "# %d.%d Symbol type\n 0 \n", i, inner_detail_count);
+    if (symbols->type == OSL_UNDEFINED) {
+      sprintf(buffer, "# %d.1 Symbol type\nUndefined\n", i);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
     else {
-      sprintf(buffer, "# %d.%d Symbol type\n 1 \n", i, inner_detail_count);
+      sprintf(buffer, "# %d.1 Symbol type\n", i);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
-      switch (temp_symbols->type) {
+      switch (symbols->type) {
         case OSL_SYMBOL_TYPE_ITERATOR : sprintf(buffer, "Iterator\n");  break;
         case OSL_SYMBOL_TYPE_PARAMETER: sprintf(buffer, "Parameter\n"); break;
         case OSL_SYMBOL_TYPE_ARRAY    : sprintf(buffer, "Array\n");     break;
         case OSL_SYMBOL_TYPE_FUNCTION : sprintf(buffer, "Function\n");  break;
-        default : sprintf(buffer, "Unknown\n") ;
+        default : sprintf(buffer, "Undefined\n") ;
       }
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
-    inner_detail_count ++;
-
 
     // Printing Generated Boolean flag
-    if (temp_symbols->generated == OSL_UNDEFINED)
-      sprintf(buffer, "# %d.%d Generated Boolean \n 0 \n", i, inner_detail_count);
-    else
-      sprintf(buffer, "# %d.%d Generated Boolean \n 1 \n 1 \n", i, inner_detail_count);
-
+    sprintf(buffer, "\n# %d.2 Generated Boolean\n%d\n", i, symbols->generated);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    inner_detail_count ++;
-
 
     // Printing Number of dimensions
-    if (temp_symbols->nb_dims == OSL_UNDEFINED) {
-      sprintf(buffer, "# %d.%d Number of dimensions \n 0 \n", i, inner_detail_count);
-    }
-    else {
-      sprintf(buffer, "# %d.%d Number of dimensions \n 1 \n", i, inner_detail_count);
-      sprintf(buffer, " %d\n", temp_symbols->nb_dims);
-    }
-
+    sprintf(buffer,"\n# %d.3 Number of dimensions\n%d\n", i, symbols->nb_dims);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    inner_detail_count ++;
 
     // Printing Identifier
-    if (temp_symbols->identifier != NULL) {
-      sprintf(buffer, "# %d.%d Identifier \n 0 - Not provided\n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    }
-    else {
-      sprintf(buffer, "# %d.%d Identifier \n 1 - provided\n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-      osl_util_safe_strcat(&string, osl_generic_sprint(temp_symbols->identifier), &high_water_mark);
-    }
-
-
-    inner_detail_count ++;
-
-    // Printing Data type
-    if (temp_symbols->datatype != NULL) {
-      sprintf(buffer, "# %d.%d Datatype \n 0 - Not provided\n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    }
-    else {
-      sprintf(buffer, "# %d.%d Datatype \n 1 - provided \n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-      osl_util_safe_strcat(&string, osl_generic_sprint(temp_symbols->datatype), &high_water_mark);
-    }
-
-    inner_detail_count ++;
-
-    // Printing Scope
-    if (temp_symbols->scope != NULL) {
-      sprintf(buffer, "# %d.%d Scope \n 0 - Not provided \n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    }
-    else {
-      sprintf(buffer, "# %d.%d Scope \n 1 - provided\n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-      osl_util_safe_strcat(&string, osl_generic_sprint(temp_symbols->scope), &high_water_mark);
-    }
-
-    inner_detail_count ++;
-
-    // Printing Scope
-    if (temp_symbols->extent != NULL) {
-      sprintf(buffer, "# %d.%d Extent \n 0 - Not provided \n", i, inner_detail_count);
-    }
-    else {
-      sprintf(buffer, "# %d.%d Extent \n 1 - provided \n", i, inner_detail_count);
-      osl_util_safe_strcat(&string, buffer, &high_water_mark);
-      char* extent = osl_relation_spprint(temp_symbols->extent, NULL);
-      sprintf(buffer, "%s\n", extent);
-    }
-
+    sprintf(buffer, "\n# %d.4 Identifier\n", i);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    inner_detail_count ++;
+    temp = osl_generic_sprint(symbols->identifier);
+    osl_util_safe_strcat(&string, temp, &high_water_mark);
+    free(temp);
 
-    temp_symbols = temp_symbols->next;
+    // Printing Datatype
+    sprintf(buffer, "\n# %d.5 Datatype\n", i);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    temp = osl_generic_sprint(symbols->datatype);
+    osl_util_safe_strcat(&string, temp, &high_water_mark);
+    free(temp);
+
+    // Printing Scope
+    sprintf(buffer, "\n# %d.6 Scope\n", i);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    temp = osl_generic_sprint(symbols->scope);
+    osl_util_safe_strcat(&string, temp, &high_water_mark);
+    free(temp);
+
+    // Printing Extent
+    sprintf(buffer, "\n# %d.7 Extent\n", i);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    temp = osl_generic_sprint(symbols->extent);
+    osl_util_safe_strcat(&string, temp, &high_water_mark);
+    free(temp);
+
+    symbols = symbols->next;
   }
 
   OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
-
   return string;
 }
 
@@ -423,10 +306,12 @@ char * osl_symbols_sprint(osl_symbols_p symbols) {
  * \return A pointer to the symbols structure that has been read.
  */
 osl_symbols_p osl_symbols_sread(char ** input) {
+  int nb_symbols;
+  char* type;
   osl_symbols_p symbols;
   osl_symbols_p head;
-  int nb_symbols;
-
+  osl_interface_p registry;
+  
   if (*input == NULL) {
     OSL_debug("no symbols optional tag");
     return NULL;
@@ -442,13 +327,13 @@ osl_symbols_p osl_symbols_sread(char ** input) {
     return NULL;
 
   head = symbols = osl_symbols_malloc();
+  registry = osl_interface_get_default_registry();
 
-  while( nb_symbols != 0 ) {
-
+  while (nb_symbols != 0) {
     // Reading the type of symbol
-    if(osl_util_read_int(NULL, input) != 0 ) {
-      char* type = osl_util_read_string(NULL, input);
-      if( strcmp(type, "Iterator") == 0 )
+    type = osl_util_read_string(NULL, input);
+    if (type != NULL) {
+      if (strcmp(type, "Iterator") == 0)
         symbols->type = OSL_SYMBOL_TYPE_ITERATOR;
       else if (strcmp(type, "Parameter") == 0)
         symbols->type = OSL_SYMBOL_TYPE_PARAMETER;
@@ -458,60 +343,26 @@ osl_symbols_p osl_symbols_sread(char ** input) {
         symbols->type = OSL_SYMBOL_TYPE_FUNCTION;
       else
         symbols->type = OSL_UNDEFINED;
+      free(type);
     }
-    else
-      symbols->type = OSL_UNDEFINED;
 
     // Reading origin of symbol
-    if(osl_util_read_int(NULL, input) != 0) 
-      symbols->generated = osl_util_read_int(NULL, input);
-    else
-      symbols->generated = OSL_UNDEFINED;
+    symbols->generated = osl_util_read_int(NULL, input);
 
-    // Reading Number of dimensions of a symbol
-    if(osl_util_read_int(NULL, input) != 0)
-      symbols->nb_dims = osl_util_read_int(NULL, input);
-    else
-      symbols->nb_dims = OSL_UNDEFINED;
+    // Reading the number of dimensions of a symbol
+    symbols->nb_dims = osl_util_read_int(NULL, input);
 
     // Reading identifier
-    if(osl_util_read_int(NULL, input) != 0) {
-      osl_interface_p registry = osl_strings_interface();
-      char* generic_string = osl_util_tag_content(*input, strdup("string"));
-      symbols->identifier = osl_generic_sread_one(&generic_string, registry);
-      free(generic_string);
-    }
-    else
-      symbols->identifier = NULL;
+    symbols->identifier = osl_generic_sread_one(input, registry);
 
     // Reading data type
-    if(osl_util_read_int(NULL, input) != 0) {
-      osl_interface_p registry = osl_strings_interface();
-      char* generic_string = osl_util_tag_content(*input, strdup("string"));
-      symbols->datatype = osl_generic_sread_one(&generic_string, registry);
-      free(generic_string);
-    }
-    else
-      symbols->datatype = NULL;
+    symbols->datatype = osl_generic_sread_one(input, registry);
 
     // Reading scope
-    if(osl_util_read_int(NULL, input) != 0) {
-      osl_interface_p registry = osl_strings_interface();
-      char* generic_string = osl_util_tag_content(*input, strdup("string"));
-      symbols->scope = osl_generic_sread_one(&generic_string, registry);
-      free(generic_string);
-    }
-    else
-      symbols->scope = NULL;
+    symbols->scope = osl_generic_sread_one(input, registry);
 
     // Reading extent
-    if(osl_util_read_int(NULL, input) != 0) {
-      char* generic_string = osl_util_tag_content(*input, strdup("string"));
-      symbols->extent = osl_relation_sread(input);
-      free(generic_string);
-    }
-    else
-      symbols->extent = NULL;
+    symbols->extent = osl_generic_sread_one(input, registry);
 
     nb_symbols --;
     if (nb_symbols != 0) {
@@ -520,6 +371,7 @@ osl_symbols_p osl_symbols_sread(char ** input) {
     }
   } 
 
+  osl_interface_free(registry);
   return head;
 } 
 
@@ -544,14 +396,11 @@ osl_symbols_p osl_symbols_malloc() {
   symbols->type       = OSL_UNDEFINED;
   symbols->generated  = OSL_UNDEFINED;
   symbols->nb_dims    = OSL_UNDEFINED;
-
   symbols->identifier = NULL;
   symbols->datatype   = NULL;
   symbols->scope      = NULL;
   symbols->extent     = NULL;
-
-  symbols->usr        = NULL;
-  symbols->tag        = OSL_UNDEFINED;
+  symbols->next       = NULL;
 
   return symbols;
 }
@@ -564,17 +413,16 @@ osl_symbols_p osl_symbols_malloc() {
  * \param[in,out] symbols The pointer to the symbols structure to free.
  */
 void osl_symbols_free(osl_symbols_p symbols) {
-  if (symbols != NULL) {
-    if (symbols->identifier != NULL)
-      osl_generic_free(symbols->identifier);
-    if (symbols->datatype != NULL)
-      osl_generic_free(symbols->datatype);
-    if (symbols->scope != NULL)
-      osl_generic_free(symbols->scope);
-    if(symbols->extent != NULL)
-      osl_relation_free(symbols->extent);
-    if (symbols->usr != NULL)
-      free(symbols->usr);
+  osl_symbols_p tmp;
+
+  while (symbols != NULL) {
+    tmp = symbols->next;
+    osl_generic_free(symbols->identifier);
+    osl_generic_free(symbols->datatype);
+    osl_generic_free(symbols->scope);
+    osl_generic_free(symbols->extent);
+    free(symbols);
+    symbols = tmp;
   }
 }
 
@@ -585,6 +433,52 @@ void osl_symbols_free(osl_symbols_p symbols) {
 
 
 /**
+ * osl_symbols_add function:
+ * this function adds a scop "scop" at the end of the symbols list pointed
+ * by "location".
+ * \param[in,out] location  Address of the first element of the symbols list.
+ * \param[in]     symbols   The symbols to add to the list.
+ */
+void osl_symbols_add(osl_symbols_p* location, osl_symbols_p symbols) {
+  while (*location != NULL)
+    location = &((*location)->next);
+
+  *location = symbols;
+}
+
+
+/**
+ * osl_symbols_nclone function:
+ * This function builds and returns a "hard copy" (not a pointer copy) of the
+ * n first elements of an osl_symbols_t list.
+ * \param symbols The pointer to the symbols structure we want to clone.
+ * \param n       The number of nodes we want to copy (-1 for infinity).
+ * \return The clone of the n first nodes of the symbols list.
+ */
+osl_symbols_p osl_symbols_nclone(osl_symbols_p symbols, int n) {
+  osl_symbols_p clone = NULL, new;
+  int i = 0;
+
+  while ((symbols != NULL) && ((n == -1) || (i < n))) {
+    new             = osl_symbols_malloc();
+    new->type       = symbols->type;
+    new->generated  = symbols->generated;
+    new->nb_dims    = symbols->nb_dims;
+    new->identifier = osl_generic_clone(symbols->identifier);
+    new->datatype   = osl_generic_clone(symbols->datatype);
+    new->scope      = osl_generic_clone(symbols->scope);
+    new->extent     = osl_generic_clone(symbols->extent);
+    
+    osl_symbols_add(&clone, new);
+    symbols = symbols->next;
+    i++;
+  }
+
+  return clone;
+}
+
+
+/**
  * osl_symbols_clone function:
  * this function builds and returns a "hard copy" (not a pointer copy) of an
  * osl_symbols_t data structure.
@@ -592,25 +486,8 @@ void osl_symbols_free(osl_symbols_p symbols) {
  * \return A pointer to the clone of the symbols structure.
  */
 osl_symbols_p osl_symbols_clone(osl_symbols_p symbols) {
-  osl_symbols_p clone;
 
-  if (symbols == NULL)
-    return NULL;
-
-  clone = osl_symbols_malloc();
-  clone->type      = symbols->type;
-  clone->generated = symbols->generated;
-  clone->nb_dims    = symbols->nb_dims;
-
-  clone->identifier = osl_generic_clone(symbols->identifier);
-  clone->datatype   = osl_generic_clone(symbols->datatype);
-  clone->scope      = osl_generic_clone(symbols->scope);
-  clone->extent     = osl_relation_clone(symbols->extent);
-
-  clone->usr        = symbols->usr;
-  clone->tag        = symbols->tag;
-
-  return clone;
+  return osl_symbols_nclone(symbols, -1);
 }
 
 
@@ -631,11 +508,11 @@ int osl_symbols_equal(osl_symbols_p c1, osl_symbols_p c2) {
     return 0;
 
   if (c1->type == c2->type && c1->generated == c2->generated && 
-      c1->nb_dims == c2->nb_dims && c1->tag == c2->tag) {
+      c1->nb_dims == c2->nb_dims) {
     if (osl_generic_equal(c1->identifier, c2->identifier)) {
       if (osl_generic_equal(c1->datatype, c2->datatype)) {
         if (osl_generic_equal(c1->scope, c2->scope)) {
-          if (osl_relation_equal(c1->extent, c2->extent)) {
+          if (osl_generic_equal(c1->extent, c2->extent)) {
             return 1;
           }
         }
@@ -644,6 +521,24 @@ int osl_symbols_equal(osl_symbols_p c1, osl_symbols_p c2) {
   }
 
   return 0;
+}
+
+
+/**
+ * osl_symbols_get_nb_symbols function:
+ * this function returns the number of symbols in the symbol list provided
+ * as input.
+ * \param symbols The head of the symbol list.
+ * \return The number of symbols in the symbol list.
+ */
+int osl_symbols_get_nb_symbols(osl_symbols_p symbols) {
+  int nb_symbols = 0;
+
+  while (symbols != NULL) {
+    nb_symbols++;
+    symbols = symbols->next;
+  }
+  return nb_symbols;
 }
 
 

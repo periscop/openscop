@@ -65,6 +65,7 @@
 #include <string.h>
 #include <osl/extensions/textual.h>
 #include <osl/extensions/comment.h>
+#include <osl/extensions/null.h>
 #include <osl/extensions/scatnames.h>
 #include <osl/extensions/arrays.h>
 #include <osl/extensions/coordinates.h>
@@ -73,6 +74,7 @@
 #include <osl/extensions/irregular.h>
 #include <osl/strings.h>
 #include <osl/body.h>
+#include <osl/relation.h>
 #include <osl/interface.h>
 
 
@@ -232,9 +234,6 @@ void osl_interface_free(osl_interface_p interface) {
   osl_interface_p tmp;
   int i = 0;
  
-  if (interface == NULL)
-    return;
-
   while (interface != NULL) {
     tmp = interface->next;
     if (interface->URI != NULL)
@@ -368,10 +367,12 @@ osl_interface_p osl_interface_get_default_registry() {
   // Internal generics
   osl_interface_add(&registry, osl_strings_interface());
   osl_interface_add(&registry, osl_body_interface());
+  osl_interface_add(&registry, osl_relation_interface());
 
   // Extensions
   osl_interface_add(&registry, osl_textual_interface());
   osl_interface_add(&registry, osl_comment_interface());
+  osl_interface_add(&registry, osl_null_interface());
   osl_interface_add(&registry, osl_scatnames_interface());
   osl_interface_add(&registry, osl_arrays_interface());
   osl_interface_add(&registry, osl_coordinates_interface());

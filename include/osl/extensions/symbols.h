@@ -75,28 +75,25 @@ extern "C"
   {
 # endif
 
-
 # define OSL_URI_SYMBOLS        "symbols"
-
 
 /**
  * The osl_symbols_t structure stores information regarding the symbols.
  */
 struct osl_symbols {
-  int    type;                     /**< Symbol type (variable, iterator...) */
-  int    generated;                /**< Flag to determine its origin  */
-  int    nb_dims;		   /**< Number of dimensions in Symbol */
-  osl_generic_p  identifier;       /**< Symbol identifier */
-  osl_generic_p  datatype;         /**< Symbol Datatype(int,float......)*/
-  osl_generic_p  scope;            /**< Scope of symbol */
-  osl_relation_p extent;           /**< Limits of dimensions in Symbol */
+  int           type;        /**< Symbol type (variable, iterator...) */
+  int           generated;   /**< Flag to determine its origin */
+  int           nb_dims;     /**< Number of array dimensions */
+  osl_generic_p identifier;  /**< Symbol identifier */
+  osl_generic_p datatype;    /**< Symbol Datatype (int, float...) */
+  osl_generic_p scope;       /**< Scope of symbol */
+  osl_generic_p extent;      /**< Limits of dimensions in Symbol */
 
-  void* usr;                       /**< A user defined field */
-  int   tag;                       /**< Depth for iterators, number for others*/
-  struct osl_symbols*  next;
+  void*         usr;         /**< A user defined field */
+  struct osl_symbols* next;
 };
-typedef struct osl_symbols   osl_symbols_t;
-typedef struct osl_symbols*  osl_symbols_p;
+typedef struct osl_symbols  osl_symbols_t;
+typedef struct osl_symbols* osl_symbols_p;
 
 
 /*+***************************************************************************
@@ -123,16 +120,15 @@ void            osl_symbols_free(osl_symbols_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+void            osl_symbols_add(osl_symbols_p*, osl_symbols_p);
+osl_symbols_p   osl_symbols_nclone(osl_symbols_p, int);
 osl_symbols_p   osl_symbols_clone(osl_symbols_p);
 int             osl_symbols_equal(osl_symbols_p, osl_symbols_p);
+osl_symbols_p   osl_symbols_lookup(osl_symbols_p, osl_generic_p);
+osl_symbols_p   osl_symbols_remove(osl_symbols_p*, osl_symbols_p);
+int             osl_symbols_get_nb_symbols(osl_symbols_p);
 osl_interface_p osl_symbols_interface();
 
-osl_symbols_p   osl_symbols_lookup(osl_symbols_p, osl_generic_p);
-osl_symbols_p   osl_symbols_add(osl_symbols_p* , osl_symbols_p);
-osl_symbols_p   osl_symbols_remove(osl_symbols_p* , osl_symbols_p);
-
-
-/* Yet to write some other functions */
 
 # if defined(__cplusplus)
   }
