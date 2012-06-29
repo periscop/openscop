@@ -142,6 +142,7 @@ void       osl_scop_add(osl_scop_p *, osl_scop_p);
 osl_scop_p osl_scop_clone(osl_scop_p);
 int        osl_scop_equal(osl_scop_p, osl_scop_p);
 int        osl_scop_integrity_check(osl_scop_p);
+int        osl_scop_check_compatible_scoplib(osl_scop_p);
 int        osl_scop_get_nb_parameters(osl_scop_p);
 void       osl_scop_register_extension(osl_scop_p, osl_interface_p);
 void       osl_scop_get_attributes(osl_scop_p,
