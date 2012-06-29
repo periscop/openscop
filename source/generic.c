@@ -68,6 +68,7 @@
 #include <osl/util.h>
 #include <osl/interface.h>
 #include <osl/generic.h>
+#include <osl/extensions/arrays.h>
 
 
 /*+***************************************************************************
@@ -198,6 +199,26 @@ void osl_generic_print(FILE * file, osl_generic_p generic) {
   string = osl_generic_sprint(generic);
   if (string != NULL) {
     fprintf(file, "%s", string);
+    free(string);
+  }
+}
+
+
+/**
+ * osl_generic_print_options_scoplib function:
+ * this function prints the options sections (only arrays in the
+ * SCoPLib format)
+ * \param[in] file    File where the information has to be printed.
+ * \param[in] generic The generic structure to print.
+ */
+void osl_generic_print_options_scoplib(FILE * file, osl_generic_p generic) {
+  char * string;
+
+  osl_generic_p arrays = osl_generic_lookup(generic, OSL_URI_ARRAYS);
+  
+  string = osl_arrays_sprint((osl_arrays_p) arrays);
+  if (string != NULL) {
+    fprintf(file, "<arrays>\n%s</arrays>\n", string);
     free(string);
   }
 }

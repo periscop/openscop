@@ -161,6 +161,35 @@ void osl_body_print(FILE * file, osl_body_p body) {
 
 
 /**
+ * osl_body_print_scoplib function:
+ * this function prints the content of an osl_body_t structure
+ * (*body) into a file (file, possibly stdout) in the SCoPLib format.
+ * \param[in] file  File where informations are printed.
+ * \param[in] body  The body whose information has to be printed.
+ */
+void osl_body_print_scoplib(FILE * file, osl_body_p body) {
+  int nb_iterators;
+
+  if (body != NULL) {
+    nb_iterators = osl_strings_size(body->iterators);
+
+    if (nb_iterators > 0) {
+      fprintf(file, "# List of original iterators\n");
+      osl_strings_print(file, body->iterators);
+    } else {
+      fprintf(file, "fakeiter\n");
+    }
+
+    fprintf(file, "# Statement body expression\n");
+    osl_strings_print(file, body->expression);
+  }
+  else {
+    fprintf(file, "# NULL statement body\n");
+  }
+}
+
+
+/**
  * osl_body_sprint function:
  * this function prints the content of an osl_body_t structure
  * (*body) into a string (returned) in the OpenScop textual format.
