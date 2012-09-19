@@ -77,32 +77,35 @@ extern "C"
 
 
 /**
- * The osl_coordinates_t structure stores a coordinates extention to the core
- * OpenScop representation. It provides information about the SCoP location
- * (file name, starting and ending lines, indentation level).
+ * The osl_coordinates_t structure stores a coordinates extension to the core
+ * OpenScop representation. It provides information about the SCoP location in
+ * the original source file (file name, starting and ending lines/columns,
+ * indentation level).
  */
 struct osl_coordinates {
-  char * name;   /**< File name (may include the fils path as well). */
-  int    start;  /**< First line of the SCoP in the original source file. */
-  int    end;    /**< Last line of the SCoP in the original source file. */
-  int    indent; /**< Indentation (number of spaces starting each line). */
+  char* name;         /**< File name (may include the file path as well). */
+  int   line_start;   /**< Starting line of the SCoP. */
+  int   line_end;     /**< Ending line of the SCoP. */
+  int   column_start; /**< Starting column of the SCoP in the starting line. */
+  int   column_end;   /**< Ending column of the SCoP in the ending line. */
+  int   indent;       /**< Indentation (number of spaces starting each line).*/
 };
-typedef struct osl_coordinates   osl_coordinates_t;
-typedef struct osl_coordinates * osl_coordinates_p;
+typedef struct osl_coordinates  osl_coordinates_t;
+typedef struct osl_coordinates* osl_coordinates_p;
 
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void              osl_coordinates_idump(FILE *, osl_coordinates_p, int);
-void              osl_coordinates_dump(FILE *, osl_coordinates_p);
-char *            osl_coordinates_sprint(osl_coordinates_p);
+void              osl_coordinates_idump(FILE*, osl_coordinates_p, int);
+void              osl_coordinates_dump(FILE*, osl_coordinates_p);
+char*             osl_coordinates_sprint(osl_coordinates_p);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_coordinates_p osl_coordinates_sread(char **);
+osl_coordinates_p osl_coordinates_sread(char**);
 
 
 /*+***************************************************************************

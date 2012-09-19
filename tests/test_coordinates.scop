@@ -19,11 +19,11 @@ CONTEXT
 # File name
 ./ax-do.c
 
-# Starting line
-9
+# Starting line and column
+9 4
 
-# Ending line
-15
+# Ending line and column
+15 8
 
 # Indentation
 2

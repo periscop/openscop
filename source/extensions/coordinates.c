@@ -85,7 +85,7 @@
  * \param coordinates The coordinates structure to print.
  * \param level       Number of spaces before printing, for each line.
  */
-void osl_coordinates_idump(FILE * file, osl_coordinates_p coordinates,
+void osl_coordinates_idump(FILE* file, osl_coordinates_p coordinates,
                            int level) {
   int j;
 
@@ -114,8 +114,9 @@ void osl_coordinates_idump(FILE * file, osl_coordinates_p coordinates,
       fprintf(file, "|\t");
 
     // Display the lines.
-    fprintf(file, "Lines______: [%d, %d]\n",
-            coordinates->start, coordinates->end);
+    fprintf(file, "Coordinates: [%d,%d -> %d,%d]\n",
+            coordinates->line_start, coordinates->column_start,
+            coordinates->line_end,   coordinates->column_end);
 
     // Go to the right level.
     for(j = 0; j <= level; j++)
@@ -139,7 +140,7 @@ void osl_coordinates_idump(FILE * file, osl_coordinates_p coordinates,
  * \param file        The file where the information has to be printed.
  * \param coordinates The coordinates structure to print.
  */
-void osl_coordinates_dump(FILE * file, osl_coordinates_p coordinates) {
+void osl_coordinates_dump(FILE* file, osl_coordinates_p coordinates) {
   osl_coordinates_idump(file, coordinates, 0);
 }
 
@@ -151,30 +152,32 @@ void osl_coordinates_dump(FILE * file, osl_coordinates_p coordinates) {
  * \param  coordinates The coordinates structure to be print.
  * \return A string containing the OpenScop dump of the coordinates structure.
  */
-char * osl_coordinates_sprint(osl_coordinates_p coordinates) {
+char* osl_coordinates_sprint(osl_coordinates_p coordinates) {
   int high_water_mark = OSL_MAX_STRING;
-  char * string = NULL;
+  char* string = NULL;
   char buffer[OSL_MAX_STRING];
 
   if (coordinates != NULL) {
-    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(string, char*, high_water_mark * sizeof(char));
     string[0] = '\0';
    
     // Print the coordinates content.
     sprintf(buffer, "# File name\n%s\n", coordinates->name);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    sprintf(buffer, "# Starting line\n%d\n", coordinates->start);
+    sprintf(buffer, "# Starting line and column\n%d %d\n",
+            coordinates->line_start, coordinates->column_start);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    sprintf(buffer, "# Ending line\n%d\n", coordinates->end);
+    sprintf(buffer, "# Ending line and column\n%d %d\n",
+            coordinates->line_end, coordinates->column_end);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     sprintf(buffer, "# Indentation\n%d\n", coordinates->indent);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
   
     // Keep only the memory space we need.
-    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char*, (strlen(string) + 1) * sizeof(char));
   }
 
   return string;
@@ -196,7 +199,7 @@ char * osl_coordinates_sprint(osl_coordinates_p coordinates) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the coordinates structure that has been read.
  */
-osl_coordinates_p osl_coordinates_sread(char ** input) {
+osl_coordinates_p osl_coordinates_sread(char** input) {
   osl_coordinates_p coordinates;
 
   if (*input == NULL) {
@@ -210,11 +213,11 @@ osl_coordinates_p osl_coordinates_sread(char ** input) {
   // Read the file name (and path).
   coordinates->name = osl_util_read_line(NULL, input);
 
-  // Read the number of the starting line.
-  coordinates->start = osl_util_read_int(NULL, input);
-
-  // Read the number of the ending line.
-  coordinates->end = osl_util_read_int(NULL, input);
+  // Read the coordinates.
+  coordinates->line_start   = osl_util_read_int(NULL, input);
+  coordinates->column_start = osl_util_read_int(NULL, input);
+  coordinates->line_end     = osl_util_read_int(NULL, input);
+  coordinates->column_end   = osl_util_read_int(NULL, input);
 
   // Read the indentation level.
   coordinates->indent = osl_util_read_int(NULL, input);
@@ -240,10 +243,12 @@ osl_coordinates_p osl_coordinates_malloc() {
   osl_coordinates_p coordinates;
   
   OSL_malloc(coordinates, osl_coordinates_p, sizeof(osl_coordinates_t));
-  coordinates->name   = NULL;
-  coordinates->start  = OSL_UNDEFINED;
-  coordinates->end    = OSL_UNDEFINED;
-  coordinates->indent = OSL_UNDEFINED;
+  coordinates->name         = NULL;
+  coordinates->line_start   = OSL_UNDEFINED;
+  coordinates->column_start = OSL_UNDEFINED;
+  coordinates->line_end     = OSL_UNDEFINED;
+  coordinates->column_end   = OSL_UNDEFINED;
+  coordinates->indent       = OSL_UNDEFINED;
 
   return coordinates;
 }
@@ -283,9 +288,11 @@ osl_coordinates_p osl_coordinates_clone(osl_coordinates_p coordinates) {
 
   clone = osl_coordinates_malloc();
   OSL_strdup(clone->name, coordinates->name);
-  clone->start  = coordinates->start;
-  clone->end    = coordinates->end;
-  clone->indent = coordinates->indent;
+  clone->line_start   = coordinates->line_start;
+  clone->column_start = coordinates->column_start;
+  clone->line_end     = coordinates->line_end;
+  clone->column_end   = coordinates->column_end;
+  clone->indent       = coordinates->indent;
 
   return clone;
 }
@@ -311,8 +318,23 @@ int osl_coordinates_equal(osl_coordinates_p c1, osl_coordinates_p c2) {
     return 0;
   }
 
-  if (c1->start != c2->start) {
+  if (c1->line_start != c2->line_start) {
     OSL_info("starting lines are not the same");
+    return 0;
+  }
+
+  if (c1->column_start != c2->column_start) {
+    OSL_info("starting columns are not the same");
+    return 0;
+  }
+
+  if (c1->line_end != c2->line_end) {
+    OSL_info("Ending lines are not the same");
+    return 0;
+  }
+
+  if (c1->column_end != c2->column_end) {
+    OSL_info("Ending columns are not the same");
     return 0;
   }
 
@@ -345,4 +367,3 @@ osl_interface_p osl_coordinates_interface() {
 
   return interface;
 }
-
