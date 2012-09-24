@@ -236,7 +236,7 @@ char * osl_util_read_line(FILE * file, char ** str) {
     // Parse from a file.
     start = osl_util_skip_blank_and_comments(file, s);
     while (*start && *start != '\n' && *start != '#' && i < OSL_MAX_STRING)
-      res[i++] = (*start)++;
+      res[i++] = *start++;
   }
   else {
     // Parse from a string.
