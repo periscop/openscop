@@ -343,7 +343,7 @@ static
 char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
   char ** strings;
   char temp[OSL_MAX_STRING];
-  int i, offset, array_id;
+  int i, offset;
   
   if ((relation == NULL) || (names == NULL)) {
     OSL_debug("no names or relation to build the name array");
@@ -360,7 +360,6 @@ char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
   // 2. Output dimensions.
   if (osl_relation_is_access(relation)) {
     // The first output dimension is the array name.
-    array_id  = osl_relation_get_array_id(relation);
     OSL_strdup(strings[offset], "Arr");
     // The other ones are the array dimensions [1]...[n]
     for (i = offset + 1; i < relation->nb_output_dims + offset; i++) {

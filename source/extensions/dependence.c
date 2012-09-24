@@ -239,7 +239,6 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
   
   osl_dependence_p tmp = dependence;
   int nb_deps;
-  int precision;
   int buffer_size = 2048;
   char* buffer;
   char buff[2048];
@@ -255,8 +254,6 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
   strcat(buffer, buff);
   
   if (nb_deps) {
-    precision = dependence->domain->precision;
-    
     for (tmp = dependence, nb_deps = 1; tmp; tmp = tmp->next, ++nb_deps) {
       
       switch (tmp->type) {

@@ -288,7 +288,7 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
  */
 void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
                           osl_names_p names) {
-  int nb_relations, number = 1;
+  int number = 1;
   int generated_names = 0;
   int iterators_backedup = 0;
   osl_strings_p iterators_backup = NULL;
@@ -316,8 +316,6 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
     fprintf(file, "# =============================================== ");
     fprintf(file, "Statement %d\n", number);
     
-    nb_relations = osl_relation_nb_components(statement->domain); 
-
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
     fprintf(file, "# Iteration domain\n");
