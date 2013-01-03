@@ -252,6 +252,24 @@ void osl_interface_free(osl_interface_p interface) {
 
 
 /**
+ * osl_interface_number function:
+ * this function returns the number of statements in the interface list
+ * provided as parameter.
+ * \param[in] interface The first element of the interface list.
+ * \return The number of statements in the interface list.
+ */
+int osl_interface_number(osl_interface_p interface) {
+  int number = 0;
+
+  while (interface != NULL) {
+    number++;
+    interface = interface->next;
+  }
+  return number;
+}
+
+
+/**
  * osl_interface_nclone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of the
  * n first elements of an osl_interface_t list.

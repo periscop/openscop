@@ -124,6 +124,7 @@ void            osl_interface_free(osl_interface_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+int             osl_interface_number(osl_interface_p);
 osl_interface_p osl_interface_nclone(osl_interface_p, int);
 osl_interface_p osl_interface_clone(osl_interface_p);
 int             osl_interface_equal(osl_interface_p, osl_interface_p);
