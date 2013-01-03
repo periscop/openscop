@@ -511,6 +511,24 @@ void osl_generic_free(osl_generic_p generic) {
 
 
 /**
+ * osl_generic_number function:
+ * this function returns the number of statements in the generic list
+ * provided as parameter.
+ * \param[in] generic The first element of the generic list.
+ * \return The number of statements in the generic list.
+ */
+int osl_generic_number(osl_generic_p generic) {
+  int number = 0;
+
+  while (generic != NULL) {
+    number++;
+    generic = generic->next;
+  }
+  return number;
+}
+
+
+/**
  * osl_generic_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
  * osl_generic_t data structure.
