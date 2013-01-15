@@ -66,6 +66,12 @@
 
 #include <stdio.h>
 
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
+
+
 typedef void * osl_int_p;
 
 
@@ -122,5 +128,9 @@ int    osl_int_one(int, void *, int);
 int    osl_int_mone(int, void *, int);
 int    osl_int_divisible(int, void *, int, void *, int);
 
+
+# if defined(__cplusplus)
+  }
+# endif
 
 #endif /* define OSL_INT_H */
