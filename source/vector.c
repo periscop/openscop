@@ -108,7 +108,7 @@ void osl_vector_idump(FILE * file, osl_vector_p vector, int level) {
     fprintf(file, "[ ");
 
     for (j = 0; j < vector->size; j++) {
-      osl_int_print(file, vector->precision, vector->v, j);
+      osl_int_print(file, vector->precision, vector->v[j]);
       fprintf(file, " ");
     }
 
@@ -165,9 +165,9 @@ osl_vector_p osl_vector_pmalloc(int precision, int size) {
     vector->v = NULL;
   }
   else {
-    OSL_malloc(vector->v, void *, size * osl_int_sizeof(precision));
+    OSL_malloc(vector->v, osl_int_t*, size * sizeof(osl_int_t));
     for (i = 0; i < size; i++)
-      osl_int_init_set_si(precision, vector->v, i, 0);
+      osl_int_init_set_si(precision, &vector->v[i], 0);
   }
   return vector;
 }
@@ -200,7 +200,7 @@ void osl_vector_free(osl_vector_p vector) {
   if (vector != NULL) {
     if (vector->v != NULL) {
       for (i = 0; i < vector->size; i++)
-        osl_int_clear(vector->precision, vector->v, i);
+        osl_int_clear(vector->precision, &vector->v[i]);
 
       free(vector->v);
     }
@@ -235,8 +235,8 @@ osl_vector_p osl_vector_add_scalar(osl_vector_p vector, int scalar) {
 
   result = osl_vector_pmalloc(precision, vector->size);
   for (i = 0; i < vector->size; i++)
-    osl_int_assign(precision, result->v, i, vector->v, i);
-  osl_int_add_si(precision, result->v, last, vector->v, last, scalar);
+    osl_int_assign(precision, &result->v[i], vector->v[i]);
+  osl_int_add_si(precision, &result->v[last], vector->v[last], scalar);
 
   return result;
 }
@@ -261,7 +261,7 @@ osl_vector_p osl_vector_add(osl_vector_p v1, osl_vector_p v2) {
 
   v3 = osl_vector_pmalloc(v1->precision, v1->size);
   for (i = 0; i < v1->size; i++)
-    osl_int_add(v1->precision, v3->v, i, v1->v, i, v2->v, i);
+    osl_int_add(v1->precision, &v3->v[i], v1->v[i], v2->v[i]);
 
   return v3;
 }
@@ -286,7 +286,7 @@ osl_vector_p osl_vector_sub(osl_vector_p v1, osl_vector_p v2) {
 
   v3 = osl_vector_pmalloc(v1->precision, v1->size);
   for (i = 0; i < v1->size; i++)
-    osl_int_sub(v1->precision, v3->v, i, v1->v, i, v2->v, i);
+    osl_int_sub(v1->precision, &v3->v[i], v1->v[i], v2->v[i]);
 
   return v3;
 }
@@ -303,7 +303,7 @@ osl_vector_p osl_vector_sub(osl_vector_p v1, osl_vector_p v2) {
 void osl_vector_tag_inequality(osl_vector_p vector) {
   if ((vector == NULL) || (vector->size < 1))
     OSL_error("vector cannot be tagged");
-  osl_int_set_si(vector->precision, vector->v, 0, 1);
+  osl_int_set_si(vector->precision, &vector->v[0], 1);
 }
 
 
@@ -318,7 +318,7 @@ void osl_vector_tag_inequality(osl_vector_p vector) {
 void osl_vector_tag_equality(osl_vector_p vector) {
   if ((vector == NULL) || (vector->size < 1))
     OSL_error("vector cannot be tagged");
-  osl_int_set_si(vector->precision, vector->v, 0, 0);
+  osl_int_set_si(vector->precision, &vector->v[0], 0);
 }
 
 
@@ -340,7 +340,7 @@ int osl_vector_equal(osl_vector_p v1, osl_vector_p v2) {
     return 0;
 
   for (i = 0; i < v1->size; i++)
-    if (osl_int_ne(v1->precision, v1->v, i, v2->v, i))
+    if (osl_int_ne(v1->precision, v1->v[i], v2->v[i]))
       return 0;
 
   return 1;
@@ -360,7 +360,7 @@ osl_vector_p osl_vector_mul_scalar(osl_vector_p v, int scalar) {
   osl_vector_p result = osl_vector_pmalloc(v->precision, v->size);
   
   for (i = 0; i < v->size; i++)
-    osl_int_mul_si(v->precision, result->v, i, v->v, i, scalar);
+    osl_int_mul_si(v->precision, &result->v[i], v->v[i], scalar);
 
   return result;
 }
@@ -380,7 +380,7 @@ int osl_vector_is_scalar(osl_vector_p vector) {
     return 0;
 
   for (i = 0; i < vector->size - 1; i++)
-    if (!osl_int_zero(vector->precision, vector->v, i))
+    if (!osl_int_zero(vector->precision, vector->v[i]))
       return 0;
   return 1;
 }

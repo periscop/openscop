@@ -21,7 +21,7 @@
 @set EDITION 1.0
 @set SPEC_VERSION 1.0
 @set LIB_VERSION 0.8.4
-@set UPDATED September 19th 2012
+@set UPDATED February 2nd 2013
 @setchapternewpage odd
 
 @c % This is to ask for A4 instead of Letter size document.
@@ -1947,6 +1947,7 @@ A[i+j] += B[i] * C[j];
 @section OpenScop Data Structure Specification
 
 @menu
+* osl_int_t::
 * osl_relation_t::
 * osl_relation_list_t::
 * osl_interface_t::
@@ -1979,6 +1980,31 @@ Before reading at the OpenScop data structures, it is much recommended to
 read at the OpenScop file format description, as it is quite close to this
 representation (@pxref{OpenScop File Format Specification}).
 
+@c ---------------------------------------------------------------------------
+
+@node osl_int_t
+@subsection osl_int_t
+
+@example
+@group
+union osl_int @{
+  long int  sp;               /* Single precision int */
+  long long dp;               /* Double precision int */
+  void*     mp;               /* Pointer to a multiple precision int */
+@};
+typedef union osl_int  osl_int_t;
+typedef union osl_int* osl_int_p;
+@end group
+@end example
+
+@noindent The @code{osl_int_t} union stores an integer element. The
+union is used to implement the multiple precision support of OpenScop.
+A given implementation may or may not support a given precision type.
+However, dedicated functions or macros must tell the user whether a given
+precision type is supported or not. The @code{mp} field is a pointer to
+a multiple precision int, e.g., a @code{mpz_t} from the GNU GMP library.
+
+@c ---------------------------------------------------------------------------
 
 @node osl_relation_t
 @subsection osl_relation_t
@@ -1994,12 +2020,12 @@ struct osl_relation @{
   int nb_input_dims;          /* Number of input dimensions */
   int nb_local_dims;          /* Number of local dimensions */
   int nb_parameters;          /* Number of parameters */
-  void ** m;                  /* Matrix of constraints */
-  void * usr;                 /* User-managed field */
-  struct osl_relation * next; /* Next relation in the union */
+  osl_int_t** m;              /* Matrix of constraints */
+  void* usr;                  /* User-managed field */
+  struct osl_relation*  next; /* Next relation in the union */
 @};
-typedef struct osl_relation   osl_relation_t;
-typedef struct osl_relation * osl_relation_p;
+typedef struct osl_relation  osl_relation_t;
+typedef struct osl_relation* osl_relation_p;
 @end group
 @end example
 
@@ -2039,11 +2065,11 @@ Finally, the @code{usr} field is provided for user's convenience.
 @example
 @group
 struct osl_relation_list @{
-  osl_relation_p elt;              /* Element of the list */
-  struct osl_relation_list * next; /* Next element of the list */
+  osl_relation_p elt;             /* Element of the list */
+  struct osl_relation_list* next; /* Next element of the list */
 @};
-typedef struct osl_relation_list   osl_relation_list_t;
-typedef struct osl_relation_list * osl_relation_list_p;
+typedef struct osl_relation_list  osl_relation_list_t;
+typedef struct osl_relation_list* osl_relation_list_p;
 @end group
 @end example
 
@@ -2059,27 +2085,27 @@ the next element of the list.
 
 @example
 @group
-typedef void   (*osl_idump_f) (FILE *, void *, int);
-typedef char * (*osl_sprint_f)(void *);
-typedef void * (*osl_sread_f) (char *);
-typedef void * (*osl_malloc_f)();
-typedef void   (*osl_free_f)  (void *);
-typedef void * (*osl_clone_f) (void *);
-typedef int    (*osl_equal_f) (void *, void *);
+typedef void  (*osl_idump_f) (FILE*, void*, int);
+typedef char* (*osl_sprint_f)(void*);
+typedef void* (*osl_sread_f) (char*);
+typedef void* (*osl_malloc_f)();
+typedef void  (*osl_free_f)  (void*);
+typedef void* (*osl_clone_f) (void*);
+typedef int   (*osl_equal_f) (void*, void*);
 
 struct osl_interface @{
-  char * URI;                  /* Unique interface identifier string */
-  osl_idump_f  idump;          /* Pointer to the idump function */
-  osl_sprint_f sprint;         /* Pointer to the sprint function */
-  osl_sread_f  sread;          /* Pointer to the sread function */
-  osl_malloc_f malloc;         /* Pointer to the malloc function */
-  osl_free_f   free;           /* Pointer to the free function */
-  osl_clone_f  clone;          /* Pointer to the clone function */
-  osl_equal_f  equal;          /* Pointer to the equal function */
-  struct osl_interface * next; /* Next interface in the list */
+  char* URI;                  /* Unique interface identifier string */
+  osl_idump_f  idump;         /* Pointer to the idump function */
+  osl_sprint_f sprint;        /* Pointer to the sprint function */
+  osl_sread_f  sread;         /* Pointer to the sread function */
+  osl_malloc_f malloc;        /* Pointer to the malloc function */
+  osl_free_f   free;          /* Pointer to the free function */
+  osl_clone_f  clone;         /* Pointer to the clone function */
+  osl_equal_f  equal;         /* Pointer to the equal function */
+  struct osl_interface* next; /* Next interface in the list */
 @};
-typedef struct osl_interface   osl_interface_t;
-typedef struct osl_interface * osl_interface_p;
+typedef struct osl_interface  osl_interface_t;
+typedef struct osl_interface* osl_interface_p;
 @end group
 @end example
 
@@ -2100,12 +2126,12 @@ and the section dedicated to writing extensions
 @example
 @group
 struct osl_generic @{
-  void * data;                 /* Pointer to some data */
-  osl_interface_p interface;   /* Interface to work with the data */
-  struct osl_generic * next;   /* Pointer to the next generic */
+  void* data;                 /* Pointer to some data */
+  osl_interface_p interface;  /* Interface to work with the data */
+  struct osl_generic* next;   /* Pointer to the next generic */
 @};
-typedef struct osl_generic   osl_generic_t;
-typedef struct osl_generic * osl_generic_p;
+typedef struct osl_generic  osl_generic_t;
+typedef struct osl_generic* osl_generic_p;
 @end group
 @end example
 
@@ -2125,10 +2151,10 @@ extensions.
 @example
 @group
 struct osl_string @{
-  char ** string;              /* NULL-terminated array of strings */
+  char** string;              /* NULL-terminated array of strings */
 @};
-typedef struct osl_strings   osl_strings_t;
-typedef struct osl_strings * osl_strings_p;
+typedef struct osl_strings  osl_strings_t;
+typedef struct osl_strings* osl_strings_p;
 @end group
 @end example
 
@@ -2144,11 +2170,11 @@ its manipulation through a generic type.
 @example
 @group
 struct osl_body @{
-  osl_strings_p iterators;     /* Original iterators */
-  osl_strings_p expression;    /* Original statement expression */
+  osl_strings_p iterators;    /* Original iterators */
+  osl_strings_p expression;   /* Original statement expression */
 @};
-typedef struct osl_body   osl_body_t;
-typedef struct osl_body * osl_body_p;
+typedef struct osl_body  osl_body_t;
+typedef struct osl_body* osl_body_p;
 @end group
 @end example
 
@@ -2166,15 +2192,15 @@ substitutions inside the expression.
 @example
 @group
 struct osl_statement @{
-  osl_relation_p domain;       /* Iteration domain */
-  osl_relation_p scattering;   /* Scattering relation */
-  osl_relation_list_p access;  /* List of array access relations */
-  osl_generic_p body;          /* Original statement body */
-  void * usr;                  /* A user-defined field */
-  struct osl_statement * next; /* Next statement in the list */
+  osl_relation_p domain;      /* Iteration domain */
+  osl_relation_p scattering;  /* Scattering relation */
+  osl_relation_list_p access; /* List of array access relations */
+  osl_generic_p body;         /* Original statement body */
+  void* usr;                  /* A user-defined field */
+  struct osl_statement* next; /* Next statement in the list */
 @};
-typedef struct osl_statement   osl_statement_t;
-typedef struct osl_statement * osl_statement_p;
+typedef struct osl_statement  osl_statement_t;
+typedef struct osl_statement* osl_statement_p;
 @end group
 @end example
 
@@ -2199,18 +2225,18 @@ totally managed by the user.
 @example
 @group
 struct osl_scop @{
-  int version;                 /* Version of the data structure */
-  char * language;             /* Target language */
-  osl_relation_p context;      /* Constraints on the parameters */
-  osl_generic_p parameters;    /* Information about parameters */
-  osl_statement_p statement;   /* Statement list */
-  osl_interface_p registry;    /* Registered extension interfaces */
-  osl_generic_p extension;     /* Extension list */
-  void * usr;                  /* A user-defined field */
-  struct osl_scop * next;      /* Next scop in the list */
+  int version;                /* Version of the data structure */
+  char* language;             /* Target language */
+  osl_relation_p context;     /* Constraints on the parameters */
+  osl_generic_p parameters;   /* Information about parameters */
+  osl_statement_p statement;  /* Statement list */
+  osl_interface_p registry;   /* Registered extension interfaces */
+  osl_generic_p extension;    /* Extension list */
+  void* usr;                  /* A user-defined field */
+  struct osl_scop* next;      /* Next scop in the list */
 @};
-typedef struct osl_scop   osl_scop_t;
-typedef struct osl_scop * osl_scop_p;
+typedef struct osl_scop  osl_scop_t;
+typedef struct osl_scop* osl_scop_p;
 @end group
 @end example
 
@@ -2459,10 +2485,10 @@ This is a comment string.
 @example
 @group
 struct osl_comment @{
-  char * comment;  /* Comment message as a 0-terminated string */
+  char* comment;  /* Comment message as a 0-terminated string */
 @};
-typedef struct osl_comment   osl_comment_t;
-typedef struct osl_comment * osl_comment_p;
+typedef struct osl_comment  osl_comment_t;
+typedef struct osl_comment* osl_comment_p;
 @end group
 @end example
 
@@ -2511,8 +2537,8 @@ beta_0 i beta_1 j beta_2
 struct osl_scatnames @{
   osl_strings_p names;  /* List of textual scattering dimension names. */
 @};
-typedef struct osl_scatnames   osl_scatnames_t;
-typedef struct osl_scatnames * osl_scatnames_p;
+typedef struct osl_scatnames  osl_scatnames_t;
+typedef struct osl_scatnames* osl_scatnames_p;
 @end group
 @end example
 
@@ -2572,12 +2598,12 @@ extension. It corresponds to the array names of the preliminary example
 @example
 @group
 struct osl_arrays @{
-  int nb_names;      /* Number of names */
-  int  *  id;        /* Array of nb_names identifiers */
-  char ** names;     /* Array of nb_names names */
+  int nb_names;     /* Number of names */
+  int *  id;        /* Array of nb_names identifiers */
+  char** names;     /* Array of nb_names names */
 @};
-typedef struct osl_arrays   osl_arrays_t;
-typedef struct osl_arrays * osl_arrays_p;
+typedef struct osl_arrays  osl_arrays_t;
+typedef struct osl_arrays* osl_arrays_p;
 @end group
 @end example
 
@@ -2645,13 +2671,13 @@ For instance, the following example is a correct textual
 @example
 @group
 struct osl_coordinates @{
-  char * name;   /* File name */
-  int    start;  /* First line of the SCoP in the source file */
-  int    end;    /* Last line of the SCoP in the source file */
-  int    indent; /* Indentation */
+  char* name;   /* File name */
+  int   start;  /* First line of the SCoP in the source file */
+  int   end;    /* Last line of the SCoP in the source file */
+  int   indent; /* Indentation */
 @};
-typedef struct osl_coordinates   osl_coordinates_t;
-typedef struct osl_coordinates * osl_coordinates_p;
+typedef struct osl_coordinates  osl_coordinates_t;
+typedef struct osl_coordinates* osl_coordinates_p;
 @end group
 @end example
 
@@ -2695,10 +2721,10 @@ unroll([3], 4);
 @example
 @group
 struct osl_clay @{
-  char * script;  /* Clay script as a 0-terminated string */
+  char* script;  /* Clay script as a 0-terminated string */
 @};
-typedef struct osl_clay   osl_clay_t;
-typedef struct osl_clay * osl_clay_p;
+typedef struct osl_clay  osl_clay_t;
+typedef struct osl_clay* osl_clay_p;
 @end group
 @end example
 
@@ -2781,6 +2807,18 @@ setenv OSL_PRECISION 64
 his .bashrc or .tcshrc (or whatever convenient file) to make this
 setting permanent. 
 
+The OpenScop Library provides the following function to know whether or not
+a given precision type is supported by the library or not:
+@example
+@group
+int osl_int_is_precision_supported(int precision);
+@end group
+@end example
+@noindent this function returns @code{1} if the precision type is
+supported, @code{0} otherwise. Possible values for the @code{precision}
+parameter are @code{32} for 32 bits (single) precision, @code{64} for
+64 bits (double) precision and @code{0} for multiple precision.
+
 @node Base Functions
 @section Base Functions
 
@@ -2819,8 +2857,8 @@ OpenScop Library.
 
 @example
 @group
-void osl_@emph{structure}_dump(FILE * output, osl_@emph{structure}_p s);
-void osl_@emph{structure}_idump(FILE * output, osl_@emph{structure}_p s, int i);
+void osl_@emph{structure}_dump(FILE* output, osl_@emph{structure}_p s);
+void osl_@emph{structure}_idump(FILE* output, osl_@emph{structure}_p s, int i);
 @end group
 @end example
 
@@ -2840,7 +2878,7 @@ an indentation level.
 
 @example
 @group
-void osl_@emph{structure}_print(FILE * output, osl_@emph{structure}_p s);
+void osl_@emph{structure}_print(FILE* output, osl_@emph{structure}_p s);
 @end group
 @end example
 
@@ -2857,7 +2895,7 @@ for writing).
 
 @example
 @group
-osl_@emph{structure}_p osl_@emph{structure}_read(FILE * input);
+osl_@emph{structure}_p osl_@emph{structure}_read(FILE* input);
 @end group
 @end example
 

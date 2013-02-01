@@ -70,10 +70,35 @@
 #include <osl/int.h>
 
 
-
 /*+***************************************************************************
  *                                Basic Functions                            *
  *****************************************************************************/
+
+
+/**
+ * osl_int_is_precision_supported function:
+ * this function returns 1 if the precision provided as parameter is supported
+ * by the library and 0 otherwise. Possible values for the precision
+ * parameter are OSL_PRECISION_SP for 32 bits (single) precision,
+ * OSL_PRECISION_DP for 64 bits (double) precision and OSL_PRECISION_MP for
+ * multiple precision.
+ * \param[in] precision The precision to check for.
+ * \return 1 if the precision is supported, 0 otherwise.
+ */
+int osl_int_is_precision_supported(int precision) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      return 1;
+    case OSL_PRECISION_DP:
+      return 1;
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      return 1;
+#endif
+  }
+
+  return 0;
+}
 
 
 /**
@@ -84,7 +109,6 @@
  * \param[in] precision The precision to print.
  */
 void osl_int_dump_precision(FILE * file, int precision) {
-
   switch (precision) {
     case OSL_PRECISION_SP:
       fprintf(file, "32 bits");
@@ -103,59 +127,20 @@ void osl_int_dump_precision(FILE * file, int precision) {
 }
 
 
-int osl_int_sizeof(int precision) {
+void osl_int_init(int precision, osl_int_p variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return sizeof(long int);
-
-    case OSL_PRECISION_DP:
-      return sizeof(long long int);
-
-#ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP:
-      return sizeof(mpz_t);
-#endif
-
-    default:
-      OSL_error("unknown precision");
-  }
-}
-
-
-void * osl_int_address(int precision, void * base, int offset) {
-  switch (precision) {
-    case OSL_PRECISION_SP:
-      return (long int *)base + offset;
-
-    case OSL_PRECISION_DP:
-      return (long long int *)base + offset;
-
-#ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP:
-      return (mpz_t *)base + offset;
-#endif
-
-    default:
-      OSL_error("unknown precision");
-  }
-}
-
-
-void osl_int_init(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
-  switch (precision) {
-    case OSL_PRECISION_SP:
-      *(long int *)value = 0;
+      variable->sp = 0;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)value = 0;
+      variable->dp = 0;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_init(*(mpz_t *)value);
+      OSL_malloc(variable->mp, void*, sizeof(mpz_t)); 
+      mpz_init(*((mpz_t*)variable->mp));
       break;
 #endif
 
@@ -165,55 +150,31 @@ void osl_int_init(int precision, void * value_base, int value_offset) {
 }
 
 
-void * osl_int_malloc(int precision) {
-  void * value;
+osl_int_p osl_int_malloc(int precision) {
+  osl_int_p variable;
 
-  switch (precision) {
-    case OSL_PRECISION_SP:
-      value = malloc(sizeof(long int));
-      break;
-
-    case OSL_PRECISION_DP:
-      value = malloc(sizeof(long long int));
-      *(long long int *)value = 0;
-      break;
-
-#ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP:
-      value = malloc(sizeof(mpz_t));
-      break;
-#endif
-
-    default:
-      OSL_error("unknown precision");
-  }
-
-  osl_int_init(precision, value, 0);
-  return value;
+  OSL_malloc(variable, osl_int_p, sizeof(osl_int_t));
+  osl_int_init(precision, variable);
+  return variable;
 }
 
 
 /**
- * val1_base[val1_offset] = val2_base[val2_offset];
+ * variable = value;
  */
-void osl_int_assign(int precision,
-                    void * val1_base, int val1_offset,
-                    void * val2_base, int val2_offset) {
-  void * val1 = osl_int_address(precision, val1_base, val1_offset);
-  void * val2 = osl_int_address(precision, val2_base, val2_offset);
-
+void osl_int_assign(int precision, osl_int_p variable, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)val1 = *(long int *)val2;
+      variable->sp = value.sp;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)val1 = *(long long int *)val2;
+      variable->dp = value.dp;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_set(*(mpz_t *)val1, *(mpz_t *)val2);
+      mpz_set(*((mpz_t*)variable->mp), *((mpz_t*)value.mp));
       break;
 #endif
 
@@ -224,24 +185,21 @@ void osl_int_assign(int precision,
 
 
 /**
- * value_base[value_offset] = i;
+ * variable = i;
  */
-void osl_int_set_si(int precision, void * value_base, int value_offset,
-                    int i) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+void osl_int_set_si(int precision, osl_int_p variable, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)value = (long int)i;
+      variable->sp = (long int)i;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)value = (long long int)i;
+      variable->dp = (long long int)i;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_set_si(*(mpz_t *)value, i);
+      mpz_set_si(*((mpz_t*)variable->mp), i);
       break;
 #endif
 
@@ -252,21 +210,19 @@ void osl_int_set_si(int precision, void * value_base, int value_offset,
 
 
 /**
- * return value_base[value_offset];
+ * return value;
  */
-int osl_int_get_si(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+int osl_int_get_si(int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return *(int *)value;
+      return value.sp;
 
     case OSL_PRECISION_DP:
-      return *(int *)value;
+      return (int)value.dp;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return mpz_get_si(*(mpz_t *)value);
+      return mpz_get_si(*((mpz_t*)value.mp));
 #endif
 
     default:
@@ -276,24 +232,22 @@ int osl_int_get_si(int precision, void * value_base, int value_offset) {
 
 
 /**
- * value_base[value_offset] = i; // including initialization for GMP
+ * variable = i; // including initialization for GMP
  */
-void osl_int_init_set_si(int precision,
-                         void * value_base, int value_offset, int i) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+void osl_int_init_set_si(int precision, osl_int_p variable, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)value = (long int)i;
+      variable->sp = (long int)i;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)value = (long long int)i;
+      variable->dp = (long long int)i;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_init_set_si(*(mpz_t *)value, i);
+      OSL_malloc(variable->mp, void*, sizeof(mpz_t)); 
+      mpz_init_set_si(*((mpz_t*)variable->mp), i);
       break;
 #endif
 
@@ -304,26 +258,21 @@ void osl_int_init_set_si(int precision,
 
 
 /**
- * val1_base[val1_offset] <=> val2_base[val2_offset];
+ * var1 <=> var2;
  */
-void osl_int_swap(int precision,
-                  void * val1_base,   int val1_offset,
-                  void * val2_base,   int val2_offset) {
-  void * val1 = osl_int_address(precision, val1_base, val1_offset);
-  void * val2 = osl_int_address(precision, val2_base, val2_offset);
-
+void osl_int_swap(int precision, osl_int_p var1, osl_int_p var2) {
   switch (precision) {
     case OSL_PRECISION_SP: {
-      long int temp = *(long int *)val1;
-      *(long int *)val1 = *(long int *)val2;
-      *(long int *)val2 = temp;
+      long int temp = var1->sp;
+      var1->sp = var2->sp;
+      var2->sp = temp;
       break;
     }
 
     case OSL_PRECISION_DP: {
-      long long int temp = *(long long int *)val1;
-      *(long long int *)val1 = *(long long int *)val2;
-      *(long long int *)val2 = temp;
+      long long int temp = var1->dp;
+      var1->dp = var2->dp;
+      var2->dp = temp;
       break;
     }
 
@@ -331,9 +280,9 @@ void osl_int_swap(int precision,
     case OSL_PRECISION_MP: {
       mpz_t temp;
       mpz_init(temp);
-      mpz_set(temp, *(mpz_t *)val1);
-      mpz_set(*(mpz_t *)val1, *(mpz_t *)val2);
-      mpz_set(*(mpz_t *)val2, temp);
+      mpz_set(temp, *((mpz_t*)var1->mp));
+      mpz_set(*((mpz_t*)var1->mp), *((mpz_t*)var2->mp));
+      mpz_set(*((mpz_t*)var2->mp), temp);
       mpz_clear(temp);
       break;
     }
@@ -346,23 +295,22 @@ void osl_int_swap(int precision,
 
 
 /**
- * value_base[value_offset] = 0; // Including cleaning for GMP
+ * variable = 0; // Including cleaning for GMP
  */
-void osl_int_clear(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-  
+void osl_int_clear(int precision, osl_int_p variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)value = 0;
+      variable->sp = 0;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)value = 0;
+      variable->dp = 0;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_clear(*(mpz_t *)value);
+      mpz_clear(*((mpz_t*)variable->mp));
+      free(variable->mp);
       break;
 #endif
 
@@ -372,27 +320,23 @@ void osl_int_clear(int precision, void * value_base, int value_offset) {
 }
 
 
-void osl_int_free(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
-  osl_int_clear(precision, value_base, value_offset);
-  free(value);
+void osl_int_free(int precision, osl_int_p variable) {
+  osl_int_clear(precision, variable);
+  free(variable);
 }
 
 
 /**
  * osl_int_print function:
  * this function displays an integer value into a file (file, possibly stdout).
- * \param file         The file where the integer has to be printed.
- * \param precision    The precision of the integer.
- * \param value_base   Address of the base integer value.
- * \param value_offset Offset in number of values from the base integer value.
+ * \param file      The file where the integer has to be printed.
+ * \param precision The precision of the integer.
+ * \param value     The integer element to print.
  */
-void osl_int_print(FILE * file, int precision,
-                   void * value_base, int value_offset) {
+void osl_int_print(FILE * file, int precision, osl_int_t value) {
   char string[OSL_MAX_STRING];
   
-  osl_int_sprint(string, precision, value_base, value_offset);
+  osl_int_sprint(string, precision, value);
   fprintf(file, "%s", string);
 }
 
@@ -401,28 +345,24 @@ void osl_int_print(FILE * file, int precision,
  * osl_int_sprint function:
  * this function prints an integer value into a string, it uses the
  * OpenScop Library formats OSL_FMT_* to format the printing.
- * \param string       The string where the integer has to be printed.
- * \param precision    The precision of the integer.
- * \param value_base   Address of the base integer value.
- * \param value_offset Offset in number of values from the base integer value.
+ * \param string    The string where the integer has to be printed.
+ * \param precision The precision of the integer.
+ * \param value     The integer element to print.
  */
-void osl_int_sprint(char * string, int precision,
-                    void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-            
+void osl_int_sprint(char * string, int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      sprintf(string, OSL_FMT_SP, *(long int *)value);
+      sprintf(string, OSL_FMT_SP, value.sp);
       break;
 
     case OSL_PRECISION_DP:
-      sprintf(string, OSL_FMT_DP, *(long long int *)value);
+      sprintf(string, OSL_FMT_DP, value.dp);
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       char * str;
-      str = mpz_get_str(0, 10, *(mpz_t *)value); //TODO: 10 -> #define
+      str = mpz_get_str(0, 10, *((mpz_t*)value.mp)); //TODO: 10 -> #define
       sprintf(string, OSL_FMT_MP, str);
       free(str);
       break;
@@ -441,23 +381,20 @@ void osl_int_sprint(char * string, int precision,
  * using OSL_TMT_TXT_* formats.
  * \see osl_int_sprintf
  */
-void osl_int_sprint_txt(char * string, int precision,
-                        void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-            
+void osl_int_sprint_txt(char * string, int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      sprintf(string, OSL_FMT_TXT_SP, *(long int *)value);
+      sprintf(string, OSL_FMT_TXT_SP, value.sp);
       break;
 
     case OSL_PRECISION_DP:
-      sprintf(string, OSL_FMT_TXT_DP, *(long long int *)value);
+      sprintf(string, OSL_FMT_TXT_DP, value.dp);
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       char * str;
-      str = mpz_get_str(0, 10, *(mpz_t *)value); //TODO: 10 -> #define
+      str = mpz_get_str(0, 10, *((mpz_t*)value.mp)); //TODO: 10 -> #define
       sprintf(string, OSL_FMT_TXT_MP, str);
       free(str);
       break;
@@ -470,20 +407,18 @@ void osl_int_sprint_txt(char * string, int precision,
 }
 
 
-void osl_int_sread(char ** string, int precision,
-                   void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
+void osl_int_sread(char ** string, int precision, osl_int_p variable) {
   int nb_read = 0;
 
   switch (precision) {
     case OSL_PRECISION_SP:
-      nb_read = sscanf(*string, OSL_FMT_TXT_SP, (long int *)value);
+      nb_read = sscanf(*string, OSL_FMT_TXT_SP, &(variable->sp));
       if (nb_read == 0)
         OSL_error("failed to read an integer");
       break;
 
     case OSL_PRECISION_DP:
-      nb_read = sscanf(*string, OSL_FMT_TXT_DP, (long long int *)value);
+      nb_read = sscanf(*string, OSL_FMT_TXT_DP, &(variable->dp));
       if (nb_read == 0)
         OSL_error("failed to read an integer");
       break;
@@ -494,7 +429,7 @@ void osl_int_sread(char ** string, int precision,
       nb_read = sscanf(*string, OSL_FMT_TXT_DP, &tmp);
       if (nb_read == 0)
         OSL_error("failed to read an integer");
-      mpz_set_si(*(mpz_t *)value, tmp);
+      mpz_set_si(*((mpz_t*)variable->mp), tmp);
       break;
     }
 #endif
@@ -514,26 +449,21 @@ void osl_int_sread(char ** string, int precision,
 
 
 /**
- * result_base[result_offset] = value_base[value_offset] + 1;
+ * variable <- value + 1;
  */
-void osl_int_increment(int precision,
-                       void * result_base, int result_offset,
-                       void * value_base,  int value_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * value  = osl_int_address(precision, value_base, value_offset);
-
+void osl_int_increment(int precision, osl_int_p variable, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)value + (long int)1;
+      variable->sp = value.sp + 1;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)value + (long long int)1;
+      variable->dp = value.dp + (long long int)1;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_add_ui(*(mpz_t *)result, *(mpz_t *)value, 1);
+      mpz_add_ui(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), 1);
       break;
 #endif
 
@@ -544,28 +474,23 @@ void osl_int_increment(int precision,
 
 
 /**
- * result_base[result_offset] = value_base[value_offset] - 1;
+ * variable <- value - 1;
  */
-void osl_int_decrement(int precision,
-                       void * result_base, int result_offset,
-                       void * value_base,  int value_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * value  = osl_int_address(precision, value_base, value_offset);
-
+void osl_int_decrement(int precision, osl_int_p variable, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)value - (long int)1;
+      variable->sp = value.sp - 1;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)value - (long long int)1;
+      variable->dp = value.dp - (long long int)1;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       mpz_t one;
       mpz_init_set_si(one, 1);
-      mpz_sub(*(mpz_t *)result, *(mpz_t *)value, one);
+      mpz_sub(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), one);
       mpz_clear(one);
       break;
     }
@@ -578,29 +503,22 @@ void osl_int_decrement(int precision,
 
 
 /**
- * result_base[result_offset] = val1_base[val1_offset]+val2_base[val2_offset];
+ * variable <- val1 + val2;
  */
 void osl_int_add(int precision,
-                 void * result_base, int result_offset,
-                 void * val1_base,   int val1_offset,
-                 void * val2_base,   int val2_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * val1   = osl_int_address(precision, val1_base, val1_offset);
-  void * val2   = osl_int_address(precision, val2_base, val2_offset);
-
+                 osl_int_p variable, osl_int_t val1, osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)val1 + *(long int *)val2;
+      variable->sp = val1.sp + val2.sp;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)val1 +
-                                 *(long long int *)val2;
+      variable->dp = val1.dp + val2.dp;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_add(*(mpz_t *)result, *(mpz_t *)val1, *(mpz_t *)val2);
+      mpz_add(*((mpz_t*)variable->mp), *((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
       break;
 #endif
 
@@ -611,28 +529,24 @@ void osl_int_add(int precision,
 
 
 /**
- * result_base[result_offset] = value_base[value_offset] + i;
+ * variable <- value + i;
  */
 void osl_int_add_si(int precision,
-                    void * result_base, int result_offset,
-                    void * value_base,  int value_offset, int i) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * value  = osl_int_address(precision, value_base, value_offset);
-
+                    osl_int_p variable, osl_int_t value, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)value + (long int)i;
+      variable->sp = value.sp + (long int)i;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)value + (long long int)i;
+      variable->dp = value.dp + (long long int)i;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       mpz_t si;
       mpz_init_set_si(si, i);
-      mpz_add(*(mpz_t *)result, *(mpz_t *)value, si);
+      mpz_add(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), si);
       mpz_clear(si);
       break;
     }
@@ -645,29 +559,22 @@ void osl_int_add_si(int precision,
 
 
 /**
- * result_base[result_offset] = val1_base[val1_offset]*val2_base[val2_offset];
+ * variable <- val1 * val2;
  */
 void osl_int_mul(int precision,
-                 void * result_base, int result_offset,
-                 void * val1_base,   int val1_offset,
-                 void * val2_base,   int val2_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * val1   = osl_int_address(precision, val1_base, val1_offset);
-  void * val2   = osl_int_address(precision, val2_base, val2_offset);
-
+                 osl_int_p variable, osl_int_t val1, osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)val1 * *(long int *)val2;
+      variable->sp = val1.sp * val2.sp;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)val1 *
-                                 *(long long int *)val2;
+      variable->dp = val1.dp * val2.dp;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_mul(*(mpz_t *)result, *(mpz_t *)val1, *(mpz_t *)val2);
+      mpz_mul(*((mpz_t*)variable->mp), *((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
       break;
 #endif
 
@@ -678,26 +585,22 @@ void osl_int_mul(int precision,
 
 
 /**
- * result_base[result_offset] = value_base[value_offset] * i;
+ * variable <- value * i;
  */
 void osl_int_mul_si(int precision,
-                    void * result_base, int result_offset,
-                    void * value_base,  int value_offset, int i) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * value  = osl_int_address(precision, value_base, value_offset);
-
+                    osl_int_p variable, osl_int_t value, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)value * (long int)i;
+      variable->sp = value.sp * (long int)i;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)value * (long long int)i;
+      variable->dp = value.dp * (long long int)i;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_mul_si(*(mpz_t *)result, *(mpz_t *)value, i);
+      mpz_mul_si(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), i);
       break;
 #endif
 
@@ -708,29 +611,22 @@ void osl_int_mul_si(int precision,
 
 
 /**
- * result_base[result_offset] = val1_base[val1_offset]-val2_base[val2_offset];
+ * variable <- val1 - val2;
  */
 void osl_int_sub(int precision,
-                 void * result_base, int result_offset,
-                 void * val1_base,   int val1_offset,
-                 void * val2_base,   int val2_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * val1   = osl_int_address(precision, val1_base, val1_offset);
-  void * val2   = osl_int_address(precision, val2_base, val2_offset);
-
+                 osl_int_p variable, osl_int_t val1, osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = *(long int *)val1 - *(long int *)val2;
+      variable->sp = val1.sp - val2.sp;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = *(long long int *)val1 -
-                                 *(long long int *)val2;
+      variable->dp = val1.dp - val2.dp;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_sub(*(mpz_t *)result, *(mpz_t *)val1, *(mpz_t *)val2);
+      mpz_sub(*((mpz_t*)variable->mp), *((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
       break;
 #endif
 
@@ -741,26 +637,21 @@ void osl_int_sub(int precision,
 
 
 /**
- * result_base[result_offset] = -value_base[value_offset];
+ * variable <- -value;
  */
-void osl_int_oppose(int precision,
-                    void * result_base, int result_offset,
-                    void * value_base,  int value_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * value  = osl_int_address(precision, value_base, value_offset);
-
+void osl_int_oppose(int precision, osl_int_p variable, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = -*(long int *)value;
+      variable->sp = -value.sp;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = -*(long long int *)value;
+      variable->dp = -value.dp;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_neg(*(mpz_t *)result, *(mpz_t *)value);
+      mpz_neg(*((mpz_t*)variable->mp), *((mpz_t*)value.mp));
       break;
 #endif
 
@@ -771,28 +662,21 @@ void osl_int_oppose(int precision,
 
 
 /**
- * result_base[result_offset] = | value_base[value_offset] |;
+ * variable <- | value |;
  */
-void osl_int_abs(int precision,
-                 void * result_base, int result_offset,
-                 void * value_base,  int value_offset) {
-  void * result = osl_int_address(precision, result_base, result_offset);
-  void * value  = osl_int_address(precision, value_base, value_offset);
-
+void osl_int_abs(int precision, osl_int_p variable, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      *(long int *)result = (*(long int *)value > 0) ?
-          *(long int *)value : -(*(long int *)value);
+      variable->sp = (value.sp > 0) ? value.sp : -value.sp;
       break;
 
     case OSL_PRECISION_DP:
-      *(long long int *)result = (*(long long int *)value > 0) ?
-          *(long long int *)value : -(*(long long int *)value);
+      variable->dp = (value.dp > 0) ? value.dp : -value.dp;
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_abs(*(mpz_t *)result, *(mpz_t *)value);
+      mpz_abs(*((mpz_t*)variable->mp), *((mpz_t*)value.mp));
       break;
 #endif
 
@@ -808,24 +692,19 @@ void osl_int_abs(int precision,
 
 
 /**
- * (val1_base[val1_offset] == val2_base[val2_offset])
+ * (val1 == val2)
  */
-int osl_int_eq(int precision,
-               void * val1_base, int val1_offset,
-               void * val2_base, int val2_offset) {
-  void * val1 = osl_int_address(precision, val1_base, val1_offset);
-  void * val2 = osl_int_address(precision, val2_base, val2_offset);
-
+int osl_int_eq(int precision, osl_int_t val1, osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return (*(long int *)val1 == *(long int *)val2);
+      return (val1.sp == val2.sp);
 
     case OSL_PRECISION_DP:
-      return (*(long long int *)val1 == *(long long int *)val2);
+      return (val1.dp == val2.dp);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_cmp(*(mpz_t *)val1, *(mpz_t *)val2) == 0);
+      return (mpz_cmp(*((mpz_t*)val1.mp), *((mpz_t*)val2.mp)) == 0);
 #endif
 
     default:
@@ -835,33 +714,27 @@ int osl_int_eq(int precision,
 
 
 /**
- * (val1_base[val1_offset] != val2_base[val2_offset])
+ * (val1 != val2)
  */
-int osl_int_ne(int precision,
-               void * val1_base, int val1_offset,
-               void * val2_base, int val2_offset) {
-  return !osl_int_eq(precision,
-                          val1_base, val1_offset,
-                          val2_base, val2_offset);
+int osl_int_ne(int precision, osl_int_t val1, osl_int_t val2) {
+  return !osl_int_eq(precision, val1, val2);
 }
 
 
 /**
- * (value_base[value_offset] > 0)
+ * (value > 0)
  */
-int osl_int_pos(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+int osl_int_pos(int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return (*(long int *)value > 0);
+      return (value.sp > 0);
 
     case OSL_PRECISION_DP:
-      return (*(long long int *)value > 0);
+      return (value.dp > 0);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_sgn(*(mpz_t *)value) > 0);
+      return (mpz_sgn(*((mpz_t*)value.mp)) > 0);
 #endif
 
     default:
@@ -871,21 +744,19 @@ int osl_int_pos(int precision, void * value_base, int value_offset) {
 
 
 /**
- * (value_base[value_offset] < 0)
+ * (value < 0)
  */
-int osl_int_neg(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+int osl_int_neg(int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return (*(long int *)value < 0);
+      return (value.sp < 0);
 
     case OSL_PRECISION_DP:
-      return (*(long long int *)value < 0);
+      return (value.dp < 0);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_sgn(*(mpz_t *)value) < 0);
+      return (mpz_sgn(*((mpz_t*)value.mp)) < 0);
 #endif
 
     default:
@@ -895,21 +766,19 @@ int osl_int_neg(int precision, void * value_base, int value_offset) {
 
 
 /**
- * (value_base[value_offset] == 0)
+ * (value == 0)
  */
-int osl_int_zero(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+int osl_int_zero(int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return (*(long int *)value == 0);
+      return (value.sp == 0);
 
     case OSL_PRECISION_DP:
-      return (*(long long int *)value == 0);
+      return (value.dp == 0);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_sgn(*(mpz_t *)value) == 0);
+      return (mpz_sgn(*((mpz_t*)value.mp)) == 0);
 #endif
 
     default:
@@ -919,21 +788,19 @@ int osl_int_zero(int precision, void * value_base, int value_offset) {
 
 
 /**
- * (value_base[value_offset] == 1)
+ * (value == 1)
  */
-int osl_int_one(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+int osl_int_one(int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return (*(long int *)value == (long int)1);
+      return (value.sp == (long int)1);
 
     case OSL_PRECISION_DP:
-      return (*(long long int *)value == (long long int)1);
+      return (value.dp == (long long int)1);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_cmp_si(*(mpz_t *)value, 1) == 0);
+      return (mpz_cmp_si(*((mpz_t*)value.mp), 1) == 0);
 #endif
 
     default:
@@ -943,21 +810,19 @@ int osl_int_one(int precision, void * value_base, int value_offset) {
 
 
 /**
- * (value_base[value_offset] == -1)
+ * (value == -1)
  */
-int osl_int_mone(int precision, void * value_base, int value_offset) {
-  void * value = osl_int_address(precision, value_base, value_offset);
-
+int osl_int_mone(int precision, osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return (*(long int *)value == (long int)-1);
+      return (value.sp == (long int)-1);
 
     case OSL_PRECISION_DP:
-      return (*(long long int *)value == (long long int)-1);
+      return (value.dp == (long long int)-1);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_cmp_si(*(mpz_t *)value, -1) == 0);
+      return (mpz_cmp_si(*((mpz_t*)value.mp), -1) == 0);
 #endif
 
     default:
@@ -967,24 +832,19 @@ int osl_int_mone(int precision, void * value_base, int value_offset) {
 
 
 /**
- * ((val1_base[val1_offset] % val2_base[val2_offset]) == 0)
+ * ((val1 % val2) == 0)
  */
-int osl_int_divisible(int precision,
-                      void * val1_base, int val1_offset,
-                      void * val2_base, int val2_offset) {
-  void * val1 = osl_int_address(precision, val1_base, val1_offset);
-  void * val2 = osl_int_address(precision, val2_base, val2_offset);
-
+int osl_int_divisible(int precision, osl_int_t val1, osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return ((*(long int *)val1 % *(long int *)val2) == 0);
+      return ((val1.sp % val2.sp) == 0);
 
     case OSL_PRECISION_DP:
-      return ((*(long long int *)val1 % *(long long int *)val2) == 0);
+      return ((val1.dp % val2.dp) == 0);
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return mpz_divisible_p(*(mpz_t *)val1, *(mpz_t *)val2);
+      return mpz_divisible_p(*((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
 #endif
 
     default:

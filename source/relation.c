@@ -209,7 +209,7 @@ void osl_relation_idump(FILE * file, osl_relation_p relation, int level) {
       fprintf(file, "[ ");
 
       for (j = 0; j < relation->nb_columns; j++) {
-        osl_int_print(file, relation->precision, relation->m[i], j);
+        osl_int_print(file, relation->precision, relation->m[i][j]);
         fprintf(file, " ");
       }
 
@@ -252,7 +252,7 @@ void osl_relation_dump(FILE * file, osl_relation_p relation) {
  * osl_relation_expression_element function:
  * this function returns a string containing the printing of a value (e.g.,
  * an iterator with its coefficient or a constant).
- * \param[in]     val       Address of the coefficient or constant value.
+ * \param[in]     val       Coefficient or constant value.
  * \param[in]     precision The precision of the value.
  * \param[in,out] first     Pointer to a boolean set to 1 if the current value
  *                          is the first of an expresion, 0 otherwise (maybe
@@ -263,7 +263,7 @@ void osl_relation_dump(FILE * file, osl_relation_p relation) {
  * \return A string that contains the printing of a value.
  */
 static
-char * osl_relation_expression_element(void * val,
+char * osl_relation_expression_element(osl_int_t val,
                                        int precision, int * first,
                                        int cst, char * name) {
   char * temp, * body, * sval;
@@ -276,17 +276,17 @@ char * osl_relation_expression_element(void * val,
   sval[0] = '\0';
 
   // statements for the 'normal' processing.
-  if (!osl_int_zero(precision, val, 0) && (!cst)) {
-    if ((*first) || osl_int_neg(precision, val, 0)) {
-      if (osl_int_one(precision, val, 0)) {         // case 1
+  if (!osl_int_zero(precision, val) && (!cst)) {
+    if ((*first) || osl_int_neg(precision, val)) {
+      if (osl_int_one(precision, val)) {         // case 1
         sprintf(sval, "%s", name);
       }
       else {
-        if (osl_int_mone(precision, val, 0)) {      // case -1
+        if (osl_int_mone(precision, val)) {      // case -1
           sprintf(sval, "-%s", name);
         }
 	else {                                      // default case
-	  osl_int_sprint_txt(sval, precision, val, 0);
+	  osl_int_sprint_txt(sval, precision, val);
 	  sprintf(temp, "*%s", name);
 	  strcat(sval, temp);
         }
@@ -294,12 +294,12 @@ char * osl_relation_expression_element(void * val,
       *first = 0;
     }
     else {
-      if (osl_int_one(precision, val, 0)) {
+      if (osl_int_one(precision, val)) {
         sprintf(sval, "+%s", name);
       }
       else {
         sprintf(sval, "+");
-	osl_int_sprint_txt(temp, precision, val, 0);
+	osl_int_sprint_txt(temp, precision, val);
 	strcat(sval, temp);
 	sprintf(temp, "*%s", name);
 	strcat(sval, temp);
@@ -308,17 +308,17 @@ char * osl_relation_expression_element(void * val,
   }
   else {
     if (cst) {
-      if ((osl_int_zero(precision, val, 0) && (*first)) ||
-          (osl_int_neg(precision, val, 0)))
-        osl_int_sprint_txt(sval, precision, val, 0);
-      if (osl_int_pos(precision, val, 0)) {
+      if ((osl_int_zero(precision, val) && (*first)) ||
+          (osl_int_neg(precision, val)))
+        osl_int_sprint_txt(sval, precision, val);
+      if (osl_int_pos(precision, val)) {
         if (!(*first)) {
           sprintf(sval, "+");
-          osl_int_sprint_txt(temp, precision, val, 0);
+          osl_int_sprint_txt(temp, precision, val);
 	  strcat(sval, temp);
 	}
 	else {
-          osl_int_sprint_txt(sval, precision, val, 0);
+          osl_int_sprint_txt(sval, precision, val);
         }
       }
     }
@@ -431,7 +431,7 @@ char * osl_relation_subexpression(osl_relation_p relation,
   for (i = start; i <= stop; i++) {
     if (oppose) {
       osl_int_oppose(relation->precision,
-                     relation->m[row], i, relation->m[row], i);
+                     &relation->m[row][i], relation->m[row][i]);
     }
 
     if (i == relation->nb_columns - 1)
@@ -439,13 +439,12 @@ char * osl_relation_subexpression(osl_relation_p relation,
     else
       constant = 0;
 
-    sval = osl_relation_expression_element(
-        osl_int_address(relation->precision, relation->m[row], i),
+    sval = osl_relation_expression_element(relation->m[row][i],
         relation->precision, &first, constant, strings[i]);
     
     if (oppose) {
       osl_int_oppose(relation->precision,
-                     relation->m[row], i, relation->m[row], i);
+                     &relation->m[row][i], relation->m[row][i]);
     }
     strcat(sline, sval);
     free(sval);
@@ -499,21 +498,21 @@ int osl_relation_is_simple_output(osl_relation_p relation, int row) {
     OSL_error("the specified row does not exist in the relation");
 
   // The constraint must be an equality.
-  if (!osl_int_zero(relation->precision, relation->m[row], 0))
+  if (!osl_int_zero(relation->precision, relation->m[row][0]))
     return 0;
 
   // Check the output part has one and only one non-zero +1 or -1 coefficient.
   first = 1;
   for (i = 1; i <= relation->nb_output_dims; i++) {
-    if (!osl_int_zero(relation->precision, relation->m[row], i)) {
+    if (!osl_int_zero(relation->precision, relation->m[row][i])) {
       if (first)
         first = 0;
       else
         return 0;
 
-      if (osl_int_one(relation->precision, relation->m[row], i))
+      if (osl_int_one(relation->precision, relation->m[row][i]))
         sign = 1;
-      else if (osl_int_mone(relation->precision, relation->m[row], i))
+      else if (osl_int_mone(relation->precision, relation->m[row][i]))
         sign = -1;
       else
         return 0;
@@ -567,7 +566,7 @@ char * osl_relation_sprint_comment(osl_relation_p relation, int row,
     
     // We don't print the right hand side if it's an array identifier.
     if (!osl_relation_is_access(relation) ||
-        osl_int_zero(relation->precision, relation->m[row], 1)) {
+        osl_int_zero(relation->precision, relation->m[row][1])) {
       expression = osl_relation_subexpression(relation, row,
                                               relation->nb_output_dims + 1,
                                               relation->nb_columns - 1,
@@ -591,7 +590,7 @@ char * osl_relation_sprint_comment(osl_relation_p relation, int row,
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
     free(expression);
     
-    if (osl_int_zero(relation->precision, relation->m[row], 0))
+    if (osl_int_zero(relation->precision, relation->m[row][0]))
       snprintf(buffer, OSL_MAX_STRING, " == 0");
     else
       snprintf(buffer, OSL_MAX_STRING, " >= 0");
@@ -873,7 +872,7 @@ char * osl_relation_spprint_polylib(osl_relation_p relation,
 
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j < relation->nb_columns; j++) {
-        osl_int_sprint(buffer, relation->precision, relation->m[i], j);
+        osl_int_sprint(buffer, relation->precision, relation->m[i][j]);
         osl_util_safe_strcat(&string, buffer, &high_water_mark);
         snprintf(buffer, OSL_MAX_STRING, " ");
         osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -1053,7 +1052,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
       // First column
       if (!is_access_array) {
         // array index name for scoplib
-        osl_int_sprint(buffer, relation->precision, relation->m[i], 0);
+        osl_int_sprint(buffer, relation->precision, relation->m[i][0]);
         osl_util_safe_strcat(&string, buffer, &high_water_mark);
         snprintf(buffer, OSL_MAX_STRING, " ");
         osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -1061,8 +1060,8 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
       } else {
         // The first column represents the array index name in openscop
         if (i == start_row)
-          osl_int_sprint(buffer, relation->precision, relation->m[0],
-                         relation->nb_columns-1);
+          osl_int_sprint(buffer, relation->precision,
+                         relation->m[0][relation->nb_columns-1]);
         else
           snprintf(buffer, OSL_MAX_STRING, "   0 ");
           
@@ -1075,7 +1074,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
       if (relation->type == OSL_TYPE_DOMAIN) {
       
         for (j = 1; j < index_input_dims; j++) {
-          osl_int_sprint(buffer, relation->precision, relation->m[i], j);
+          osl_int_sprint(buffer, relation->precision, relation->m[i][j]);
           osl_util_safe_strcat(&string, buffer, &high_water_mark);
           snprintf(buffer, OSL_MAX_STRING, " ");
           osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -1083,7 +1082,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
         
         // Jmp input_dims
         for (j = index_params; j < relation->nb_columns; j++) {
-          osl_int_sprint(buffer, relation->precision, relation->m[i], j);
+          osl_int_sprint(buffer, relation->precision, relation->m[i][j]);
           osl_util_safe_strcat(&string, buffer, &high_water_mark);
           snprintf(buffer, OSL_MAX_STRING, " ");
           osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -1098,7 +1097,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
             snprintf(buffer, OSL_MAX_STRING, "   0 ");
             osl_util_safe_strcat(&string, buffer, &high_water_mark);
           } else {
-            osl_int_sprint(buffer, relation->precision, relation->m[i], j);
+            osl_int_sprint(buffer, relation->precision, relation->m[i][j]);
             osl_util_safe_strcat(&string, buffer, &high_water_mark);
             snprintf(buffer, OSL_MAX_STRING, " ");
             osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -1116,7 +1115,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
             snprintf(buffer, OSL_MAX_STRING, "  0 ");
             osl_util_safe_strcat(&string, buffer, &high_water_mark);
           } else {
-            osl_int_sprint(buffer, relation->precision, relation->m[i], j);
+            osl_int_sprint(buffer, relation->precision, relation->m[i][j]);
             osl_util_safe_strcat(&string, buffer, &high_water_mark);
             snprintf(buffer, OSL_MAX_STRING, " ");
             osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -1445,7 +1444,7 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
 
         // TODO: remove this tmp (sread updates the pointer).
         tmp = str;
-        osl_int_sread(&tmp, precision, relation->m[i], j);
+        osl_int_sread(&tmp, precision, &relation->m[i][j]);
         c += n;
       }
     }
@@ -1546,7 +1545,7 @@ osl_relation_p osl_relation_psread(char ** input, int precision) {
 
         // TODO: remove this tmp (sread updates the pointer).
         tmp = str;
-        osl_int_sread(&tmp, precision, relation->m[i], j);
+        osl_int_sread(&tmp, precision, &relation->m[i][j]);
         *input += n;
       }
     }
@@ -1613,7 +1612,7 @@ osl_relation_p osl_relation_read(FILE * foo) {
 osl_relation_p osl_relation_pmalloc(int precision,
                                     int nb_rows, int nb_columns) {
   osl_relation_p relation;
-  void ** p, * q;
+  osl_int_t ** p, * q;
   int i, j;
 
   if ((precision != OSL_PRECISION_SP) &&
@@ -1639,14 +1638,13 @@ osl_relation_p osl_relation_pmalloc(int precision,
     relation->m = NULL;
   } 
   else {
-    OSL_malloc(p, void **, nb_rows * sizeof(void *));
-    OSL_malloc(q, void *,
-                    nb_rows * nb_columns * osl_int_sizeof(precision));
+    OSL_malloc(p, osl_int_t**, nb_rows * sizeof(osl_int_t*));
+    OSL_malloc(q, osl_int_t*, nb_rows * nb_columns * sizeof(osl_int_t));
     relation->m = p;
     for (i = 0; i < nb_rows; i++) {
-      relation->m[i] = osl_int_address(precision, q, i * nb_columns);
+      relation->m[i] = q + i * nb_columns ;
       for (j = 0; j < nb_columns; j++)
-        osl_int_init_set_si(precision, relation->m[i], j, 0);
+        osl_int_init_set_si(precision, &relation->m[i][j], 0);
     }
   }
  
@@ -1677,18 +1675,14 @@ osl_relation_p osl_relation_malloc(int nb_rows, int nb_columns) {
  */
 void osl_relation_free_inside(osl_relation_p relation) {
   int i, nb_elements;
-  void * p;
 
   if (relation == NULL)
     return;
 
   nb_elements = relation->nb_rows * relation->nb_columns;
   
-  if (nb_elements > 0)
-    p = relation->m[0];
-  
   for (i = 0; i < nb_elements; i++)
-    osl_int_clear(relation->precision, p, i);
+    osl_int_clear(relation->precision, &relation->m[0][i]);
 
   if (relation->m != NULL) {
     if (nb_elements > 0)
@@ -1752,7 +1746,8 @@ osl_relation_p osl_relation_nclone(osl_relation_p relation, int n) {
 
     for (i = 0; i < relation->nb_rows; i++)
       for (j = 0; j < relation->nb_columns; j++)
-        osl_int_assign(relation->precision, node->m[i], j, relation->m[i], j);
+        osl_int_assign(relation->precision,
+                       &node->m[i][j], relation->m[i][j]);
   
     if (first) {
       first = 0;
@@ -1808,7 +1803,8 @@ osl_relation_p osl_relation_clone_nconstraints(osl_relation_p relation,
 
     for (i = 0; i < n; i++)
       for (j = 0; j < relation->nb_columns; j++)
-        osl_int_assign(relation->precision, node->m[i], j, relation->m[i], j);
+        osl_int_assign(relation->precision,
+                       &node->m[i][j], relation->m[i][j]);
   
     if (first) {
       first = 0;
@@ -1903,7 +1899,7 @@ void osl_relation_replace_vector(osl_relation_p relation,
     OSL_error("vector cannot replace relation row");
 
   for (i = 0; i < vector->size; i++)
-    osl_int_assign(relation->precision, relation->m[row], i, vector->v, i);
+    osl_int_assign(relation->precision, &relation->m[row][i], vector->v[i]);
 }
 
 
@@ -1926,12 +1922,12 @@ void osl_relation_add_vector(osl_relation_p relation,
       (row >= relation->nb_rows) || (row < 0))
     OSL_error("vector cannot be added to relation");
 
-  if (osl_int_get_si(relation->precision, relation->m[row], 0) == 0)
-    osl_int_assign(relation->precision, relation->m[row], 0, vector->v, 0);
+  if (osl_int_get_si(relation->precision, relation->m[row][0]) == 0)
+    osl_int_assign(relation->precision, &relation->m[row][0], vector->v[0]);
 
   for (i = 1; i < vector->size; i++)
     osl_int_add(relation->precision,
-                relation->m[row], i, relation->m[row], i, vector->v, i);
+                &relation->m[row][i], relation->m[row][i], vector->v[i]);
 }
 
 
@@ -1954,12 +1950,12 @@ void osl_relation_sub_vector(osl_relation_p relation,
       (row >= relation->nb_rows) || (row < 0))
     OSL_error("vector cannot be subtracted to row");
 
-  if (osl_int_get_si(relation->precision, relation->m[row], 0) == 0)
-    osl_int_assign(relation->precision, relation->m[row], 0, vector->v, 0);
+  if (osl_int_get_si(relation->precision, relation->m[row][0]) == 0)
+    osl_int_assign(relation->precision, &relation->m[row][0], vector->v[0]);
 
   for (i = 1; i < vector->size; i++)
     osl_int_sub(relation->precision,
-                relation->m[row], i, relation->m[row], i, vector->v, i);
+                &relation->m[row][i], relation->m[row][i], vector->v[i]);
 }
 
 
@@ -2051,10 +2047,10 @@ void osl_relation_insert_blank_column(osl_relation_p relation, int column) {
 
   for (i = 0; i < relation->nb_rows; i++) {
     for (j = 0; j < column; j++)
-      osl_int_assign(relation->precision, temp->m[i], j, relation->m[i], j);
+      osl_int_assign(relation->precision, &temp->m[i][j], relation->m[i][j]);
 
     for (j = column; j < relation->nb_columns; j++)
-      osl_int_assign(relation->precision, temp->m[i], j+1, relation->m[i], j);
+      osl_int_assign(relation->precision, &temp->m[i][j+1], relation->m[i][j]);
   }
 
   osl_relation_free_inside(relation);
@@ -2108,7 +2104,7 @@ void osl_relation_replace_constraints(osl_relation_p r1,
 
   for (i = 0; i < r2->nb_rows; i++)
     for (j = 0; j < r2->nb_columns; j++)
-      osl_int_assign(r1->precision, r1->m[i+row], j, r2->m[i], j);
+      osl_int_assign(r1->precision, &r1->m[i+row][j], r2->m[i][j]);
 }
 
 
@@ -2146,13 +2142,13 @@ void osl_relation_insert_constraints(osl_relation_p r1,
 
   for (i = 0; i < row; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      osl_int_assign(r1->precision, temp->m[i], j, r1->m[i], j);
+      osl_int_assign(r1->precision, &temp->m[i][j], r1->m[i][j]);
 
   osl_relation_replace_constraints(temp, r2, row);
 
   for (i = row + r2->nb_rows; i < r2->nb_rows + r1->nb_rows; i++)
     for (j = 0; j < r1->nb_columns; j++)
-      osl_int_assign(r1->precision, temp->m[i], j, r1->m[i-r2->nb_rows], j);
+      osl_int_assign(r1->precision, &temp->m[i][j], r1->m[i-r2->nb_rows][j]);
 
   osl_relation_free_inside(r1);
 
@@ -2184,7 +2180,8 @@ void osl_relation_swap_constraints(osl_relation_p relation, int c1, int c2) {
     OSL_error("bad constraint rows");
 
   for (i = 0; i < relation->nb_columns; i++)
-    osl_int_swap(relation->precision, relation->m[c1], i, relation->m[c2], i);
+    osl_int_swap(relation->precision,
+                 &relation->m[c1][i], &relation->m[c2][i]);
 }
 
 
@@ -2211,11 +2208,11 @@ void osl_relation_remove_row(osl_relation_p r, int row) {
 
   for (i = 0; i < row; i++)
     for (j = 0; j < r->nb_columns; j++)
-      osl_int_assign(r->precision, temp->m[i], j, r->m[i], j);
+      osl_int_assign(r->precision, &temp->m[i][j], r->m[i][j]);
 
   for (i = row + 1; i < r->nb_rows; i++)
     for (j = 0; j < r->nb_columns; j++)
-      osl_int_assign(r->precision, temp->m[i - 1], j, r->m[i], j);
+      osl_int_assign(r->precision, &temp->m[i - 1][j], r->m[i][j]);
 
   osl_relation_free_inside(r);
 
@@ -2251,10 +2248,10 @@ void osl_relation_remove_column(osl_relation_p r, int column) {
 
   for (i = 0; i < r->nb_rows; i++) {
     for (j = 0; j < column; j++)
-      osl_int_assign(r->precision, temp->m[i], j, r->m[i], j);
+      osl_int_assign(r->precision, &temp->m[i][j], r->m[i][j]);
 
     for (j = column + 1; j < r->nb_columns; j++)
-      osl_int_assign(r->precision, temp->m[i], j - 1, r->m[i], j);
+      osl_int_assign(r->precision, &temp->m[i][j - 1], r->m[i][j]);
   }
 
   osl_relation_free_inside(r);
@@ -2298,16 +2295,16 @@ void osl_relation_insert_columns(osl_relation_p relation,
 
   for (i = 0; i < relation->nb_rows; i++) {
     for (j = 0; j < column; j++)
-      osl_int_assign(relation->precision, temp->m[i], j, relation->m[i], j);
+      osl_int_assign(relation->precision, &temp->m[i][j], relation->m[i][j]);
 
     for (j = column; j < column + insert->nb_columns; j++)
       osl_int_assign(relation->precision,
-                     temp->m[i], j, insert->m[i], j - column);
+                     &temp->m[i][j], insert->m[i][j - column]);
 
     for (j = column + insert->nb_columns;
          j < insert->nb_columns + relation->nb_columns; j++)
       osl_int_assign(relation->precision,
-                     temp->m[i], j, relation->m[i], j - insert->nb_columns);
+                     &temp->m[i][j], relation->m[i][j - insert->nb_columns]);
   }
 
   osl_relation_free_inside(relation);
@@ -2390,7 +2387,7 @@ int osl_relation_part_equal(osl_relation_p r1, osl_relation_p r2) {
 
   for (i = 0; i < r1->nb_rows; ++i)
     for (j = 0; j < r1->nb_columns; ++j)
-      if (osl_int_ne(r1->precision, r1->m[i], j, r2->m[i], j))
+      if (osl_int_ne(r1->precision, r1->m[i][j], r2->m[i][j]))
         return 0;
 
   return 1;
@@ -2603,8 +2600,8 @@ int osl_relation_integrity_check(osl_relation_p relation,
     // made of 0 or 1 only.
     if ((relation->nb_rows > 0) && (relation->nb_columns > 0)) {
       for (i = 0; i < relation->nb_rows; i++) {
-        if (!osl_int_zero(relation->precision, relation->m[i], 0) &&
-            !osl_int_one(relation->precision, relation->m[i], 0)) {
+        if (!osl_int_zero(relation->precision, relation->m[i][0]) &&
+            !osl_int_one(relation->precision, relation->m[i][0])) {
           OSL_warning("first column of a relation is not "
                            "strictly made of 0 or 1");
           osl_relation_dump(stderr, relation);
@@ -2730,7 +2727,7 @@ int osl_relation_get_array_id(osl_relation_p relation) {
     // - check that (-m[i][#columns -1] / m[i][1]) > 0.
     nb_array_id = 0;
     for (i = 0; i < relation->nb_rows; i++) {
-      if (!osl_int_zero(precision, relation->m[i], 1)) {
+      if (!osl_int_zero(precision, relation->m[i][1])) {
         nb_array_id ++;
         row_id = i;
       }
@@ -2744,21 +2741,20 @@ int osl_relation_get_array_id(osl_relation_p relation) {
       return OSL_UNDEFINED;
     }
     for (i = 0; i < relation->nb_columns - 1; i++) {
-      if ((i != 1) && !osl_int_zero(precision, relation->m[row_id], i)) {
+      if ((i != 1) && !osl_int_zero(precision, relation->m[row_id][i])) {
         OSL_warning("non integer array identifier");
         return OSL_UNDEFINED;
       }
     }
     if (!osl_int_divisible(precision,
-                           relation->m[row_id], relation->nb_columns - 1,
-                           relation->m[row_id], 1)) {
+                           relation->m[row_id][relation->nb_columns - 1],
+                           relation->m[row_id][1])) {
       OSL_warning("rational array identifier");
       return OSL_UNDEFINED;
     }
     array_id = -osl_int_get_si(precision,
-                               relation->m[row_id],
-                               relation->nb_columns - 1);
-    array_id /= osl_int_get_si(precision, relation->m[row_id], 1);
+                               relation->m[row_id][relation->nb_columns - 1]);
+    array_id /= osl_int_get_si(precision, relation->m[row_id][1]);
     if (array_id <= 0) {
       OSL_warning("negative or 0 identifier in access function");
       return OSL_UNDEFINED;
@@ -2911,6 +2907,7 @@ osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
   int i, j;
   int first = 1;
   int offset;
+  int precision = relation->precision;
   osl_relation_p extended = NULL, node, previous = NULL;
 
   while (relation != NULL) {
@@ -2918,7 +2915,7 @@ osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
       OSL_error("Number of output dims is greater than required extension");
     offset = dim - relation->nb_output_dims;
     
-    node = osl_relation_pmalloc(relation->precision,
+    node = osl_relation_pmalloc(precision,
                                 relation->nb_rows + offset,
                                 relation->nb_columns + offset);
     
@@ -2932,19 +2929,18 @@ osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
     // Note that we use the fact that the matrix is initialized with zeros.
     for (i = 0; i < relation->nb_rows; i++) {
       for (j = 0; j <= relation->nb_output_dims; j++)
-        osl_int_assign(relation->precision, node->m[i], j, relation->m[i], j);
+        osl_int_assign(precision, &node->m[i][j], relation->m[i][j]);
 
       for (j = relation->nb_output_dims + offset + 1;
            j < relation->nb_columns + offset; j++)
-        osl_int_assign(relation->precision,
-                       node->m[i], j, relation->m[i], j - offset);
+        osl_int_assign(precision, &node->m[i][j], relation->m[i][j - offset]);
     }
 
     // New rows dedicated to the new dimensions
     for (i = relation->nb_rows; i < relation->nb_rows + offset; i++) {
       for (j = 0; j < relation->nb_columns + offset; j++) {
         if ((i - relation->nb_rows) == (j - relation->nb_output_dims - 1))
-          osl_int_set_si(relation->precision, node->m[i], j, -1);
+          osl_int_set_si(precision, &node->m[i][j], -1);
       }
     }
 

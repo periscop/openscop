@@ -815,12 +815,12 @@ int osl_scop_check_compatible_scoplib(osl_scop_p scop) {
     for (i = 0 ; i < scattering->nb_rows ; i++) {
       for (j = 0 ; j < scattering->nb_output_dims ; j++) {
         if (i == j) { // -1
-          if (!osl_int_mone(precision, scattering->m[i], j+1)) {
+          if (!osl_int_mone(precision, scattering->m[i][j+1])) {
             OSL_error("Wrong -Identity");
             return 0;
           }
         } else { // 0
-          if (!osl_int_zero(precision, scattering->m[i], j+1)) {
+          if (!osl_int_zero(precision, scattering->m[i][j+1])) {
             OSL_error("Wrong -Identity");
             return 0;
           }
