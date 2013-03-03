@@ -27,11 +27,26 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	if(DOXYGEN_FOUND)
 		configure_file("doc/Doxyfile.in" "Doxyfile")
 		add_custom_target(
-			doc
+			doxygen
 			${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 			COMMENT "Generating API documentation with Doxygen" VERBATIM
 		)
+	else()
+		message (STATUS "Doxygen not found :( API documentation can not be built")
+	endif()
+
+# Build documentation
+	find_program(texi2pdf_exe texi2pdf)
+	if(texi2pdf_exe)
+		add_custom_target(
+			doc
+			${texi2pdf_exe} ${CMAKE_CURRENT_SOURCE_DIR}/doc/openscop.texi --output=${CMAKE_CURRENT_BINARY_DIR}/openscop.pdf
+			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+			COMMENT "Generating documentation (pdf) (with texi2pdf)" VERBATIM
+		)
+	else()
+		message (STATUS "texi2pdf not found :( Documentation can not be built")
 	endif()
 
 
@@ -40,16 +55,10 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	find_library(gmp_LIB gmp)
 	if (gmp_LIB)
 		message (STATUS "Library gmp found =) ${gmp_LIB}")
+		add_definitions(-DOSL_GMP_IS_HERE)
 	else()
-		message(FATAL_ERROR "Library gmp not found :(")
+		message(STATUS "Library gmp not found :(")
 	endif()
-
-# files .c
-	file(
-		GLOB_RECURSE
-		sources
-		source/*
-	)
 
 # Include directories (to use #include <> instead of #include "")
 
@@ -73,14 +82,39 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	message(STATUS "C flags    = ${CMAKE_C_FLAGS}")
 
 
+# files .c
+	file(
+		GLOB_RECURSE
+		sources
+		source/*
+	)
+	
 # Library
+
+	# Shared
 	add_library(
 		osl
 		SHARED
 		${sources}
 	)
-	target_link_libraries(osl ${gmp_LIB})
+	if (gmp_LIB)
+		target_link_libraries(osl ${gmp_LIB})
+	endif()
 	get_property(osl_lib_location TARGET osl PROPERTY LOCATION)
+	message(STATUS "Add osl library (shared) ${osl_lib_location}")
+	
+	# Static
+	add_library(
+		osl_static
+		STATIC
+		${sources}
+	)
+	set_target_properties(osl_static PROPERTIES OUTPUT_NAME osl)
+	if (gmp_LIB)
+		target_link_libraries(osl_static ${gmp_LIB})
+	endif()
+	get_property(osl_static_lib_location TARGET osl_static PROPERTY LOCATION)
+	message(STATUS "Add osl library (static) ${osl_static_lib_location}")
 
 
 # Executables & tests
@@ -92,7 +126,7 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	set(exe "osl_test")
 	message(STATUS "Add executable tests/${exe}")
 	add_executable(${exe} "tests/${exe}.c")
-	target_link_libraries(${exe} ${osl_lib_location})
+	target_link_libraries(${exe} osl_static)
 	add_test(${exe} "${exe}")
 
 	message(STATUS "---")
@@ -101,7 +135,9 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 # Install
 
 	install(TARGETS osl LIBRARY DESTINATION lib)
+	install(TARGETS osl_static ARCHIVE DESTINATION lib)
 	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
+	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.hpp")
 	install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/" DESTINATION include FILES_MATCHING PATTERN "*.h")
 	install(FILES osl-config.cmake DESTINATION lib/osl)
 
@@ -115,6 +151,11 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	message(STATUS "                 # If you need root access:")
 	message(STATUS "                 #     sudo make install")
 	message(STATUS "                 #     su -c \"make install\"")
-	message(STATUS "    make doc     # To generate the Doxygen")
+	if(DOXYGEN_FOUND)
+		message(STATUS "    make doxygen  # To generate the Doxygen")
+	endif()
+	if(texi2pdf_exe)
+		message(STATUS "    make doc      # To generate the documentation")
+	endif()
 
 	message(STATUS "---")
