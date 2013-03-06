@@ -399,6 +399,65 @@ void osl_generic_add(osl_generic_p * list, osl_generic_p generic) {
   }
 }
 
+/**
+ * osl_generic_remove_node function:
+ * this functions removes a given generic from a generic list
+ * \param[in] list    Address of a generic list
+ * \param[in] generic Pointer to the generic to be removed
+ *                    Assumes a single node is to be removed.
+ */
+void osl_generic_remove_node(osl_generic_p * list, osl_generic_p generic) {
+
+  osl_generic_p tmp = *list;
+  
+  if (generic != NULL) {
+
+    if (*list != NULL) {
+      //target is the first element of list
+      if(tmp==generic){
+        *list = generic->next;
+        generic->next=NULL; //free below removes the whole list!
+        osl_generic_free(generic); 
+      }
+
+      //find target
+      while (tmp->next!=generic && tmp->next != NULL)
+        tmp = tmp->next;
+
+      if(tmp->next==generic){
+        tmp->next = generic->next;
+        generic->next=NULL; //free below removes the whole list!
+        osl_generic_free(generic); 
+      }
+      else  //target not found
+        OSL_warning("generic not found in the list\n");
+    }
+
+  }
+}
+
+/**
+ * osl_generic_remove function:
+ * given a URI, this function removes that generic from the list
+ * \param[in] list    Address of a generic list
+ * \param[in] URI     Pointer to the URI string
+ */
+void osl_generic_remove(osl_generic_p *list, char * URI){
+
+ osl_generic_p tmp = *list;
+
+ while(tmp != NULL){
+   if(osl_generic_has_URI(tmp, URI))
+     break;
+   tmp = tmp->next;
+ }
+
+ if(tmp!=NULL){
+   osl_generic_remove_node(list, tmp);
+ }
+
+}
+
 
 /**
  * osl_generic_malloc function:
