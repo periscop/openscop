@@ -2,12 +2,12 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                          osl.h                             **
+     **                      extensions/extbody.h                        **
      **-----------------------------------------------------------------**
-     **                   First version: 11/05/2010                     **
+     **                   First version: 07/12/2010                     **
      **-----------------------------------------------------------------**
 
- 
+
  *****************************************************************************
  * OpenScop: Structures and formats for polyhedral tools to talk together    *
  *****************************************************************************
@@ -61,59 +61,69 @@
  *****************************************************************************/
 
 
-#ifndef OSL_OSL_H
-# define OSL_OSL_H
+#ifndef OSL_EXTBODY_H
+# define OSL_EXTBODY_H
 
-/* List of reserved OpenScop URIs:
- * - arrays
- * - body
- * - clay
- * - comment
- * - coordinates
- * - dependence
- * - extbody
- * - generic
- * - int
- * - interface
- * - irregular
- * - null
- * - openscop
- * - relation
- * - relation_list
- * - scatnames
- * - scop
- * - statement
- * - strings
- * - symbols
- * - textual
- * - vector
- */
-
-# include <osl/macros.h>
-# include <osl/int.h>
-# include <osl/util.h>
+# include <stdio.h>
 # include <osl/strings.h>
-# include <osl/body.h>
-# include <osl/vector.h>
-# include <osl/relation.h>
-# include <osl/relation_list.h>
 # include <osl/interface.h>
+# include <osl/body.h>
 
-# include <osl/extensions/textual.h>
-# include <osl/extensions/comment.h>
-# include <osl/extensions/null.h>
-# include <osl/extensions/clay.h>
-# include <osl/extensions/scatnames.h>
-# include <osl/extensions/arrays.h>
-# include <osl/extensions/coordinates.h>
-# include <osl/extensions/irregular.h>
-# include <osl/extensions/symbols.h>
-# include <osl/extensions/dependence.h>
-# include <osl/extensions/extbody.h>
-
-# include <osl/generic.h>
-# include <osl/statement.h>
-# include <osl/scop.h>
+# if defined(__cplusplus)
+extern "C"
+  {
+# endif
 
 
-#endif /* define OSL_OSL_H */
+# define OSL_URI_EXTBODY        "extbody"
+
+
+/**
+ * The osl_extbody_t structure stores the coordinates of each access in the
+ * body. osl_extbody is replaced by the simple body.
+ */
+struct osl_extbody {
+  osl_body_p body;
+  int nb_access;   /**< Nb of access. */
+  int * start;     /**< Array of nb_access start. */
+  int * length;    /**< Array of nb_access length. */
+};
+typedef struct osl_extbody   osl_extbody_t;
+typedef struct osl_extbody * osl_extbody_p;
+
+
+/*+***************************************************************************
+ *                          Structure display function                       *
+ *****************************************************************************/
+void                 osl_extbody_idump(FILE *, osl_extbody_p, int);
+void                 osl_extbody_dump(FILE *, osl_extbody_p);
+char *               osl_extbody_sprint(osl_extbody_p);
+
+
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+osl_extbody_p         osl_extbody_sread(char **);
+
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+osl_extbody_p         osl_extbody_malloc();
+void                  osl_extbody_free(osl_extbody_p);
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+osl_extbody_p         osl_extbody_clone(osl_extbody_p);
+int                   osl_extbody_equal(osl_extbody_p,
+                                              osl_extbody_p);
+osl_interface_p       osl_extbody_interface();
+void                  osl_extbody_add(osl_extbody_p, int, int);
+
+# if defined(__cplusplus)
+  }
+# endif
+
+#endif /* define OSL_EXTBODY_H */

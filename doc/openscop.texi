@@ -2446,6 +2446,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Scatnames Extension::
 * Coordinates Extension::
 * Clay Extension::
+* Extbody Extension::
 * Irregular Extension::
 @end menu
 
@@ -2725,6 +2726,80 @@ struct osl_clay @{
 @};
 typedef struct osl_clay  osl_clay_t;
 typedef struct osl_clay* osl_clay_p;
+@end group
+@end example
+
+@c ---------------------------------------------------------------------------
+
+
+@node Extbody Extension
+@subsection Extbody Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{extbody}.
+@item Author: Joel Poudroux <joel.poudroux@@u-psud.fr>.
+@item Purpose: the @code{extbody} extension provides a list of
+coordinates to locate each access easily in the body string.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{extbody} extension file format respects the following
+grammar.  It reuses the @code{Body} description (@pxref{Body Generic})
+
+@example
+Extbody_generic   ::= "<extbody>" Extbody "</extbody>"
+Extbody           ::= Coordinate_number Coordinate_list Body
+Coordinate_list   ::= Access_start Access_length Coordinate_list | (void)
+Coordinate_number ::= _Integer
+Access_start      ::= _Integer
+Access_length     ::= _Integer
+@end example
+
+@noindent This extension can replace the @pxref{Body Generic}.  The number of
+accesses @code{Coordinate_number} must be equal to the number of access relations
+in the statement. Each coordinate is associated with the corresponding access
+relation in the access relation list (the order matters). It is possible that an access has
+two relations in the
+access relation list (when it is in read/write mode). In this case we can replace one
+of the couple of coordinates with a (-1 -1). It is possible to put twice the
+same coordinates, but using (-1 -1) may improve some tool efficiency (e.g., Clay would
+apply twice the same processing otherwise). For each access,
+@code{Access_start} is the index of this acces in the body string (starting from 0),
+and @code{Access_length} is the length of the access text. For instance:
+
+@example
+@group
+<extbody>
+# Number of access
+3
+# Mapping start/length
+ 0  1   # a coordinates (read)
+-1 -1   # a coordinates (write)
+ 6  9   # b coordinates
+# Number of original iterators
+0
+# Statement body expression
+a++ + b[i+1][j];
+</extbody>
+@end group
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{extbody} extension data structure is the following:
+
+@example
+@group
+struct osl_extbody @{
+  osl_body_p body;
+  int nb_access;   /**< Nb of access. */
+  int * start;     /**< Array of nb_access start. */
+  int * length;    /**< Array of nb_access length. */
+@};
+typedef struct osl_extbody  osl_extbody_t;
+typedef struct osl_extbody* osl_extbody_p;
 @end group
 @end example
 

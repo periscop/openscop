@@ -91,6 +91,7 @@ osl_test_SOURCES  = \
 	test_empty_statement.scop \
 	test_just_access.scop \
 	test_just_body.scop \
+	test_just_extbody.scop \
 	test_just_domain.scop \
 	test_just_scattering.scop \
 	test_coordinates.scop \
