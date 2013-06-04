@@ -2447,6 +2447,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Coordinates Extension::
 * Clay Extension::
 * Extbody Extension::
+* Loop Extension::
 * Irregular Extension::
 @end menu
 
@@ -2800,6 +2801,98 @@ struct osl_extbody @{
 @};
 typedef struct osl_extbody  osl_extbody_t;
 typedef struct osl_extbody* osl_extbody_p;
+@end group
+@end example
+
+
+@c ---------------------------------------------------------------------------
+
+
+@node Loop Extension
+@subsection Loop Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{loop}.
+@item Author: Taj Muhammad Khan <taj.khan@@inria.fr>.
+@item Purpose: the @code{loop} extension provides  a means to transfer 
+information about loops in a the original code in the SCoP: number of loops in the SCoP,
+for each loop: the iterator name, number of statements, statement identifiers,
+names of private variables, an identifier for OpenMP pragma directive.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{coordinates} extension file format respects the following
+grammar:
+@example
+Loop_generic            ::= "<loop>" Num_loops Loop_list "</loop>"
+Num_loops               ::= _Integer
+Loop_list               ::= Loop Loop_list | (void) 
+Loop                    ::= Iterator_name Nb_stmts Stmt_list 
+		    Private_variables Directive
+Iterator_name           ::= _String
+Nb_stmts                ::= _Integer
+Stmt_list               ::= Stmt_id Stmt_list | (void)
+Stmt_id                 ::= _Integer
+Private_variables       ::= _String
+Directive               ::= _Integer
+@end example
+
+
+@noindent With in the tags, the number of loops is provided on the first line. Next comes a series of @code{loop} structures. Within each @code{loop}, the first line contains the name if the iterator, next comes the number of statements in the loop followed by their identifiers separated by spaces. Next is the names of the private variables and in the end is the OpenMP pragma directive.
+For instance, the following example is a correct textual
+@code{loop} extension containing two loops:
+
+@example
+@group
+<loop>
+# Number of loops
+2
+# ===========================================
+# Loop number 1 
+# Iterator name
+t2
+# Number of stmts
+1
+# Statement identifiers
+1
+# Private variables
+lbv,ubv
+# Directive
+1
+# ===========================================
+# Loop number 2 
+# Iterator name
+t2
+# Number of stmts
+1
+# Statement identifiers
+2
+# Private variables
+lbv,ubv
+# Directive
+1
+</loop>
+@end group
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{loop} extension data structure is the following:
+
+@example
+@group
+struct osl_loop @{
+  char * iter;             /* \0 terminated iterator name */
+  int  nb_stmts;           /* Number of statements in the loop */
+  int  *  stmt_ids;        /* Array of statement identifiers. */
+  char * private_vars;     /* \0 terminated variable names */
+  int  directive;          /* the OpenMP directive to implement */
+  struct osl_loop * next;  /* pointer to the next element */
+@};
+typedef struct osl_loop   osl_loop_t;
+typedef struct osl_loop * osl_loop_p;
 @end group
 @end example
 
