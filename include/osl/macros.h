@@ -7,7 +7,7 @@
      **                   First version: 30/04/2008                     **
      **-----------------------------------------------------------------**
 
- 
+
  *****************************************************************************
  * OpenScop: Structures and formats for polyhedral tools to talk together    *
  *****************************************************************************
@@ -116,6 +116,8 @@
 # define OSL_STRING_READ           "READ"
 # define OSL_STRING_WRITE          "WRITE"
 # define OSL_STRING_MAY_WRITE      "MAY_WRITE"
+
+# define OSL_STRING_NULL           "(null)"
 
 /*+***************************************************************************
  *                               UTILITY MACROS                              *

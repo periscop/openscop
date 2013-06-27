@@ -2447,6 +2447,9 @@ particular, the sender fully accepts the license and copyright notice.
 * Coordinates Extension::
 * Clay Extension::
 * Extbody Extension::
+* Loop Extension::
+* Cloogoptions Extension::
+>>>>>>> bbe8f48... cloogoptions extension
 * Irregular Extension::
 @end menu
 
@@ -2801,6 +2804,308 @@ struct osl_extbody @{
 typedef struct osl_extbody  osl_extbody_t;
 typedef struct osl_extbody* osl_extbody_p;
 @end group
+@end example
+
+
+@c ---------------------------------------------------------------------------
+
+
+@node Loop Extension
+@subsection Loop Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{loop}.
+@item Author: Taj Muhammad Khan <taj.khan@@inria.fr>.
+@item Purpose: the @code{loop} extension provides a means to transfer 
+information about loops in the original code. It starts with the number of loops
+in the SCoP.
+For each loop it records: the iterator name, the number of statements, the statement
+identifiers, the names of private variables,
+and an identifier for OpenMP pragma directive.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{coordinates} extension file format respects the following
+grammar:
+@example
+Loop_generic            ::= "<loop>" Num_loops Loop_list "</loop>"
+Num_loops               ::= _Integer
+Loop_list               ::= Loop Loop_list | (void) 
+Loop                    ::= Iterator_name Nb_stmts Stmt_list 
+		                        Private_variables Directive
+Iterator_name           ::= _String
+Nb_stmts                ::= _Integer
+Stmt_list               ::= Stmt_id Stmt_list | (void)
+Stmt_id                 ::= _Integer
+Private_variables       ::= _String
+Directive               ::= _Integer
+@end example
+
+
+@noindent With in the tags, the number of loops is provided on the first line.
+Next comes a series of @code{loop} structures. Within each @code{loop},
+the first line contains the name of the iterator, next comes the number of
+statements in the loop followed by their identifiers separated by spaces.
+Next line contains the names of the private variables and in the end is the OpenMP
+pragma directive. In case there are no private variables to be declared for a
+loop, the special string "(null)" should replace their declaration as shown
+below.
+
+For instance, the following example is a correct textual
+@code{loop} extension containing two loops:
+
+@example
+@group
+<loop>
+# Number of loops
+2
+# ===========================================
+# Loop number 1 
+# Iterator name
+t2
+# Number of stmts
+1
+# Statement identifiers
+1
+# Private variables
+lbv,ubv
+# Directive
+1
+# ===========================================
+# Loop number 2 
+# Iterator name
+t2
+# Number of stmts
+1
+# Statement identifiers
+2
+# Private variables
+(null)
+# Directive
+1
+</loop>
+@end group
+@end example
+
+@noindent The pragma directive can have one of the defined values: 
+@code{OSL_LOOP_DIRECTIVE_NONE}, @code{OSL_LOOP_DIRECTIVE_PARALLEL},
+@code{OSL_LOOP_DIRECTIVE_MPI}, or @code{OSL_LOOP_DIRECTIVE_VECTOR}.
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{loop} extension data structure is the following:
+
+@example
+@group
+struct osl_loop @{
+  char * iter;             /* \0 terminated iterator name */
+  int  nb_stmts;           /* Number of statements in the loop */
+  int  *  stmt_ids;        /* Array of statement identifiers. */
+  char * private_vars;     /* \0 terminated variable names */
+  int  directive;          /* the OpenMP directive to implement */
+  struct osl_loop * next;  /* pointer to the next element */
+@};
+typedef struct osl_loop   osl_loop_t;
+typedef struct osl_loop * osl_loop_p;
+@end group
+@end example
+
+
+
+@node Cloogoptions Extension
+@subsection Cloogoptions Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{cloogoptions}.
+@item Author: Taj Muhammad Khan <taj.khan@@inria.fr>.
+@item Purpose: the @code{cloogoptions} extension provides a mean to pass
+options to CLooG for each SCoP. It is a way to control CLooG's code generation
+options at SCoP level.
+@end itemize
+
+@noindent The @code{cloogoptions} extension file format respects the following
+grammar.
+
+@example
+Cloogoptions_generic  ::= "<cloogoptions>" Cloogoptions "</cloogoptions>"
+Cloogoptions          ::= l f fs_ls_size ls_list fs_list stop strides sh
+                          first_unroll esp fsp otl block compilable callable
+                          language save_domains name openscop quiet leaks
+                          backtrack override structure noblocks noscalars
+                          nosimplify
+l                     ::= _Integer
+f                     ::= _Integer
+fs_ls_size            ::= _Integer
+fs_list               ::= _Integer fs_list | (void)
+ls_list               ::= _Integer ls_list | (void)
+stop                  ::= _Integer
+strides               ::= _Integer
+sh                    ::= _Integer
+first_unroll          ::= _Integer
+esp                   ::= _Integer
+fsp                   ::= _Integer
+otl                   ::= _Integer
+block                 ::= _Integer
+compilable            ::= _Integer
+callable              ::= _Integer
+language              ::= _Integer
+save_domains          ::= _Integer
+name                  ::= _String
+openscop              ::= _Integer
+quiet                 ::= _Integer
+leaks                 ::= _Integer
+backtrack             ::= _Integer
+override              ::= _Integer
+structure             ::= _Integer
+noblocks              ::= _Integer
+noscalars             ::= _Integer
+nosimplify            ::= _Integer
+@end example
+
+@noindent This extension can be used to pass options to CLooG. It contains most of
+the options contained in the @code{CloogOptions} structure present in CLooG.
+@noindent  Further explanation can be sought in comments in the data structure
+further below.
+
+@noindent Following is an example of a correct @code{CloogOptions} description printed in
+a SCoP file:
+
+@example
+<cloogoptions>
+# Last level to optimize
+-1
+# First level to optimize
+1
+# size of fs and ls arrays
+0
+# Last level to optimize (statement wise)
+# First level to optimize (statement wise)
+# Level to stop code generation
+-1
+# Handle non-unit strides
+0
+# Compute simple hulls
+0
+# First dimension to unroll
+-1
+# Spread equalities
+1
+# Level to start spreading equalities
+1
+# Eliminate one time loops
+1
+# Make block per dimension
+0
+# Generate compilable code
+0
+# Generate callable code
+0
+# Language: 1 Fortran, 0 C
+0
+# Save copy of domain
+0
+# File name
+NULL
+# Input has openscop format
+0
+# Quiet
+0
+# Check for memory leaks
+0
+# Backtracking in QW algorithm
+0
+# Bypass cloog correctness
+0
+# Print structure
+0
+# Dont make blocks
+0
+# Dont use scalar dims
+0
+# Dont simplify polyhedra
+0
+</cloogoptions>
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{cloogoptions} extension data structure is the following:
+
+@example
+struct osl_cloogoptions
+@{
+  int l ;           /* Last level to optimize. */
+  int f ;           /* First level to optimize. */
+  int *ls;          /* Last level to optimize (statement-wise). */
+  int *fs;          /* First level to optimize (statement-wise). */
+  int fs_ls_size;   /* Size of the fs and ls arrays (same size) */
+  int stop ;        /* Level to stop code generation. */
+  int strides ;     /* 1 if user wants to handle non-unit strides (then loop
+                     * increment can be something else than one),
+                     * 0 otherwise.
+                     */
+  int sh;	          /* 1 for computing simple hulls */
+  int first_unroll; /* The first dimension to unroll */
+  int esp ;         /* 1 if user wants to spread all equalities, i.e. when
+                     * there is something like "i = 3*j + 1 ; A[i] = 0 ;"
+                     * the generator will write "A[3*j + 1] = 0 ;",
+                     * 0 otherwise.
+                     */
+  int fsp ;         /* The iteration level where equalities spreading can
+                     * begin (it might happen that the user wants not to
+                     * spread values of scattering iterators).
+                     */
+  int otl ;         /* 1 for eliminate loops running just one time and write
+                     * them as an affectation of the iterator, 0 otherwise.
+                     */
+  int block ;       /* 1 to make one new block @{...@} per new dimension,
+                     * 0 otherwise.
+                     */
+  int compilable;   /* 1 to generate a compilable code by using
+                     * preprocessing, 0 otherwise.
+                     */
+  int callable;     /* 1 to generate callable code by using
+                     * preprocessing, 0 otherwise.
+                     */
+  int language;     /* 1 to generate FORTRAN, 0 for C otherwise. */
+
+  int save_domains; /* Save unsimplified copy of domain. */
+  char * name ;     /* Name of the input file. */
+  float time ;      /* Time spent for code generation in seconds. */
+  int openscop;     /* 1 if the input file has OpenScop format,
+                     * 0 otherwise.
+                     */
+  struct osl_scop *scop; /* Input OpenScop scop if any, NULL otherwise. */
+
+  int quiet;        /* Don't print any informational messages. */
+  int leaks ;       /* 1 if I want to print the allocation statistics,
+                     * 0 otherwise.
+                     */
+  int backtrack;    /* 1 to perform backtracking in
+                     * Quillere's algorithm, 0 otherwise.
+                     */
+  int override ;    /* 1 if I want to bypass CLooG decisions on option
+                     * correctness (generated code may be incorrect),
+                     * 0 otherwise.
+                     */
+  int structure ;   /* 1 if I want to print the CloogProgram structure
+                     * before the pretty printed code, 0 otherwise.
+                     */
+  int noblocks ;    /* 1 if I don't want to make statement blocks,
+                     * 0 otherwise.
+                     */
+  int noscalars ;   /* 1 if I don't want to use scalar dimensions,
+                     * 0 otherwise.
+                     */
+  int nosimplify;   /* 1 if I don't want to simplify polyhedra,
+                     * 0 otherwise.
+                     */
+@} ;
+typedef struct osl_cloogoptions osl_cloogoptions_t;
+typedef struct osl_cloogoptions * osl_cloogoptions_p;
 @end example
 
 
