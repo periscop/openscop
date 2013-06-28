@@ -285,7 +285,7 @@ osl_loop_p osl_loop_sread(char **input) {
       loop->stmt_ids[i] = osl_util_read_int(NULL, input);
   
     loop->private_vars = osl_util_read_line(NULL, input);
-    if (!strcmp(loop->private_vars, "(null)")) {
+    if (!strcmp(loop->private_vars, OSL_STRING_NULL)) {
       free(loop->private_vars);
       loop->private_vars=NULL;
     }
