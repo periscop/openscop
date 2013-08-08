@@ -19,7 +19,7 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	endif()
 
 # User's settings - General C Flags
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -std=c99")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -std=c99 -pedantic")
 
 
 # Build doxygen
@@ -137,7 +137,6 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	install(TARGETS osl LIBRARY DESTINATION lib)
 	install(TARGETS osl_static ARCHIVE DESTINATION lib)
 	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
-	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.hpp")
 	install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/" DESTINATION include FILES_MATCHING PATTERN "*.h")
 	install(FILES osl-config.cmake DESTINATION lib/osl)
 
@@ -152,10 +151,10 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 	message(STATUS "                 #     sudo make install")
 	message(STATUS "                 #     su -c \"make install\"")
 	if(DOXYGEN_FOUND)
-		message(STATUS "    make doxygen  # To generate the Doxygen")
+		message(STATUS "    make doxygen # To generate the Doxygen")
 	endif()
 	if(texi2pdf_exe)
-		message(STATUS "    make doc      # To generate the documentation")
+		message(STATUS "    make doc     # To generate the documentation")
 	endif()
 
 	message(STATUS "---")
