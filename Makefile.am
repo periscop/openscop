@@ -7,7 +7,7 @@
 #    **                   First version: 30/04/2008                      **
 #    **------------------------------------------------------------------**
 #
-#   
+#
 # ***************************************************************************
 # * OpenScop: Structures and formats for polyhedral tools to talk together  *
 # ***************************************************************************
@@ -105,6 +105,7 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/arrays.h \
 	include/osl/extensions/coordinates.h \
 	include/osl/extensions/irregular.h  \
+	include/osl/extensions/cloogoptions.h  \
 	include/osl/extensions/symbols.h \
 	include/osl/extensions/loop.h  \
 	include/osl/extensions/extbody.h
@@ -128,6 +129,7 @@ libosl_la_SOURCES = \
 	source/extensions/arrays.c \
 	source/extensions/coordinates.c \
 	source/extensions/irregular.c \
+	source/extensions/cloogoptions.c \
 	source/extensions/symbols.c \
 	source/extensions/extbody.c \
 	source/extensions/loop.c \
