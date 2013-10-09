@@ -513,6 +513,8 @@ void osl_cloogoptions_free(osl_cloogoptions_p options){
     free(options->fs);
   if (options->ls)
     free(options->ls);
+  if (options->name)
+    free(options->name);
 
   free(options);
 }
