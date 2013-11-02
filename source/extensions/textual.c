@@ -100,7 +100,7 @@ void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
     fprintf(file, "+-- osl_textual_t: ");
     
     // Display the textual message (without any carriage return).
-    tmp = strdup(textual->textual);
+    OSL_strdup(tmp, textual->textual);
     for (j = 0; j < strlen(tmp); j++)
       if (tmp[j] == '\n')
 	tmp[j] = ' ';
@@ -321,7 +321,7 @@ int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
 osl_interface_p osl_textual_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_TEXTUAL);
+  OSL_strdup(interface->URI, OSL_URI_TEXTUAL);
   interface->idump  = (osl_idump_f)osl_textual_idump;
   interface->sprint = (osl_sprint_f)osl_textual_sprint;
   interface->sread  = (osl_sread_f)osl_textual_sread;

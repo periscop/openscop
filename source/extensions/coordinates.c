@@ -356,7 +356,7 @@ int osl_coordinates_equal(osl_coordinates_p c1, osl_coordinates_p c2) {
 osl_interface_p osl_coordinates_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_COORDINATES);
+  OSL_strdup(interface->URI, OSL_URI_COORDINATES);
   interface->idump  = (osl_idump_f)osl_coordinates_idump;
   interface->sprint = (osl_sprint_f)osl_coordinates_sprint;
   interface->sread  = (osl_sread_f)osl_coordinates_sread;

@@ -547,7 +547,7 @@ int osl_loop_equal(osl_loop_p a1, osl_loop_p a2) {
 osl_interface_p osl_loop_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_LOOP);
+  OSL_strdup(interface->URI, OSL_URI_LOOP);
   interface->idump  = (osl_idump_f)osl_loop_idump;
   interface->sprint = (osl_sprint_f)osl_loop_sprint;
   interface->sread  = (osl_sread_f)osl_loop_sread;

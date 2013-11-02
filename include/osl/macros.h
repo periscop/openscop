@@ -64,6 +64,9 @@
 #ifndef OSL_MACROS_H
 # define OSL_MACROS_H
 
+# include "util.h"
+
+
 # define OSL_DEBUG                 0       // 1 for debug mode, 0 otherwise.
 
 # define OSL_URI_SCOP              "OpenScop"
@@ -164,7 +167,7 @@
 # define OSL_strdup(destination, source)                                   \
          do {                                                              \
            if (source != NULL) {                                           \
-             if (((destination) = strdup(source)) == NULL)                 \
+             if (((destination) = osl_util_strdup(source)) == NULL)                 \
                OSL_error("memory overflow");                               \
            }                                                               \
            else {                                                          \

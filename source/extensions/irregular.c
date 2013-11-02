@@ -290,9 +290,9 @@ osl_irregular_p osl_irregular_sread(char ** extensions_fixme) {
     
     // Get iterators
     for(j = 0; j < irregular->nb_iterators[i]; j++)
-      irregular->iterators[i][j] = strdup(strtok(NULL, " \n"));
+      OSL_strdup(irregular->iterators[i][j], strtok(NULL, " \n"));
     // Get predicat string
-    irregular->body[i] = strdup(strtok(NULL, "\n"));
+    OSL_strdup(irregular->body[i], strtok(NULL, "\n"));
   }
   
   return irregular;
@@ -443,8 +443,8 @@ osl_irregular_p osl_irregular_clone(osl_irregular_p irregular) {
       exit(1);
     }
     for(j=0;j<copy->nb_iterators[i];j++)
-      copy->iterators[i][j] = strdup(irregular->iterators[i][j]);
-    copy->body[i] = strdup(irregular->body[i]);
+      OSL_strdup(copy->iterators[i][j], irregular->iterators[i][j]);
+    OSL_strdup(copy->iterators[i][j], irregular->body[i]);
   }
 
   return copy;
@@ -528,7 +528,7 @@ osl_irregular_p osl_irregular_add_control(
   for(i=0; i<irregular->nb_control; i++)
   {
     result->nb_iterators[i] = irregular->nb_iterators[i];
-    result->body[i] = strdup(irregular->body[i]); 
+    OSL_strdup(result->body[i], irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
     if (result->iterators[i] == NULL)
@@ -537,7 +537,7 @@ osl_irregular_p osl_irregular_add_control(
       exit(1);
     }
     for(j=0; j<irregular->nb_iterators[i];j++)
-      result->iterators[i][j] = strdup(irregular->iterators[i][j]);
+      OSL_strdup(result->iterators[i][j], irregular->iterators[i][j]);
   }
   //add controls
   result->iterators[irregular->nb_control] = (char**)malloc(sizeof(char*)*nb_iterators);
@@ -547,14 +547,14 @@ osl_irregular_p osl_irregular_add_control(
     exit(1);
   }
   for(i=0; i<nb_iterators; i++)
-    result->iterators[irregular->nb_control][i] = strdup(iterators[i]);
+    OSL_strdup(result->iterators[irregular->nb_control][i], iterators[i]);
   result->nb_iterators[irregular->nb_control] = nb_iterators;
-  result->body[irregular->nb_control] = strdup(body);
+  OSL_strdup(result->body[irregular->nb_control], body);
   //copy exits
   for(i=result->nb_control; i<nb_predicates; i++)
   {
     result->nb_iterators[i] = irregular->nb_iterators[i-1];
-    result->body[i] = strdup(irregular->body[i-1]); 
+    OSL_strdup(result->body[i], irregular->body[i-1]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i-1]);
     if (result->iterators[i] == NULL)
@@ -563,7 +563,7 @@ osl_irregular_p osl_irregular_add_control(
       exit(1);
     }
     for(j=0; j<irregular->nb_iterators[i-1];j++)
-      result->iterators[i][j] = strdup(irregular->iterators[i-1][j]);
+      OSL_strdup(result->iterators[i][j], irregular->iterators[i-1][j]);
   }
   // copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*irregular->nb_statements);
@@ -617,7 +617,7 @@ osl_irregular_p osl_irregular_add_exit(
   for(i=0; i<nb_predicates - 1; i++)
   {
     result->nb_iterators[i] = irregular->nb_iterators[i];
-    result->body[i] = strdup(irregular->body[i]); 
+    OSL_strdup(result->body[i], irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
     if (result->iterators[i] == NULL)
@@ -626,7 +626,7 @@ osl_irregular_p osl_irregular_add_exit(
       exit(1);
     }
     for(j=0; j<irregular->nb_iterators[i];j++)
-      result->iterators[i][j] = strdup(irregular->iterators[i][j]);
+      OSL_strdup(result->iterators[i][j], irregular->iterators[i][j]);
   }
   //add exit
   result->iterators[nb_predicates-1] = (char**)malloc(sizeof(char*)*nb_iterators);
@@ -637,9 +637,9 @@ osl_irregular_p osl_irregular_add_exit(
   }
 
   for(i=0; i<nb_iterators; i++)
-    result->iterators[nb_predicates-1][i] = strdup(iterators[i]);
+    OSL_strdup(result->iterators[nb_predicates-1][i], iterators[i]);
   result->nb_iterators[nb_predicates-1] = nb_iterators;
-  result->body[nb_predicates-1] = strdup(body);
+  OSL_strdup(result->body[nb_predicates-1], body);
   // copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*irregular->nb_statements);
   result->predicates = (int**)malloc(sizeof(int*)*irregular->nb_statements);
@@ -691,7 +691,7 @@ osl_irregular_p osl_irregular_add_predicates(
   for(i=0; i<nb_predicates; i++)
   {
     result->nb_iterators[i] = irregular->nb_iterators[i];
-    result->body[i] = strdup(irregular->body[i]); 
+    OSL_strdup(result->body[i], irregular->body[i]); 
     result->iterators[i] = (char**)malloc(sizeof(char*)  *  
                                           irregular->nb_iterators[i]);
     if (result->iterators[i] == NULL)
@@ -700,7 +700,7 @@ osl_irregular_p osl_irregular_add_predicates(
       exit(1);
     }
     for(j=0; j<irregular->nb_iterators[i];j++)
-      result->iterators[i][j] = strdup(irregular->iterators[i][j]);
+      OSL_strdup(result->iterators[i][j], irregular->iterators[i][j]);
   }
   //copy statements
   result->nb_predicates = (int*)malloc(sizeof(int)*result->nb_statements);
@@ -749,7 +749,7 @@ osl_irregular_p osl_irregular_add_predicates(
 osl_interface_p osl_irregular_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_IRREGULAR);
+  OSL_strdup(interface->URI, OSL_URI_IRREGULAR);
   interface->idump  = (osl_idump_f)osl_irregular_idump;
   interface->sprint = (osl_sprint_f)osl_irregular_sprint;
   interface->sread  = (osl_sread_f)osl_irregular_sread;

@@ -641,7 +641,7 @@ int osl_nb_dependences(osl_dependence_p deps) {
 osl_interface_p osl_dependence_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_DEPENDENCE);
+  OSL_strdup(interface->URI, OSL_URI_DEPENDENCE);
   interface->idump  = (osl_idump_f)osl_dependence_idump;
   interface->sprint = (osl_sprint_f)osl_dependence_sprint;
   interface->sread  = (osl_sread_f)osl_dependence_sread;

@@ -462,7 +462,7 @@ osl_scop_p osl_scop_pread(FILE * file, osl_interface_p registry,
       OSL_warning("uninterpreted information (after language)");
 
     if (language != NULL) {
-      scop->language = strdup(language->string[0]);
+      OSL_strdup(scop->language, language->string[0]);
       osl_strings_free(language);
     }
 
@@ -641,7 +641,7 @@ osl_scop_p osl_scop_clone(osl_scop_p scop) {
     node                 = osl_scop_malloc();
     node->version        = scop->version;
     if (scop->language != NULL)
-      node->language     = strdup(scop->language);
+      OSL_strdup(node->language, scop->language);
     node->context        = osl_relation_clone(scop->context);
     node->parameters     = osl_generic_clone(scop->parameters);
     node->statement      = osl_statement_clone(scop->statement);

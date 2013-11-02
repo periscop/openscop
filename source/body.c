@@ -392,7 +392,7 @@ int osl_body_equal(osl_body_p b1, osl_body_p b2) {
 osl_interface_p osl_body_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_BODY);
+  OSL_strdup(interface->URI, OSL_URI_BODY);
   interface->idump  = (osl_idump_f)osl_body_idump;
   interface->sprint = (osl_sprint_f)osl_body_sprint;
   interface->sread  = (osl_sread_f)osl_body_sread;

@@ -492,6 +492,24 @@ void osl_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
 
 /**
+ * \brief String duplicate
+ * 
+ * osl_util_strdup function:
+ * this function return a copy of the string str.
+ * 
+ * \param[in] str string to be copied.
+ * 
+ * \return a copy of the string
+ */
+char * osl_util_strdup(char const * str) {
+  char * dup = NULL;
+  OSL_malloc(dup, char *, (strlen(str) + 1) * sizeof(char));
+  if (dup) { strcpy(dup, str); }
+  return dup;
+}
+
+
+/**
  * osl_util_get_precision function:
  * this function returns the precision defined by the precision environment
  * variable or the highest available precision if it is not defined.

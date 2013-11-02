@@ -104,7 +104,7 @@ void osl_clay_idump(FILE * file, osl_clay_p clay, int level) {
       fprintf(file, "|\t");
   
     // Display the clay script (without any carriage return).
-    tmp = strdup(clay->script);
+    OSL_strdup(tmp, clay->script);
     for (j = 0; j < strlen(tmp); j++)
       if (tmp[j] == '\n')
 	tmp[j] = ' ';
@@ -301,7 +301,7 @@ int osl_clay_equal(osl_clay_p c1, osl_clay_p c2) {
 osl_interface_p osl_clay_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_CLAY);
+  OSL_strdup(interface->URI, OSL_URI_CLAY);
   interface->idump  = (osl_idump_f)osl_clay_idump;
   interface->sprint = (osl_sprint_f)osl_clay_sprint;
   interface->sread  = (osl_sread_f)osl_clay_sread;

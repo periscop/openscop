@@ -828,7 +828,7 @@ char * osl_relation_spprint_polylib(osl_relation_p relation,
   char * comment;
 
   if (relation == NULL)
-    return strdup("# NULL relation\n");
+    return osl_util_strdup("# NULL relation\n");
 
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -936,7 +936,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
   char * comment;
 
   if (relation == NULL)
-    return strdup("# NULL relation\n");
+    return osl_util_strdup("# NULL relation\n");
 
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -2970,7 +2970,7 @@ osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
 osl_interface_p osl_relation_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_RELATION);
+  OSL_strdup(interface->URI, OSL_URI_RELATION);
   interface->idump  = (osl_idump_f)osl_relation_idump;
   interface->sprint = (osl_sprint_f)osl_relation_sprint;
   interface->sread  = (osl_sread_f)osl_relation_sread;

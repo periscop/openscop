@@ -551,7 +551,7 @@ int osl_symbols_get_nb_symbols(osl_symbols_p symbols) {
 osl_interface_p osl_symbols_interface() {
   osl_interface_p interface = osl_interface_malloc();
 
-  interface->URI    = strdup(OSL_URI_SYMBOLS);
+  OSL_strdup(interface->URI, OSL_URI_SYMBOLS);
   interface->idump  = (osl_idump_f)osl_symbols_idump;
   interface->sprint = (osl_sprint_f)osl_symbols_sprint;
   interface->sread  = (osl_sread_f)osl_symbols_sread;

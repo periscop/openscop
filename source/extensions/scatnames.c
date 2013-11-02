@@ -269,7 +269,7 @@ int osl_scatnames_equal(osl_scatnames_p s1, osl_scatnames_p s2) {
 osl_interface_p osl_scatnames_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_SCATNAMES);
+  OSL_strdup(interface->URI, OSL_URI_SCATNAMES);
   interface->idump  = (osl_idump_f)osl_scatnames_idump;
   interface->sprint = (osl_sprint_f)osl_scatnames_sprint;
   interface->sread  = (osl_sread_f)osl_scatnames_sread;
