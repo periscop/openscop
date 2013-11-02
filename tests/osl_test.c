@@ -92,13 +92,9 @@
  * \return 1 if the test is successful, 0 otherwise.
  */
 int test_file(char * input_name, int verbose) {
-  int success = 0;
-  int failure = 0;
   int cloning = 0;
   int dumping = 0;
   int equal   = 0;
-  int output_desc;
-  char output_name[] = "/tmp/osl_test_XXXXXX";
   FILE * input_file, * output_file;
   osl_scop_p input_scop;
   osl_scop_p output_scop;
@@ -122,27 +118,24 @@ int test_file(char * input_name, int verbose) {
   // PART II. Clone and test.
   cloned_scop = osl_scop_clone(input_scop);
   // Compare the two scops.
-  if (cloning = osl_scop_equal(input_scop, cloned_scop))
+  if ((cloning = osl_scop_equal(input_scop, cloned_scop)))
     printf("- cloning succeeded\n");
   else
     printf("- cloning failed\n");
 
   // PART III. Dump to file and test.
-  output_desc = mkstemp(output_name);
-  if ((output_file = fdopen(output_desc, "w")) == NULL)
+  output_file = tmpfile();
+  if (output_file == NULL)
     OSL_error("cannot open temporary output file for writing");
   //osl_scop_dump(stdout, input_scop);
   //osl_scop_print(stdout, input_scop);
   osl_scop_print(output_file, input_scop);
-  fclose(output_file);
   
   // Raise the generated file to data structures.
-  if ((output_file = fopen(output_name, "r")) == NULL)
-    OSL_error("cannot open temporary output file for reading");
+  rewind(output_file);
   output_scop = osl_scop_read(output_file);
   //osl_scop_dump(stdout, output_scop);
   fclose(output_file);
-  close(output_desc);
 
   if (verbose) {
     printf("\n\n*************************************************\n\n");
@@ -152,13 +145,13 @@ int test_file(char * input_name, int verbose) {
   }
 
   // Compare the two scops.
-  if (dumping = osl_scop_equal(input_scop, output_scop))
+  if ((dumping = osl_scop_equal(input_scop, output_scop)))
     printf("- dumping succeeded\n");
   else
     printf("- dumping failed\n");
 
   // PART IV. Report.
-  if (equal = (cloning + dumping > 1) ? 1 : 0)
+  if ((equal = (cloning + dumping > 1) ? 1 : 0))
     printf("Success :-)\n");
   else
     printf("Failure :-(\n");
@@ -167,7 +160,6 @@ int test_file(char * input_name, int verbose) {
   osl_scop_free(input_scop);
   osl_scop_free(cloned_scop);
   osl_scop_free(output_scop);
-  remove(output_name);
 
   return equal;
 }
