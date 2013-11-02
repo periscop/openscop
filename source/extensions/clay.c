@@ -87,6 +87,7 @@
  */
 void osl_clay_idump(FILE * file, osl_clay_p clay, int level) {
   int j;
+  size_t l;
   char * tmp;
 
   // Go to the right level.
@@ -105,9 +106,9 @@ void osl_clay_idump(FILE * file, osl_clay_p clay, int level) {
   
     // Display the clay script (without any carriage return).
     OSL_strdup(tmp, clay->script);
-    for (j = 0; j < strlen(tmp); j++)
-      if (tmp[j] == '\n')
-	tmp[j] = ' ';
+    for (l = 0; l < strlen(tmp); l++)
+      if (tmp[l] == '\n')
+	tmp[l] = ' ';
     fprintf(file, "script: %s\n", tmp);
     free(tmp);
   }

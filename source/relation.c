@@ -638,7 +638,7 @@ char * osl_relation_column_string(osl_relation_p relation, char ** strings) {
   i = 0;
   while (strings[i] != NULL) {
     space  = OSL_FMT_LENGTH;
-    length = (space > strlen(strings[i])) ? strlen(strings[i]) : space;
+    length = (space > (int)strlen(strings[i])) ? (int)strlen(strings[i]) : space;
     right  = (space - length + (OSL_FMT_LENGTH % 2)) / 2;
     left   = space - length - right;
 
@@ -651,7 +651,7 @@ char * osl_relation_column_string(osl_relation_p relation, char ** strings) {
       sprintf(temp, "%c", strings[i][j]);
       strcat(scolumn, temp);
     }
-    if (length >= strlen(strings[i]))
+    if (length >= (int)strlen(strings[i]))
       sprintf(temp, "%c", strings[i][j]);
     else 
       sprintf(temp, ".");
@@ -720,7 +720,7 @@ char * osl_relation_column_string_scoplib(osl_relation_p relation,
         (relation->type == OSL_TYPE_DOMAIN && i <= index_output_dims) ||
         i >= index_parameters) {
       space  = OSL_FMT_LENGTH;
-      length = (space > strlen(strings[i])) ? strlen(strings[i]) : space;
+      length = (space > (int)strlen(strings[i])) ? (int)strlen(strings[i]) : space;
       right  = (space - length + (OSL_FMT_LENGTH % 2)) / 2;
       left   = space - length - right;
 
@@ -733,7 +733,7 @@ char * osl_relation_column_string_scoplib(osl_relation_p relation,
         sprintf(temp, "%c", strings[i][j]);
         strcat(scolumn, temp);
       }
-      if (length >= strlen(strings[i]))
+      if (length >= (int)strlen(strings[i]))
         sprintf(temp, "%c", strings[i][j]);
       else 
         sprintf(temp, ".");

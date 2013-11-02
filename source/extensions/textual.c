@@ -101,7 +101,7 @@ void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
     
     // Display the textual message (without any carriage return).
     OSL_strdup(tmp, textual->textual);
-    for (j = 0; j < strlen(tmp); j++)
+    for (j = 0; j < (int)strlen(tmp); j++)
       if (tmp[j] == '\n')
 	tmp[j] = ' ';
 
@@ -109,7 +109,7 @@ void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
       for (j = 0; j < 20; j++)
         fprintf(file, "%c", tmp[j]);
       fprintf(file, "   ...   ");
-      for (j = strlen(tmp) - 20; j < strlen(tmp); j++)
+      for (j = (int)strlen(tmp) - 20; j < (int)strlen(tmp); j++)
         fprintf(file, "%c", tmp[j]);
       fprintf(file, "\n");
     }
