@@ -190,7 +190,6 @@ void osl_scop_dump(FILE * file, osl_scop_p scop) {
  * \param[in] scop The scop (list) we have to generate names for.
  * \return A set of generated names for the input scop dimensions.
  */
-static
 osl_names_p osl_scop_names(osl_scop_p scop) {
   int nb_parameters = OSL_UNDEFINED;
   int nb_iterators  = OSL_UNDEFINED;

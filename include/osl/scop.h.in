@@ -150,6 +150,7 @@ void       osl_scop_get_attributes(osl_scop_p,
                                    int *, int *, int *, int *, int *);
 void       osl_scop_normalize_scattering(osl_scop_p);
 
+osl_names_p osl_scop_names(osl_scop_p scop);
 
 # if defined(__cplusplus)
   }
