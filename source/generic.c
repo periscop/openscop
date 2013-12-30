@@ -408,19 +408,21 @@ void osl_generic_add(osl_generic_p * list, osl_generic_p generic) {
  */
 void osl_generic_remove_node(osl_generic_p * list, osl_generic_p generic) {
 
-  osl_generic_p tmp = *list;
+  osl_generic_p tmp = NULL;
   
   if (generic != NULL) {
 
     if (*list != NULL) {
       //target is the first element of list
-      if(tmp==generic){
+      if(*list==generic){
         *list = generic->next;
         generic->next=NULL; //free below removes the whole list!
         osl_generic_free(generic); 
+        return;
       }
 
       //find target
+      tmp = *list;
       while (tmp->next!=generic && tmp->next != NULL)
         tmp = tmp->next;
 
