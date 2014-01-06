@@ -81,8 +81,12 @@ extern "C"
 struct osl_strings {
   char ** string; /**< NULL-terminated array of character strings */
 };
-typedef struct osl_strings   osl_strings_t;
-typedef struct osl_strings * osl_strings_p;
+typedef struct osl_strings               osl_strings_t;
+typedef struct osl_strings       *       osl_strings_p;
+typedef struct osl_strings const         osl_const_strings_t;
+typedef struct osl_strings       * const osl_strings_const_p;
+typedef struct osl_strings const *       osl_const_strings_p;
+typedef struct osl_strings const * const osl_const_strings_const_p;
 
 
 /*+***************************************************************************
@@ -111,7 +115,7 @@ void            osl_strings_free(osl_strings_p);
  *****************************************************************************/
 osl_strings_p   osl_strings_clone(osl_strings_p);
 int             osl_strings_equal(osl_strings_p, osl_strings_p);
-int             osl_strings_size(osl_strings_p);
+size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
 osl_interface_p osl_strings_interface();
 osl_strings_p   osl_strings_generate(char *, int);

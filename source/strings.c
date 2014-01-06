@@ -377,8 +377,8 @@ int osl_strings_equal(osl_strings_p s1, osl_strings_p s2) {
  * \param[in] strings The strings structure we need to know the size.
  * \return The number of strings in the strings structure.
  */
-int osl_strings_size(osl_strings_p strings) {
-  int size = 0;
+size_t osl_strings_size(osl_const_strings_p strings) {
+  size_t size = 0;
 
   if ((strings != NULL) && (strings->string != NULL)) {
     while (strings->string[size] != NULL) {
