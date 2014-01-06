@@ -125,4 +125,25 @@ osl_strings_p   osl_strings_generate(char *, int);
   }
 # endif
 
+# if defined(__cplusplus)
+#include <vector>
+#include <string>
+
+namespace osl
+{
+  /**
+   * @brief Convert osl_strings to std::vector<std::string>
+   * @param[in] s An osl_strings
+   * @return the std::vector<std::string>
+   */
+  inline
+  std::vector<std::string> osl_strings_to_cpp(osl_const_strings_const_p s) {
+    if (s != nullptr && s->string != nullptr) {
+      return std::vector<std::string>(s->string,
+                                      s->string + osl_strings_size(s));
+    }
+  }
+}
+# endif
+
 #endif /* define OSL_STRINGS_H */
