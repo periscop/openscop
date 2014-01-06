@@ -643,7 +643,7 @@ int osl_generic_equal(osl_generic_p x1, osl_generic_p x2) {
  * \param[in] URI The URI value to test.
  * \return 1 if x has the provided URI, 0 otherwise.
  */
-int osl_generic_has_URI(osl_generic_p x, char * URI) {
+int osl_generic_has_URI(osl_const_generic_const_p x, char const * const URI) {
 
   if ((x == NULL) ||
       (x->interface == NULL) ||
