@@ -83,8 +83,12 @@ struct osl_generic {
   osl_interface_p interface; /**< Interface to work with the data. */
   struct osl_generic * next; /**< Pointer to the next generic. */
 };
-typedef struct osl_generic   osl_generic_t;
-typedef struct osl_generic * osl_generic_p;
+typedef struct osl_generic               osl_generic_t;
+typedef struct osl_generic       *       osl_generic_p;
+typedef struct osl_generic const         osl_const_generic_t;
+typedef struct osl_generic       * const osl_generic_const_p;
+typedef struct osl_generic const *       osl_const_generic_p;
+typedef struct osl_generic const * const osl_const_generic_const_p;
 
 
 /*+***************************************************************************
@@ -124,7 +128,8 @@ void          osl_generic_free(osl_generic_p);
 int           osl_generic_number(osl_generic_p);
 osl_generic_p osl_generic_clone(osl_generic_p);
 int           osl_generic_equal(osl_generic_p, osl_generic_p);
-int           osl_generic_has_URI(osl_generic_p, char *);
+int           osl_generic_has_URI(osl_const_generic_const_p,
+                                  char const * const);
 void *        osl_generic_lookup(osl_generic_p, char *);
 osl_generic_p osl_generic_shell(void *, osl_interface_p);
 

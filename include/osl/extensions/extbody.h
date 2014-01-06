@@ -88,8 +88,12 @@ struct osl_extbody {
   int * start;     /**< Array of nb_access start. */
   int * length;    /**< Array of nb_access length. */
 };
-typedef struct osl_extbody   osl_extbody_t;
-typedef struct osl_extbody * osl_extbody_p;
+typedef struct osl_extbody               osl_extbody_t;
+typedef struct osl_extbody       *       osl_extbody_p;
+typedef struct osl_extbody const         osl_const_extbody_t;
+typedef struct osl_extbody       * const osl_extbody_const_p;
+typedef struct osl_extbody const *       osl_const_extbody_p;
+typedef struct osl_extbody const * const osl_const_extbody_const_p;
 
 
 /*+***************************************************************************
