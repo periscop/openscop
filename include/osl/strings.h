@@ -142,6 +142,7 @@ namespace osl
       return std::vector<std::string>(s->string,
                                       s->string + osl_strings_size(s));
     }
+    else { return std::vector<std::string>(); }
   }
 }
 # endif
