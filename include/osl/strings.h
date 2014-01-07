@@ -81,8 +81,12 @@ extern "C"
 struct osl_strings {
   char ** string; /**< NULL-terminated array of character strings */
 };
-typedef struct osl_strings   osl_strings_t;
-typedef struct osl_strings * osl_strings_p;
+typedef struct osl_strings               osl_strings_t;
+typedef struct osl_strings       *       osl_strings_p;
+typedef struct osl_strings const         osl_const_strings_t;
+typedef struct osl_strings       * const osl_strings_const_p;
+typedef struct osl_strings const *       osl_const_strings_p;
+typedef struct osl_strings const * const osl_const_strings_const_p;
 
 
 /*+***************************************************************************
@@ -111,7 +115,7 @@ void            osl_strings_free(osl_strings_p);
  *****************************************************************************/
 osl_strings_p   osl_strings_clone(osl_strings_p);
 int             osl_strings_equal(osl_strings_p, osl_strings_p);
-int             osl_strings_size(osl_strings_p);
+size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
 osl_interface_p osl_strings_interface();
 osl_strings_p   osl_strings_generate(char *, int);
@@ -119,6 +123,28 @@ osl_strings_p   osl_strings_generate(char *, int);
 
 # if defined(__cplusplus)
   }
+# endif
+
+# if defined(__cplusplus)
+#include <vector>
+#include <string>
+
+namespace osl
+{
+  /**
+   * @brief Convert osl_strings to std::vector<std::string>
+   * @param[in] s An osl_strings
+   * @return the std::vector<std::string>
+   */
+  inline
+  std::vector<std::string> osl_strings_to_cpp(osl_const_strings_const_p s) {
+    if (s != nullptr && s->string != nullptr) {
+      return std::vector<std::string>(s->string,
+                                      s->string + osl_strings_size(s));
+    }
+    else { return std::vector<std::string>(); }
+  }
+}
 # endif
 
 #endif /* define OSL_STRINGS_H */
