@@ -638,7 +638,7 @@ char * osl_relation_column_string(osl_relation_p relation, char ** strings) {
   i = 0;
   while (strings[i] != NULL) {
     space  = OSL_FMT_LENGTH;
-    length = (space > strlen(strings[i])) ? strlen(strings[i]) : space;
+    length = (space > (int)strlen(strings[i])) ? (int)strlen(strings[i]) : space;
     right  = (space - length + (OSL_FMT_LENGTH % 2)) / 2;
     left   = space - length - right;
 
@@ -651,7 +651,7 @@ char * osl_relation_column_string(osl_relation_p relation, char ** strings) {
       sprintf(temp, "%c", strings[i][j]);
       strcat(scolumn, temp);
     }
-    if (length >= strlen(strings[i]))
+    if (length >= (int)strlen(strings[i]))
       sprintf(temp, "%c", strings[i][j]);
     else 
       sprintf(temp, ".");
@@ -720,7 +720,7 @@ char * osl_relation_column_string_scoplib(osl_relation_p relation,
         (relation->type == OSL_TYPE_DOMAIN && i <= index_output_dims) ||
         i >= index_parameters) {
       space  = OSL_FMT_LENGTH;
-      length = (space > strlen(strings[i])) ? strlen(strings[i]) : space;
+      length = (space > (int)strlen(strings[i])) ? (int)strlen(strings[i]) : space;
       right  = (space - length + (OSL_FMT_LENGTH % 2)) / 2;
       left   = space - length - right;
 
@@ -733,7 +733,7 @@ char * osl_relation_column_string_scoplib(osl_relation_p relation,
         sprintf(temp, "%c", strings[i][j]);
         strcat(scolumn, temp);
       }
-      if (length >= strlen(strings[i]))
+      if (length >= (int)strlen(strings[i]))
         sprintf(temp, "%c", strings[i][j]);
       else 
         sprintf(temp, ".");
@@ -828,7 +828,7 @@ char * osl_relation_spprint_polylib(osl_relation_p relation,
   char * comment;
 
   if (relation == NULL)
-    return strdup("# NULL relation\n");
+    return osl_util_strdup("# NULL relation\n");
 
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -936,7 +936,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
   char * comment;
 
   if (relation == NULL)
-    return strdup("# NULL relation\n");
+    return osl_util_strdup("# NULL relation\n");
 
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -2970,7 +2970,7 @@ osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
 osl_interface_p osl_relation_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_RELATION);
+  OSL_strdup(interface->URI, OSL_URI_RELATION);
   interface->idump  = (osl_idump_f)osl_relation_idump;
   interface->sprint = (osl_sprint_f)osl_relation_sprint;
   interface->sread  = (osl_sread_f)osl_relation_sread;

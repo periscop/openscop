@@ -87,6 +87,7 @@
  */
 void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
   int j;
+  size_t l;
   char * tmp;
 
   // Go to the right level.
@@ -104,10 +105,10 @@ void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
       fprintf(file, "|\t");
   
     // Display the comment message (without any carriage return).
-    tmp = strdup(comment->comment);
-    for (j = 0; j < strlen(tmp); j++)
-      if (tmp[j] == '\n')
-	tmp[j] = ' ';
+    OSL_strdup(tmp, comment->comment);
+    for (l = 0; l < strlen(tmp); l++)
+      if (tmp[l] == '\n')
+	tmp[l] = ' ';
     fprintf(file, "comment: %s\n", tmp);
     free(tmp);
   }
@@ -296,7 +297,7 @@ int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
 osl_interface_p osl_comment_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_COMMENT);
+  OSL_strdup(interface->URI, OSL_URI_COMMENT);
   interface->idump  = (osl_idump_f)osl_comment_idump;
   interface->sprint = (osl_sprint_f)osl_comment_sprint;
   interface->sread  = (osl_sread_f)osl_comment_sread;

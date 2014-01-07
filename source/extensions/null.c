@@ -256,7 +256,7 @@ int osl_null_equal(osl_null_p c1, osl_null_p c2) {
 osl_interface_p osl_null_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_NULL);
+  OSL_strdup(interface->URI, OSL_URI_NULL);
   interface->idump  = (osl_idump_f)osl_null_idump;
   interface->sprint = (osl_sprint_f)osl_null_sprint;
   interface->sread  = (osl_sread_f)osl_null_sread;

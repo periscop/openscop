@@ -417,7 +417,7 @@ osl_strings_p osl_strings_encapsulate(char * string) {
 osl_interface_p osl_strings_interface() {
   osl_interface_p interface = osl_interface_malloc();
   
-  interface->URI    = strdup(OSL_URI_STRINGS);
+  OSL_strdup(interface->URI, OSL_URI_STRINGS);
   interface->idump  = (osl_idump_f)osl_strings_idump;
   interface->sprint = (osl_sprint_f)osl_strings_sprint;
   interface->sread  = (osl_sread_f)osl_strings_sread;
@@ -450,7 +450,7 @@ osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
     strings[nb_strings] = NULL;
     for (i = 0; i < nb_strings; i++) {
       sprintf(buff, "%s%d", prefix, i + 1);
-      strings[i] = strdup(buff);
+      OSL_strdup(strings[i], buff);
       if (strings[i] == NULL)
         OSL_error("memory overflow");
     }

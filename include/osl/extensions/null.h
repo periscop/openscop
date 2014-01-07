@@ -81,6 +81,7 @@ extern "C"
  * OpenScop representation. It contains simply nothing.
  */
 struct osl_null {
+  int fake_member_to_disable_warning;
 };
 typedef struct osl_null   osl_null_t;
 typedef struct osl_null * osl_null_p;

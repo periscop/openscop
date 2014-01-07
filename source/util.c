@@ -434,7 +434,7 @@ char * osl_util_tag_content(char * str, char * name) {
   char tag[strlen(name) + 3];
   char endtag[strlen(name) + 4];
   int size = 0;
-  int lentag;
+  size_t lentag;
   char * res = NULL;
 
   sprintf(tag, "<%s>", name);
@@ -482,12 +482,30 @@ char * osl_util_tag_content(char * str, char * name) {
  */
 void osl_util_safe_strcat(char ** dst, char * src, int * hwm) {
 
-  while (strlen(*dst) + strlen(src) >= *hwm) {
+  while ((int)(strlen(*dst) + strlen(src)) >= *hwm) {
     *hwm += OSL_MAX_STRING;
     OSL_realloc(*dst, char *, *hwm * sizeof(char));
   }
 
   strcat(*dst, src);
+}
+
+
+/**
+ * \brief String duplicate
+ * 
+ * osl_util_strdup function:
+ * this function return a copy of the string str.
+ * 
+ * \param[in] str string to be copied.
+ * 
+ * \return a copy of the string
+ */
+char * osl_util_strdup(char const * str) {
+  char * dup = NULL;
+  OSL_malloc(dup, char *, (strlen(str) + 1) * sizeof(char));
+  if (dup) { strcpy(dup, str); }
+  return dup;
 }
 
 
@@ -627,14 +645,14 @@ int osl_util_lazy_isolated_identifier(char * expression, char * identifier,
         
   // If the first non-space character after is not in [\]),;\+]: no. 
   look = index + strlen(identifier);
-  while (look < strlen(expression)) {
+  while (look < (int)strlen(expression)) {
     if (isspace(expression[look]))
       look++;
     else
       break;
   }
 
-  if ((look < strlen(expression)) &&
+  if ((look < (int)strlen(expression)) &&
       (expression[look] != ']')   &&
       (expression[look] != ')')   &&
       (expression[look] != '+')   &&
@@ -663,7 +681,8 @@ int osl_util_lazy_isolated_identifier(char * expression, char * identifier,
  */
 char * osl_util_identifier_substitution(char * expression,
                                         char ** identifiers) {
-  int index, j, found;
+  size_t index;
+  int j, found;
   int high_water_mark = OSL_MAX_STRING;
   char buffer[OSL_MAX_STRING];
   char * string;
