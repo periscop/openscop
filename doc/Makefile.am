@@ -79,7 +79,6 @@ EXTRA_DIST		=			\
 	htmldoc.tar.gz				\
 	openscop.pdf				\
 	S4.cloog				\
-	ascii-art.txt				\
 	images/basic.eps			\
 	images/basic.fig			\
 	images/basic.jpg			\

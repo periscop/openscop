@@ -127,17 +127,14 @@ AX_SUBMODULE(gmp,no|system|build,system)
 
 case "$with_gmp" in
 build)
-    CPPFLAGS="-D$gmp_flag -I$with_gmp_builddir $CPPFLAGS"
-    LDFLAGS="-L$with_gmp_builddir/$lt_cv_objdir $LDFLAGS"
+    CPPFLAGS="-D$gmp_flag -I$gmp_srcdir -I$with_gmp_builddir $CPPFLAGS"
+    LIBS="$with_gmp_builddir/libgmp.la $LIBS"
     ;;
 system)
     CPPFLAGS="-D$gmp_flag $CPPFLAGS"
     if test "x$with_gmp_prefix" != "x"; then
 	CPPFLAGS="-I$with_gmp_prefix/include $CPPFLAGS"
-    fi
-    
-    if test "$with_gmp_exec_prefix" != "yes" ; then
-	LDFLAGS="-L$with_gmp_exec_prefix/lib $LDFLAGS"
+	LDFLAGS="-L$with_gmp_prefix/lib $LDFLAGS"
     fi
     ;;
 esac

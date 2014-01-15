@@ -69,6 +69,7 @@
 
 #############################################################################
 
+AUTOMAKE_OPTIONS = subdir-objects
 SUBDIRS = . doc tests
 ACLOCAL_AMFLAGS = -I m4
 
@@ -109,13 +110,12 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/loop.h  \
 	include/osl/extensions/extbody.h
 
-DEFAULT_INCLUDES = -I.
-INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include
+AM_CPPFLAGS =  -I. -I$(top_builddir)/include -I$(top_srcdir)/include
 AM_CFLAGS = $(CFLAGS_WARN)
 
 #############################################################################
 
-libosl_la_CPPFLAGS = -g
+libosl_la_CPPFLAGS = -I. -I$(top_builddir)/include -I$(top_srcdir)/include -g
 libosl_la_SOURCES = \
 	source/scop.c \
 	source/statement.c \
@@ -143,7 +143,6 @@ libosl_la_SOURCES = \
 	source/util.c
 
 MAINTAINERCLEANFILES 	=			\
-	autoconf/texinfo.tex			\
 	Makefile.in				\
 	aclocal.m4				\
 	configure				\

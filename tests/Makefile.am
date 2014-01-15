@@ -79,11 +79,9 @@ noinst_PROGRAMS = osl_test
 
 TESTS = osl_test
 
-osl_test_CPPFLAGS = -I$(top_srcdir)/include -static
+osl_test_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/include -static
 
-osl_test_LDFLAGS  = -L$(top_srcdir)
-
-osl_test_LDADD    = -losl
+osl_test_LDADD    = ../libosl.la
 
 osl_test_SOURCES  = \
 	osl_test.c \
@@ -100,4 +98,4 @@ osl_test_SOURCES  = \
 	test_no_statement.scop \
 	test_scop_list.scop
 
-
+MAINTAINERCLEANFILE = ../autoconf/texinfo.tex
