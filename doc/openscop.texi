@@ -630,15 +630,15 @@ T_S.
 @end ifnottex
 Let us consider the following logical dates for each statement:
 
-@tex
 @example
 @group
+@tex
 $\theta_{S1} = 2$
 $\theta_{S2} = 3$
 $\theta_{S3} = 1$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
@@ -673,15 +673,15 @@ once the program reaches this logical date, the two statements can be executed
 in any order, or better, in parallel. For instance let us consider the
 following scheduling:
 
-@tex
 @example
 @group
+@tex
 $\theta_{S1} = 1$
 $\theta_{S2} = 2$
 $\theta_{S3} = 1$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
@@ -721,15 +721,15 @@ may correspond to days (most significant), the next one to hours (less
 significant), the third to minutes and so on. For instance we can consider
 the following multidimensional schedules for our example:
 
-@tex
 @example
 @group
+@tex
 $\theta_{S1} = (1,1)$
 $\theta_{S2} = (2,1)$
 $\theta_{S3} = (1,2)$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
@@ -773,15 +773,15 @@ executed. Typically, allocations are written in the same way as scheduling.
 Here, we denote it @math{P_S} for a statement @code{S}.
 For instance, let us consider the following allocation:
 
-@tex
 @example
 @group
+@tex
 $P_{S1} = 1$
 $P_{S2} = 2$
 $P_{S3} = 1$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
@@ -831,15 +831,15 @@ For instance, let us consider the following space/time mapping for our
 example where one dimension is devoted to mapping and one dimension is
 devoted to scheduling:
 
-@tex
 @example
 @group
+@tex
 $M_{S1} = (1,2)$
 $M_{S2} = (2,1)$
 $M_{S3} = (1,1)$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
@@ -943,13 +943,13 @@ iteration vector
 @code{S4} (the integer points of its iteration domain) using the following
 scheduling function:
 
-@tex
 @example
 @group
+@tex
 $\theta_{S4}(i, j) = (j+2, 3*i+j)$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
@@ -1009,13 +1009,13 @@ complex sequence of basic-old-good transformations. Nevertheless it is most
 of the time quite easy to translate well known transformations to schedules.
 For instance, let us consider this new scheduling function:
 
-@tex
 @example
 @group
+@tex
 $\theta_{S4}(i,j) = (j,i)$
+@end tex
 @end group
 @end example
-@end tex
 
 @ifnottex
 @example
