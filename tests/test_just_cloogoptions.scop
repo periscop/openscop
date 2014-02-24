@@ -1,0 +1,75 @@
+<OpenScop>
+
+# =============================================== Global
+# Language
+C
+
+# Context
+CONTEXT
+0 2 0 0 0 0
+
+# Parameters are provided
+0
+
+# Number of statements
+0
+
+# =============================================== Extensions
+
+<cloogoptions>
+# Last level to optimize
+-1
+# First level to optimize
+1
+# size of fs and ls arrays
+0
+# Last level to optimize (statement wise)
+# First level to optimize (statement wise)
+# Level to stop code generation
+-1
+# Handle non-unit strides
+0
+# Compute simple hulls
+0
+# First dimension to unroll
+-1
+# Spread equalities
+1
+# Level to start spreading equalities
+1
+# Eliminate one time loops
+1
+# Make block per dimension
+0
+# Generate compilable code
+0
+# Generate callable code
+0
+# Language: 1 Fortran, 0 C
+0
+# Save copy of domain
+0
+# File name
+(null)
+# Input has openscop format
+0
+# Quiet
+0
+# Check for memory leaks
+0
+# Backtracking in QW algorithm
+0
+# Bypass cloog correctness
+0
+# Print structure
+0
+# Dont make blocks
+0
+# Dont use scalar dims
+0
+# Dont simplify polyhedra
+0
+</cloogoptions>
+
+</OpenScop>
+
