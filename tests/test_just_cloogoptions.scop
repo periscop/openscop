@@ -1,0 +1,41 @@
+<OpenScop>
+
+# =============================================== Global
+# Language
+C
+
+# Context
+CONTEXT
+0 2 0 0 0 0
+
+# Parameters are provided
+0
+
+# Number of statements
+0
+
+# =============================================== Extensions
+
+<cloogoptions>
+l -1 # Last level to optimize
+f 1 # First level to optimize
+fs-ls-size 3 # size of fs and ls arrays
+ls 1 2 3 # Last level to optimize (statement wise)
+fs 1 2 3 # First level to optimize (statement wise)
+stop 1 # Level to stop code generation
+sh 0 # Compute simple hulls
+first-unroll 1 # First dimension to unroll
+otl 1 # Eliminate one time loops
+esp 1 # Spread equalities
+fsp 1 # Level to start spreading equalities
+block 0 # Make block per dimension
+compilable 0 # Generate compilable code
+callable 0 # Generate callable code
+language 0 # Language: 1 Fortran, 0 C
+name dingdong.c # Name of the input file
+save-domains 0 # Save copy of domain
+openscop 1 # Input has openscop format
+quiet 1 # Quiet
+</cloogoptions>
+
+</OpenScop>
