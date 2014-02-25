@@ -140,7 +140,7 @@ void osl_int_init(int precision, osl_int_p variable) {
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
       OSL_malloc(variable->mp, void*, sizeof(mpz_t)); 
-      mpz_init(*((mpz_t*)variable->mp));
+      mpz_init(*variable->mp);
       break;
 #endif
 
@@ -174,7 +174,7 @@ void osl_int_assign(int precision, osl_int_p variable, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_set(*((mpz_t*)variable->mp), *((mpz_t*)value.mp));
+      mpz_set(*variable->mp, *value.mp);
       break;
 #endif
 
@@ -199,7 +199,7 @@ void osl_int_set_si(int precision, osl_int_p variable, int i) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_set_si(*((mpz_t*)variable->mp), i);
+      mpz_set_si(*variable->mp, i);
       break;
 #endif
 
@@ -222,7 +222,7 @@ int osl_int_get_si(int precision, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return mpz_get_si(*((mpz_t*)value.mp));
+      return mpz_get_si(*value.mp);
 #endif
 
     default:
@@ -247,7 +247,7 @@ void osl_int_init_set_si(int precision, osl_int_p variable, int i) {
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
       OSL_malloc(variable->mp, void*, sizeof(mpz_t)); 
-      mpz_init_set_si(*((mpz_t*)variable->mp), i);
+      mpz_init_set_si(*variable->mp, i);
       break;
 #endif
 
@@ -280,9 +280,9 @@ void osl_int_swap(int precision, osl_int_p var1, osl_int_p var2) {
     case OSL_PRECISION_MP: {
       mpz_t temp;
       mpz_init(temp);
-      mpz_set(temp, *((mpz_t*)var1->mp));
-      mpz_set(*((mpz_t*)var1->mp), *((mpz_t*)var2->mp));
-      mpz_set(*((mpz_t*)var2->mp), temp);
+      mpz_set(temp, *var1->mp);
+      mpz_set(*var1->mp, *var2->mp);
+      mpz_set(*var2->mp, temp);
       mpz_clear(temp);
       break;
     }
@@ -309,7 +309,7 @@ void osl_int_clear(int precision, osl_int_p variable) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_clear(*((mpz_t*)variable->mp));
+      mpz_clear(*variable->mp);
       free(variable->mp);
       break;
 #endif
@@ -362,7 +362,7 @@ void osl_int_sprint(char * string, int precision, osl_int_t value) {
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       char * str;
-      str = mpz_get_str(0, 10, *((mpz_t*)value.mp)); //TODO: 10 -> #define
+      str = mpz_get_str(0, 10, *value.mp); //TODO: 10 -> #define
       sprintf(string, OSL_FMT_MP, str);
       free(str);
       break;
@@ -394,7 +394,7 @@ void osl_int_sprint_txt(char * string, int precision, osl_int_t value) {
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
       char * str;
-      str = mpz_get_str(0, 10, *((mpz_t*)value.mp)); //TODO: 10 -> #define
+      str = mpz_get_str(0, 10, *value.mp); //TODO: 10 -> #define
       sprintf(string, OSL_FMT_TXT_MP, str);
       free(str);
       break;
@@ -429,7 +429,7 @@ void osl_int_sread(char ** string, int precision, osl_int_p variable) {
       nb_read = sscanf(*string, OSL_FMT_TXT_DP, &tmp);
       if (nb_read == 0)
         OSL_error("failed to read an integer");
-      mpz_set_si(*((mpz_t*)variable->mp), tmp);
+      mpz_set_si(*variable->mp, tmp);
       break;
     }
 #endif
@@ -463,7 +463,7 @@ void osl_int_increment(int precision, osl_int_p variable, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_add_ui(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), 1);
+      mpz_add_ui(*variable->mp, *value.mp, 1);
       break;
 #endif
 
@@ -490,7 +490,7 @@ void osl_int_decrement(int precision, osl_int_p variable, osl_int_t value) {
     case OSL_PRECISION_MP: {
       mpz_t one;
       mpz_init_set_si(one, 1);
-      mpz_sub(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), one);
+      mpz_sub(*variable->mp, *value.mp, one);
       mpz_clear(one);
       break;
     }
@@ -518,7 +518,7 @@ void osl_int_add(int precision,
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_add(*((mpz_t*)variable->mp), *((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
+      mpz_add(*variable->mp, *val1.mp, *val2.mp);
       break;
 #endif
 
@@ -546,7 +546,7 @@ void osl_int_add_si(int precision,
     case OSL_PRECISION_MP: {
       mpz_t si;
       mpz_init_set_si(si, i);
-      mpz_add(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), si);
+      mpz_add(*variable->mp, *value.mp, si);
       mpz_clear(si);
       break;
     }
@@ -574,7 +574,7 @@ void osl_int_mul(int precision,
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_mul(*((mpz_t*)variable->mp), *((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
+      mpz_mul(*variable->mp, *val1.mp, *val2.mp);
       break;
 #endif
 
@@ -600,7 +600,7 @@ void osl_int_mul_si(int precision,
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_mul_si(*((mpz_t*)variable->mp), *((mpz_t*)value.mp), i);
+      mpz_mul_si(*variable->mp, *value.mp, i);
       break;
 #endif
 
@@ -626,7 +626,7 @@ void osl_int_sub(int precision,
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_sub(*((mpz_t*)variable->mp), *((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
+      mpz_sub(*variable->mp, *val1.mp, *val2.mp);
       break;
 #endif
 
@@ -651,7 +651,7 @@ void osl_int_oppose(int precision, osl_int_p variable, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_neg(*((mpz_t*)variable->mp), *((mpz_t*)value.mp));
+      mpz_neg(*variable->mp, *value.mp);
       break;
 #endif
 
@@ -676,12 +676,41 @@ void osl_int_abs(int precision, osl_int_p variable, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      mpz_abs(*((mpz_t*)variable->mp), *((mpz_t*)value.mp));
+      mpz_abs(*variable->mp, *value.mp);
       break;
 #endif
 
     default:
       OSL_error("unknown precision");
+  }
+}
+
+
+// log function for long long int
+static size_t lllog2(long long int x) {
+  size_t n = 0;
+
+  x = llabs(x);
+
+  while (x) { x >>= 1; ++n; }
+
+  return n;
+}
+
+/**
+ * @return size in base 2
+ */
+size_t osl_int_size_in_base_2(int const precision, osl_int_t const value) {
+  switch (precision) {
+    case OSL_PRECISION_SP: return lllog2(value.sp);
+
+    case OSL_PRECISION_DP: return lllog2(value.dp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: return mpz_sizeinbase(*value.mp, 2);
+#endif
+
+    default: OSL_error("unknown precision");
   }
 }
 
@@ -704,7 +733,7 @@ int osl_int_eq(int precision, osl_int_t val1, osl_int_t val2) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_cmp(*((mpz_t*)val1.mp), *((mpz_t*)val2.mp)) == 0);
+      return (mpz_cmp(*val1.mp, *val2.mp) == 0);
 #endif
 
     default:
@@ -734,7 +763,7 @@ int osl_int_pos(int precision, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_sgn(*((mpz_t*)value.mp)) > 0);
+      return (mpz_sgn(*value.mp) > 0);
 #endif
 
     default:
@@ -756,7 +785,7 @@ int osl_int_neg(int precision, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_sgn(*((mpz_t*)value.mp)) < 0);
+      return (mpz_sgn(*value.mp) < 0);
 #endif
 
     default:
@@ -778,7 +807,7 @@ int osl_int_zero(int precision, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_sgn(*((mpz_t*)value.mp)) == 0);
+      return (mpz_sgn(*value.mp) == 0);
 #endif
 
     default:
@@ -800,7 +829,7 @@ int osl_int_one(int precision, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_cmp_si(*((mpz_t*)value.mp), 1) == 0);
+      return (mpz_cmp_si(*value.mp, 1) == 0);
 #endif
 
     default:
@@ -822,7 +851,7 @@ int osl_int_mone(int precision, osl_int_t value) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return (mpz_cmp_si(*((mpz_t*)value.mp), -1) == 0);
+      return (mpz_cmp_si(*value.mp, -1) == 0);
 #endif
 
     default:
@@ -844,7 +873,7 @@ int osl_int_divisible(int precision, osl_int_t val1, osl_int_t val2) {
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
-      return mpz_divisible_p(*((mpz_t*)val1.mp), *((mpz_t*)val2.mp));
+      return mpz_divisible_p(*val1.mp, *val2.mp);
 #endif
 
     default:

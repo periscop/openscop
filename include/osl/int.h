@@ -79,7 +79,11 @@ extern "C"
 union osl_int {
   long int  sp; /**< Single precision int */
   long long dp; /**< Double precision int */
+#ifdef OSL_GMP_IS_HERE
+  mpz_t*    mp; /**< Pointer to a multiple precision int */
+#else
   void*     mp; /**< Pointer to a multiple precision int */
+#endif
 };
 typedef union osl_int   osl_int_t;
 typedef union osl_int * osl_int_p;
@@ -121,6 +125,7 @@ void      osl_int_mul_si(int, osl_int_p, osl_int_t, int);
 void      osl_int_sub(int, osl_int_p, osl_int_t, osl_int_t);
 void      osl_int_oppose(int, osl_int_p, osl_int_t);
 void      osl_int_abs(int, osl_int_p, osl_int_t);
+size_t    osl_int_size_in_base_2(int const, osl_int_t const);
 
 
 /*+***************************************************************************
