@@ -152,6 +152,8 @@
            exit(1);                                                        \
          } while (0)
 
+# define OSL_overflow(msg) OSL_error(msg)
+
 # define OSL_malloc(ptr, type, size)                                       \
          do {                                                              \
            if (((ptr) = (type)malloc(size)) == NULL)                       \
