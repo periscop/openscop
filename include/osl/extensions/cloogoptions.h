@@ -2,12 +2,12 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                         statement.h                             **
+     **                     extensions/cloogoptions.h                   **
      **-----------------------------------------------------------------**
-     **                   First version: 30/04/2008                     **
+     **                   First version: 14/05/2013                     **
      **-----------------------------------------------------------------**
 
- 
+
  *****************************************************************************
  * OpenScop: Structures and formats for polyhedral tools to talk together    *
  *****************************************************************************
@@ -61,15 +61,11 @@
  *****************************************************************************/
 
 
-#ifndef OSL_STATEMENT_H
-# define OSL_STATEMENT_H
+#ifndef OSL_CLOOGOPTIONS_H
+# define OSL_CLOOGOPTIONS_H
 
 # include <stdio.h>
-# include <osl/relation.h>
-# include <osl/relation_list.h>
-# include <osl/names.h>
 # include <osl/interface.h>
-# include <osl/generic.h>
 
 # if defined(__cplusplus)
 extern "C"
@@ -77,66 +73,111 @@ extern "C"
 # endif
 
 
-/**
- * The osl_statement_t structure stores a list of statement. Each node
- * contains the useful informations for a given statement to process it
- * within a polyhedral framework. The order in the list may matter for naming
- * conventions (e.g. "S1" for the first statement in the list).
- */
-struct osl_statement {
-  osl_relation_p domain;       /**< Iteration domain of the statement */
-  osl_relation_p scattering;   /**< Scattering relation of the statement*/
-  osl_relation_list_p access;  /**< Access information */
-  osl_generic_p extension;     /**< A list of statement extensions */
-  void * usr;                  /**< A user-defined field, not touched
-				    AT ALL by the OpenScop Library. */
-  struct osl_statement * next; /**< Next statement in the linked list */
-};
-typedef struct osl_statement   osl_statement_t;
-typedef struct osl_statement * osl_statement_p;
+# define OSL_URI_CLOOGOPTIONS "cloogoptions"
 
+
+struct osl_cloogoptions
+{
+  /* OPTIONS FOR LOOP GENERATION */
+  int l ;           /* Last level to optimize. */
+  int l_set ;       /* l is set. */
+  int f ;           /* First level to optimize. */
+  int f_set ;       /* f is set. */
+
+  int *ls;          /* Last level to optimize (statement-wise). */
+  int ls_set;       /* ls is set. */
+  int *fs;          /* First level to optimize (statement-wise). */
+  int fs_set;       /* fs is set. */
+  int fs_ls_size;   /* Size of the fs and ls arrays (same size) */
+  int fs_ls_size_set; /* fs_ls_size is set */
+  int stop ;        /* Level to stop code generation. */
+  int stop_set ;    /* stop is set. */
+  int strides ;     /* 1 if user wants to handle non-unit strides (then loop
+                     * increment can be something else than one), 0 otherwise.
+                     */
+  int strides_set;  /* strides is set. */
+  int sh;	          /* 1 for computing simple hulls */
+  int sh_set ;      /* sh is set. */
+  int first_unroll; /* The first dimension to unroll */
+  int first_unroll_set ;    /* first_unroll is set. */
+
+  /* OPTIONS FOR PRETTY PRINTING */
+  int esp ;         /* 1 if user wants to spread all equalities, i.e. when there
+                     * is something like "i = 3*j + 1 ; A[i] = 0 ;" the
+                     * generator will write "A[3*j + 1] = 0 ;", 0 otherwise.
+                     */
+  int esp_set ;     /* esp is set. */
+  int fsp ;         /* The iteration level where equalities spreading can begin
+                     * (it might happen that the user wants not to spread values
+                     * of scattering iterators).
+                     */
+  int fsp_set ;     /* fsp is set. */
+  int otl ;         /* 1 for eliminate loops running just one time and write
+                     * them as an affectation of the iterator, 0 otherwise.
+                     */
+  int otl_set ;     /* otl is set. */
+  int block ;       /* 1 to make one new block {...} per new dimension,
+                     * 0 otherwise.
+                     */
+  int block_set ;    /* block is set. */
+  int compilable;   /* 1 to generate a compilable code by using
+                     * preprocessing, 0 otherwise.
+                     */
+  int compilable_set ;    /* compilable is set. */
+  int callable;     /* 1 to generate callable code by using
+                     * preprocessing, 0 otherwise.
+                     */
+  int callable_set ;    /* callable is set. */
+  int language;     /* 1 to generate FORTRAN, 0 for C otherwise. */
+  int language_set ;    /* language is set. */
+
+  int save_domains; /* Save unsimplified copy of domain. */
+  int save_domains_set ;    /* save_domains is set. */
+
+  /* MISC OPTIONS */
+  char * name ;     /* Name of the input file. */
+  int name_set ;
+  int openscop;     /* 1 if the input file has OpenScop format, 0 otherwise. */
+  int openscop_set ;    /* openscop is set. */
+  struct osl_scop *scop; /* Input OpenScop scop if any, NULL otherwise. */
+
+  int quiet;        /* Don't print any informational messages. */
+  int quiet_set ;   /* quiet is set. */
+} ;
+
+typedef struct osl_cloogoptions osl_cloogoptions_t;
+typedef struct osl_cloogoptions * osl_cloogoptions_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_statement_idump(FILE *, osl_statement_p, int);
-void            osl_statement_dump(FILE *, osl_statement_p);
-void            osl_statement_pprint(FILE *, osl_statement_p, osl_names_p);
-void            osl_statement_print(FILE *, osl_statement_p);
+void osl_cloogoptions_idump(FILE *, osl_cloogoptions_p, int);
+void osl_cloogoptions_dump(FILE *, osl_cloogoptions_p);
+char* osl_cloogoptions_sprint(osl_cloogoptions_p);
 
-// SCoPLib Compatibility
-void            osl_statement_pprint_scoplib(FILE *, osl_statement_p,
-                                             osl_names_p);
 
 /*****************************************************************************
- *                              Reading function                             *
+ *                               Reading function                            *
  *****************************************************************************/
-osl_statement_p osl_statement_pread(FILE *, osl_interface_p, int);
-osl_statement_p osl_statement_read(FILE *);
+osl_cloogoptions_p osl_cloogoptions_sread(char **);
+
+/*+***************************************************************************
+ *                    Memory allocation/deallocation function                *
+ *****************************************************************************/
+osl_cloogoptions_p osl_cloogoptions_malloc();
+void osl_cloogoptions_free(osl_cloogoptions_p);
 
 
 /*+***************************************************************************
- *                   Memory allocation/deallocation function                 *
+ *                            Processing functions                           *
  *****************************************************************************/
-osl_statement_p osl_statement_malloc();
-void            osl_statement_free(osl_statement_p);
+osl_cloogoptions_p osl_cloogoptions_clone(osl_cloogoptions_p);
+int osl_cloogoptions_equal(osl_cloogoptions_p, osl_cloogoptions_p);
+osl_interface_p   osl_cloogoptions_interface();
 
-
-/*+***************************************************************************
- *                           Processing functions                            *
- *****************************************************************************/
-void            osl_statement_add(osl_statement_p *, osl_statement_p);
-void            osl_statement_compact(osl_statement_p, int);
-int             osl_statement_number(osl_statement_p);
-osl_statement_p osl_statement_nclone(osl_statement_p, int);
-osl_statement_p osl_statement_clone(osl_statement_p);
-int             osl_statement_equal(osl_statement_p, osl_statement_p);
-int             osl_statement_integrity_check(osl_statement_p, int);
-int             osl_statement_get_nb_iterators(osl_statement_p);
-void            osl_statement_get_attributes(osl_statement_p, int *, int *,
-                                             int *, int *, int *);
 
 # if defined(__cplusplus)
   }
 # endif
-#endif /* define OSL_STATEMENT_H */
+
+#endif /* define OSL_CLOOGOPTIONS_H */

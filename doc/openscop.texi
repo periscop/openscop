@@ -1371,10 +1371,9 @@ WRITE
    0    0   -1    0    1    0    0    0    ##  [i]
    0    0    0   -1    0    1    0    0    ##     [j]
 
-# ----------------------------------------------  1.4 Body
-# Statement body is provided
+# ----------------------------------------------  1.4 Statement Extensions
+# Number of Statement Extensions
 1
-# Statement body
 <body>
 # Number of original iterators
 2
@@ -1440,10 +1439,9 @@ READ
    0    0   -1    0    0    0    1    0    0    ##  [k]
    0    0    0   -1    0    1    0    0    0    ##     [j]
 
-# ----------------------------------------------  2.4 Body
-# Statement body is provided
+# ----------------------------------------------  1.4 Statement Extensions
+# Number of Statement Extensions
 1
-# Statement body
 <body>
 # Number of original iterators
 3
@@ -1498,15 +1496,15 @@ Statements            ::= Nb_statements Statement_list
 Statement_list        ::= Statement Statement_list | (void)
 Relation_list         ::= _Relation Relation_list  | (void)
 Extension_list        ::= _Generic  Extension_list | (void)
-Statement             ::= Statement_relations Body
-Body                  ::= "0" | "1" Body_information
+Statement             ::= Statement_relations Statement_extensions
+Statement_extensions  ::= Num_Extensions Extension_list
 Parameters            ::= "0" | "1" Parameter_information
 Statement_relations   ::= Nb_relations Relation_List 
 Parameter_domain      ::= _Relation
 Language              ::= _String
 Nb_Relations          ::= _Integer
+Num_extensions        ::= _Integer
 Parameter_information ::= _Generic
-Body_information      ::= _Generic
 @end example
 
 The @samp{Context} and the @samp{Statements} parts compose the
@@ -1527,16 +1525,16 @@ a complete source to source framework based on OpenSCop:
        i.e. the number of @samp{Statement} items in the @samp{Statement_list}.
        @samp{Statement} represents the information on a given statement.
        To each statement is associated a list of relations and,
-       optionaly, a body. The list of relations may include
-       one iteration domain (@pxref{Iteration Domain Relation}),
+       optionaly, a list of statement extensions. The list of relations
+       may include one iteration domain (@pxref{Iteration Domain Relation}),
        one scattering relation (@pxref{Scattering Relation})
        and several access relations (@pxref{Access Relation}).
        There is no mandatory ordering, but for consistency reason it would
        be much appreciated that iteration domain comes first (if present)
        then scattering (if present), then accesses (if present).
-       The statement body is an optional information. It is preceded by a
-       boolean which precises whether it is provided or not. 
-       It is a generic information (@pxref{Generics}), a @code{body}
+       The statement extensions is an optional information. It starts with a
+       integer which precises the number of extensions provided. 
+       It is generic information (@pxref{Generics}), a @code{body}
        (@pxref{Body Generic}) for instance.
 @end itemize
 
@@ -2195,7 +2193,7 @@ struct osl_statement @{
   osl_relation_p domain;      /* Iteration domain */
   osl_relation_p scattering;  /* Scattering relation */
   osl_relation_list_p access; /* List of array access relations */
-  osl_generic_p body;         /* Original statement body */
+  osl_generic_p extension;    /* Generic extensions */
   void* usr;                  /* A user-defined field */
   struct osl_statement* next; /* Next statement in the list */
 @};
@@ -2212,6 +2210,8 @@ framework. The order in the list may matter for naming conventions
 and the scattering are represented using an @code{osl_relation_p}
 structure while the accesses are using a list of
 relations: one for each memory access in the statement.
+The extensions part is a list of generics @code{osl_generic_t} which can
+contain useful structures such as @code{body}.
 The @code{body} field should provide information about the statement body
 (since it has a generic type, the specification is not strict about how it
 is used), e.g., using the @code{osl_body_t} data structure (@pxref{osl_body_t}).
@@ -2448,6 +2448,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Clay Extension::
 * Extbody Extension::
 * Loop Extension::
+* Cloogoptions Extension::
 * Irregular Extension::
 @end menu
 
@@ -2758,7 +2759,7 @@ Access_start      ::= _Integer
 Access_length     ::= _Integer
 @end example
 
-@noindent This extension can replace the @pxref{Body Generic}.  The number of
+@noindent This extension extends the @pxref{Body Generic}.  The number of
 accesses @code{Coordinate_number} must be equal to the number of access relations
 in the statement. Each coordinate is associated with the corresponding access
 relation in the access relation list (the order matters). It is possible that an access has
@@ -2908,6 +2909,146 @@ struct osl_loop @{
 typedef struct osl_loop   osl_loop_t;
 typedef struct osl_loop * osl_loop_p;
 @end group
+@end example
+
+
+
+@node Cloogoptions Extension
+@subsection Cloogoptions Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{cloogoptions}.
+@item Author: Taj Muhammad Khan <taj.khan@@inria.fr>.
+@item Purpose: the @code{cloogoptions} extension provides a mean to pass
+options to CLooG for each SCoP. It is a way to control CLooG's code generation
+options at SCoP level.
+@end itemize
+
+@noindent The @code{cloogoptions} extension file format respects the following
+grammar.
+
+@example
+Cloogoptions_generic  ::= "<cloogoptions>" Cloogoptions "</cloogoptions>"
+Cloogoptions          ::= option_val_list
+option_val_list       ::= option_val option_val_list | (void)
+option_val            ::= option val_list | option string
+val_list              ::= val val_list | (void)
+option                ::= _String
+string                ::= _String
+val                   ::= _Integer
+@end example
+
+@noindent This extension can be used to pass options to CLooG. It contains most of
+the options contained in the @code{CloogOptions} structure present in CLooG.
+@noindent  Further explanation can be sought in comments in the data structure
+further below.
+
+@noindent Following is an example of a correct @code{CloogOptions} description printed in
+a SCoP file:
+
+@example
+<cloogoptions>
+l -1 # Last level to optimize
+f 1 # First level to optimize
+fs-ls-size 3 # size of fs and ls arrays
+ls 1 2 3 # Last level to optimize (statement wise)
+fs 1 2 3 # First level to optimize (statement wise)
+stop 1 # Level to stop code generation
+sh 0 # Compute simple hulls
+first-unroll 1 # First dimension to unroll
+otl 1 # Eliminate one time loops
+esp 1 # Spread equalities
+fsp 1 # Level to start spreading equalities
+block 0 # Make block per dimension
+compilable 0 # Generate compilable code
+callable 0 # Generate callable code
+language 0 # Language: 1 Fortran, 0 C
+name dingdong.c # Name of the input file
+save-domains 0 # Save copy of domain
+openscop 1 # Input has openscop format
+quiet 1 # Quiet
+</cloogoptions>
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{cloogoptions} extension data structure is provided below.
+  For each field of the structure, there's a flag @code{fieldname_set} which indicates whether
+  the value in the corresponding field is valid or not:
+
+@example
+struct osl_cloogoptions
+@{
+  /* OPTIONS FOR LOOP GENERATION */
+  int l ;           /* Last level to optimize. */
+  int l_set ;       /* l is set. */
+  int f ;           /* First level to optimize. */
+  int f_set ;       /* f is set. */
+
+  int *ls;          /* Last level to optimize (statement-wise). */
+  int ls_set;       /* ls is set. */
+  int *fs;          /* First level to optimize (statement-wise). */
+  int fs_set;       /* fs is set. */
+  int fs_ls_size;   /* Size of the fs and ls arrays (same size) */
+  int fs_ls_size_set; /* fs_ls_size is set */
+  int stop ;        /* Level to stop code generation. */
+  int stop_set ;    /* stop is set. */
+  int strides ;     /* 1 if user wants to handle non-unit strides (then loop
+                     * increment can be something else than one),
+                     * 0 otherwise.
+                     */
+  int strides_set;  /* strides is set. */
+  int sh;	          /* 1 for computing simple hulls */
+  int sh_set ;      /* sh is set. */
+  int first_unroll; /* The first dimension to unroll */
+  int first_unroll_set ;    /* first_unroll is set. */
+
+  /* OPTIONS FOR PRETTY PRINTING */
+  int esp ;         /* 1 if user wants to spread all equalities, i.e. when
+                     * it is something like "i = 3*j + 1 ; A[i] = 0 ;" the
+                     * generator will write "A[3*j + 1] = 0 ;", 0 otherwise.
+                     */
+  int esp_set ;     /* esp is set. */
+  int fsp ;         /* The iteration level where equalities spreading can
+                     * begin (it might happen that the user wants not to
+                     * spread values of scattering iterators).
+                     */
+  int fsp_set ;     /* fsp is set. */
+  int otl ;         /* 1 for eliminate loops running just one time and write
+                     * them as an affectation of the iterator, 0 otherwise.
+                     */
+  int otl_set ;     /* otl is set. */
+  int block ;       /* 1 to make one new block @{...@} per new dimension,
+                     * 0 otherwise.
+                     */
+  int block_set ;    /* block is set. */
+  int compilable;   /* 1 to generate a compilable code by using
+                     * preprocessing, 0 otherwise.
+                     */
+  int compilable_set ;    /* compilable is set. */
+  int callable;     /* 1 to generate callable code by using
+                     * preprocessing, 0 otherwise.
+                     */
+  int callable_set ;    /* callable is set. */
+  int language;     /* 1 to generate FORTRAN, 0 for C otherwise. */
+  int language_set ;    /* language is set. */
+
+  int save_domains; /* Save unsimplified copy of domain. */
+  int save_domains_set ;    /* save_domains is set. */
+
+  /* MISC OPTIONS */
+  char * name ;     /* Name of the input file. */
+  int name_set ;
+  int openscop;     /* 1 if input file has OpenScop format, 0 otherwise. */
+  int openscop_set ;    /* openscop is set. */
+  struct osl_scop *scop; /* Input OpenScop scop if any, NULL otherwise. */
+
+  int quiet;        /* Don't print any informational messages. */
+  int quiet_set ;   /* quiet is set. */
+@} ;
+typedef struct osl_cloogoptions osl_cloogoptions_t;
+typedef struct osl_cloogoptions * osl_cloogoptions_p;
 @end example
 
 

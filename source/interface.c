@@ -75,6 +75,7 @@
 #include <osl/extensions/irregular.h>
 #include <osl/extensions/extbody.h>
 #include <osl/extensions/loop.h>
+#include <osl/extensions/cloogoptions.h>
 #include <osl/strings.h>
 #include <osl/body.h>
 #include <osl/relation.h>
@@ -402,6 +403,7 @@ osl_interface_p osl_interface_get_default_registry() {
   osl_interface_add(&registry, osl_symbols_interface());
   osl_interface_add(&registry, osl_extbody_interface());
   osl_interface_add(&registry, osl_loop_interface());
+  osl_interface_add(&registry, osl_cloogoptions_interface());
   //osl_interface_add(&registry, osl_irregular_interface());
 
   return registry;

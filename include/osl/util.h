@@ -72,6 +72,15 @@ extern "C"
   {
 # endif
 
+struct osl_opt{
+  char* name;
+  int   expect_arg;
+  char* comment;
+};
+
+typedef struct osl_opt osl_opt_t;
+typedef struct osl_opt * osl_opt_p;
+
 
 /*+***************************************************************************
  *                            Utility functions                              *
@@ -92,6 +101,8 @@ char * osl_util_strdup(char const *);
 int    osl_util_get_precision();
 void   osl_util_print_provided(FILE *, int, char *);
 char * osl_util_identifier_substitution(char *, char **);
+int    osl_util_read_arg_int(int, char**, int*);
+int    osl_util_read_arg_string(int, char**, char**);
 
 
 # if defined(__cplusplus)
