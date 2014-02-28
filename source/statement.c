@@ -130,7 +130,7 @@ void osl_statement_idump(FILE * file, osl_statement_p statement, int level) {
     osl_relation_list_idump(file, statement->access, level + 1);
 
     // Print the original body expression.
-    osl_generic_idump(file, statement->body, level + 1);
+    osl_generic_idump(file, statement->extension, level + 1);
 
     statement = statement->next;
     number++;
@@ -201,6 +201,8 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
   int nb_relations, number = 1;
   int generated_names = 0;
   int iterators_backedup = 0;
+  int nb_ext = 0;
+  osl_body_p body = NULL;
   osl_strings_p iterators_backup = NULL;
 
   // Generate the dimension names if necessary and replace iterators with
@@ -212,11 +214,11 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
 
   while (statement != NULL) {
     // If possible, replace iterator names with statement iterator names.
-    if (osl_generic_has_URI(statement->body, OSL_URI_BODY) &&
-        (((osl_body_p)(statement->body->data))->iterators != NULL)) {
+    body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
+    if (body && body->iterators != NULL) {
       iterators_backedup = 1;
       iterators_backup = names->iterators;
-      names->iterators = ((osl_body_p)(statement->body->data))->iterators;
+      names->iterators = body->iterators;
     }
 
     nb_relations = 0;
@@ -250,16 +252,12 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
     fprintf(file, "\n");
 
     fprintf(file, "# ---------------------------------------------- ");
-    fprintf(file, "%2d.4 Body\n", number);
-    if (statement->body != NULL) {
-      fprintf(file, "# Statement body is provided\n");
-      fprintf(file, "1\n");
-      osl_generic_print(file, statement->body);
-    }
-    else {
-      fprintf(file, "# Statement body is not provided\n");
-      fprintf(file, "0\n");
-    }
+    fprintf(file, "%2d.4 Statement Extensions\n", number);
+    fprintf(file, "# Number of Statement Extensions\n");
+    nb_ext = osl_generic_number(statement->extension);
+    fprintf(file, "%d\n", nb_ext);
+    if(nb_ext>0)
+      osl_generic_print(file, statement->extension);
 
     fprintf(file, "\n");
 
@@ -291,6 +289,7 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
   int number = 1;
   int generated_names = 0;
   int iterators_backedup = 0;
+  osl_body_p body = NULL;
   osl_strings_p iterators_backup = NULL;
   int add_fakeiter;
 
@@ -303,11 +302,11 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
 
   while (statement != NULL) {
     // If possible, replace iterator names with statement iterator names.
-    if (osl_generic_has_URI(statement->body, OSL_URI_BODY) &&
-        (((osl_body_p)(statement->body->data))->iterators != NULL)) {
+    body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
+    if (body && body->iterators != NULL) {
       iterators_backedup = 1;
       iterators_backup = names->iterators;
-      names->iterators = ((osl_body_p)(statement->body->data))->iterators;
+      names->iterators = body->iterators;
     }
     
     add_fakeiter = statement->domain->nb_rows == 0 &&
@@ -339,9 +338,10 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.4 Body\n", number);
-    if (statement->body != NULL) {
+    if (body != NULL) {
       fprintf(file, "# Statement body is provided\n1\n");
-      osl_body_print_scoplib(file, statement->body->data);
+      osl_body_print_scoplib(file, body);
+      body = NULL; //re-initialize for next statement
     }
     else {
       fprintf(file, "# Statement body is not provided\n0\n");
@@ -452,6 +452,8 @@ osl_statement_p osl_statement_pread(FILE * file, osl_interface_p registry,
                                     int precision) {
   osl_statement_p stmt = osl_statement_malloc();
   osl_relation_list_p list;
+  osl_generic_p new = NULL;
+  int i, nb_ext = 0;
 
   if (file) {
     // Read all statement relations.
@@ -460,9 +462,12 @@ osl_statement_p osl_statement_pread(FILE * file, osl_interface_p registry,
     // Store relations at the right place according to their type.
     osl_statement_dispatch(stmt, list);
 
-    // Read the body information.
-    if (osl_util_read_int(file, NULL) > 0)
-      stmt->body = osl_generic_read_one(file, registry); 
+    // Read the Extensions
+    nb_ext = osl_util_read_int(file, NULL);
+    for (i=0; i<nb_ext; i++) {
+      new = osl_generic_read_one(file, registry); 
+      osl_generic_add(&stmt->extension, new);
+    }
   }
 
   return stmt;
@@ -506,7 +511,7 @@ osl_statement_p osl_statement_malloc() {
   statement->domain     = NULL;
   statement->scattering = NULL;
   statement->access     = NULL;
-  statement->body       = NULL;
+  statement->extension  = NULL;
   statement->next       = NULL;
 
   return statement;
@@ -527,7 +532,7 @@ void osl_statement_free(osl_statement_p statement) {
     osl_relation_free(statement->domain);
     osl_relation_free(statement->scattering);
     osl_relation_list_free(statement->access);
-    osl_generic_free(statement->body);
+    osl_generic_free(statement->extension);
 
     free(statement);
     statement = next;
@@ -591,7 +596,7 @@ osl_statement_p osl_statement_nclone(osl_statement_p statement, int n) {
     node->domain     = osl_relation_clone(statement->domain);
     node->scattering = osl_relation_clone(statement->scattering);
     node->access     = osl_relation_list_clone(statement->access);
-    node->body       = osl_generic_clone(statement->body);
+    node->extension  = osl_generic_clone(statement->extension);
     node->next       = NULL;
 
     if (first) {
@@ -665,7 +670,7 @@ int osl_statement_equal(osl_statement_p s1, osl_statement_p s2) {
     return 0;
   }
 
-  if (!osl_generic_equal(s1->body, s2->body)) {
+  if (!osl_generic_equal(s1->extension, s2->extension)) {
     OSL_info("statement bodies are not the same"); 
     return 0;
   }
@@ -687,6 +692,7 @@ int osl_statement_equal(osl_statement_p s1, osl_statement_p s2) {
 int osl_statement_integrity_check(osl_statement_p statement,
                                   int expected_nb_parameters) {
   int expected_nb_iterators;
+  osl_body_p body = NULL;
 
   while (statement != NULL) {
     // Check the domain.
@@ -723,11 +729,10 @@ int osl_statement_integrity_check(osl_statement_p statement,
     }
 
     // Check the statement body.
+    body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
     if ((expected_nb_iterators != OSL_UNDEFINED) &&
-        (osl_generic_has_URI(statement->body, OSL_URI_BODY)) &&
-        (((osl_body_p)(statement->body->data))->iterators != NULL) &&
-        (expected_nb_iterators != osl_strings_size(
-            ((osl_body_p)(statement->body->data))->iterators))) {
+        body && body->iterators != NULL &&
+        (expected_nb_iterators != osl_strings_size(body->iterators))) {
       OSL_warning("unexpected number of original iterators");
       return 0;
     }

@@ -1371,10 +1371,9 @@ WRITE
    0    0   -1    0    1    0    0    0    ##  [i]
    0    0    0   -1    0    1    0    0    ##     [j]
 
-# ----------------------------------------------  1.4 Body
-# Statement body is provided
+# ----------------------------------------------  1.4 Statement Extensions
+# Number of Statement Extensions
 1
-# Statement body
 <body>
 # Number of original iterators
 2
@@ -1440,10 +1439,9 @@ READ
    0    0   -1    0    0    0    1    0    0    ##  [k]
    0    0    0   -1    0    1    0    0    0    ##     [j]
 
-# ----------------------------------------------  2.4 Body
-# Statement body is provided
+# ----------------------------------------------  1.4 Statement Extensions
+# Number of Statement Extensions
 1
-# Statement body
 <body>
 # Number of original iterators
 3
@@ -1498,15 +1496,15 @@ Statements            ::= Nb_statements Statement_list
 Statement_list        ::= Statement Statement_list | (void)
 Relation_list         ::= _Relation Relation_list  | (void)
 Extension_list        ::= _Generic  Extension_list | (void)
-Statement             ::= Statement_relations Body
-Body                  ::= "0" | "1" Body_information
+Statement             ::= Statement_relations Statement_extensions
+Statement_extensions  ::= Num_Extensions Extension_list
 Parameters            ::= "0" | "1" Parameter_information
 Statement_relations   ::= Nb_relations Relation_List 
 Parameter_domain      ::= _Relation
 Language              ::= _String
 Nb_Relations          ::= _Integer
+Num_extensions        ::= _Integer
 Parameter_information ::= _Generic
-Body_information      ::= _Generic
 @end example
 
 The @samp{Context} and the @samp{Statements} parts compose the
@@ -1527,16 +1525,16 @@ a complete source to source framework based on OpenSCop:
        i.e. the number of @samp{Statement} items in the @samp{Statement_list}.
        @samp{Statement} represents the information on a given statement.
        To each statement is associated a list of relations and,
-       optionaly, a body. The list of relations may include
-       one iteration domain (@pxref{Iteration Domain Relation}),
+       optionaly, a list of statement extensions. The list of relations
+       may include one iteration domain (@pxref{Iteration Domain Relation}),
        one scattering relation (@pxref{Scattering Relation})
        and several access relations (@pxref{Access Relation}).
        There is no mandatory ordering, but for consistency reason it would
        be much appreciated that iteration domain comes first (if present)
        then scattering (if present), then accesses (if present).
-       The statement body is an optional information. It is preceded by a
-       boolean which precises whether it is provided or not. 
-       It is a generic information (@pxref{Generics}), a @code{body}
+       The statement extensions is an optional information. It starts with a
+       integer which precises the number of extensions provided. 
+       It is generic information (@pxref{Generics}), a @code{body}
        (@pxref{Body Generic}) for instance.
 @end itemize
 
@@ -2195,7 +2193,7 @@ struct osl_statement @{
   osl_relation_p domain;      /* Iteration domain */
   osl_relation_p scattering;  /* Scattering relation */
   osl_relation_list_p access; /* List of array access relations */
-  osl_generic_p body;         /* Original statement body */
+  osl_generic_p extension;    /* Generic extensions */
   void* usr;                  /* A user-defined field */
   struct osl_statement* next; /* Next statement in the list */
 @};
@@ -2212,6 +2210,8 @@ framework. The order in the list may matter for naming conventions
 and the scattering are represented using an @code{osl_relation_p}
 structure while the accesses are using a list of
 relations: one for each memory access in the statement.
+The extensions part is a list of generics @code{osl_generic_t} which can
+contain useful structures such as @code{body}.
 The @code{body} field should provide information about the statement body
 (since it has a generic type, the specification is not strict about how it
 is used), e.g., using the @code{osl_body_t} data structure (@pxref{osl_body_t}).
@@ -2758,7 +2758,7 @@ Access_start      ::= _Integer
 Access_length     ::= _Integer
 @end example
 
-@noindent This extension can replace the @pxref{Body Generic}.  The number of
+@noindent This extension extends the @pxref{Body Generic}.  The number of
 accesses @code{Coordinate_number} must be equal to the number of access relations
 in the statement. Each coordinate is associated with the corresponding access
 relation in the access relation list (the order matters). It is possible that an access has
