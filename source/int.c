@@ -164,7 +164,8 @@ osl_int_p osl_int_malloc(int precision) {
 /**
  * variable = value;
  */
-void osl_int_assign(int precision, osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_assign(int precision, osl_int_const_p variable, 
+                                   osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp;
@@ -465,7 +466,8 @@ void osl_int_sread(char ** string, int precision, osl_int_const_p variable) {
 /**
  * variable <- value + 1;
  */
-void osl_int_increment(int precision, osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_increment(int precision, osl_int_const_p variable,
+                                      osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -498,7 +500,8 @@ void osl_int_increment(int precision, osl_int_const_p variable, osl_const_int_t 
 /**
  * variable <- value - 1;
  */
-void osl_int_decrement(int precision, osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_decrement(int precision, osl_int_const_p variable,
+                                      osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -535,8 +538,8 @@ void osl_int_decrement(int precision, osl_int_const_p variable, osl_const_int_t 
 /**
  * variable <- val1 + val2;
  */
-void osl_int_add(int precision,
-                 osl_int_const_p variable, osl_const_int_t val1, osl_const_int_t val2) {
+void osl_int_add(int precision, osl_int_const_p variable,
+                                osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -581,8 +584,8 @@ void osl_int_add(int precision,
 /**
  * variable <- value + i;
  */
-void osl_int_add_si(int precision,
-                    osl_int_const_p variable, osl_const_int_t value, int i) {
+void osl_int_add_si(int precision, osl_int_const_p variable,
+                                   osl_const_int_t value, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -631,8 +634,8 @@ void osl_int_add_si(int precision,
 /**
  * variable <- val1 - val2;
  */
-void osl_int_sub(int precision,
-                 osl_int_const_p variable, osl_const_int_t val1, osl_const_int_t val2) {
+void osl_int_sub(int precision, osl_int_const_p variable,
+                                osl_const_int_t val1, osl_const_int_t val2) {
 #ifdef OSL_GMP_IS_HERE
   if (precision == OSL_PRECISION_MP) {
     mpz_sub(*variable->mp, *val1.mp, *val2.mp);
@@ -650,8 +653,8 @@ void osl_int_sub(int precision,
 /**
  * variable <- val1 * val2;
  */
-void osl_int_mul(int precision,
-                 osl_int_const_p variable, osl_const_int_t val1, osl_const_int_t val2) {
+void osl_int_mul(int precision, osl_int_const_p variable,
+                                osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = val1.sp * val2.sp;
@@ -731,7 +734,9 @@ void osl_int_mul_si(int precision,
  * \brief q <- a / b
  * \pre b divides a (without remainder)
  */
-void osl_int_div_exact(int const precision, osl_int_const_p q, osl_const_int_t a, osl_const_int_t b) {
+void osl_int_div_exact(int const precision,
+                       osl_int_const_p q,
+                       osl_const_int_t a, osl_const_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP: q->sp = a.sp / b.sp; return;
 
@@ -751,14 +756,18 @@ void osl_int_div_exact(int const precision, osl_int_const_p q, osl_const_int_t a
  * 
  * q is the quotient
  */
-void osl_int_floor_div_q(int const precision, osl_int_const_p q, osl_const_int_t a, osl_const_int_t b) {
+void osl_int_floor_div_q(int const precision,
+                         osl_int_const_p q,
+                         osl_const_int_t a, osl_const_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       q->sp = a.sp / b.sp;
       if (q->sp < 0) { if (a.sp % b.sp != 0) --q->sp; }
       else if (q->sp == 0) {
         if ((osl_int_pos(precision, a) && osl_int_neg(precision, b)) ||
-            (osl_int_neg(precision, a) && osl_int_pos(precision, b))) { --q->sp; }
+            (osl_int_neg(precision, a) && osl_int_pos(precision, b))) {
+          --q->sp;
+        }
       }
       return;
 
@@ -767,7 +776,9 @@ void osl_int_floor_div_q(int const precision, osl_int_const_p q, osl_const_int_t
       if (q->dp < 0) { if (a.dp % b.dp != 0) --q->dp; }
       else if (q->dp == 0) {
         if ((osl_int_pos(precision, a) && osl_int_neg(precision, b)) ||
-            (osl_int_neg(precision, a) && osl_int_pos(precision, b))) { --q->dp; }
+            (osl_int_neg(precision, a) && osl_int_pos(precision, b))) {
+          --q->dp;
+        }
       }
       return;
 
@@ -785,7 +796,9 @@ void osl_int_floor_div_q(int const precision, osl_int_const_p q, osl_const_int_t
  * 
  * r is the remainder
  */
-void osl_int_floor_div_r(int const precision, osl_int_const_p r, osl_const_int_t a, osl_const_int_t b) {
+void osl_int_floor_div_r(int const precision,
+                         osl_int_const_p r,
+                         osl_const_int_t a, osl_const_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       osl_int_floor_div_q(precision, r, a, b);
@@ -812,7 +825,9 @@ void osl_int_floor_div_r(int const precision, osl_int_const_p r, osl_const_int_t
  * q is the quotient \n
  * r is the remainder
  */
-void osl_int_floor_div_q_r(int const precision, osl_int_const_p q, osl_int_const_p r, osl_const_int_t a, osl_const_int_t b) {
+void osl_int_floor_div_q_r(int const precision,
+                           osl_int_const_p q, osl_int_const_p r,
+                           osl_const_int_t a, osl_const_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       osl_int_floor_div_q(precision, q, a, b);
@@ -838,7 +853,8 @@ void osl_int_floor_div_q_r(int const precision, osl_int_const_p q, osl_int_const
  * 
  * \pre mod is always positive
  */
-void osl_int_mod(int const precision, osl_int_const_p mod, osl_const_int_t a, osl_const_int_t b) {
+void osl_int_mod(int const precision, osl_int_const_p mod,
+                                      osl_const_int_t a, osl_const_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       mod->sp = a.sp % b.sp;
@@ -867,7 +883,8 @@ static long long int llgcd(long long int const a, long long int const b) {
 /**
  * \brief Compute the gcd (greatest common divisor) of a and b
  */
-void osl_int_gcd(int const precision, osl_int_const_p gcd, osl_const_int_t a, osl_const_int_t b) {
+void osl_int_gcd(int const precision, osl_int_const_p gcd,
+                                      osl_const_int_t a, osl_const_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP: gcd->sp = labs(llgcd(a.sp, b.sp)); return;
 
@@ -885,7 +902,8 @@ void osl_int_gcd(int const precision, osl_int_const_p gcd, osl_const_int_t a, os
 /**
  * variable <- -value;
  */
-void osl_int_oppose(int precision, osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_oppose(int precision, osl_int_const_p variable,
+                                   osl_const_int_t value) {
   // TODO overflow is possible if abs(INT_MIN) != abs(MAX_INT)
   switch (precision) {
     case OSL_PRECISION_SP:
@@ -911,7 +929,8 @@ void osl_int_oppose(int precision, osl_int_const_p variable, osl_const_int_t val
 /**
  * variable <- | value |;
  */
-void osl_int_abs(int precision, osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_abs(int precision, osl_int_const_p variable,
+                                osl_const_int_t value) {
   // TODO overflow is possible if abs(INT_MIN) != abs(MAX_INT)
   switch (precision) {
     case OSL_PRECISION_SP:
@@ -948,7 +967,8 @@ static size_t lllog2(long long int x) {
 /**
  * @return size in base 2
  */
-size_t osl_int_size_in_base_2(int const precision, osl_const_int_t const value) {
+size_t osl_int_size_in_base_2(int const precision,
+                              osl_const_int_t const value) {
   switch (precision) {
     case OSL_PRECISION_SP: return lllog2(value.sp);
 
@@ -976,9 +996,11 @@ static size_t lllog10(long long int x) {
 
 /**
  * @return size in base 10
- * @warning mpz_sizeinbase may not return the same result with same integer in different precisions
+ * @warning mpz_sizeinbase may not return the same result
+ * with same integer in different precisions
  */
-size_t osl_int_size_in_base_10(int const precision, osl_const_int_t const value) {
+size_t osl_int_size_in_base_10(int const precision,
+                               osl_const_int_t const value) {
   switch (precision) {
     case OSL_PRECISION_SP: return lllog10(value.sp);
 
@@ -1141,7 +1163,8 @@ int osl_int_mone(int precision, osl_const_int_t value) {
 /**
  * ((val1 % val2) == 0)
  */
-int osl_int_divisible(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_divisible(int precision,
+                      osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return ((val1.sp % val2.sp) == 0);
