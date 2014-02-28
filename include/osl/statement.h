@@ -87,7 +87,7 @@ struct osl_statement {
   osl_relation_p domain;       /**< Iteration domain of the statement */
   osl_relation_p scattering;   /**< Scattering relation of the statement*/
   osl_relation_list_p access;  /**< Access information */
-  osl_generic_p body;          /**< Original statement body */
+  osl_generic_p extension;     /**< A list of statement extensions */
   void * usr;                  /**< A user-defined field, not touched
 				    AT ALL by the OpenScop Library. */
   struct osl_statement * next; /**< Next statement in the linked list */
