@@ -726,7 +726,7 @@ int osl_statement_integrity_check(osl_statement_p statement,
     if ((expected_nb_iterators != OSL_UNDEFINED) &&
         (osl_generic_has_URI(statement->body, OSL_URI_BODY)) &&
         (((osl_body_p)(statement->body->data))->iterators != NULL) &&
-        (expected_nb_iterators != osl_strings_size(
+        ((size_t)expected_nb_iterators != osl_strings_size(
             ((osl_body_p)(statement->body->data))->iterators))) {
       OSL_warning("unexpected number of original iterators");
       return 0;

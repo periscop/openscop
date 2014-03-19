@@ -129,7 +129,7 @@ void osl_strings_dump(FILE * file, osl_strings_p strings) {
  * \return A string containing the OpenScop dump of the strings structure.
  */
 char * osl_strings_sprint(osl_strings_p strings) {
-  int i;
+  size_t i;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
@@ -352,7 +352,7 @@ osl_strings_p osl_strings_clone(osl_strings_p strings) {
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
 int osl_strings_equal(osl_strings_p s1, osl_strings_p s2) {
-  int i, nb_s1;
+  size_t i, nb_s1;
   
   if (s1 == s2)
     return 1;
