@@ -121,9 +121,15 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 
 	enable_testing()
 
-	message(STATUS "---") # osl_test
+	message(STATUS "---") #
 
 	set(exe "osl_test")
+	message(STATUS "Add executable tests/${exe}")
+	add_executable(${exe} "tests/${exe}.c")
+	target_link_libraries(${exe} osl_static)
+	add_test(${exe} "${exe}")
+
+	set(exe "osl_int")
 	message(STATUS "Add executable tests/${exe}")
 	add_executable(${exe} "tests/${exe}.c")
 	target_link_libraries(${exe} osl_static)
