@@ -732,6 +732,68 @@ void osl_int_abs(int precision,
 }
 
 
+// log2 function for long long int
+static size_t lllog2(long long int x) {
+  size_t n = 0;
+
+  x = llabs(x);
+
+  while (x) { x >>= 1; ++n; }
+
+  return ((n == 0) ? 1 : n);
+}
+
+/**
+ * @return size in base 2
+ */
+size_t osl_int_size_in_base_2(int const precision,
+                              osl_const_int_t const value) {
+  switch (precision) {
+    case OSL_PRECISION_SP: return lllog2(value.sp);
+
+    case OSL_PRECISION_DP: return lllog2(value.dp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: return mpz_sizeinbase(*value.mp, 2);
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+// log10 function for long long int
+static size_t lllog10(long long int x) {
+  size_t n = 0;
+
+  x = llabs(x);
+
+  while (x) { x /= 10; ++n; }
+
+  return n;
+}
+
+/**
+ * @return size in base 10
+ * @warning mpz_sizeinbase may not return the same result
+ * with same integer in different precisions
+ */
+size_t osl_int_size_in_base_10(int const precision,
+                               osl_const_int_t const value) {
+  switch (precision) {
+    case OSL_PRECISION_SP: return lllog10(value.sp);
+
+    case OSL_PRECISION_DP: return lllog10(value.dp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: return mpz_sizeinbase(*value.mp, 10);
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
 /*+***************************************************************************
  *                            Conditional Operations                         *
  *****************************************************************************/

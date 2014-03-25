@@ -129,6 +129,8 @@ void      osl_int_mul(int, osl_int_const_p, osl_const_int_t, osl_const_int_t);
 void      osl_int_mul_si(int, osl_int_const_p, osl_const_int_t, int);
 void      osl_int_oppose(int, osl_int_const_p, osl_const_int_t);
 void      osl_int_abs(int, osl_int_const_p, osl_const_int_t);
+size_t    osl_int_size_in_base_2(int const, osl_const_int_t);
+size_t    osl_int_size_in_base_10(int const, osl_const_int_t);
 
 
 /*+***************************************************************************
