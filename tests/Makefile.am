@@ -75,13 +75,15 @@ MAINTAINERCLEANFILES	= Makefile.in
 
 #############################################################################
 
-noinst_PROGRAMS = osl_test
+noinst_PROGRAMS = osl_test osl_int
 
-TESTS = osl_test
+TESTS = osl_test osl_int
 
 osl_test_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/include -static
+osl_int_CPPFLAGS  = -I$(top_builddir)/include -I$(top_srcdir)/include -static
 
 osl_test_LDADD    = ../libosl.la
+osl_int_LDADD     = ../libosl.la
 
 osl_test_SOURCES  = \
 	osl_test.c \
@@ -97,5 +99,6 @@ osl_test_SOURCES  = \
 	test_clay.scop \
 	test_no_statement.scop \
 	test_scop_list.scop
+osl_int_SOURCES   = osl_int.c
 
 MAINTAINERCLEANFILE = ../autoconf/texinfo.tex
