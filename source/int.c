@@ -127,7 +127,7 @@ void osl_int_dump_precision(FILE * file, int precision) {
 }
 
 
-void osl_int_init(int precision, osl_int_p variable) {
+void osl_int_init(int precision, osl_int_const_p variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = 0;
@@ -162,7 +162,8 @@ osl_int_p osl_int_malloc(int precision) {
 /**
  * variable = value;
  */
-void osl_int_assign(int precision, osl_int_p variable, osl_int_t value) {
+void osl_int_assign(int precision,
+                    osl_int_const_p variable, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp;
@@ -187,7 +188,7 @@ void osl_int_assign(int precision, osl_int_p variable, osl_int_t value) {
 /**
  * variable = i;
  */
-void osl_int_set_si(int precision, osl_int_p variable, int i) {
+void osl_int_set_si(int precision, osl_int_const_p variable, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = (long int)i;
@@ -212,7 +213,7 @@ void osl_int_set_si(int precision, osl_int_p variable, int i) {
 /**
  * return value;
  */
-int osl_int_get_si(int precision, osl_int_t value) {
+int osl_int_get_si(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return value.sp;
@@ -234,7 +235,7 @@ int osl_int_get_si(int precision, osl_int_t value) {
 /**
  * variable = i; // including initialization for GMP
  */
-void osl_int_init_set_si(int precision, osl_int_p variable, int i) {
+void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = (long int)i;
@@ -260,7 +261,7 @@ void osl_int_init_set_si(int precision, osl_int_p variable, int i) {
 /**
  * var1 <=> var2;
  */
-void osl_int_swap(int precision, osl_int_p var1, osl_int_p var2) {
+void osl_int_swap(int precision, osl_int_const_p var1, osl_int_const_p var2) {
   switch (precision) {
     case OSL_PRECISION_SP: {
       long int temp = var1->sp;
@@ -297,7 +298,7 @@ void osl_int_swap(int precision, osl_int_p var1, osl_int_p var2) {
 /**
  * variable = 0; // Including cleaning for GMP
  */
-void osl_int_clear(int precision, osl_int_p variable) {
+void osl_int_clear(int precision, osl_int_const_p variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = 0;
@@ -320,7 +321,7 @@ void osl_int_clear(int precision, osl_int_p variable) {
 }
 
 
-void osl_int_free(int precision, osl_int_p variable) {
+void osl_int_free(int precision, osl_int_const_p variable) {
   osl_int_clear(precision, variable);
   free(variable);
 }
@@ -333,7 +334,7 @@ void osl_int_free(int precision, osl_int_p variable) {
  * \param precision The precision of the integer.
  * \param value     The integer element to print.
  */
-void osl_int_print(FILE * file, int precision, osl_int_t value) {
+void osl_int_print(FILE * file, int precision, osl_const_int_t value) {
   char string[OSL_MAX_STRING];
   
   osl_int_sprint(string, precision, value);
@@ -349,7 +350,7 @@ void osl_int_print(FILE * file, int precision, osl_int_t value) {
  * \param precision The precision of the integer.
  * \param value     The integer element to print.
  */
-void osl_int_sprint(char * string, int precision, osl_int_t value) {
+void osl_int_sprint(char * string, int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       sprintf(string, OSL_FMT_SP, value.sp);
@@ -381,7 +382,7 @@ void osl_int_sprint(char * string, int precision, osl_int_t value) {
  * using OSL_TMT_TXT_* formats.
  * \see osl_int_sprintf
  */
-void osl_int_sprint_txt(char * string, int precision, osl_int_t value) {
+void osl_int_sprint_txt(char * string, int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       sprintf(string, OSL_FMT_TXT_SP, value.sp);
@@ -407,7 +408,7 @@ void osl_int_sprint_txt(char * string, int precision, osl_int_t value) {
 }
 
 
-void osl_int_sread(char ** string, int precision, osl_int_p variable) {
+void osl_int_sread(char ** string, int precision, osl_int_const_p variable) {
   int nb_read = 0;
 
   switch (precision) {
@@ -451,7 +452,8 @@ void osl_int_sread(char ** string, int precision, osl_int_p variable) {
 /**
  * variable <- value + 1;
  */
-void osl_int_increment(int precision, osl_int_p variable, osl_int_t value) {
+void osl_int_increment(int precision,
+                       osl_int_const_p variable, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp + 1;
@@ -476,7 +478,8 @@ void osl_int_increment(int precision, osl_int_p variable, osl_int_t value) {
 /**
  * variable <- value - 1;
  */
-void osl_int_decrement(int precision, osl_int_p variable, osl_int_t value) {
+void osl_int_decrement(int precision,
+                       osl_int_const_p variable, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp - 1;
@@ -505,8 +508,8 @@ void osl_int_decrement(int precision, osl_int_p variable, osl_int_t value) {
 /**
  * variable <- val1 + val2;
  */
-void osl_int_add(int precision,
-                 osl_int_p variable, osl_int_t val1, osl_int_t val2) {
+void osl_int_add(int precision, osl_int_const_p variable,
+                 osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = val1.sp + val2.sp;
@@ -532,7 +535,7 @@ void osl_int_add(int precision,
  * variable <- value + i;
  */
 void osl_int_add_si(int precision,
-                    osl_int_p variable, osl_int_t value, int i) {
+                    osl_int_const_p variable, osl_const_int_t value, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp + (long int)i;
@@ -561,8 +564,8 @@ void osl_int_add_si(int precision,
 /**
  * variable <- val1 * val2;
  */
-void osl_int_mul(int precision,
-                 osl_int_p variable, osl_int_t val1, osl_int_t val2) {
+void osl_int_mul(int precision, osl_int_const_p variable,
+                 osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = val1.sp * val2.sp;
@@ -588,7 +591,7 @@ void osl_int_mul(int precision,
  * variable <- value * i;
  */
 void osl_int_mul_si(int precision,
-                    osl_int_p variable, osl_int_t value, int i) {
+                    osl_int_const_p variable, osl_const_int_t value, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp * (long int)i;
@@ -613,8 +616,8 @@ void osl_int_mul_si(int precision,
 /**
  * variable <- val1 - val2;
  */
-void osl_int_sub(int precision,
-                 osl_int_p variable, osl_int_t val1, osl_int_t val2) {
+void osl_int_sub(int precision, osl_int_const_p variable,
+                 osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = val1.sp - val2.sp;
@@ -639,7 +642,8 @@ void osl_int_sub(int precision,
 /**
  * variable <- -value;
  */
-void osl_int_oppose(int precision, osl_int_p variable, osl_int_t value) {
+void osl_int_oppose(int precision,
+                    osl_int_const_p variable, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = -value.sp;
@@ -664,7 +668,8 @@ void osl_int_oppose(int precision, osl_int_p variable, osl_int_t value) {
 /**
  * variable <- | value |;
  */
-void osl_int_abs(int precision, osl_int_p variable, osl_int_t value) {
+void osl_int_abs(int precision,
+                 osl_int_const_p variable, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = (value.sp > 0) ? value.sp : -value.sp;
@@ -694,7 +699,7 @@ void osl_int_abs(int precision, osl_int_p variable, osl_int_t value) {
 /**
  * (val1 == val2)
  */
-int osl_int_eq(int precision, osl_int_t val1, osl_int_t val2) {
+int osl_int_eq(int precision, osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (val1.sp == val2.sp);
@@ -716,7 +721,7 @@ int osl_int_eq(int precision, osl_int_t val1, osl_int_t val2) {
 /**
  * (val1 != val2)
  */
-int osl_int_ne(int precision, osl_int_t val1, osl_int_t val2) {
+int osl_int_ne(int precision, osl_const_int_t val1, osl_const_int_t val2) {
   return !osl_int_eq(precision, val1, val2);
 }
 
@@ -724,7 +729,7 @@ int osl_int_ne(int precision, osl_int_t val1, osl_int_t val2) {
 /**
  * (value > 0)
  */
-int osl_int_pos(int precision, osl_int_t value) {
+int osl_int_pos(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp > 0);
@@ -746,7 +751,7 @@ int osl_int_pos(int precision, osl_int_t value) {
 /**
  * (value < 0)
  */
-int osl_int_neg(int precision, osl_int_t value) {
+int osl_int_neg(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp < 0);
@@ -768,7 +773,7 @@ int osl_int_neg(int precision, osl_int_t value) {
 /**
  * (value == 0)
  */
-int osl_int_zero(int precision, osl_int_t value) {
+int osl_int_zero(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp == 0);
@@ -790,7 +795,7 @@ int osl_int_zero(int precision, osl_int_t value) {
 /**
  * (value == 1)
  */
-int osl_int_one(int precision, osl_int_t value) {
+int osl_int_one(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp == (long int)1);
@@ -812,7 +817,7 @@ int osl_int_one(int precision, osl_int_t value) {
 /**
  * (value == -1)
  */
-int osl_int_mone(int precision, osl_int_t value) {
+int osl_int_mone(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp == (long int)-1);
@@ -834,7 +839,8 @@ int osl_int_mone(int precision, osl_int_t value) {
 /**
  * ((val1 % val2) == 0)
  */
-int osl_int_divisible(int precision, osl_int_t val1, osl_int_t val2) {
+int osl_int_divisible(int precision,
+                      osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return ((val1.sp % val2.sp) == 0);
