@@ -62,6 +62,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
+
 #ifdef OSL_GMP_IS_HERE
 # include <gmp.h>
 #endif
@@ -216,13 +218,29 @@ void osl_int_set_si(int precision, osl_int_const_p variable, int i) {
 int osl_int_get_si(int precision, osl_const_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
-      return value.sp;
+      #ifndef NDEBUG
+        if (value.sp > (long int)(INT_MAX))
+          OSL_overflow("osl_int_get_si overflow");
+        if (value.sp < (long int)(INT_MIN))
+          OSL_overflow("osl_int_get_si overflow");
+      #endif
+      return (int)value.sp;
 
     case OSL_PRECISION_DP:
+      #ifndef NDEBUG
+        if (value.dp > (long long int)(INT_MAX))
+          OSL_overflow("osl_int_get_si overflow");
+        if (value.dp < (long long int)(INT_MIN))
+          OSL_overflow("osl_int_get_si overflow");
+      #endif
       return (int)value.dp;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
+      #ifndef NDEBUG
+        if (mpz_fits_sint_p(*value.mp) == 0)
+          OSL_overflow("osl_int_get_si overflow");
+      #endif
       return mpz_get_si(*value.mp);
 #endif
 
@@ -512,10 +530,30 @@ void osl_int_add(int precision, osl_int_const_p variable,
                  osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
+      #ifndef NDEBUG
+        if (osl_int_pos(precision, val1) && osl_int_pos(precision, val2)) {
+          if (LONG_MAX - val1.sp < val2.sp)
+            OSL_overflow("osl_int_add overflow");
+        }
+        else if (osl_int_neg(precision, val1) && osl_int_neg(precision, val2)) {
+          if (val1.sp - LONG_MIN < -val2.sp)
+            OSL_overflow("osl_int_add overflow");
+        }
+      #endif
       variable->sp = val1.sp + val2.sp;
       break;
 
     case OSL_PRECISION_DP:
+      #ifndef NDEBUG
+        if (osl_int_pos(precision, val1) && osl_int_pos(precision, val2)) {
+          if (LLONG_MAX - val1.dp < val2.dp)
+            OSL_overflow("osl_int_add overflow");
+        }
+        else if (osl_int_neg(precision, val1) && osl_int_neg(precision, val2)) {
+          if (val1.dp - LLONG_MIN < -val2.dp)
+            OSL_overflow("osl_int_add overflow");
+        }
+      #endif
       variable->dp = val1.dp + val2.dp;
       break;
 
@@ -538,10 +576,30 @@ void osl_int_add_si(int precision,
                     osl_int_const_p variable, osl_const_int_t value, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
+      #ifndef NDEBUG
+        if (osl_int_pos(precision, value) && i > 0) {
+          if (LONG_MAX - value.sp < i)
+            OSL_overflow("osl_int_add_si overflow");
+        }
+        else if (osl_int_neg(precision, value) && i < 0) {
+          if (value.sp - LONG_MIN < -i)
+            OSL_overflow("osl_int_add_si overflow");
+        }
+      #endif
       variable->sp = value.sp + (long int)i;
       break;
 
     case OSL_PRECISION_DP:
+      #ifndef NDEBUG
+        if (osl_int_pos(precision, value) && i > 0) {
+          if (LLONG_MAX - value.dp < i)
+            OSL_overflow("osl_int_add_si overflow");
+        }
+        else if (osl_int_neg(precision, value) && i < 0) {
+          if (value.dp - LLONG_MIN < -i)
+            OSL_overflow("osl_int_add_si overflow");
+        }
+      #endif
       variable->dp = value.dp + (long long int)i;
       break;
 
@@ -569,10 +627,24 @@ void osl_int_mul(int precision, osl_int_const_p variable,
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = val1.sp * val2.sp;
+      #ifndef NDEBUG
+        if (!osl_int_zero(precision, val1) && !osl_int_zero(precision, val2)) {
+          if (variable->sp / val2.sp != val1.sp) {
+            OSL_overflow("osl_int_mul overflow");
+          }
+        }
+      #endif
       break;
 
     case OSL_PRECISION_DP:
       variable->dp = val1.dp * val2.dp;
+      #ifndef NDEBUG
+        if (!osl_int_zero(precision, val1) && !osl_int_zero(precision, val2)) {
+          if (variable->dp / val2.dp != val1.dp) {
+            OSL_overflow("osl_int_mul overflow");
+          }
+        }
+      #endif
       break;
 
 #ifdef OSL_GMP_IS_HERE
@@ -595,10 +667,24 @@ void osl_int_mul_si(int precision,
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp * (long int)i;
+      #ifndef NDEBUG
+        if (!osl_int_zero(precision, value) && i != 0) {
+          if (variable->sp / (long int)i != value.sp) {
+            OSL_overflow("osl_int_mul_si overflow");
+          }
+        }
+      #endif
       break;
 
     case OSL_PRECISION_DP:
       variable->dp = value.dp * (long long int)i;
+      #ifndef NDEBUG
+        if (!osl_int_zero(precision, value) && i != 0) {
+          if (variable->dp / (long long int)i != value.dp) {
+            OSL_overflow("osl_int_mul_si overflow");
+          }
+        }
+      #endif
       break;
 
 #ifdef OSL_GMP_IS_HERE
