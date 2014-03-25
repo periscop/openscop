@@ -79,7 +79,11 @@ extern "C"
 union osl_int {
   long int  sp; /**< Single precision int */
   long long dp; /**< Double precision int */
+#ifdef OSL_GMP_IS_HERE
+  mpz_t*    mp; /**< Pointer to a multiple precision int */
+#else
   void*     mp; /**< Pointer to a multiple precision int */
+#endif
 };
 typedef union osl_int   osl_int_t;
 typedef union osl_int * osl_int_p;
