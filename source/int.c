@@ -472,24 +472,7 @@ void osl_int_sread(char ** string, int precision, osl_int_const_p variable) {
  */
 void osl_int_increment(int precision,
                        osl_int_const_p variable, osl_const_int_t value) {
-  switch (precision) {
-    case OSL_PRECISION_SP:
-      variable->sp = value.sp + 1;
-      break;
-
-    case OSL_PRECISION_DP:
-      variable->dp = value.dp + (long long int)1;
-      break;
-
-#ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP:
-      mpz_add_ui(*variable->mp, *value.mp, 1);
-      break;
-#endif
-
-    default:
-      OSL_error("unknown precision");
-  }
+  osl_int_add_si(precision, variable, value, 1);
 }
 
 
@@ -498,28 +481,7 @@ void osl_int_increment(int precision,
  */
 void osl_int_decrement(int precision,
                        osl_int_const_p variable, osl_const_int_t value) {
-  switch (precision) {
-    case OSL_PRECISION_SP:
-      variable->sp = value.sp - 1;
-      break;
-
-    case OSL_PRECISION_DP:
-      variable->dp = value.dp - (long long int)1;
-      break;
-
-#ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP: {
-      mpz_t one;
-      mpz_init_set_si(one, 1);
-      mpz_sub(*variable->mp, *value.mp, one);
-      mpz_clear(one);
-      break;
-    }
-#endif
-
-    default:
-      OSL_error("unknown precision");
-  }
+  osl_int_add_si(precision, variable, value, -1);
 }
 
 
@@ -620,6 +582,25 @@ void osl_int_add_si(int precision,
 
 
 /**
+ * variable <- val1 - val2;
+ */
+void osl_int_sub(int precision, osl_int_const_p variable,
+                 osl_const_int_t val1, osl_const_int_t val2) {
+#ifdef OSL_GMP_IS_HERE
+  if (precision == OSL_PRECISION_MP) {
+    mpz_sub(*variable->mp, *val1.mp, *val2.mp);
+  }
+  else
+#endif
+  {
+    osl_int_t mval2; osl_int_init(precision, &mval2);
+    osl_int_oppose(precision, &mval2, val2);
+    osl_int_add(precision, variable, val1, mval2);
+  }
+}
+
+
+/**
  * variable <- val1 * val2;
  */
 void osl_int_mul(int precision, osl_int_const_p variable,
@@ -690,32 +671,6 @@ void osl_int_mul_si(int precision,
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP:
       mpz_mul_si(*variable->mp, *value.mp, i);
-      break;
-#endif
-
-    default:
-      OSL_error("unknown precision");
-  }
-}
-
-
-/**
- * variable <- val1 - val2;
- */
-void osl_int_sub(int precision, osl_int_const_p variable,
-                 osl_const_int_t val1, osl_const_int_t val2) {
-  switch (precision) {
-    case OSL_PRECISION_SP:
-      variable->sp = val1.sp - val2.sp;
-      break;
-
-    case OSL_PRECISION_DP:
-      variable->dp = val1.dp - val2.dp;
-      break;
-
-#ifdef OSL_GMP_IS_HERE
-    case OSL_PRECISION_MP:
-      mpz_sub(*variable->mp, *val1.mp, *val2.mp);
       break;
 #endif
 
