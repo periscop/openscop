@@ -681,6 +681,175 @@ void osl_int_mul_si(int precision,
 
 
 /**
+ * \brief q <- a / b
+ * \pre b divides a (without remainder)
+ */
+void osl_int_div_exact(int const precision,
+                       osl_int_const_p q,
+                       osl_const_int_t a, osl_const_int_t b) {
+  switch (precision) {
+    case OSL_PRECISION_SP: q->sp = a.sp / b.sp; return;
+
+    case OSL_PRECISION_DP: q->dp = a.dp / b.dp; return;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: mpz_divexact(*q->mp, *a.mp, *b.mp); return;
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+/**
+ * \brief q <- floor(a / b)
+ *
+ * q is the quotient
+ */
+void osl_int_floor_div_q(int const precision,
+                         osl_int_const_p q,
+                         osl_const_int_t a, osl_const_int_t b) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      q->sp = a.sp / b.sp;
+      if (q->sp < 0) { if (a.sp % b.sp != 0) --q->sp; }
+      else if (q->sp == 0) {
+        if ((osl_int_pos(precision, a) && osl_int_neg(precision, b)) ||
+            (osl_int_neg(precision, a) && osl_int_pos(precision, b))) {
+          --q->sp;
+        }
+      }
+      return;
+
+    case OSL_PRECISION_DP:
+      q->dp = a.dp / b.dp;
+      if (q->dp < 0) { if (a.dp % b.dp != 0) --q->dp; }
+      else if (q->dp == 0) {
+        if ((osl_int_pos(precision, a) && osl_int_neg(precision, b)) ||
+            (osl_int_neg(precision, a) && osl_int_pos(precision, b))) {
+          --q->dp;
+        }
+      }
+      return;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: mpz_fdiv_q(*q->mp, *a.mp, *b.mp); return;
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+/**
+ * \brief r <- a - b * (a / b) (r <- a % b is used)
+ *
+ * r is the remainder
+ */
+void osl_int_floor_div_r(int const precision,
+                         osl_int_const_p r,
+                         osl_const_int_t a, osl_const_int_t b) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      osl_int_floor_div_q(precision, r, a, b);
+      r->sp = a.sp - r->sp * b.sp;
+      return;
+
+    case OSL_PRECISION_DP:
+      osl_int_floor_div_q(precision, r, a, b);
+      r->dp = a.dp - r->dp * b.dp;
+      return;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: mpz_fdiv_r(*r->mp, *a.mp, *b.mp); return;
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+/**
+ * \brief Compute (q, r) such that a = b * q + r
+ *
+ * q is the quotient \n
+ * r is the remainder
+ */
+void osl_int_floor_div_q_r(int const precision,
+                           osl_int_const_p q, osl_int_const_p r,
+                           osl_const_int_t a, osl_const_int_t b) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      osl_int_floor_div_q(precision, q, a, b);
+      r->sp = a.sp - q->sp * b.sp;
+      return;
+
+    case OSL_PRECISION_DP:
+      osl_int_floor_div_q(precision, q, a, b);
+      r->dp = a.dp - q->dp * b.dp;
+      return;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: mpz_fdiv_qr(*q->mp, *r->mp, *a.mp, *b.mp); return;
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+/**
+ * \brief mod <- a % b
+ *
+ * \pre mod is always positive
+ */
+void osl_int_mod(int const precision, osl_int_const_p mod,
+                                      osl_const_int_t a, osl_const_int_t b) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      mod->sp = a.sp % b.sp;
+      if (mod->sp < 0) mod->sp += labs(b.sp);
+      return;
+
+    case OSL_PRECISION_DP:
+      mod->dp = a.dp % b.dp;
+      if (mod->dp < 0) mod->dp += llabs(b.dp);
+      return;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: mpz_mod(*mod->mp, *a.mp, *b.mp); return;
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+// gcd (greatest common divisor) for long long int
+static long long int llgcd(long long int const a, long long int const b) {
+  return (b ? llgcd(b, a % b) : a);
+}
+
+/**
+ * \brief Compute the gcd (greatest common divisor) of a and b
+ */
+void osl_int_gcd(int const precision, osl_int_const_p gcd,
+                                      osl_const_int_t a, osl_const_int_t b) {
+  switch (precision) {
+    case OSL_PRECISION_SP: gcd->sp = labs(llgcd(a.sp, b.sp)); return;
+
+    case OSL_PRECISION_DP: gcd->dp = llabs(llgcd(a.dp, b.dp)); return;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP: mpz_gcd(*gcd->mp, *a.mp, *b.mp); return;
+#endif
+
+    default: OSL_error("unknown precision");
+  }
+}
+
+
+/**
  * variable <- -value;
  */
 void osl_int_oppose(int precision,

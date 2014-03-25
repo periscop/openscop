@@ -127,6 +127,18 @@ void      osl_int_add_si(int, osl_int_const_p, osl_const_int_t, int);
 void      osl_int_sub(int, osl_int_const_p, osl_const_int_t, osl_const_int_t);
 void      osl_int_mul(int, osl_int_const_p, osl_const_int_t, osl_const_int_t);
 void      osl_int_mul_si(int, osl_int_const_p, osl_const_int_t, int);
+void      osl_int_div_exact(int const, osl_int_const_p,
+                                       osl_const_int_t, osl_const_int_t);
+void      osl_int_floor_div_q(int const, osl_int_const_p,
+                                         osl_const_int_t, osl_const_int_t);
+void      osl_int_floor_div_r(int const, osl_int_const_p,
+                                         osl_const_int_t, osl_const_int_t);
+void      osl_int_floor_div_q_r(int const, osl_int_const_p, osl_int_const_p,
+                                           osl_const_int_t, osl_const_int_t);
+void      osl_int_mod(int const, osl_int_const_p,
+                                 osl_const_int_t, osl_const_int_t);
+void      osl_int_gcd(int const, osl_int_const_p,
+                                 osl_const_int_t, osl_const_int_t);
 void      osl_int_oppose(int, osl_int_const_p, osl_const_int_t);
 void      osl_int_abs(int, osl_int_const_p, osl_const_int_t);
 size_t    osl_int_size_in_base_2(int const, osl_const_int_t);
