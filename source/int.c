@@ -251,6 +251,31 @@ int osl_int_get_si(int precision, osl_const_int_t value) {
 
 
 /**
+ * \brief Get a double from the osl_int_t
+ * \param[in] precision Precision used.
+ * \param[in] i         A osl_int_t
+ * \return a double from the value.
+ */
+double osl_int_get_d(int precision, osl_const_int_t i) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      return (double)i.sp;
+
+    case OSL_PRECISION_DP:
+      return (double)i.dp;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      return mpz_get_d(*i.mp);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+
+/**
  * variable = i; // including initialization for GMP
  */
 void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {

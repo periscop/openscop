@@ -91,11 +91,12 @@
  * \param verbose    Verbose option (1 to set, 0 not to set).
  * \return 1 if the test is successful, 0 otherwise.
  */
-int test_file(char * input_name, int verbose) {
+int test_file(char* input_name, int verbose) {
   int cloning = 0;
   int dumping = 0;
   int equal   = 0;
-  FILE * input_file, * output_file;
+  FILE* input_file;
+  FILE* output_file;
   osl_scop_p input_scop;
   osl_scop_p output_scop;
   osl_scop_p cloned_scop;
@@ -172,7 +173,7 @@ int test_file(char * input_name, int verbose) {
  * Optionnally the user can provide a file name to check this file only. A
  * verbose option is also provided to output more information during tests.
  */
-int main(int argc, char * argv[]) {
+int main(int argc, char* argv[]) {
   int total   = 0; // Total number of tests.
   int success = 0; // Number of successes.
   int verbose = 0; // 1 if the verbose option is set, 0 otherwise.

@@ -2,9 +2,9 @@
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
-     **                             int.h                               **
+     **                 extensions/pluto_unroll.h                       **
      **-----------------------------------------------------------------**
-     **                   First version: 18/07/2011                     **
+     **                   First version: 26/06/2014                     **
      **-----------------------------------------------------------------**
 
  
@@ -27,7 +27,7 @@
  *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
  *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
  *                                                                           *
- * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
+ * Copyright (C) 2014 Inria                                                  *
  *                                                                           *
  * (3-clause BSD license)                                                    *
  * Redistribution and use in source  and binary forms, with or without       *
@@ -61,108 +61,79 @@
  *****************************************************************************/
 
 
-#ifndef OSL_INT_H
-# define OSL_INT_H
+#ifndef OSL_PLUTO_UNROLL_H
+#define OSL_PLUTO_UNROLL_H
 
-# ifdef OSL_GMP_IS_HERE
-#  include <gmp.h>
-# endif
 
-# if defined(__cplusplus)
+#include <stdio.h>
+#include <stdbool.h>
+
+#include "../strings.h"
+#include "../interface.h"
+
+
+#if defined(__cplusplus)
 extern "C"
   {
-# endif
+#endif
+
+
+#define OSL_URI_PLUTO_UNROLL "pluto_unroll"
+
 
 /**
- * The osl_int_t union stores an OpenScop integer element.
+ * The osl_pluto_unroll_t structure stores the pluto_unroll
+ * that Pluto wants to unroll
  */
-union osl_int {
-  long int  sp; /**< Single precision int */
-  long long dp; /**< Double precision int */
-#ifdef OSL_GMP_IS_HERE
-  mpz_t*    mp; /**< Pointer to a multiple precision int */
-#else
-  void*     mp; /**< Pointer to a multiple precision int */
-#endif
+struct osl_pluto_unroll {
+  char*        iter;              /**< \brief \0 terminated iterator name */
+  bool         jam;               /**< \brief true if jam, false otherwise */
+  unsigned int factor;            /**< \brief unroll factor */
+  struct osl_pluto_unroll * next; /**< \brief next { iter, jam, factor } */
 };
-typedef union osl_int               osl_int_t;
-typedef union osl_int       *       osl_int_p;
-typedef union osl_int const         osl_const_int_t;
-typedef union osl_int       * const osl_int_const_p;
-typedef union osl_int const *       osl_const_int_p;
-typedef union osl_int const * const osl_const_int_const_p;
+typedef struct osl_pluto_unroll   osl_pluto_unroll_t;
+typedef struct osl_pluto_unroll * osl_pluto_unroll_p;
 
 
 /*+***************************************************************************
- *                                Basic Functions                            *
+ *                          Structure display function                       *
  *****************************************************************************/
+void   osl_pluto_unroll_idump(FILE *, osl_pluto_unroll_p, int);
+void   osl_pluto_unroll_dump(FILE *, osl_pluto_unroll_p);
+char * osl_pluto_unroll_sprint(osl_pluto_unroll_p);
 
 
-int       osl_int_is_precision_supported(int);
-void      osl_int_dump_precision(FILE *, int);
-void      osl_int_init(int, osl_int_const_p);
-osl_int_p osl_int_malloc(int);
-void      osl_int_assign(int, osl_int_const_p, osl_const_int_t);
-void      osl_int_set_si(int, osl_int_const_p, int);
-int       osl_int_get_si(int, osl_const_int_t);
-double    osl_int_get_d(int, osl_const_int_t);
-void      osl_int_init_set_si(int, osl_int_const_p, int);
-void      osl_int_swap(int, osl_int_const_p, osl_int_const_p);
-void      osl_int_clear(int, osl_int_const_p);
-void      osl_int_free(int, osl_int_const_p);
-void      osl_int_print(FILE *, int, osl_const_int_t);
-void      osl_int_sprint(char *, int, osl_const_int_t);
-void      osl_int_sprint_txt(char *, int, osl_const_int_t);
-void      osl_int_sread(char **, int, osl_int_const_p);
+/*****************************************************************************
+ *                               Reading function                            *
+ *****************************************************************************/
+osl_pluto_unroll_p osl_pluto_unroll_sread(char**);
 
 
 /*+***************************************************************************
- *                            Arithmetic Operations                          *
+ *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
-
-void      osl_int_increment(int, osl_int_const_p, osl_const_int_t);
-void      osl_int_decrement(int, osl_int_const_p, osl_const_int_t);
-void      osl_int_add(int, osl_int_const_p, osl_const_int_t, osl_const_int_t);
-void      osl_int_add_si(int, osl_int_const_p, osl_const_int_t, int);
-void      osl_int_sub(int, osl_int_const_p, osl_const_int_t, osl_const_int_t);
-void      osl_int_mul(int, osl_int_const_p, osl_const_int_t, osl_const_int_t);
-void      osl_int_mul_si(int, osl_int_const_p, osl_const_int_t, int);
-void      osl_int_div_exact(int const, osl_int_const_p,
-                                       osl_const_int_t, osl_const_int_t);
-void      osl_int_floor_div_q(int const, osl_int_const_p,
-                                         osl_const_int_t, osl_const_int_t);
-void      osl_int_floor_div_r(int const, osl_int_const_p,
-                                         osl_const_int_t, osl_const_int_t);
-void      osl_int_floor_div_q_r(int const, osl_int_const_p, osl_int_const_p,
-                                           osl_const_int_t, osl_const_int_t);
-void      osl_int_mod(int const, osl_int_const_p,
-                                 osl_const_int_t, osl_const_int_t);
-void      osl_int_gcd(int const, osl_int_const_p,
-                                 osl_const_int_t, osl_const_int_t);
-void      osl_int_oppose(int, osl_int_const_p, osl_const_int_t);
-void      osl_int_abs(int, osl_int_const_p, osl_const_int_t);
-size_t    osl_int_size_in_base_2(int const, osl_const_int_t);
-size_t    osl_int_size_in_base_10(int const, osl_const_int_t);
+osl_pluto_unroll_p osl_pluto_unroll_malloc();
+void               osl_pluto_unroll_free(osl_pluto_unroll_p);
 
 
 /*+***************************************************************************
- *                            Conditional Operations                         *
+ *                            Processing functions                           *
  *****************************************************************************/
+void               osl_pluto_unroll_fill(osl_pluto_unroll_p,
+                                         char const * const,
+                                         bool const, int const);
+osl_pluto_unroll_p osl_pluto_unroll_clone(osl_pluto_unroll_p);
+int                osl_pluto_unroll_equal_one(osl_pluto_unroll_p,
+                                              osl_pluto_unroll_p);
+int                osl_pluto_unroll_equal(osl_pluto_unroll_p,
+                                          osl_pluto_unroll_p);
+osl_strings_p      osl_pluto_unroll_to_strings(osl_pluto_unroll_p);
+osl_interface_p    osl_pluto_unroll_interface();
 
 
-int       osl_int_eq(int, osl_const_int_t, osl_const_int_t);
-int       osl_int_ne(int, osl_const_int_t, osl_const_int_t);
-int       osl_int_pos(int, osl_const_int_t);
-int       osl_int_neg(int, osl_const_int_t);
-int       osl_int_zero(int, osl_const_int_t);
-int       osl_int_one(int, osl_const_int_t);
-int       osl_int_mone(int, osl_const_int_t);
-int       osl_int_divisible(int, osl_const_int_t, osl_const_int_t);
-
-
-# if defined(__cplusplus)
+#if defined(__cplusplus)
   }
-# endif
+#endif
 
-#endif /* define OSL_INT_H */
+
+#endif /* define OSL_PLUTO_UNROLL_H */
