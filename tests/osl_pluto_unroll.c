@@ -31,7 +31,7 @@
 #include <osl/extensions/pluto_unroll.h>
 
 
-int main(int argc, char * * argv)
+int main(int argc, char** argv)
 {
   if (argc > 1) { printf("argv are ignored\n"); }
 
@@ -174,9 +174,9 @@ int main(int argc, char * * argv)
   osl_pluto_unroll_dump(stdout, p);
   {
     char * s = osl_pluto_unroll_sprint(p);
-	char * f = s;
+    char * f = s;
     pc = osl_pluto_unroll_sread(&s);
-    free(f); f = NULL; f = NULL;
+    free(f); f = NULL; s = NULL;
   }
   osl_pluto_unroll_dump(stdout, pc);
   if (osl_pluto_unroll_equal(p, pc) == 0) { nb_fail++; }
