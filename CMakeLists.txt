@@ -120,15 +120,42 @@ set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
 # Executables & tests
 
 	enable_testing()
+	
+	file(
+		GLOB_RECURSE
+		scops
+		tests/*.scop
+	)
+	
+	file(
+		GLOB_RECURSE
+		tests
+		tests/*.c
+	)
 
-	message(STATUS "---") # osl_test
-
-	set(exe "osl_test")
-	message(STATUS "Add executable tests/${exe}")
-	add_executable(${exe} "tests/${exe}.c")
-	target_link_libraries(${exe} osl_static)
-	add_test(${exe} "${exe}")
-
+	message(STATUS "---")
+	
+	foreach(test_source ${tests})
+	
+		string(REPLACE ".c" "" test_name ${test_source})
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "test__" test_name ${test_name})
+		
+		message(STATUS "Add executable tests/${test_name}")
+		add_executable(${test_name} "${test_source}")
+		target_link_libraries(${test_name} osl_static)
+		
+		if (${test_name} STREQUAL "test__osl_test")
+			foreach (scop ${scops})
+				string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "" scop_name ${scop})
+				message(STATUS "- ${scop_name}")
+				add_test("${test_name}__${scop_name}" "${test_name}" "${scop}")
+			endforeach()
+		else()
+			add_test("${test_name}" "${test_name}")
+		endif()
+		
+	endforeach()
+	
 	message(STATUS "---")
 
 

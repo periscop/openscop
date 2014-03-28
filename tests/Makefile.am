@@ -75,14 +75,16 @@ MAINTAINERCLEANFILES	= Makefile.in
 
 #############################################################################
 
-noinst_PROGRAMS = osl_test osl_pluto_unroll
+noinst_PROGRAMS = osl_test osl_int osl_pluto_unroll
 
-TESTS = osl_test osl_pluto_unroll
+TESTS = osl_test osl_int osl_pluto_unroll
 
 osl_test_CPPFLAGS         = -I$(top_builddir)/include -I$(top_srcdir)/include -static
+osl_int_CPPFLAGS          = -I$(top_builddir)/include -I$(top_srcdir)/include -static
 osl_pluto_unroll_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/include -static
 
 osl_test_LDADD         = ../libosl.la
+osl_int_LDADD          = ../libosl.la
 osl_pluto_unroll_LDADD = ../libosl.la
 
 osl_test_SOURCES = \
@@ -99,6 +101,7 @@ osl_test_SOURCES = \
 	test_clay.scop \
 	test_no_statement.scop \
 	test_scop_list.scop
+osl_int_SOURCES          = osl_int.c
 osl_pluto_unroll_SOURCES = osl_pluto_unroll.c
 
 MAINTAINERCLEANFILE = ../autoconf/texinfo.tex
