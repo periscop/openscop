@@ -2448,6 +2448,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Clay Extension::
 * Extbody Extension::
 * Loop Extension::
+* Pluto unroll Extension::
 * Irregular Extension::
 @end menu
 
@@ -2907,6 +2908,87 @@ struct osl_loop @{
 @};
 typedef struct osl_loop   osl_loop_t;
 typedef struct osl_loop * osl_loop_p;
+@end group
+@end example
+
+
+@c ---------------------------------------------------------------------------
+
+
+@node Pluto unroll Extension
+@subsection Pluto unroll Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{pluto_unroll}.
+@item Author: L@'ena@"{@dotless{i}}c Bagn@`eres <lenaic.bagneres@@inria.fr>.
+@item Purpose: the @code{pluto_unroll} extension provides a means to transfer 
+unroll information from Pluto in the SCoP.
+Pluto saves the iterator name, if unroll-and-jam or not and the unroll factor
+for several loops.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{pluto_unroll} extension file format respects the following
+grammar:
+@example
+Pluto_unroll  ::= "<pluto_unroll>" Is_present Data_list "</pluto_unroll>"
+Is_present    ::= _Integer
+Iterator_name ::= _String
+Is_Jam        ::= _Integer
+Factor        ::= _Integer
+Data          ::= Iterator_name Is_Jam Factor Is_present
+Data_list     ::= Data_list Data | (void)
+@end example
+
+
+@noindent With in the tags, the first line indicates if data are provided.
+Next comes three lines: iteraror name, integer to know if jam or not and
+the unroll factor.
+Next line indicates if new data are provided, etc.
+
+For instance, the following example is a correct 
+@code{pluto_unroll} extension containing two unrolls:
+
+@example
+@group
+<pluto_unroll>
+1
+# Iterator name
+t3
+# Jam
+1
+# Factor
+4
+# Next
+1
+# Iterator name
+t4
+# Jam
+0
+# Factor
+4
+# Next
+0
+</pluto_unroll>
+@end group
+@end example
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{pluto_unroll} extension data structure is the following:
+
+@example
+@group
+struct osl_pluto_unroll @{
+  char*        iter;              /* \0 terminated iterator name */
+  bool         jam;               /* true if jam, false otherwise */
+  unsigned int factor;            /* unroll factor */
+  struct osl_pluto_unroll * next; /* next @{ iter, jam, factor @} */
+@};
+typedef struct osl_pluto_unroll   osl_pluto_unroll_t;
+typedef struct osl_pluto_unroll * osl_pluto_unroll_p;
 @end group
 @end example
 

@@ -88,7 +88,7 @@ extern "C"
 struct osl_pluto_unroll {
   char*        iter;              /**< \brief \0 terminated iterator name */
   bool         jam;               /**< \brief true if jam, false otherwise */
-  unsigned int factor           ; /**< \brief unroll factor */
+  unsigned int factor;            /**< \brief unroll factor */
   struct osl_pluto_unroll * next; /**< \brief next { iter, jam, factor } */
 };
 typedef struct osl_pluto_unroll   osl_pluto_unroll_t;
