@@ -105,6 +105,7 @@ osl_int_p osl_int_malloc(int);
 void      osl_int_assign(int, osl_int_const_p, osl_const_int_t);
 void      osl_int_set_si(int, osl_int_const_p, int);
 int       osl_int_get_si(int, osl_const_int_t);
+double    osl_int_get_d(int, osl_const_int_t);
 void      osl_int_init_set_si(int, osl_int_const_p, int);
 void      osl_int_swap(int, osl_int_const_p, osl_int_const_p);
 void      osl_int_clear(int, osl_int_const_p);
