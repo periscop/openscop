@@ -108,7 +108,8 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/irregular.h  \
 	include/osl/extensions/symbols.h \
 	include/osl/extensions/loop.h  \
-	include/osl/extensions/extbody.h
+	include/osl/extensions/extbody.h \
+	include/osl/extensions/pluto_unroll.h
 
 AM_CPPFLAGS =  -I. -I$(top_builddir)/include -I$(top_srcdir)/include
 AM_CFLAGS = $(CFLAGS_WARN)
@@ -131,6 +132,7 @@ libosl_la_SOURCES = \
 	source/extensions/symbols.c \
 	source/extensions/extbody.c \
 	source/extensions/loop.c \
+	source/extensions/pluto_unroll.c \
 	source/interface.c \
 	source/generic.c \
 	source/relation.c \
