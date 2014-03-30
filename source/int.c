@@ -278,6 +278,15 @@ double osl_int_get_d(int precision, osl_const_int_t i) {
 /**
  * variable = i; // including initialization for GMP
  */
+void osl_int_init_set(int precision, osl_int_const_p variable, osl_const_int_t i) {
+  osl_int_init(precision, variable);
+  osl_int_assign(precision, variable, i);
+}
+
+
+/**
+ * variable = i; // including initialization for GMP
+ */
 void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
