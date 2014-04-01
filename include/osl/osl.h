@@ -110,6 +110,8 @@
 # include <osl/extensions/symbols.h>
 # include <osl/extensions/dependence.h>
 # include <osl/extensions/extbody.h>
+# include <osl/extensions/loop.h>
+# include <osl/extensions/pluto_unroll.h>
 
 # include <osl/generic.h>
 # include <osl/statement.h>
