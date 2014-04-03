@@ -666,7 +666,7 @@ int osl_generic_has_URI(osl_const_generic_const_p x, char const * const URI) {
  * \param[in] URI The URI of the generic we are looking for.
  * \return The first generic of the requested URI in the list.
  */
-void * osl_generic_lookup(osl_generic_p x, char * URI) {
+void * osl_generic_lookup(osl_generic_p x, char const * const URI) {
   while (x != NULL) {
     if (osl_generic_has_URI(x, URI))
       return x->data;
