@@ -70,6 +70,8 @@
 # include <osl/names.h>
 # include <osl/interface.h>
 # include <osl/generic.h>
+# include "body.h"
+# include "extensions/extbody.h"
 
 # if defined(__cplusplus)
 extern "C"
@@ -135,6 +137,7 @@ int             osl_statement_integrity_check(osl_statement_p, int);
 int             osl_statement_get_nb_iterators(osl_statement_p);
 void            osl_statement_get_attributes(osl_statement_p, int *, int *,
                                              int *, int *, int *);
+osl_body_p      osl_statement_get_body(osl_statement_p);
 
 # if defined(__cplusplus)
   }

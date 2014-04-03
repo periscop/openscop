@@ -278,6 +278,15 @@ double osl_int_get_d(int precision, osl_const_int_t i) {
 /**
  * variable = i; // including initialization for GMP
  */
+void osl_int_init_set(int precision, osl_int_const_p variable, osl_const_int_t i) {
+  osl_int_init(precision, variable);
+  osl_int_assign(precision, variable, i);
+}
+
+
+/**
+ * variable = i; // including initialization for GMP
+ */
 void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
@@ -451,29 +460,21 @@ void osl_int_sprint_txt(char * string, int precision, osl_const_int_t value) {
 }
 
 
-void osl_int_sread(char ** string, int precision, osl_int_const_p variable) {
+int osl_int_sscanf(char* string, int precision, osl_int_const_p i) {
   int nb_read = 0;
 
   switch (precision) {
     case OSL_PRECISION_SP:
-      nb_read = sscanf(*string, OSL_FMT_TXT_SP, &(variable->sp));
-      if (nb_read == 0)
-        OSL_error("failed to read an integer");
+      nb_read = sscanf(string, OSL_FMT_TXT_SP, &(i->sp));
       break;
 
     case OSL_PRECISION_DP:
-      nb_read = sscanf(*string, OSL_FMT_TXT_DP, &(variable->dp));
-      if (nb_read == 0)
-        OSL_error("failed to read an integer");
+      nb_read = sscanf(string, OSL_FMT_TXT_DP, &(i->dp));
       break;
 
 #ifdef OSL_GMP_IS_HERE
     case OSL_PRECISION_MP: {
-      long long int tmp;
-      nb_read = sscanf(*string, OSL_FMT_TXT_DP, &tmp);
-      if (nb_read == 0)
-        OSL_error("failed to read an integer");
-      mpz_set_si(*variable->mp, tmp);
+      nb_read = gmp_sscanf(string, "%lZd", i->mp);
       break;
     }
 #endif
@@ -481,9 +482,16 @@ void osl_int_sread(char ** string, int precision, osl_int_const_p variable) {
     default:
       OSL_error("unknown precision");
   }
+  
+  if (nb_read == 0) { OSL_error("failed to read an integer"); }
 
+  return nb_read;
+}
+
+
+void osl_int_sread(char ** string, int precision, osl_int_const_p i) {
   // Update the position in the input string.
-  *string = *string + nb_read;
+  *string += osl_int_sscanf(*string, precision, i);
 }
 
 

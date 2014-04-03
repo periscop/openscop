@@ -114,6 +114,7 @@ void            osl_strings_free(osl_strings_p);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_strings_p   osl_strings_clone(osl_strings_p);
+void            osl_strings_add(osl_strings_p, char const * const);
 int             osl_strings_equal(osl_strings_p, osl_strings_p);
 size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
