@@ -283,7 +283,8 @@ osl_strings_p osl_strings_malloc() {
   osl_strings_p strings;
 
   OSL_malloc(strings, osl_strings_p, sizeof(osl_strings_t));
-  strings->string = NULL;
+  OSL_malloc(strings->string, char**, sizeof(char*));
+  strings->string[0] = NULL;
 
   return strings;
 }
@@ -340,6 +341,21 @@ osl_strings_p osl_strings_clone(osl_strings_p strings) {
     OSL_strdup(clone->string[i], strings->string[i]);
 
   return clone;
+}
+
+
+/**
+ * osl_strings_add function.
+ * this function adds a copy of the string in the strings.
+ * \param[in,out] strings The strings structure.
+ * \param[in]     string  The string to add in strings.
+ */
+void osl_strings_add(osl_strings_p strings, char const * const string) {
+  size_t original_size = osl_strings_size(strings);
+  OSL_realloc(strings->string, char**, sizeof(char*) * (original_size + 1 + 1));
+  strings->string[original_size + 1] = NULL;
+  strings->string[original_size] = malloc(sizeof(char) * (strlen(string) + 1));
+  strcpy(strings->string[original_size], string);
 }
 
 
