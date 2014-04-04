@@ -2257,7 +2257,7 @@ void osl_relation_remove_column(osl_relation_p r, int column) {
   osl_relation_free_inside(r);
 
   // Replace the inside of relation.
-  r->nb_rows = temp->nb_rows;
+  r->nb_columns = temp->nb_columns;
   r->m = temp->m;
 
   // Free the temp "shell".
