@@ -613,8 +613,8 @@ void osl_scop_add(osl_scop_p * location, osl_scop_p scop) {
  * \param[in] scop The first element of the scop list.
  * \return The number of scops in the scop list.
  */
-int osl_scop_number(osl_scop_p scop) {
-  int number = 0;
+size_t osl_scop_number(osl_scop_p scop) {
+  size_t number = 0;
 
   while (scop != NULL) {
     number++;
