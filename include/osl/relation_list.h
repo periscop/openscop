@@ -136,7 +136,7 @@ int                 osl_relation_list_integrity_check(osl_relation_list_p,
                                                       int, int, int, int);
 void                osl_relation_list_set_type(osl_relation_list_p, int);
 osl_relation_list_p osl_relation_list_filter(osl_relation_list_p, int);
-int                 osl_relation_list_count(osl_relation_list_p);
+size_t              osl_relation_list_count(osl_relation_list_p);
 void                osl_relation_list_get_attributes(osl_relation_list_p,
                                                      int *, int *, int *,
                                                      int *, int *);

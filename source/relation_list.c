@@ -157,7 +157,7 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
  */
 void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
                                    osl_names_p names) {
-  int i;
+  size_t i;
   osl_relation_list_p head = list;
 
   // Count the number of elements in the list with non-NULL content.
@@ -195,7 +195,7 @@ void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
  */
 void osl_relation_list_pprint_access_array_scoplib(FILE * file,
               osl_relation_list_p list, osl_names_p names, int add_fakeiter) {
-  int i;
+  size_t i;
   int nb_rows_read = 0, nb_columns_read = 0;
   int nb_rows_write = 0, nb_columns_write = 0;
   int nb_rows_may_write = 0, nb_columns_may_write = 0;
@@ -295,16 +295,16 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * file,
  */
 void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
                               osl_names_p names) {
-  int i;
+  size_t i;
 
   // Count the number of elements in the list with non-NULL content.
   i = osl_relation_list_count(list);
   
   // Print it.
   if (i > 1)
-    fprintf(file,"# List of %d elements\n%d\n", i, i);
+    fprintf(file,"# List of %lu elements\n%lu\n", i, i);
   else
-    fprintf(file,"# List of %d element \n%d\n", i, i);
+    fprintf(file,"# List of %lu element \n%lu\n", i, i);
 
   // Print each element of the relation list.
   osl_relation_list_pprint_elts(file, list, names);
@@ -744,8 +744,8 @@ osl_relation_list_p osl_relation_list_filter(osl_relation_list_p list,
  * \param list The relation list to count the number of elements.
  * \return The number of nodes with non-NULL content in the relation list.
  */
-int osl_relation_list_count(osl_relation_list_p list) {
-  int i = 0;
+size_t osl_relation_list_count(osl_relation_list_p list) {
+  size_t i = 0;
   
   while (list != NULL) {
     if (list->elt != NULL)

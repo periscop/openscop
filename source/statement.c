@@ -198,7 +198,8 @@ osl_names_p osl_statement_names(osl_statement_p statement) {
  */
 void osl_statement_pprint(FILE * file, osl_statement_p statement,
                           osl_names_p names) {
-  int nb_relations, number = 1;
+  size_t nb_relations;
+  int number = 1;
   int generated_names = 0;
   int iterators_backedup = 0;
   osl_strings_p iterators_backup = NULL;
@@ -232,7 +233,7 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
       nb_relations ++;
     nb_relations += osl_relation_list_count(statement->access); 
 
-    fprintf(file, "%d\n\n", nb_relations);
+    fprintf(file, "%lu\n\n", nb_relations);
 
     fprintf(file, "# ---------------------------------------------- ");
     fprintf(file, "%2d.1 Domain\n", number);
@@ -395,7 +396,7 @@ static
 void osl_statement_dispatch(osl_statement_p stmt, osl_relation_list_p list) {
   osl_relation_list_p domain_list; 
   osl_relation_list_p scattering_list; 
-  int nb_domains, nb_scattering, nb_accesses;
+  size_t nb_domains, nb_scattering, nb_accesses;
 
   // Domain.
   domain_list = osl_relation_list_filter(list, OSL_TYPE_DOMAIN);

@@ -343,6 +343,21 @@ osl_strings_p osl_strings_clone(osl_strings_p strings) {
   return clone;
 }
 
+/**
+ * osl_strings_find function.
+ * this function finds the string in the strings.
+ * \param[in,out] strings The strings structure.
+ * \param[in]     string  The string to find in strings.
+ * \return the index where is the string, osl_strings_size if not found
+ */
+size_t osl_strings_find(osl_strings_p strings, char const * const string) {
+  size_t i;
+  for (i = 0; i < osl_strings_size(strings); ++i) {
+    if (strcmp(strings->string[i], string) == 0) { return i; }
+  }
+  return i;
+}
+
 
 /**
  * osl_strings_add function.
