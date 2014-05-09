@@ -829,24 +829,18 @@ void osl_statement_get_attributes(osl_statement_p statement,
 /**
  * osl_statement_get_body function:
  * this function returns the body of the statement.
- * \param[in,out] statement The statement to search the body.
+ * \param[in] statement The statement to search the body.
  * \return the body if found, NULL otherwise.
  */
 osl_body_p osl_statement_get_body(osl_statement_p statement) {
-  if (
-    statement == NULL ||
-    statement->body == NULL ||
-    statement->body->interface == NULL
-  ) {
+  osl_body_p body;
+
+  if (statement == NULL || statement->extension == NULL) {
     return NULL;
   }
 
-  if (strcmp(statement->body->interface->URI, OSL_URI_BODY) == 0) {
-    return (osl_body_p)(statement->body->data);
-  } else if (strcmp(statement->body->interface->URI, OSL_URI_EXTBODY) == 0) {
-    return ((osl_extbody_p)(statement->body->data))->body;
-  } else {
-    return NULL;
-  }
+  body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
+  if (body != NULL)
+    return body;
+  return (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_EXTBODY);
 }
-
