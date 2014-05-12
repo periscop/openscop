@@ -834,6 +834,7 @@ void osl_statement_get_attributes(osl_statement_p statement,
  */
 osl_body_p osl_statement_get_body(osl_statement_p statement) {
   osl_body_p body;
+  osl_extbody_p ebody;
 
   if (statement == NULL || statement->extension == NULL) {
     return NULL;
@@ -842,5 +843,9 @@ osl_body_p osl_statement_get_body(osl_statement_p statement) {
   body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
   if (body != NULL)
     return body;
-  return (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_EXTBODY);
+  ebody = (osl_extbody_p)osl_generic_lookup(statement->extension,
+                                                           OSL_URI_EXTBODY);
+  if (ebody != NULL)
+    return ebody->body;
+  return NULL;
 }
