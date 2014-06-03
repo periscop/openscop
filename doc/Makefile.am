@@ -69,11 +69,25 @@
 
 
 #############################################################################
-SUBDIRS 		=
 
-#############################################################################
+MAINTAINERCLEANFILES	=			\
+	Makefile.in				\
+	htmldoc.tar.gz				\
+	openscop.pdf				\
+	openscop.cp				\
+	openscop.fn				\
+	openscop.info				\
+	openscop.ky				\
+	openscop.pg				\
+	openscop.toc				\
+	openscop.tp				\
+	openscop.vr				\
+	openscop.aux				\
+	openscop.log				\
+	openscop.doc
 
-MAINTAINERCLEANFILES	= Makefile.in
+clean-local:
+	-rm -rf htmldoc
 
 EXTRA_DIST		=			\
 	htmldoc.tar.gz				\
@@ -100,8 +114,16 @@ EXTRA_DIST		=			\
 	images/tree.pdf				\
 	images/tree.txt
 
+if GENERATE_DOC
+# Unfortunately the following is not supported conditionaly
+# info_TEXINFOS		= openscop.texi
 
-info_TEXINFOS		= openscop.texi
+openscop.pdf: openscop.texi			\
+	images/basic.pdf			\
+	images/basic1.pdf			\
+	images/basic2.pdf			\
+	images/tree.pdf
+	$(TEXI2PDF) openscop.texi
 
 DOCDIR			= htmldoc
 DOXYFILE		= Doxyfile
@@ -116,3 +138,4 @@ htmldoc.tar.gz:
 	mkdir -p $(top_srcdir)/doc/htmldoc
 	$(DOXYGEN) $(DOXYFILE)
 	tar czf htmldoc.tar.gz htmldoc
+endif
