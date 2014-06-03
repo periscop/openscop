@@ -65,8 +65,8 @@ dnl
 dnl Input file for autoconf to build a configuration shellscript.
 
 m4_define([version_major], [0])
-m4_define([version_minor], [8])
-m4_define([version_revision], [4])
+m4_define([version_minor], [9])
+m4_define([version_revision], [0])
 
 AC_PREREQ(2.53)
 dnl Fill here the @bug email adress.
@@ -97,8 +97,8 @@ AC_CHECK_PROG(CD, cd)
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
-AC_CHECK_PROGS(DOXYGEN,doxygen,doxygen)
-AC_CHECK_PROGS(TEXI2PDF,texi2pdf,texi2pdf)
+AC_CHECK_PROGS(DOXYGEN, doxygen, doxygen, [])
+AC_CHECK_PROGS(TEXI2PDF, texi2pdf, texi2pdf, [])
 AM_CONDITIONAL(GENERATE_DOC, test -n "$TEXI2PDF" -a -n "$DOXYGEN")
   
 AX_CC_MAXOPT
