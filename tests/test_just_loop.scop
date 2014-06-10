@@ -53,7 +53,7 @@ t9
 # Private variables
 (null)
 # Directive
-4
+8 (null)
 # ===========================================
 # Loop number 4 
 # Iterator name
@@ -65,7 +65,7 @@ t9
 # Private variables
 (null)
 # Directive
-4
+8 user_defined_pragma (arg1, arg2)
 </loop>
 
 </OpenScop>
