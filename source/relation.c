@@ -1502,26 +1502,28 @@ osl_relation_p osl_relation_poly_psread(char ** input, int precision) {
   int may_read_nb_union_parts = 1;
   int read_attributes = 1;
   int first = 1;
-  //int type;
   char str[OSL_MAX_STRING], *tmp;
   osl_relation_p relation, relation_union = NULL, previous = NULL;
-
-  //type = osl_relation_read_type(NULL, input);
 
   // Read each part of the union (the number of parts may be updated inside)
   for (k = 0; k < nb_union_parts; k++) {
     // Read the number of union parts or the attributes of the union part
     while (read_attributes) {
       read_attributes = 0;
-
       // Read relation attributes.
       osl_util_sskip_blank_and_comments(input);
-      
-      read = sscanf(*input, " %d %d %d %d %d %d%n",
+      // make a copy of the first line
+      tmp = *input; 
+      while ((*tmp != '\0') && (*tmp != '\n'))
+				tmp++;
+			strncpy(str, *input, sizeof(char) * (tmp-*input));
+			str[(tmp-*input)] = '\0'; 
+			
+			read = sscanf(str, " %d %d %d %d %d %d",
           &nb_rows, &nb_columns,
           &nb_output_dims, &nb_input_dims,
-          &nb_local_dims, &nb_parameters, &n);
-      *input += n;
+          &nb_local_dims, &nb_parameters);
+			*input = tmp;
 
       if (((read != 1) && (read != 6)) ||
           ((read == 1) && (may_read_nb_union_parts != 1)))
@@ -1542,7 +1544,6 @@ osl_relation_p osl_relation_poly_psread(char ** input, int precision) {
 
     // Allocate the union part and fill its properties.
     relation = osl_relation_pmalloc(precision, nb_rows, nb_columns);
-    //relation->type           = type;
     relation->nb_output_dims = nb_output_dims;
     relation->nb_input_dims  = nb_input_dims;
     relation->nb_local_dims  = nb_local_dims;
