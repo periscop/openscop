@@ -269,8 +269,6 @@ osl_body_p osl_body_sread(char ** input) {
     }
     else {
       body->iterators = osl_strings_malloc();
-      OSL_malloc(body->iterators->string, char **, sizeof(char *));
-      body->iterators->string[0] = NULL;
     }
 
     // Read the body:

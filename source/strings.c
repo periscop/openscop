@@ -239,6 +239,7 @@ osl_strings_p osl_strings_sread(char ** input) {
 
     // Build the strings structure
     strings = osl_strings_malloc();
+    free(strings->string);
     strings->string = string;
   }
 
@@ -335,6 +336,7 @@ osl_strings_p osl_strings_clone(osl_strings_p strings) {
   if ((nb_strings = osl_strings_size(strings)) == 0)
     return clone;
 
+  free(clone->string);
   OSL_malloc(clone->string, char **, (nb_strings + 1) * sizeof(char *));
   clone->string[nb_strings] = NULL;
   for (i = 0; i < nb_strings; i++)
@@ -430,7 +432,7 @@ size_t osl_strings_size(osl_const_strings_const_p strings) {
  */
 osl_strings_p osl_strings_encapsulate(char * string) {
   osl_strings_p capsule = osl_strings_malloc();
-  
+  free(capsule->string);
   OSL_malloc(capsule->string, char **, 2 * sizeof(char *));
   capsule->string[0] = string;
   capsule->string[1] = NULL;
@@ -488,6 +490,7 @@ osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
   }
 
   generated = osl_strings_malloc();
+  free(generated->string);
   generated->string = strings;
   return generated;
 }
