@@ -1162,3 +1162,22 @@ int osl_int_divisible(int precision,
       OSL_error("unknown precision");
   }
 }
+
+
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+
+
+/**
+ * osl_int_set_precision function:
+ * this function changes the precision of the osl_int
+ */
+void osl_int_set_precision(int const precision, int const new_precision,
+                           osl_int_p i) {
+  if (i != NULL && precision != new_precision) {
+    int v = osl_int_get_si(precision, *i); // TODO Fix to avoid overflow
+    osl_int_clear(precision, i);
+    osl_int_init_set_si(new_precision, i, v);
+  }
+}
