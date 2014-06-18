@@ -129,6 +129,11 @@ void osl_int_dump_precision(FILE * file, int precision) {
 }
 
 
+/**
+ * \brief Initialize the osl int
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to initialize
+ */
 void osl_int_init(int precision, osl_int_const_p variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
@@ -152,6 +157,10 @@ void osl_int_init(int precision, osl_int_const_p variable) {
 }
 
 
+/**
+ * \brief Initialize the osl int
+ * \param[in] precision Precision of the osl int
+ */
 osl_int_p osl_int_malloc(int precision) {
   osl_int_p variable;
 
@@ -162,7 +171,10 @@ osl_int_p osl_int_malloc(int precision) {
 
 
 /**
- * variable = value;
+ * \brief variable = value
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to assign
+ * \param[in] value     Value in a osl int
  */
 void osl_int_assign(int precision,
                     osl_int_const_p variable, osl_const_int_t value) {
@@ -188,7 +200,10 @@ void osl_int_assign(int precision,
 
 
 /**
- * variable = i;
+ * \brief variable = i
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to assign
+ * \param[in] i         Value in a int
  */
 void osl_int_set_si(int precision, osl_int_const_p variable, int i) {
   switch (precision) {
@@ -213,7 +228,10 @@ void osl_int_set_si(int precision, osl_int_const_p variable, int i) {
 
 
 /**
- * return value;
+ * \brief Get the value in a int
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return the value in a int
  */
 int osl_int_get_si(int precision, osl_const_int_t value) {
   switch (precision) {
@@ -251,10 +269,10 @@ int osl_int_get_si(int precision, osl_const_int_t value) {
 
 
 /**
- * \brief Get a double from the osl_int_t
- * \param[in] precision Precision used.
- * \param[in] i         A osl_int_t
- * \return a double from the value.
+ * \brief Get the value in a double
+ * \param[in] precision Precision of the osl int
+ * \param[in] i         Value in a osl int
+ * \return the value in a double
  */
 double osl_int_get_d(int precision, osl_const_int_t i) {
   switch (precision) {
@@ -276,7 +294,10 @@ double osl_int_get_d(int precision, osl_const_int_t i) {
 
 
 /**
- * variable = i; // including initialization for GMP
+ * \brief variable = i // including initialization for GMP
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to initialize
+ * \param[in] i         Value in a osl int
  */
 void osl_int_init_set(int precision, osl_int_const_p variable, osl_const_int_t i) {
   osl_int_init(precision, variable);
@@ -285,7 +306,10 @@ void osl_int_init_set(int precision, osl_int_const_p variable, osl_const_int_t i
 
 
 /**
- * variable = i; // including initialization for GMP
+ * \brief variable = i // including initialization for GMP
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to initialize
+ * \param[in] i         Value in a osl int
  */
 void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
   switch (precision) {
@@ -311,7 +335,10 @@ void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
 
 
 /**
- * var1 <=> var2;
+ * \brief Swap the osl ints
+ * \param[in] precision Precision of the osl ints
+ * \param[in] var1 First osl int to swap
+ * \param[in] var2 Second osl int to swap
  */
 void osl_int_swap(int precision, osl_int_const_p var1, osl_int_const_p var2) {
   switch (precision) {
@@ -348,7 +375,9 @@ void osl_int_swap(int precision, osl_int_const_p var1, osl_int_const_p var2) {
 
 
 /**
- * variable = 0; // Including cleaning for GMP
+ * \brief variable = 0 // including cleaning for GMP
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to clear
  */
 void osl_int_clear(int precision, osl_int_const_p variable) {
   switch (precision) {
@@ -373,6 +402,11 @@ void osl_int_clear(int precision, osl_int_const_p variable) {
 }
 
 
+/**
+ * \brief Free thr osl int
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to free
+ */
 void osl_int_free(int precision, osl_int_const_p variable) {
   osl_int_clear(precision, variable);
   free(variable);
@@ -460,6 +494,13 @@ void osl_int_sprint_txt(char * string, int precision, osl_const_int_t value) {
 }
 
 
+/**
+ * \brief sscanf for osl int
+ * \param[in] string    Integer in a char*
+ * \param[in] precision Precision of the osl int
+ * \param[in] i         A osl int to save integer
+ * \return the number of char readed
+ */
 int osl_int_sscanf(char* string, int precision, osl_int_const_p i) {
   int nb_read = 0;
 
@@ -489,6 +530,12 @@ int osl_int_sscanf(char* string, int precision, osl_int_const_p i) {
 }
 
 
+/**
+ * \brief sread for osl int
+ * \param[in] string    Integer in a char**
+ * \param[in] precision Precision of the osl int
+ * \param[in] i         A osl int to save integer
+ */
 void osl_int_sread(char ** string, int precision, osl_int_const_p i) {
   // Update the position in the input string.
   *string += osl_int_sscanf(*string, precision, i);
@@ -501,7 +548,10 @@ void osl_int_sread(char ** string, int precision, osl_int_const_p i) {
 
 
 /**
- * variable <- value + 1;
+ * \brief variable = value + 1
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] value     Value in a osl int
  */
 void osl_int_increment(int precision,
                        osl_int_const_p variable, osl_const_int_t value) {
@@ -510,7 +560,10 @@ void osl_int_increment(int precision,
 
 
 /**
- * variable <- value - 1;
+ * \brief variable = value - 1
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] value     Value in a osl int
  */
 void osl_int_decrement(int precision,
                        osl_int_const_p variable, osl_const_int_t value) {
@@ -519,7 +572,11 @@ void osl_int_decrement(int precision,
 
 
 /**
- * variable <- val1 + val2;
+ * \brief variable = val1 + val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
  */
 void osl_int_add(int precision, osl_int_const_p variable,
                  osl_const_int_t val1, osl_const_int_t val2) {
@@ -565,7 +622,11 @@ void osl_int_add(int precision, osl_int_const_p variable,
 
 
 /**
- * variable <- value + i;
+ * \brief variable = val1 + i
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] value     Value of first int in a osl int
+ * \param[in] i         Value of second int in a int
  */
 void osl_int_add_si(int precision,
                     osl_int_const_p variable, osl_const_int_t value, int i) {
@@ -615,7 +676,11 @@ void osl_int_add_si(int precision,
 
 
 /**
- * variable <- val1 - val2;
+ * \brief variable = val1 - val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
  */
 void osl_int_sub(int precision, osl_int_const_p variable,
                  osl_const_int_t val1, osl_const_int_t val2) {
@@ -634,7 +699,11 @@ void osl_int_sub(int precision, osl_int_const_p variable,
 
 
 /**
- * variable <- val1 * val2;
+ * \brief variable = val1 * val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
  */
 void osl_int_mul(int precision, osl_int_const_p variable,
                  osl_const_int_t val1, osl_const_int_t val2) {
@@ -674,7 +743,11 @@ void osl_int_mul(int precision, osl_int_const_p variable,
 
 
 /**
- * variable <- value * i;
+ * \brief variable = val1 * i
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to save the result
+ * \param[in] value     Value of first int in a osl int
+ * \param[in] i         Value of second int in a int
  */
 void osl_int_mul_si(int precision,
                     osl_int_const_p variable, osl_const_int_t value, int i) {
@@ -714,8 +787,12 @@ void osl_int_mul_si(int precision,
 
 
 /**
- * \brief q <- a / b
+ * \brief q = a / b
  * \pre b divides a (without remainder)
+ * \param[in] precision Precision of the osl int
+ * \param[in] q         Quotient in a osl int
+ * \param[in] a         Value of first osl int
+ * \param[in] b         Value of second osl int
  */
 void osl_int_div_exact(int const precision,
                        osl_int_const_p q,
@@ -735,9 +812,11 @@ void osl_int_div_exact(int const precision,
 
 
 /**
- * \brief q <- floor(a / b)
- *
- * q is the quotient
+ * \brief q = floor(a / b)
+ * \param[in] precision Precision of the osl int
+ * \param[in] q         Quotient in a osl int
+ * \param[in] a         Value of first osl int
+ * \param[in] b         Value of second osl int
  */
 void osl_int_floor_div_q(int const precision,
                          osl_int_const_p q,
@@ -775,9 +854,11 @@ void osl_int_floor_div_q(int const precision,
 
 
 /**
- * \brief r <- a - b * (a / b) (r <- a % b is used)
- *
- * r is the remainder
+ * \brief r = a - b * (a / b)
+ * \param[in] precision Precision of the osl int
+ * \param[in] r         Remainder in a osl int
+ * \param[in] a         Value of first osl int
+ * \param[in] b         Value of second osl int
  */
 void osl_int_floor_div_r(int const precision,
                          osl_int_const_p r,
@@ -804,9 +885,11 @@ void osl_int_floor_div_r(int const precision,
 
 /**
  * \brief Compute (q, r) such that a = b * q + r
- *
- * q is the quotient \n
- * r is the remainder
+ * \param[in] precision Precision of the osl int
+ * \param[in] q         Quotient in a osl int
+ * \param[in] r         Remainder in a osl int
+ * \param[in] a         Value of first osl int
+ * \param[in] b         Value of second osl int
  */
 void osl_int_floor_div_q_r(int const precision,
                            osl_int_const_p q, osl_int_const_p r,
@@ -832,9 +915,12 @@ void osl_int_floor_div_q_r(int const precision,
 
 
 /**
- * \brief mod <- a % b
- *
+ * \brief mod = a % b
  * \pre mod is always positive
+ * \param[in] precision Precision of the osl int
+ * \param[in] mod       Modulo in a osl int
+ * \param[in] a         Value of first osl int
+ * \param[in] b         Value of second osl int
  */
 void osl_int_mod(int const precision, osl_int_const_p mod,
                                       osl_const_int_t a, osl_const_int_t b) {
@@ -865,6 +951,10 @@ static long long int llgcd(long long int const a, long long int const b) {
 
 /**
  * \brief Compute the gcd (greatest common divisor) of a and b
+ * \param[in] precision Precision of the osl int
+ * \param[in] gcd       Greatest common divisor in a osl int
+ * \param[in] a         Value of first osl int
+ * \param[in] b         Value of second osl int
  */
 void osl_int_gcd(int const precision, osl_int_const_p gcd,
                                       osl_const_int_t a, osl_const_int_t b) {
@@ -883,7 +973,10 @@ void osl_int_gcd(int const precision, osl_int_const_p gcd,
 
 
 /**
- * variable <- -value;
+ * \brief variable = - value
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to get the oppose
+ * \param[in] value     Value in a osl int
  */
 void osl_int_oppose(int precision,
                     osl_int_const_p variable, osl_const_int_t value) {
@@ -909,7 +1002,10 @@ void osl_int_oppose(int precision,
 
 
 /**
- * variable <- | value |;
+ * \brief variable = | value |
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to get the absolute value
+ * \param[in] value     Value in a osl int
  */
 void osl_int_abs(int precision,
                  osl_int_const_p variable, osl_const_int_t value) {
@@ -946,7 +1042,10 @@ static size_t lllog2(long long int x) {
 }
 
 /**
- * @return size in base 2
+ * \brief Get the size in base 2
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return the size in base 2
  */
 size_t osl_int_size_in_base_2(int const precision,
                               osl_const_int_t const value) {
@@ -976,9 +1075,11 @@ static size_t lllog10(long long int x) {
 }
 
 /**
- * @return size in base 10
- * @warning mpz_sizeinbase may not return the same result
- * with same integer in different precisions
+ * \brief Get the size in base 10
+ * \warning warning mpz_sizeinbase may not return the same result with same integer in different precisions
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return the size in base 10
  */
 size_t osl_int_size_in_base_10(int const precision,
                                osl_const_int_t const value) {
@@ -1002,7 +1103,11 @@ size_t osl_int_size_in_base_10(int const precision,
 
 
 /**
- * (val1 == val2)
+ * \brief val1 == val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if values are equal, false otherwise
  */
 int osl_int_eq(int precision, osl_const_int_t val1, osl_const_int_t val2) {
   switch (precision) {
@@ -1024,7 +1129,11 @@ int osl_int_eq(int precision, osl_const_int_t val1, osl_const_int_t val2) {
 
 
 /**
- * (val1 != val2)
+ * \brief val1 != val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if values are not equal, false otherwise
  */
 int osl_int_ne(int precision, osl_const_int_t val1, osl_const_int_t val2) {
   return !osl_int_eq(precision, val1, val2);
@@ -1032,7 +1141,10 @@ int osl_int_ne(int precision, osl_const_int_t val1, osl_const_int_t val2) {
 
 
 /**
- * (value > 0)
+ * \brief value > 0
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return 1 if value is > 0, false otherwise
  */
 int osl_int_pos(int precision, osl_const_int_t value) {
   switch (precision) {
@@ -1054,7 +1166,10 @@ int osl_int_pos(int precision, osl_const_int_t value) {
 
 
 /**
- * (value < 0)
+ * \brief value < 0
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return 1 if value < 0, false otherwise
  */
 int osl_int_neg(int precision, osl_const_int_t value) {
   switch (precision) {
@@ -1076,7 +1191,10 @@ int osl_int_neg(int precision, osl_const_int_t value) {
 
 
 /**
- * (value == 0)
+ * \brief value == 0
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return 1 if value equal to 0, false otherwise
  */
 int osl_int_zero(int precision, osl_const_int_t value) {
   switch (precision) {
@@ -1098,7 +1216,10 @@ int osl_int_zero(int precision, osl_const_int_t value) {
 
 
 /**
- * (value == 1)
+ * \brief value == 1
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return 1 if value equal to 1, false otherwise
  */
 int osl_int_one(int precision, osl_const_int_t value) {
   switch (precision) {
@@ -1120,7 +1241,10 @@ int osl_int_one(int precision, osl_const_int_t value) {
 
 
 /**
- * (value == -1)
+ * \brief value == -1
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return 1 if value equal to -1, false otherwise
  */
 int osl_int_mone(int precision, osl_const_int_t value) {
   switch (precision) {
@@ -1142,7 +1266,11 @@ int osl_int_mone(int precision, osl_const_int_t value) {
 
 
 /**
- * ((val1 % val2) == 0)
+ * \brief (val1 % val2) == 0
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if val2 divises val1 without remainder, false otherwise
  */
 int osl_int_divisible(int precision,
                       osl_const_int_t val1, osl_const_int_t val2) {
@@ -1170,8 +1298,10 @@ int osl_int_divisible(int precision,
 
 
 /**
- * osl_int_set_precision function:
- * this function changes the precision of the osl_int
+ * \brief Change the precision of the osl_int
+ * \param[in]     precision     Precision of the osl int
+ * \param[in]     new_precision Precision wanted for the osl int
+ * \param[in,out] i             A osl int to change the precision
  */
 void osl_int_set_precision(int const precision, int const new_precision,
                            osl_int_p i) {
