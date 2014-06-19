@@ -285,10 +285,10 @@ char * osl_relation_expression_element(osl_int_t val,
         if (osl_int_mone(precision, val)) {      // case -1
           sprintf(sval, "-%s", name);
         }
-	else {                                      // default case
-	  osl_int_sprint_txt(sval, precision, val);
-	  sprintf(temp, "*%s", name);
-	  strcat(sval, temp);
+  else {                                      // default case
+    osl_int_sprint_txt(sval, precision, val);
+    sprintf(temp, "*%s", name);
+    strcat(sval, temp);
         }
       }
       *first = 0;
@@ -299,10 +299,10 @@ char * osl_relation_expression_element(osl_int_t val,
       }
       else {
         sprintf(sval, "+");
-	osl_int_sprint_txt(temp, precision, val);
-	strcat(sval, temp);
-	sprintf(temp, "*%s", name);
-	strcat(sval, temp);
+  osl_int_sprint_txt(temp, precision, val);
+  strcat(sval, temp);
+  sprintf(temp, "*%s", name);
+  strcat(sval, temp);
       }
     }
   }
@@ -315,9 +315,9 @@ char * osl_relation_expression_element(osl_int_t val,
         if (!(*first)) {
           sprintf(sval, "+");
           osl_int_sprint_txt(temp, precision, val);
-	  strcat(sval, temp);
-	}
-	else {
+    strcat(sval, temp);
+  }
+  else {
           osl_int_sprint_txt(sval, precision, val);
         }
       }
@@ -1473,14 +1473,14 @@ osl_relation_p osl_relation_pread(FILE * foo, int precision) {
  * \see{osl_relation_poly_psread}
  */ 
 osl_relation_p osl_relation_psread(char ** input, int precision) {
-	int type;
-	osl_relation_p relation;
-	
-	type = osl_relation_read_type(NULL, input);
-	relation = osl_relation_poly_psread(input, precision);
-	relation->type = type; 
-	
-	return relation;
+  int type;
+  osl_relation_p relation;
+  
+  type = osl_relation_read_type(NULL, input);
+  relation = osl_relation_poly_psread(input, precision);
+  relation->type = type; 
+  
+  return relation;
 }
 
 /**
@@ -1515,15 +1515,15 @@ osl_relation_p osl_relation_poly_psread(char ** input, int precision) {
       // make a copy of the first line
       tmp = *input; 
       while ((*tmp != '\0') && (*tmp != '\n'))
-				tmp++;
-			strncpy(str, *input, sizeof(char) * (tmp-*input));
-			str[(tmp-*input)] = '\0'; 
-			
-			read = sscanf(str, " %d %d %d %d %d %d",
+        tmp++;
+      strncpy(str, *input, sizeof(char) * (tmp-*input));
+      str[(tmp-*input)] = '\0'; 
+      
+      read = sscanf(str, " %d %d %d %d %d %d",
           &nb_rows, &nb_columns,
           &nb_output_dims, &nb_input_dims,
           &nb_local_dims, &nb_parameters);
-			*input = tmp;
+      *input = tmp;
 
       if (((read != 1) && (read != 6)) ||
           ((read == 1) && (may_read_nb_union_parts != 1)))
@@ -1605,8 +1605,8 @@ osl_relation_p osl_relation_sread(char ** input) {
  * \see{osl_relation_poly_psread}
  */
 osl_relation_p osl_relation_poly_sread(char ** input) { 
-	int precision = osl_util_get_precision(); 
-	return osl_relation_poly_psread(input, precision);
+  int precision = osl_util_get_precision(); 
+  return osl_relation_poly_psread(input, precision);
 }
 
 
