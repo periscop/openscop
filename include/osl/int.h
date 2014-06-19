@@ -163,6 +163,14 @@ int       osl_int_mone(int, osl_const_int_t);
 int       osl_int_divisible(int, osl_const_int_t, osl_const_int_t);
 
 
+/*+***************************************************************************
+ *                            Processing functions                           *
+ *****************************************************************************/
+
+
+void      osl_int_set_precision(int const, int const, osl_int_p);
+
+
 # if defined(__cplusplus)
   }
 # endif

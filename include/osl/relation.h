@@ -163,42 +163,44 @@ void           osl_relation_free(osl_relation_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-int            osl_relation_nb_components(osl_relation_p relation);
-osl_relation_p osl_relation_nclone(osl_relation_p, int);
-osl_relation_p osl_relation_clone_nconstraints(osl_relation_p, int);
-osl_relation_p osl_relation_clone(osl_relation_p);
-void           osl_relation_add(osl_relation_p *, osl_relation_p);
-osl_relation_p osl_relation_union(osl_relation_p, osl_relation_p);
-void           osl_relation_replace_vector(osl_relation_p, osl_vector_p, int);
-void           osl_relation_insert_vector(osl_relation_p, osl_vector_p, int);
-osl_relation_p osl_relation_concat_vector(osl_relation_p, osl_vector_p);
-void           osl_relation_insert_blank_row(osl_relation_p, int);
-void           osl_relation_insert_blank_column(osl_relation_p, int);
-void           osl_relation_add_vector(osl_relation_p, osl_vector_p, int);
-void           osl_relation_sub_vector(osl_relation_p, osl_vector_p, int);
-osl_relation_p osl_relation_from_vector(osl_vector_p);
-void           osl_relation_replace_constraints(osl_relation_p,
+int             osl_relation_nb_components(osl_relation_p relation);
+osl_relation_p  osl_relation_nclone(osl_relation_p, int);
+osl_relation_p  osl_relation_clone_nconstraints(osl_relation_p, int);
+osl_relation_p  osl_relation_clone(osl_relation_p);
+void            osl_relation_add(osl_relation_p *, osl_relation_p);
+osl_relation_p  osl_relation_union(osl_relation_p, osl_relation_p);
+void            osl_relation_replace_vector(osl_relation_p, osl_vector_p, int);
+void            osl_relation_insert_vector(osl_relation_p, osl_vector_p, int);
+osl_relation_p  osl_relation_concat_vector(osl_relation_p, osl_vector_p);
+void            osl_relation_insert_blank_row(osl_relation_p, int);
+void            osl_relation_insert_blank_column(osl_relation_p, int);
+void            osl_relation_add_vector(osl_relation_p, osl_vector_p, int);
+void            osl_relation_sub_vector(osl_relation_p, osl_vector_p, int);
+osl_relation_p  osl_relation_from_vector(osl_vector_p);
+void            osl_relation_replace_constraints(osl_relation_p,
+                                                 osl_relation_p, int);
+void            osl_relation_insert_constraints(osl_relation_p,
                                                 osl_relation_p, int);
-void           osl_relation_insert_constraints(osl_relation_p,
-                                               osl_relation_p, int);
-void           osl_relation_swap_constraints(osl_relation_p, int, int);
-void           osl_relation_remove_row(osl_relation_p, int);
-void           osl_relation_remove_column(osl_relation_p, int);
-void           osl_relation_insert_columns(osl_relation_p, osl_relation_p,int);
-osl_relation_p osl_relation_concat_constraints(osl_relation_p, osl_relation_p);
-int            osl_relation_part_equal(osl_relation_p, osl_relation_p);    
-int            osl_relation_equal(osl_relation_p, osl_relation_p);    
-int            osl_relation_integrity_check(osl_relation_p, int, int, int,int);
-void           osl_relation_set_attributes_one(osl_relation_p,
-                                               int, int, int, int);
-void           osl_relation_set_attributes(osl_relation_p, int, int, int, int);
-void           osl_relation_set_type(osl_relation_p, int);
-int            osl_relation_get_array_id(osl_relation_p);
-int            osl_relation_is_access(osl_relation_p);
-void           osl_relation_get_attributes(osl_relation_p,
-                                           int *, int *, int *, int *, int *);
-osl_relation_p osl_relation_extend_output(osl_relation_p, int);
+void            osl_relation_swap_constraints(osl_relation_p, int, int);
+void            osl_relation_remove_row(osl_relation_p, int);
+void            osl_relation_remove_column(osl_relation_p, int);
+void            osl_relation_insert_columns(osl_relation_p, osl_relation_p,int);
+osl_relation_p  osl_relation_concat_constraints(osl_relation_p, osl_relation_p);
+int             osl_relation_part_equal(osl_relation_p, osl_relation_p);    
+int             osl_relation_equal(osl_relation_p, osl_relation_p);    
+int             osl_relation_integrity_check(osl_relation_p, int, int, int,int);
+void            osl_relation_set_attributes_one(osl_relation_p,
+                                                int, int, int, int);
+void            osl_relation_set_attributes(osl_relation_p, int, int, int, int);
+void            osl_relation_set_type(osl_relation_p, int);
+int             osl_relation_get_array_id(osl_relation_p);
+int             osl_relation_is_access(osl_relation_p);
+void            osl_relation_get_attributes(osl_relation_p,
+                                            int *, int *, int *, int *, int *);
+osl_relation_p  osl_relation_extend_output(osl_relation_p, int);
 osl_interface_p osl_relation_interface();
+void            osl_relation_set_precision(int const, osl_relation_p);
+void            osl_relation_set_same_precision(osl_relation_p, osl_relation_p);
 
 # if defined(__cplusplus)
   }

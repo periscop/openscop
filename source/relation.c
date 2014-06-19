@@ -2981,3 +2981,47 @@ osl_interface_p osl_relation_interface() {
 
   return interface;
 }
+
+
+/**
+ * osl_relation_set_precision function:
+ * this function changes the precision of the osl_relation
+ * \param[in]     precision Precision wanted for the relation
+ * \param[in,out] r         A osl relation to change the precision
+ */
+void osl_relation_set_precision(int const precision, osl_relation_p r) {
+  while (r != NULL) {
+    if (precision != r->precision) {
+      size_t i;
+      size_t j;
+      for (i = 0; i < (size_t)r->nb_rows; ++i) {
+        for (j = 0; j < (size_t)r->nb_columns; ++j) {
+          osl_int_set_precision(r->precision, precision, &r->m[i][j]);
+        }
+      }
+      r->precision = precision;
+    }
+    r = r->next;
+  }
+}
+
+
+/**
+ * osl_relation_set_same_precision function:
+ * this function gets the highest precision of the relations
+ * and set this precision to the other relation if necessary
+ * \param[in,out] a A osl relation to change the precision if necessary
+ * \param[in,out] b A osl relation to change the precision if necessary
+ */
+void osl_relation_set_same_precision(osl_relation_p a, osl_relation_p b) {
+  if (a != NULL && b != NULL && a->precision != b->precision) {
+    if (a->precision == OSL_PRECISION_MP || b->precision == OSL_PRECISION_MP) {
+      osl_relation_set_precision(OSL_PRECISION_MP, a);
+      osl_relation_set_precision(OSL_PRECISION_MP, b);
+    }
+    else if (a->precision == OSL_PRECISION_DP || b->precision == OSL_PRECISION_DP) {
+      osl_relation_set_precision(OSL_PRECISION_DP, a);
+      osl_relation_set_precision(OSL_PRECISION_DP, b);
+    }
+  }
+}
