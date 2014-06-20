@@ -718,4 +718,32 @@ char * osl_util_identifier_substitution(char * expression,
 }
 
 
+/**
+ * osl_util_read_arg_int function:
+ * this function reads an argument from (char* argv[] style) array of strings
+ * and converts it into an int.
+ *
+ * \param[in] index Index of the argument to be read
+ * \param[in] argv  Array of strings from which to read.
+ * \param[out] option Pointer to integer where the read value will be stored.
+ * \return 1.
+ */
+int osl_util_read_arg_int(int index, char** argv, int* option) {
+  if (sscanf(argv[index], " %d", option) != 1)
+    OSL_error("Expecting an integer value in argument\n");
+  return 1;
+}
 
+/**
+ * osl_util_read_arg_string function:
+ * this function reads an argument from (char* argv[] style) array of strings.
+ *
+ * \param[in] index Index of the argument to be read
+ * \param[in] argv  Array of strings from which to read.
+ * \param[out] option Pointer to string where the read value will be stored.
+ * \return 1.
+ */
+int osl_util_read_arg_string(int index, char** argv, char** option) {
+  OSL_strdup(*option, argv[index]);
+  return 1;
+}

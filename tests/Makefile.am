@@ -98,6 +98,7 @@ osl_test_SOURCES = \
 	test_just_extbody.scop \
 	test_just_domain.scop \
 	test_just_scattering.scop \
+	test_just_cloogoptions.scop \
 	test_coordinates.scop \
 	test_matmult.scop \
 	test_clay.scop \
