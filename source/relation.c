@@ -285,10 +285,10 @@ char * osl_relation_expression_element(osl_int_t val,
         if (osl_int_mone(precision, val)) {      // case -1
           sprintf(sval, "-%s", name);
         }
-  else {                                      // default case
-    osl_int_sprint_txt(sval, precision, val);
-    sprintf(temp, "*%s", name);
-    strcat(sval, temp);
+        else {                                      // default case
+          osl_int_sprint_txt(sval, precision, val);
+          sprintf(temp, "*%s", name);
+          strcat(sval, temp);
         }
       }
       *first = 0;
@@ -299,10 +299,10 @@ char * osl_relation_expression_element(osl_int_t val,
       }
       else {
         sprintf(sval, "+");
-  osl_int_sprint_txt(temp, precision, val);
-  strcat(sval, temp);
-  sprintf(temp, "*%s", name);
-  strcat(sval, temp);
+        osl_int_sprint_txt(temp, precision, val);
+        strcat(sval, temp);
+        sprintf(temp, "*%s", name);
+        strcat(sval, temp);
       }
     }
   }
@@ -315,9 +315,9 @@ char * osl_relation_expression_element(osl_int_t val,
         if (!(*first)) {
           sprintf(sval, "+");
           osl_int_sprint_txt(temp, precision, val);
-    strcat(sval, temp);
-  }
-  else {
+          strcat(sval, temp);
+        }
+        else {
           osl_int_sprint_txt(sval, precision, val);
         }
       }
