@@ -148,9 +148,9 @@ void           osl_relation_pprint_scoplib(FILE *, osl_relation_p,
 osl_relation_p osl_relation_pread(FILE *, int);
 osl_relation_p osl_relation_read(FILE *);
 osl_relation_p osl_relation_psread(char **, int);
-osl_relation_p osl_relation_poly_psread(char **, int);
+osl_relation_p osl_relation_psread_polylib(char **, int);
 osl_relation_p osl_relation_sread(char **);
-osl_relation_p osl_relation_poly_sread(char **);
+osl_relation_p osl_relation_sread_polylib(char **);
 
 
 /*+***************************************************************************
