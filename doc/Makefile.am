@@ -127,7 +127,7 @@ openscop.pdf: openscop.texi			\
 
 DOCDIR			= htmldoc
 DOXYFILE		= Doxyfile
-DOXYGEN			= @DOXYGEN@
+DOXYGENTOOL		= @DOXYGEN@
 
 # The following requires a fixed version of the Emacs 19.30 etags.
 ETAGS_ARGS		= --lang=none \
@@ -136,6 +136,6 @@ TAGS_DEPENDENCIES	= openscop.texi $(DOXYFILE).in
 
 htmldoc.tar.gz:
 	mkdir -p $(top_srcdir)/doc/htmldoc
-	$(DOXYGEN) $(DOXYFILE)
+	$(DOXYGENTOOL) $(DOXYFILE)
 	tar czf htmldoc.tar.gz htmldoc
 endif
