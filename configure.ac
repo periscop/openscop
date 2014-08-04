@@ -132,13 +132,20 @@ case "$with_gmp" in
 build)
     CPPFLAGS="-D$gmp_flag -I$gmp_srcdir -I$with_gmp_builddir $CPPFLAGS"
     LIBS="$with_gmp_builddir/libgmp.la $LIBS"
+    LDFLAGS="-L$with_gmp_builddir $LDFLAGS"
     ;;
 system)
     CPPFLAGS="-D$gmp_flag $CPPFLAGS"
+    LIBS="-lgmp $LIBS"
     if test "x$with_gmp_prefix" != "x"; then
 	CPPFLAGS="-I$with_gmp_prefix/include $CPPFLAGS"
 	LDFLAGS="-L$with_gmp_prefix/lib $LDFLAGS"
     fi
+    dnl AC_CHECK_LIB doesn't use LDFLAGS --> not suitable for the build case.
+    AC_CHECK_LIB(gmp,
+                 __gmpz_init,
+                 [],
+                 [AC_MSG_ERROR("Can't find gmp library.")])
     ;;
 esac
 case "$with_gmp" in
@@ -146,10 +153,6 @@ build|system)
     AC_CHECK_HEADER(gmp.h,
                     [],
                     [AC_MSG_ERROR("Can't find gmp headers.")])
-    AC_CHECK_LIB(gmp,
-                 __gmpz_init,
-                 [LIBS="$LIBS -lgmp"],
-                 [AC_MSG_ERROR("Can't find gmp library.")])
     ;;
 esac
 
