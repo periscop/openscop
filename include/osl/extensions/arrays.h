@@ -119,6 +119,9 @@ void            osl_arrays_free(osl_arrays_p);
 osl_arrays_p    osl_arrays_clone(osl_arrays_p);
 int             osl_arrays_equal(osl_arrays_p, osl_arrays_p);
 osl_strings_p   osl_arrays_to_strings(osl_arrays_p);
+int             osl_arrays_add(osl_arrays_p, int, char*);
+size_t          osl_arrays_get_index_from_id(osl_arrays_p, int);
+size_t          osl_arrays_get_index_from_name(osl_arrays_p, char*);
 osl_interface_p osl_arrays_interface();
 
 # if defined(__cplusplus)

@@ -382,6 +382,73 @@ osl_strings_p osl_arrays_to_strings(osl_arrays_p arrays) {
   return strings;
 }
 
+/**
+ * osl_arrays_add function:
+ * this function adds a new variable at the end of osl_array 
+ *
+ * \param[in] arrays The arrays structure to modify.
+ * \param[in] id     The new variable's id.
+ * \param[in] name   The new variable's name.
+ * \return Updated number of elements, -1 means error
+ */
+int osl_arrays_add(osl_arrays_p arrays, int id, char* name) {
+
+  if (arrays == NULL || name == NULL)
+    return -1;
+
+  OSL_realloc(arrays->id, int *, (arrays->nb_names+1) * sizeof(int));
+  OSL_realloc(arrays->names, char **, (arrays->nb_names+1) * sizeof(char *));
+  arrays->id[arrays->nb_names] = id;
+  OSL_strdup(arrays->names[arrays->nb_names], name);
+  arrays->nb_names++;
+
+  return arrays->nb_names;
+}
+
+
+/**
+ * osl_arrays_get_index_from_id function:
+ * this function the index of a variable given its identifier 
+ *
+ * \param[in] arrays The arrays structure to modify.
+ * \param[in] id     The variable's id.
+ * \return index of the variable, array->nb_names means error
+ */
+size_t osl_arrays_get_index_from_id(osl_arrays_p arrays, int id) {
+  size_t i = 0;
+
+  if (arrays == NULL)
+    return 0;
+
+  for (i=0; i<arrays->nb_names; i++) {
+    if(arrays->id[i]==id)
+      break;
+  }
+
+  return i<arrays->nb_names? i: arrays->nb_names;
+}
+
+/**
+ * osl_arrays_get_index_from_name function:
+ * this function the index of a variable given its name 
+ *
+ * \param[in] arrays The arrays structure to modify.
+ * \param[in] name     The variable's name.
+ * \return index of the variable, array->nb_names means error
+ */
+size_t osl_arrays_get_index_from_name(osl_arrays_p arrays, char* name) {
+  size_t i = 0;
+
+  if (arrays == NULL || name == NULL)
+    return 0;
+
+  for (i=0; i<arrays->nb_names; i++) {
+    if(!strcmp(arrays->names[i], name))
+      break;
+  }
+
+  return i<arrays->nb_names? i: arrays->nb_names;;
+}
 
 /**
  * osl_arrays_interface function:
