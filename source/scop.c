@@ -69,6 +69,7 @@
 #include <osl/util.h>
 #include <osl/extensions/arrays.h>
 #include <osl/extensions/textual.h>
+#include <osl/extensions/identifier.h>
 #include <osl/strings.h>
 #include <osl/relation.h>
 #include <osl/interface.h>
@@ -733,6 +734,7 @@ int osl_scop_equal(osl_scop_p s1, osl_scop_p s2) {
  */
 int osl_scop_integrity_check(osl_scop_p scop) {
   int expected_nb_parameters;
+  osl_scop_p list = scop;
 
 
   while (scop != NULL) {
@@ -763,6 +765,11 @@ int osl_scop_integrity_check(osl_scop_p scop) {
       return 0;
 
     scop = scop->next;
+  }
+
+  // Check the uniquiness of the identifiers.
+  if (!osl_identifier_is_unique(list)) {
+    return 0;
   }
 
   return 1;
