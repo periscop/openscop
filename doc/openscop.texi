@@ -2995,6 +2995,64 @@ typedef struct osl_pluto_unroll * osl_pluto_unroll_p;
 
 @c ---------------------------------------------------------------------------
 
+@node Identifier Extension
+@subsection Identifier Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{identifier}.
+@item Author: Oleksandr Zinenko <oleksandr.zinenko@@inria.fr>
+@item Purpose: the @code{identifier} extension provides a consistent way to
+identify statements across SCoP transformations.  Tools using OpenScop with
+this extension are supposed to maintain it unchanged.
+@item Precondition: the identifiers are integers that must be unique with
+respect to scop.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{identifier} extension file format respects the following
+grammar:
+@example
+ExtIdentifier ::= "<identifier>" _Integer "</identifier>"
+@end example
+
+
+@noindent Within the tags, the integer value corresponds to the identifier of
+the statement.
+
+@noindent @strong{Extra functionality}
+
+@noindent The @code{identifier} extension provides convinience functions for to
+work with identifiable statements.
+@itemize @bullet
+@item @code{osl_identifier_generate}: set up consecutive unique identifiers for
+all statements in the SCoP.
+@item @code{osl_identifier_is_unique}: check if the statement identifiers in
+the statement are unique.
+@item @code{osl_identifier_generate_one}: create one identifier that is unique
+with respect to a particular SCoP.
+@item @code{osl_identifier_statements_equal}: compare statements by identifier.
+@item @code{osl_identifier_statement_lookup}: find a statement by its
+identifier.
+@end itemize
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{identifier} extension data structure is the following:
+
+@example
+@group
+struct osl_identifier @{
+  int id;              /* unique integer underifier */
+@};
+typedef struct osl_identifier   osl_identifier_t;
+typedef struct osl_identifier * osl_identifier_p;
+@end group
+@end example
+
+@c ---------------------------------------------------------------------------
+
 
 @node Irregular Extension
 @subsection Irregular Extension

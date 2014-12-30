@@ -672,7 +672,7 @@ int osl_statement_equal(osl_statement_p s1, osl_statement_p s2) {
   }
 
   if (!osl_generic_equal(s1->extension, s2->extension)) {
-    OSL_info("statement bodies are not the same"); 
+    OSL_info("statement extensions are not the same"); 
     return 0;
   }
 
