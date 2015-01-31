@@ -15,7 +15,10 @@
 
 #include <stdlib.h>
 
+#include <gho/int/int.h>
+
 #include "../../include/osl1/extension/body.h"
+#include "../../include/osl1/input.h"
 
 
 // Create & destroy
@@ -28,7 +31,7 @@ osl1_extension_body_t osl1_extension_body_create() {
   osl1_extension_body_t body;
   body.expression = gho_string_create();
   body.original_iterators = gho_vector_string_create();
-  body.accesses = osl1_vector_start_and_size_create();
+  body.accesses = gho_vector_start_and_size_create();
   return body;
 }
 
@@ -39,7 +42,7 @@ osl1_extension_body_t osl1_extension_body_create() {
 void osl1_extension_body_destroy(osl1_extension_body_t* body) {
   gho_string_destroy(&body->expression);
   gho_vector_string_destroy(&body->original_iterators);
-  osl1_vector_start_and_size_destroy(&body->accesses);
+  gho_vector_start_and_size_destroy(&body->accesses);
 }
 
 /**
@@ -82,7 +85,7 @@ void osl1_extension_body_fprinti(FILE* file,
   
   gho_c_str_fprint(file, "# Accesses\n");
   gho_c_str_fprint(file, "# TODO\n");
-  //osl1_vector_start_and_size_fprinti(file, &body->accesses, indent);
+  //gho_vector_start_and_size_fprinti(file, &body->accesses, indent);
   //gho_c_str_fprint(file, "\n"); // TODO
   
   gho_c_str_fprinti(file, "</body>\n", indent);
@@ -135,7 +138,7 @@ void osl1_extension_body_sprinti(char** c_str,
   
   gho_c_str_sprint(c_str, "# Accesses\n");
   gho_c_str_sprint(c_str, "# TODO\n");
-  //osl1_vector_start_and_size_sprinti(c_str, &body->accesses, indent);
+  //gho_vector_start_and_size_sprinti(c_str, &body->accesses, indent);
   //gho_c_str_sprint(c_str, "\n"); // TODO
   
   gho_c_str_sprinti(c_str, "</body>\n", indent);
@@ -162,7 +165,7 @@ osl1_extension_body_t osl1_extension_body_fread(FILE* file) {
   osl1_skip_comments(file);
   osl1_extension_body_t r = osl1_extension_body_create();
   
-  int nb_iterator = osl1_int_fread(file);
+  int nb_iterator = gho_int_fread(file);
   osl1_skip_comments(file);
   
   if (nb_iterator > 0) {
@@ -175,7 +178,7 @@ osl1_extension_body_t osl1_extension_body_fread(FILE* file) {
   osl1_skip_comments(file);
   
   gho_string_t expression = gho_string_get_line(file);
-  gho_string_add_string(&r.expression, &expression);
+  gho_string_add(&r.expression, &expression);
   gho_string_destroy(&expression);
   osl1_skip_comments(file);
   
@@ -194,7 +197,7 @@ osl1_extension_body_t osl1_extension_body_sread(const char** c_str) {
   osl1_skip_comments_from_c_str(c_str);
   osl1_extension_body_t r = osl1_extension_body_create();
   
-  int nb_iterator = osl1_int_sread(c_str);
+  int nb_iterator = gho_int_sread(c_str);
   osl1_skip_comments_from_c_str(c_str);
   
   if (nb_iterator > 0) {
@@ -207,7 +210,7 @@ osl1_extension_body_t osl1_extension_body_sread(const char** c_str) {
   osl1_skip_comments_from_c_str(c_str);
   
   gho_string_t expression = gho_string_get_line_from_c_str(c_str);
-  gho_string_add_string(&r.expression, &expression);
+  gho_string_add(&r.expression, &expression);
   gho_string_destroy(&expression);
   osl1_skip_comments_from_c_str(c_str);
   
@@ -241,7 +244,7 @@ void osl1_extension_body_copy_(const osl1_extension_body_t* const body,
                                osl1_extension_body_t* copy) {
   copy->expression = gho_string_copy(&body->expression);
   copy->original_iterators = gho_vector_string_copy(&body->original_iterators);
-  copy->accesses = osl1_vector_start_and_size_copy(&body->accesses);
+  copy->accesses = gho_vector_start_and_size_copy(&body->accesses);
 }
 
 /**
@@ -255,7 +258,7 @@ bool osl1_extension_body_equal(const osl1_extension_body_t* const a,
   return
     gho_string_equal(&a->expression, &b->expression) &&
     gho_vector_string_equal(&a->original_iterators, &b->original_iterators) &&
-    osl1_vector_start_and_size_equal(&a->accesses, &b->accesses);
+    gho_vector_start_and_size_equal(&a->accesses, &b->accesses);
 }
 
 // Conversion

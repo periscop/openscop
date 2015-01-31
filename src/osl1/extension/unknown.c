@@ -16,6 +16,7 @@
 #include <gho/char.h>
 
 #include "../../include/osl1/extension/unknown.h"
+#include "../../include/osl1/input.h"
 
 
 // Create & destroy

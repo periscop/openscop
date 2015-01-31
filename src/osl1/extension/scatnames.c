@@ -15,7 +15,10 @@
 
 #include <stdlib.h>
 
+#include <gho/char.h>
+
 #include "../../include/osl1/extension/scatnames.h"
+#include "../../include/osl1/input.h"
 
 
 // Create & destroy
@@ -133,12 +136,12 @@ osl1_extension_scatnames_t osl1_extension_scatnames_fread(FILE* file) {
   
   gho_string_t scatname = gho_string_create();
   while (true) {
-     const char c = osl1_char_fread(file);
+     const char c = gho_char_fread(file);
      if (c == '\n') { break; }
      else if (c == ' ') {
        if (gho_string_size(&scatname) > 0) {
          gho_vector_string_add(&r.scatnames, &scatname);
-         gho_string_erase(&scatname);
+         gho_string_reset(&scatname);
        }
      }
      else { gho_string_add_char(&scatname, c); }
@@ -162,12 +165,12 @@ osl1_extension_scatnames_t osl1_extension_scatnames_sread(const char** c_str) {
   
   gho_string_t scatname = gho_string_create();
   while (true) {
-     const char c = osl1_char_sread(c_str);
+     const char c = gho_char_sread(c_str);
      if (c == '\n') { break; }
      else if (c == ' ') {
        if (gho_string_size(&scatname) > 0) {
          gho_vector_string_add(&r.scatnames, &scatname);
-         gho_string_erase(&scatname);
+         gho_string_reset(&scatname);
        }
      }
      else { gho_string_add_char(&scatname, c); }
