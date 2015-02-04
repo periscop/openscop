@@ -111,6 +111,15 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/extbody.h \
 	include/osl/extensions/pluto_unroll.h
 
+EXTRA_DIST = osl-config.cmake
+
+install-data-local:
+	@test -z "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)" || $(mkdir_p) "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)"
+	$(INSTALL_DATA) "$(top_srcdir)/osl-config.cmake" "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)/"
+
+uninstall-local:
+	rm -f "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)/osl-config.cmake"
+
 AM_CPPFLAGS =  -I. -I$(top_builddir)/include -I$(top_srcdir)/include
 AM_CFLAGS = $(CFLAGS_WARN)
 
