@@ -82,11 +82,11 @@ void osl1_extension_unknown_fprinti(FILE* file,
   gho_string_fprint(file, &unknown->mark);
   gho_c_str_fprint(file, ">\n");
   
-  gho_string_fprinti(file, &unknown->extension, indent);
+  gho_string_fprint(file, &unknown->extension);
   
   gho_c_str_fprinti(file, "</", indent);
   gho_string_fprint(file, &unknown->mark);
-  gho_c_str_fprint(file, ">\n");
+  gho_c_str_fprint(file, ">");
 }
 
 /**
@@ -122,11 +122,11 @@ void osl1_extension_unknown_sprinti(char** c_str,
   gho_string_sprint(c_str, &unknown->mark);
   gho_c_str_sprint(c_str, ">\n");
   
-  gho_string_sprinti(c_str, &unknown->extension, indent);
+  gho_string_sprint(c_str, &unknown->extension);
   
   gho_c_str_sprinti(c_str, "</", indent);
   gho_string_sprint(c_str, &unknown->mark);
-  gho_c_str_sprint(c_str, ">\n");
+  gho_c_str_sprint(c_str, ">");
 }
 
 /**
@@ -151,12 +151,28 @@ osl1_extension_unknown_t osl1_extension_unknown_fread_with_mark(FILE* file,
                                                const gho_string_t* const mark) {
   osl1_extension_unknown_t r = osl1_extension_unknown_create_with_mark(mark);
   
-  while (gho_char_fpeek(file) != '<') { // TODO better test
+  gho_string_t line_peek = gho_string_peek_line(file);
+  while (isspace(line_peek.c_str[0])) {
+    gho_string_remove(&line_peek, 0);
+  }
+  while (
+    gho_string_size(&line_peek) <= gho_string_size(mark) ||
+    ( line_peek.c_str[0] == '<' && line_peek.c_str[1] == '/' &&
+      gho_c_str_equal(line_peek.c_str + 2, mark->c_str + 1) ) == false
+  ) {
     gho_string_t line = gho_string_get_line(file);
     gho_string_add(&r.extension, &line);
     gho_string_add_c_str(&r.extension, "\n");
     gho_string_destroy(&line);
+    
+    gho_string_destroy(&line_peek);
+    line_peek = gho_string_peek_line(file);
+    while (isspace(line_peek.c_str[0])) {
+      gho_string_remove(&line_peek, 0);
+    }
   }
+  
+  gho_string_destroy(&line_peek);
   
   return r;
 }
@@ -172,12 +188,28 @@ osl1_extension_unknown_t osl1_extension_unknown_sread_with_mark(
                                                const gho_string_t* const mark) {
   osl1_extension_unknown_t r = osl1_extension_unknown_create_with_mark(mark);
   
-  while (gho_char_speek(c_str) != '<') { // TODO better test
+  gho_string_t line_peek = gho_string_peek_line_from_c_str(c_str);
+  while (isspace(line_peek.c_str[0])) {
+    gho_string_remove(&line_peek, 0);
+  }
+  while (
+    gho_string_size(&line_peek) <= gho_string_size(mark) ||
+    ( line_peek.c_str[0] == '<' && line_peek.c_str[1] == '/' &&
+      gho_c_str_equal(line_peek.c_str + 2, mark->c_str + 1) ) == false
+  ) {
     gho_string_t line = gho_string_get_line_from_c_str(c_str);
     gho_string_add(&r.extension, &line);
     gho_string_add_c_str(&r.extension, "\n");
     gho_string_destroy(&line);
+    
+    gho_string_destroy(&line_peek);
+    line_peek = gho_string_peek_line_from_c_str(c_str);
+    while (isspace(line_peek.c_str[0])) {
+      gho_string_remove(&line_peek, 0);
+    }
   }
+  
+  gho_string_destroy(&line_peek);
   
   return r;
 }

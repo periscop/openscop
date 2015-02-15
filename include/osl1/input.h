@@ -13,8 +13,8 @@
 // limitations under the License.
 
 
-#ifndef OSL1_SCOP_INPUT_H
-#define OSL1_SCOP_INPUT_H
+#ifndef OSL1_INPUT_H
+#define OSL1_INPUT_H
 
 #include <stdio.h>
 #include <stdbool.h>

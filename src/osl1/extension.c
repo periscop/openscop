@@ -47,3 +47,35 @@ const void* osl1_get_extension_cptr(gho_type_t const type,
   
   return NULL;
 }
+
+// Output
+
+/**
+ * \brief Print extensions in a file with indentation
+ * \param[in] file       A C file
+ * \param[in] extensions An gho_vector_any_t
+ * \param[in] indent     Indentation (number of spaces)
+ */
+void osl1_extensions_fprinti_openscop(FILE* file,
+                                      const gho_vector_any_t* const extensions,
+                                      const unsigned int indent) {
+  for (size_t i = 0; i < extensions->size; ++i) {
+    gho_any_fprinti(file, &extensions->array[i], indent);
+    if (i != extensions->size - 1) { gho_c_str_fprint(file, "\n\n"); }
+  }
+}
+
+/**
+ * \brief Print extensions in a C string with indentation
+ * \param[in] c_str      A C string
+ * \param[in] extensions An gho_vector_any_t
+ * \param[in] indent     Indentation (number of spaces)
+ */
+void osl1_extensions_sprinti_openscop(char** c_str,
+                                      const gho_vector_any_t* const extensions,
+                                      const unsigned int indent) {
+  for (size_t i = 0; i < extensions->size; ++i) {
+    gho_any_sprinti(c_str, &extensions->array[i], indent);
+    if (i != extensions->size - 1) { gho_c_str_sprint(c_str, "\n\n"); }
+  }
+}

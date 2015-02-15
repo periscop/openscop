@@ -56,21 +56,21 @@ void osl1_extension_scatnames_reset(osl1_extension_scatnames_t* scatnames) {
  * \brief Print an osl1_extension_scatnames in a file with indentation
  * \param[in] file   A C file
  * \param[in] scatnames   An osl1_extension_scatnames
- * \param[in] indent indentation (number of spaces)
+ * \param[in] indent Indentation (number of spaces)
  */
 void osl1_extension_scatnames_fprinti(FILE* file,
                               const osl1_extension_scatnames_t* const scatnames,
                               const unsigned int indent) {
   gho_c_str_fprinti(file, "<scatnames>\n", indent);
   
-  gho_fprinti(file, indent);
+  gho_fprinti(file, indent + 4);
   for (size_t i = 0; i < scatnames->scatnames.size; ++i) {
     gho_string_fprint(file, &scatnames->scatnames.array[i]);
     gho_c_str_fprint(file, " ");
   }
   gho_c_str_fprint(file, "\n");
   
-  gho_c_str_fprinti(file, "</scatnames>\n", indent);
+  gho_c_str_fprinti(file, "</scatnames>", indent);
 }
 
 /**
@@ -96,21 +96,21 @@ void osl1_extension_scatnames_print(
  * \brief Print an osl1_extension_scatnames in a C string with indentation
  * \param[in] c_str  A C string
  * \param[in] scatnames   An osl1_extension_scatnames
- * \param[in] indent indentation (number of spaces)
+ * \param[in] indent Indentation (number of spaces)
  */
 void osl1_extension_scatnames_sprinti(char** c_str,
                               const osl1_extension_scatnames_t* const scatnames,
                               const unsigned int indent) {
   gho_c_str_sprinti(c_str, "<scatnames>\n", indent);
   
-  gho_sprinti(c_str, indent);
+  gho_sprinti(c_str, indent + 4);
   for (size_t i = 0; i < scatnames->scatnames.size; ++i) {
     gho_string_sprint(c_str, &scatnames->scatnames.array[i]);
     gho_c_str_sprint(c_str, " ");
   }
   gho_c_str_sprint(c_str, "\n");
   
-  gho_c_str_sprinti(c_str, "</scatnames>\n", indent);
+  gho_c_str_sprinti(c_str, "</scatnames>", indent);
 }
 
 /**

@@ -67,28 +67,28 @@ void osl1_extension_body_fprinti(FILE* file,
                                  const unsigned int indent) {
   gho_c_str_fprinti(file, "<body>\n", indent);
   
-  gho_c_str_fprint(file, "# Number of original iterators\n");
-  gho_size_t_fprinti(file, &body->original_iterators.size, indent);
+  gho_c_str_fprinti(file, "# Number of original iterators\n", indent + 4);
+  gho_size_t_fprinti(file, &body->original_iterators.size, indent + 4);
   gho_c_str_fprint(file, "\n");
   
-  gho_c_str_fprint(file, "# Original iterators\n");
-  gho_fprinti(file, indent);
+  gho_c_str_fprinti(file, "# Original iterators\n", indent + 4);
+  gho_fprinti(file, indent + 4);
   for (size_t i = 0; i < body->original_iterators.size; ++i) {
     gho_string_fprint(file, &body->original_iterators.array[i]);
     gho_c_str_fprint(file, " ");
   }
   gho_c_str_fprint(file, "\n");
   
-  gho_c_str_fprint(file, "# Expression\n");
-  gho_string_fprinti(file, &body->expression, indent);
+  gho_c_str_fprinti(file, "# Expression\n", indent + 4);
+  gho_string_fprinti(file, &body->expression, indent + 4);
   gho_c_str_fprint(file, "\n");
   
-  gho_c_str_fprint(file, "# Accesses\n");
-  gho_c_str_fprint(file, "# TODO\n");
-  //gho_vector_start_and_size_fprinti(file, &body->accesses, indent);
+  gho_c_str_fprinti(file, "# Accesses\n", indent + 4);
+  gho_c_str_fprinti(file, "# TODO\n", indent + 4);
+  //gho_vector_start_and_size_fprinti(file, &body->accesses, indent + 4);
   //gho_c_str_fprint(file, "\n"); // TODO
   
-  gho_c_str_fprinti(file, "</body>\n", indent);
+  gho_c_str_fprinti(file, "</body>", indent);
 }
 
 /**
@@ -120,28 +120,28 @@ void osl1_extension_body_sprinti(char** c_str,
                                  const unsigned int indent) {
   gho_c_str_sprinti(c_str, "<body>\n", indent);
   
-  gho_c_str_sprint(c_str, "# Number of original iterators\n");
-  gho_size_t_sprinti(c_str, &body->original_iterators.size, indent);
+  gho_c_str_sprinti(c_str, "# Number of original iterators\n", indent + 4);
+  gho_size_t_sprinti(c_str, &body->original_iterators.size, indent + 4);
   gho_c_str_sprint(c_str, "\n");
   
-  gho_c_str_sprint(c_str, "# Original iterators\n");
-  gho_sprinti(c_str, indent);
+  gho_c_str_sprinti(c_str, "# Original iterators\n", indent + 4);
+  gho_sprinti(c_str, indent + 4);
   for (size_t i = 0; i < body->original_iterators.size; ++i) {
     gho_string_sprint(c_str, &body->original_iterators.array[i]);
     gho_c_str_sprint(c_str, " ");
   }
   gho_c_str_sprint(c_str, "\n");
   
-  gho_c_str_sprint(c_str, "# Expression\n");
-  gho_string_sprinti(c_str, &body->expression, indent);
+  gho_c_str_sprinti(c_str, "# Expression\n", indent + 4);
+  gho_string_sprinti(c_str, &body->expression, indent + 4);
   gho_c_str_sprint(c_str, "\n");
   
-  gho_c_str_sprint(c_str, "# Accesses\n");
-  gho_c_str_sprint(c_str, "# TODO\n");
-  //gho_vector_start_and_size_sprinti(c_str, &body->accesses, indent);
+  gho_c_str_sprinti(c_str, "# Accesses\n", indent + 4);
+  gho_c_str_sprinti(c_str, "# TODO\n", indent + 4);
+  //gho_vector_start_and_size_sprinti(c_str, &body->accesses, indent + 4);
   //gho_c_str_sprint(c_str, "\n"); // TODO
   
-  gho_c_str_sprinti(c_str, "</body>\n", indent);
+  gho_c_str_sprinti(c_str, "</body>", indent);
 }
 
 /**
@@ -183,7 +183,7 @@ osl1_extension_body_t osl1_extension_body_fread(FILE* file) {
   osl1_skip_comments(file);
   
   // TODO accesses
-  fprintf(stderr, "TODO: osl1_extension_body_fread IS NOT FULLY IMPLEMENTED!\n");
+  //fprintf(stderr, "TODO: osl1_extension_body_fread IS NOT FULLY IMPLEMENTED!\n");
   
   return r;
 }
@@ -215,7 +215,7 @@ osl1_extension_body_t osl1_extension_body_sread(const char** c_str) {
   osl1_skip_comments_from_c_str(c_str);
   
   // TODO accesses
-  fprintf(stderr, "TODO: osl1_extension_body_sread IS NOT FULLY IMPLEMENTED!\n");
+  //fprintf(stderr, "TODO: osl1_extension_body_sread IS NOT FULLY IMPLEMENTED!\n");
   
   return r;
 }

@@ -15,9 +15,10 @@
 
 #include <stdlib.h>
 
+#include <gho/input.h>
+#include <gho/char.h>
+
 #include "../include/osl1/input.h"
-#include "../include/gho/input.h"
-#include "../include/gho/char.h"
 
 
 /**

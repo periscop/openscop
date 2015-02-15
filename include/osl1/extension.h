@@ -37,7 +37,19 @@ void* osl1_get_extension_ptr(gho_type_t const type,
 const void* osl1_get_extension_cptr(gho_type_t const type,
                                     const gho_vector_any_t* const extensions);
 
+// Output
+void osl1_extensions_fprinti_openscop(FILE* file,
+                                      const gho_vector_any_t* const extensions,
+                                      const unsigned int indent);
+void osl1_extensions_sprinti_openscop(char** c_str,
+                                      const gho_vector_any_t* const extensions,
+                                      const unsigned int indent);
+
 // Input
+static inline
+gho_vector_any_t osl1_extensions_fread(FILE* file);
+static inline
+gho_vector_any_t osl1_extensions_sread(const char** c_str);
 static inline
 gho_any_t osl1_extension_fread_with_mark(FILE* file,
                                          const gho_string_t* const mark);
