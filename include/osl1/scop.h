@@ -37,7 +37,7 @@ extern "C"
 
 
 /**
- * \brief TODO osl1_scop_t
+ * \brief osl1_scop_t describes a SCoP (context, parameters, statements)
  */
 typedef struct {
   

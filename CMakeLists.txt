@@ -30,7 +30,7 @@ cmake_minimum_required(VERSION 2.6)
 		set(CMAKE_C_FLAGS "-Og -g3")
 	endif()
 
-# General C++ flags
+# General C flags
 	# General
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion -std=c11 -pedantic")
 	# Thread support
@@ -229,7 +229,9 @@ cmake_minimum_required(VERSION 2.6)
 # Install
 	# Library
 	install(TARGETS osl LIBRARY DESTINATION lib)
+	install(TARGETS osl_static ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 	install(TARGETS osl1 LIBRARY DESTINATION lib)
+	install(TARGETS osl1_static ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
 	# .h
 	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 	install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/" DESTINATION include FILES_MATCHING PATTERN "*.h")
