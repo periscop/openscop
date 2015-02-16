@@ -578,29 +578,34 @@ void osl_util_print_provided(FILE * file, int provided, char * title) {
 static
 int osl_util_identifier_is_here(char * expression, char * identifier,
                                 int index) {
+  size_t identifier_len = strlen(identifier);
+  size_t expression_len = strlen(expression);
+
   // If there is no space enough to find the identifier: no.
-  if (strlen(identifier) + index > strlen(expression))
+  if (identifier_len + index > expression_len)
     return 0;
   
-  // If there is a character before and it is in [A-Za-z0-9]: no.
+  // If there is a character before and it is in [A-Za-z0-9_]: no.
   if ((index > 0) &&
-      (((expression[index - 1] >= 'A') && (expression[index - 1] <= 'Z')) || 
-       ((expression[index - 1] >= 'a') && (expression[index - 1] <= 'z')) || 
-       ((expression[index - 1] >= '0') && (expression[index - 1] <= '9'))))
+      (((expression[index - 1] >= 'A') && (expression[index - 1] <= 'Z')) ||
+       ((expression[index - 1] >= 'a') && (expression[index - 1] <= 'z')) ||
+       ((expression[index - 1] >= '0') && (expression[index - 1] <= '9')) ||
+        (expression[index - 1] == '_')))
     return 0;
 
-  // If there is a character after and it is in [A-Za-z0-9]: no.
-  if ((strlen(identifier) + index < strlen(expression)) &&
-      (((expression[strlen(identifier) + index] >= 'A') &&
-        (expression[strlen(identifier) + index] <= 'Z'))   || 
-       ((expression[strlen(identifier) + index] >= 'a') &&
-        (expression[strlen(identifier) + index] <= 'z'))   || 
-       ((expression[strlen(identifier) + index] >= '0') &&
-        (expression[strlen(identifier) + index] <= '9'))))
+  // If there is a character after and it is in [A-Za-z0-9_]: no.
+  if ((identifier_len + index < expression_len) &&
+      (((expression[identifier_len + index] >= 'A') &&
+        (expression[identifier_len + index] <= 'Z'))   ||
+       ((expression[identifier_len + index] >= 'a') &&
+        (expression[identifier_len + index] <= 'z'))   ||
+       ((expression[identifier_len + index] >= '0') &&
+        (expression[identifier_len + index] <= '9'))   ||
+       ( expression[identifier_len + index] == '_')))
     return 0;
 
   // If the identifier string is not here: no.
-  if (strncmp(expression + index, identifier, strlen(identifier)))
+  if (strncmp(expression + index, identifier, identifier_len))
     return 0;
 
   return 1;
