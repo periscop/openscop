@@ -45,6 +45,11 @@ cmake_minimum_required(VERSION 2.6)
 # Get local directory where .cmake are
 	set(FIND_PACKAGE_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+# Get gho_include
+	message(STATUS "---")
+	execute_process(COMMAND "git" "submodule" "init")
+	execute_process(COMMAND "git" "submodule" "update")
+
 # GMP
 	message(STATUS "---")
 	find_package(osl_gmp PATHS "${FIND_PACKAGE_LOCAL_PATH}" NO_DEFAULT_PATH)
