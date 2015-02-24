@@ -124,6 +124,10 @@ static inline
 void osl1_convex_relation_reset(osl1_convex_relation_t* convex_relation);
 
 // Output
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 void osl1_convex_relation_fprinti(FILE* file,
                             const osl1_convex_relation_t* const convex_relation,
                             const unsigned int indent);
@@ -136,6 +140,9 @@ void osl1_convex_relation_sprinti(char** c_str,
                             const unsigned int indent);
 void osl1_convex_relation_sprint(char** c_str,
                           const osl1_convex_relation_t* const convex_relation);
+#if defined(__cplusplus)
+}
+#endif
 
 // Input
 static inline
