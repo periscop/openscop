@@ -27,6 +27,7 @@ find_file(OSL_GMP_INCLUDE_DIR "gmp.h")
 
 set(GHO_GMP_MACRO "gho_with_gmp")
 set(OSL_GMP_MACRO "osl_with_gmp")
+set(OSL_GMP_OLD_MACRO "OSL_GMP_IS_HERE")
 
 if (OSL_GMP_LIBRARY AND OSL_GMP_INCLUDE_DIR)
 	
@@ -38,6 +39,7 @@ if (OSL_GMP_LIBRARY AND OSL_GMP_INCLUDE_DIR)
 	
 	add_definitions("-D${GHO_GMP_MACRO}")
 	add_definitions("-D${OSL_GMP_MACRO}")
+	add_definitions("-D${OSL_GMP_OLD_MACRO}")
 	
 	message(STATUS "Library GMP found =) ${OSL_GMP_INCLUDE_DIR} | ${OSL_GMP_LIBRARY}")
 	
