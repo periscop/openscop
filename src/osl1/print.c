@@ -21,9 +21,6 @@
 #include "../include/osl1/print.h"
 
 
-
-
-
 // Convex relation index name
 
 /**

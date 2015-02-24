@@ -17,7 +17,7 @@
 
 #include <gho/c_str.h>
 
-#include "../../osl1/input.h"
+#include "../input.h"
 
 
 // Create & destroy
