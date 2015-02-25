@@ -21,11 +21,11 @@
 
 
 find_library(OSL1_LIBRARY osl1)
-find_file(OSL1_INCLUDE_DIR "osl1/osl.h")
+find_file(OSL1_INCLUDE_DIR "osl1/scop.h")
 
 if (OSL1_LIBRARY AND OSL1_INCLUDE_DIR)
 	
-	string(REPLACE "/osl1/osl.h" "" OSL1_INCLUDE_DIR ${OSL1_INCLUDE_DIR})
+	string(REPLACE "/osl1/scop.h" "" OSL1_INCLUDE_DIR ${OSL1_INCLUDE_DIR})
 	
 	set(OSL1_FOUND "TRUE")
 	
