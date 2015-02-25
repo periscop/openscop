@@ -52,7 +52,7 @@ osl1_scop_t osl_to_osl1_scop(const osl_scop_t* const scop_osl) {
         strcmp(scop_osl->parameters->interface->URI, "strings") == 0
     ) {
       const osl_strings_t* const parameters_osl = scop_osl->parameters->data;
-      for (char** p = parameters_osl->string; p != NULL; ++p) { // p should be const
+      for (char** p = parameters_osl->string; *p != NULL; ++p) { // p should be const
         gho_vector_string_add_c_str(&r.parameters, *p);
       }
     }
@@ -126,7 +126,7 @@ gho_vector_any_t osl_to_osl1_extensions(
         }
         // Names of original iterators
         if (body->iterators != NULL) {
-          for (char** s = body->iterators->string; s != NULL; ++s) { 
+          for (char** s = body->iterators->string; *s != NULL; ++s) { 
             gho_vector_string_add_c_str(&tmp.original_iterators, *s);
           }
         }
@@ -135,12 +135,12 @@ gho_vector_any_t osl_to_osl1_extensions(
         osl1_extension_body_destroy(&tmp);
       }
       // scatnames
-      if (strcmp(p->interface->URI, "scatnames") == 0) {
+      else if (strcmp(p->interface->URI, "scatnames") == 0) {
         const osl_scatnames_t* const scatnames = p->data;
         osl1_extension_scatnames_t tmp = osl1_extension_scatnames_create();
         // Names of output dimensions of scattering
         if (scatnames->names != NULL) {
-          for (char** s = scatnames->names->string; s != NULL; ++s) { 
+          for (char** s = scatnames->names->string; *s != NULL; ++s) { 
             gho_vector_string_add_c_str(&tmp.scatnames, *s);
           }
         }
