@@ -14,6 +14,7 @@
 
 
 #include <gho/int/size_t.h>
+#include <gho/math.h>
 
 #include "../include/osl1/relation.h"
 #include "../include/osl1/input.h"
@@ -65,4 +66,21 @@ osl1_relation_t osl1_relation_sread(const char** c_str) {
   }
   
   return relation;
+}
+
+// Output dimensions
+
+/**
+ * \brief Get the maximum number of output dimensions in all convex relations
+ *        of the relation
+ * \param[in] relation An osl1_relation_t
+ * \return maximum number of output dimensions in all convex relations
+ *         of the relation
+ */
+size_t osl1_relation_max_nb_output_dim(const osl1_relation_t* const relation) {
+  size_t r = 0;
+  for (size_t i = 0; i < relation->size; ++i) {
+    r = gho_T_max(r, relation->array[i].nb_output_dim);
+  }
+  return r;
 }

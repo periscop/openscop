@@ -54,4 +54,7 @@
 osl1_relation_t osl1_relation_fread(FILE* file);
 osl1_relation_t osl1_relation_sread(const char** c_str);
 
+// Output dimensions
+size_t osl1_relation_max_nb_output_dim(const osl1_relation_t* const relation);
+
 #endif

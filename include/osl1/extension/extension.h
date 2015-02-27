@@ -93,6 +93,14 @@ gho_any_t osl1_extension_fread_with_mark(FILE* file,
     osl1_extension_body_destroy(&extension);
     return r;
   }
+  
+  // comments
+  if (gho_c_str_equal(mark->c_str, "<comments>")) {
+    osl1_extension_comments_t extension = osl1_extension_comments_fread(file);
+    gho_any_t r = osl1_extension_comments_to_any(&extension);
+    osl1_extension_comments_destroy(&extension);
+    return r;
+  }
 
 //   // coordinates
 //   if (gho_c_str_equal(mark->c_str, "<coordinates>")) {
@@ -134,6 +142,14 @@ gho_any_t osl1_extension_sread_with_mark(const char** c_str,
     osl1_extension_body_t extension = osl1_extension_body_sread(c_str);
     gho_any_t r = osl1_extension_body_to_any(&extension);
     osl1_extension_body_destroy(&extension);
+    return r;
+  }
+  
+  // comments
+  if (gho_c_str_equal(mark->c_str, "<comments>")) {
+    osl1_extension_comments_t extension = osl1_extension_comments_sread(c_str);
+    gho_any_t r = osl1_extension_comments_to_any(&extension);
+    osl1_extension_comments_destroy(&extension);
     return r;
   }
 
