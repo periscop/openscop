@@ -30,6 +30,7 @@
   #include <gho/matrix/mpz_t.h>
 #endif
 #include <gho/operand.h>
+#include <gho/vector/size_t.h>
 
 #include "extension.h"
 
@@ -268,7 +269,6 @@ void osl1_convex_relation_remove_constraint(
                       osl1_convex_relation_t* convex_relation, const size_t i);
 
 // Index
-
 static inline
 bool osl1_convex_relation_is_output_dim(
                             const osl1_convex_relation_t* const convex_relation,
@@ -317,6 +317,15 @@ static inline
 size_t osl1_convex_relation_j_to_parameter_dim(
                             const osl1_convex_relation_t* const convex_relation,
                             const size_t j);
+
+// Dimensions
+static inline
+gho_vector_size_t_t osl1_convex_relation_output_dims_used(
+                          const osl1_convex_relation_t* const convex_relation);
+static inline
+gho_vector_size_t_t osl1_convex_relation_output_dims_used_in_row(
+                            const osl1_convex_relation_t* const convex_relation,
+                            const size_t i);
 
 #include "implementation/convex_relation.h"
 
