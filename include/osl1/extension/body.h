@@ -58,7 +58,7 @@ void osl1_extension_body_fprinti(FILE* file,
                                  const unsigned int indent);
 void osl1_extension_body_fprint(FILE* file,
                                 const osl1_extension_body_t* const body);
-void osl1_extension_body_print(const osl1_extension_body_t* const statement);
+void osl1_extension_body_print(const osl1_extension_body_t* const body);
 void osl1_extension_body_sprinti(char** c_str,
                                  const osl1_extension_body_t* const body,
                                  const unsigned int indent);
@@ -81,7 +81,6 @@ bool osl1_extension_body_equal(const osl1_extension_body_t* const a,
 gho_string_t osl1_extension_body_to_string(
                                       const osl1_extension_body_t* const body);
 gho_any_t osl1_extension_body_to_any(const osl1_extension_body_t* const body);
-
 
 #if defined(__cplusplus)
 }

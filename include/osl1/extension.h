@@ -26,6 +26,7 @@
 #include <gho/type.h>
 
 #include "extension/body.h"
+#include "extension/comments.h"
 #include "extension/coordinates.h"
 #include "extension/scatnames.h"
 #include "extension/unknown.h"
