@@ -945,7 +945,7 @@ size_t osl1_convex_relation_output_dim_to_j(
 /**
  * \brief Compute global column index of an input dimension
  * \param[in] convex_relation An osl1_convex_relation_t
- * \param[in] i_output_dim    Input dimension (column) index
+ * \param[in] i_input_dim     Input dimension (column) index
  * \return global column index of an input dimension
  */
 size_t osl1_convex_relation_input_dim_to_j(
@@ -962,7 +962,7 @@ size_t osl1_convex_relation_input_dim_to_j(
 /**
  * \brief Compute global column index of a local dimension
  * \param[in] convex_relation An osl1_convex_relation_t
- * \param[in] i_output_dim    Local dimension (column) index
+ * \param[in] i_local_dim     Local dimension (column) index
  * \return global column index of a local dimension
  */
 size_t osl1_convex_relation_local_dim_to_j(
@@ -980,7 +980,7 @@ size_t osl1_convex_relation_local_dim_to_j(
 /**
  * \brief Compute global column index of a parameter dimension
  * \param[in] convex_relation An osl1_convex_relation_t
- * \param[in] i_output_dim    Parameter (column) index
+ * \param[in] i_parameter     Parameter (column) index
  * \return global column index of a parameter dimension
  */
 size_t osl1_convex_relation_parameter_dim_to_j(
@@ -1078,6 +1078,58 @@ size_t osl1_convex_relation_j_to_parameter_dim(
     fprintf(stderr, "ERROR: osl1_convex_relation_j_to_parameter_dim: "
                     "number of parameter dimensions is 0!\n");
     exit(1);
+  }
+  return r;
+}
+
+
+// Dimensions
+
+/**
+ * \brief Return the output dimensions used in the convex relation
+ *        (sorted by index)
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \return the output dimensions used in the convex relation (sorted by index)
+ */
+gho_vector_size_t_t osl1_convex_relation_output_dims_used(
+                          const osl1_convex_relation_t* const convex_relation) {
+  gho_vector_size_t_t r = gho_vector_size_t_create();
+  const size_t nb_row = osl1_convex_relation_nb_row(convex_relation);
+  for (size_t i = 0; i < nb_row; ++i) {
+    for (size_t j = 1; j < 1 + convex_relation->nb_output_dim; ++j) {
+      if (osl1_convex_relation_is_0(convex_relation, i, j) == false) {
+        const size_t i_output_dim =
+          osl1_convex_relation_j_to_output_dim(convex_relation, j);
+        if (gho_vector_size_t_find(&r, &i_output_dim) == r.size) {
+          gho_vector_size_t_add(&r, &i_output_dim);
+        }
+      }
+    }
+  }
+  gho_vector_size_t_sort(&r);
+  return r;
+}
+
+/**
+ * \brief Return the output dimensions used in a row of the convex relation
+ *        (sorted by index)
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \param[in] i               Row index
+ * \return the output dimensions used in the row ofthe convex relation
+ *         (sorted by index)
+ */
+gho_vector_size_t_t osl1_convex_relation_output_dims_used_in_row(
+                            const osl1_convex_relation_t* const convex_relation,
+                            const size_t i) {
+  gho_vector_size_t_t r = gho_vector_size_t_create();
+  for (size_t j = 1; j < 1 + convex_relation->nb_output_dim; ++j) {
+    if (osl1_convex_relation_is_0(convex_relation, i, j) == false) {
+      const size_t i_output_dim =
+        osl1_convex_relation_j_to_output_dim(convex_relation, j);
+      if (gho_vector_size_t_find(&r, &i_output_dim) == r.size) {
+        gho_vector_size_t_add(&r, &i_output_dim);
+      }
+    }
   }
   return r;
 }
