@@ -75,10 +75,10 @@ osl1_relation_t osl_to_osl1_relation(const osl_relation_t* const relation_osl) {
       for (size_t j = 0; j < nb_col; ++j) {
         gho_operand_t e = osl1_convex_relation_at(&tmp, i, j);
         if (p->precision == OSL_PRECISION_SP) {
-          gho_set_lli(e, (gho_llint)p->m[i][j].sp);
+          gho_set_lli(e, p->m[i][j].sp);
         }
-        else if (p->precision == OSL_PRECISION_SP) {
-          gho_set_lli(e, (gho_llint)p->m[i][j].dp);
+        else if (p->precision == OSL_PRECISION_DP) {
+          gho_set_lli(e, p->m[i][j].dp);
         }
         #ifdef osl_with_gmp
         else if (p->precision == OSL_PRECISION_MP) {

@@ -58,15 +58,28 @@ gho_string_t osl1_convex_relation_name_column(
   else if (osl1_convex_relation_is_output_dim(convex_relation, j)) {
     const size_t i_output_dim =
       osl1_convex_relation_j_to_output_dim(convex_relation, j);
-    if (scatnames == NULL ||
-        scatnames->scatnames.size < convex_relation->nb_output_dim) {
-      gho_string_destroy(&r);
-      r = gho_size_t_to_string(&i_output_dim);
-      gho_string_add_char_i(&r, 'c', 0);
+    // Domain
+    if (convex_relation->nb_input_dim == 0) {
+      if (body == NULL ||
+          body->original_iterators.size < convex_relation->nb_output_dim) {
+        gho_string_add_char(&r, (char)('i' + (char)i_output_dim));
+      }
+      else {
+        gho_string_add(&r, &body->original_iterators.array[i_output_dim]);
+      }
     }
+    // Scattering or accesses
     else {
-      gho_string_add(&r, &scatnames->scatnames.array[i_output_dim]);
-      gho_string_add_char(&r, '\'');
+      if (scatnames == NULL ||
+          scatnames->scatnames.size < convex_relation->nb_output_dim) {
+        gho_string_destroy(&r);
+        r = gho_size_t_to_string(&i_output_dim);
+        gho_string_add_char_i(&r, 'c', 0);
+      }
+      else {
+        gho_string_add(&r, &scatnames->scatnames.array[i_output_dim]);
+        gho_string_add_char(&r, '\'');
+      }
     }
   }
   
@@ -427,15 +440,28 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
     gho_c_str_fprint(file, "# ");
     bool first_number = true;
     for (size_t j = 1; j < nb_col; ++j) {
-      if (osl1_convex_relation_is_0(convex_relation, i, j) == false &&
-          osl1_convex_relation_is_1(convex_relation, i, j) == false) {
+      if (osl1_convex_relation_is_0(convex_relation, i, j) == false) {
+        // +
         if (first_number == false) { gho_c_str_fprint(file, " + "); }
-        if (osl1_convex_relation_is_minus_1(convex_relation, i, j)) {
-          gho_c_str_fprint(file, "-");
+        first_number = false;
+        // Coefficient
+        if (osl1_convex_relation_is_1(convex_relation, i, j)) {
+          if (j == nb_col - 1) {
+            gho_c_str_fprint(file, "1");
+          }
+        }
+        else if (osl1_convex_relation_is_minus_1(convex_relation, i, j)) {
+          if (j == nb_col - 1) {
+            gho_c_str_fprint(file, "-1");
+          }
+          else {
+            gho_c_str_fprint(file, "-");
+          }
         }
         else {
           osl1_convex_relation_at_fprint(file, convex_relation, i, j);
         }
+        // Name of dimension
         if (j != nb_col - 1) {
           gho_string_t name =
             osl1_convex_relation_name_column(convex_relation, j,
@@ -443,7 +469,6 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
           gho_string_fprint(file, &name);
           gho_string_destroy(&name);
         }
-        first_number = false;
       }
       if (j == nb_col - 1) {
         if (first_number) { gho_c_str_fprint(file, "0"); }
@@ -625,15 +650,28 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
     gho_c_str_sprint(c_str, "# ");
     bool first_number = true;
     for (size_t j = 1; j < nb_col; ++j) {
-      if (osl1_convex_relation_is_0(convex_relation, i, j) == false &&
-          osl1_convex_relation_is_1(convex_relation, i, j) == false) {
+      if (osl1_convex_relation_is_0(convex_relation, i, j) == false) {
+        // +
         if (first_number == false) { gho_c_str_sprint(c_str, " + "); }
-        if (osl1_convex_relation_is_minus_1(convex_relation, i, j)) {
-          gho_c_str_sprint(c_str, "-");
+        first_number = false;
+        // Coefficient
+        if (osl1_convex_relation_is_1(convex_relation, i, j)) {
+          if (j == nb_col - 1) {
+            gho_c_str_sprint(c_str, "1");
+          }
+        }
+        else if (osl1_convex_relation_is_minus_1(convex_relation, i, j)) {
+          if (j == nb_col - 1) {
+            gho_c_str_sprint(c_str, "-1");
+          }
+          else {
+            gho_c_str_sprint(c_str, "-");
+          }
         }
         else {
           osl1_convex_relation_at_sprint(c_str, convex_relation, i, j);
         }
+        // Name of dimension
         if (j != nb_col - 1) {
           gho_string_t name =
             osl1_convex_relation_name_column(convex_relation, j,
@@ -641,7 +679,6 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
           gho_string_sprint(c_str, &name);
           gho_string_destroy(&name);
         }
-        first_number = false;
       }
       if (j == nb_col - 1) {
         if (first_number) { gho_c_str_sprint(c_str, "0"); }
