@@ -603,7 +603,51 @@ void osl1_convex_relation_set_minus_1(osl1_convex_relation_t* convex_relation,
   gho_set_minus_1(op);
 }
 
+/**
+ * \brief convex_relation[i][j] = value
+ * \param[in] convex_relation An osl1_convex_relation
+ * \param[in] i               Row index
+ * \param[in] j               Column index
+ * \param[in] value           A gho_llint
+ */
+void osl1_convex_relation_set_lli(osl1_convex_relation_t* convex_relation,
+                                  const size_t i, const size_t j,
+                                  const gho_llint value) {
+  gho_operand_t op = osl1_convex_relation_at(convex_relation, i, j);
+  gho_set_lli(op, value);
+}
+
 // Add (column)
+
+/**
+ * \brief Add a dimension before a column index
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \param[in] j               Column index
+ * \warning Do not use this function, use osl1_convex_relation_add_output_dim,
+ *          osl1_convex_relation_add_input_dim,
+ *          osl1_convex_relation_add_local_dim and
+ *          osl1_convex_relation_add_parameter functions
+ */
+void osl1_convex_relation_add_col_before_(
+                                        osl1_convex_relation_t* convex_relation,
+                                        const size_t j) {
+  if (convex_relation->precision == GHO_TYPE_LINT) {
+    gho_matrix_lint_add_col_before(&convex_relation->matrix.li, j);
+  }
+  else if (convex_relation->precision == GHO_TYPE_LLINT) {
+    gho_matrix_llint_add_col_before(&convex_relation->matrix.lli, j);
+  }
+  #ifdef osl_with_gmp
+  else if (convex_relation->precision == GHO_TYPE_GHO_MPZ_T) {
+    gho_matrix_mpz_add_col_before(&convex_relation->matrix.mpz, j);
+  }
+  #endif
+  else {
+    fprintf(stderr, "ERROR: osl1_convex_relation_add_col_before_: "
+                    "unknown precision!\n");
+    exit(1);
+  }
+}
 
 /**
  * \brief Add a dimension after a column index
@@ -642,6 +686,44 @@ void osl1_convex_relation_add_col_after_(
 void osl1_convex_relation_add_output_dim(osl1_convex_relation_t* convex_relation) {
   const size_t j = convex_relation->nb_output_dim;
   osl1_convex_relation_add_col_after_(convex_relation, j);
+  ++convex_relation->nb_output_dim;
+}
+
+/**
+ * \brief Add an output dimension before a column index
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \param[in] i_output_dim    Output dimension index
+ */
+void osl1_convex_relation_add_output_dim_before(
+                                      osl1_convex_relation_t* convex_relation,
+                                      const size_t i_output_dim) {
+  #ifndef NDEBUG
+    if (i_output_dim > convex_relation->nb_output_dim) {
+      fprintf(stderr, "ERROR: osl1_convex_relation_add_output_dim_before: "
+                      "i_output_dim is invalid!\n");
+      exit(1);
+    }
+  #endif
+  osl1_convex_relation_add_col_before_(convex_relation, i_output_dim + 1);
+  ++convex_relation->nb_output_dim;
+}
+
+/**
+ * \brief Add an output dimension after a column index
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \param[in] i_output_dim    Output dimension index
+ */
+void osl1_convex_relation_add_output_dim_after(
+                                      osl1_convex_relation_t* convex_relation,
+                                      const size_t i_output_dim) {
+  #ifndef NDEBUG
+    if (i_output_dim >= convex_relation->nb_output_dim) {
+      fprintf(stderr, "ERROR: osl1_convex_relation_add_output_dim_after: "
+                      "i_output_dim is invalid!\n");
+      exit(1);
+    }
+  #endif
+  osl1_convex_relation_add_col_after_(convex_relation, i_output_dim + 1);
   ++convex_relation->nb_output_dim;
 }
 
@@ -731,8 +813,33 @@ void osl1_convex_relation_add_equation_before(
   }
 }
 
-
 // Add (row)
+
+/**
+ * \brief Add a dimension before a row index
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \param[in] j               Row index
+ */
+void osl1_convex_relation_add_row_before_(
+                                        osl1_convex_relation_t* convex_relation,
+                                        const size_t j) {
+  if (convex_relation->precision == GHO_TYPE_LINT) {
+    gho_matrix_lint_add_row_before(&convex_relation->matrix.li, j);
+  }
+  else if (convex_relation->precision == GHO_TYPE_LLINT) {
+    gho_matrix_llint_add_row_before(&convex_relation->matrix.lli, j);
+  }
+  #ifdef osl_with_gmp
+  else if (convex_relation->precision == GHO_TYPE_GHO_MPZ_T) {
+    gho_matrix_mpz_add_row_before(&convex_relation->matrix.mpz, j);
+  }
+  #endif
+  else {
+    fprintf(stderr, "ERROR: osl1_convex_relation_row_col_before_: "
+                    "unknown precision!\n");
+    exit(1);
+  }
+}
 
 /**
  * \brief Add a dimension after a row index

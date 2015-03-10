@@ -223,15 +223,31 @@ void osl1_convex_relation_set_1(osl1_convex_relation_t* convex_relation,
 static inline
 void osl1_convex_relation_set_minus_1(osl1_convex_relation_t* convex_relation,
                                       const size_t i, const size_t j);
+static inline
+void osl1_convex_relation_set_lli(osl1_convex_relation_t* convex_relation,
+                                  const size_t i, const size_t j,
+                                  const gho_llint value);
 
 // Add (column)
 static inline
+void osl1_convex_relation_add_col_before_(
+                                        osl1_convex_relation_t* convex_relation,
+                                        const size_t j);
+static inline
 void osl1_convex_relation_add_col_after_(
                                         osl1_convex_relation_t* convex_relation,
-                                        const size_t i);
+                                        const size_t j);
 static inline
 void osl1_convex_relation_add_output_dim(
                                       osl1_convex_relation_t* convex_relation);
+static inline
+void osl1_convex_relation_add_output_dim_before(
+                                      osl1_convex_relation_t* convex_relation,
+                                      const size_t i_output_dim);
+static inline
+void osl1_convex_relation_add_output_dim_after(
+                                      osl1_convex_relation_t* convex_relation,
+                                      const size_t i_output_dim);
 static inline
 void osl1_convex_relation_add_input_dim(
                                       osl1_convex_relation_t* convex_relation);
@@ -249,6 +265,10 @@ void osl1_convex_relation_add_equation_before(
                       osl1_convex_relation_t* convex_relation, const size_t i);
 
 // Add (row)
+static inline
+void osl1_convex_relation_add_row_before_(
+                                        osl1_convex_relation_t* convex_relation,
+                                        const size_t i);
 static inline
 void osl1_convex_relation_add_row_after_(
                                         osl1_convex_relation_t* convex_relation,
