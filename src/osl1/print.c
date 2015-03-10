@@ -472,7 +472,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
       }
       if (j == nb_col - 1) {
         if (first_number) { gho_c_str_fprint(file, "0"); }
-        if (osl1_convex_relation_is_0(convex_relation, i, j)) {
+        if (osl1_convex_relation_is_0(convex_relation, i, 0)) {
           gho_c_str_fprint(file, " = 0");
         }
         else {
