@@ -230,6 +230,8 @@ void osl1_convex_relation_set_lli(osl1_convex_relation_t* convex_relation,
 
 // Add (column)
 static inline
+void osl1_convex_relation_add_col_(osl1_convex_relation_t* convex_relation);
+static inline
 void osl1_convex_relation_add_col_before_(
                                         osl1_convex_relation_t* convex_relation,
                                         const size_t j);
@@ -265,6 +267,8 @@ void osl1_convex_relation_add_equation_before(
                       osl1_convex_relation_t* convex_relation, const size_t i);
 
 // Add (row)
+static inline
+void osl1_convex_relation_add_row_(osl1_convex_relation_t* convex_relation);
 static inline
 void osl1_convex_relation_add_row_before_(
                                         osl1_convex_relation_t* convex_relation,

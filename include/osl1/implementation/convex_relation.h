@@ -620,6 +620,33 @@ void osl1_convex_relation_set_lli(osl1_convex_relation_t* convex_relation,
 // Add (column)
 
 /**
+ * \brief Add a dimension at the end
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \warning Do not use this function, use osl1_convex_relation_add_output_dim,
+ *          osl1_convex_relation_add_input_dim,
+ *          osl1_convex_relation_add_local_dim and
+ *          osl1_convex_relation_add_parameter functions
+ */
+void osl1_convex_relation_add_col_(osl1_convex_relation_t* convex_relation) {
+  if (convex_relation->precision == GHO_TYPE_LINT) {
+    gho_matrix_lint_add_col(&convex_relation->matrix.li);
+  }
+  else if (convex_relation->precision == GHO_TYPE_LLINT) {
+    gho_matrix_llint_add_col(&convex_relation->matrix.lli);
+  }
+  #ifdef osl_with_gmp
+  else if (convex_relation->precision == GHO_TYPE_GHO_MPZ_T) {
+    gho_matrix_mpz_add_col(&convex_relation->matrix.mpz);
+  }
+  #endif
+  else {
+    fprintf(stderr, "ERROR: osl1_convex_relation_add_col_before_: "
+                    "unknown precision!\n");
+    exit(1);
+  }
+}
+
+/**
  * \brief Add a dimension before a column index
  * \param[in] convex_relation An osl1_convex_relation_t
  * \param[in] j               Column index
@@ -816,22 +843,45 @@ void osl1_convex_relation_add_equation_before(
 // Add (row)
 
 /**
- * \brief Add a dimension before a row index
+ * \brief Add row at the end
  * \param[in] convex_relation An osl1_convex_relation_t
- * \param[in] j               Row index
  */
-void osl1_convex_relation_add_row_before_(
-                                        osl1_convex_relation_t* convex_relation,
-                                        const size_t j) {
+void osl1_convex_relation_add_row_(osl1_convex_relation_t* convex_relation) {
   if (convex_relation->precision == GHO_TYPE_LINT) {
-    gho_matrix_lint_add_row_before(&convex_relation->matrix.li, j);
+    gho_matrix_lint_add_row(&convex_relation->matrix.li);
   }
   else if (convex_relation->precision == GHO_TYPE_LLINT) {
-    gho_matrix_llint_add_row_before(&convex_relation->matrix.lli, j);
+    gho_matrix_llint_add_row(&convex_relation->matrix.lli);
   }
   #ifdef osl_with_gmp
   else if (convex_relation->precision == GHO_TYPE_GHO_MPZ_T) {
-    gho_matrix_mpz_add_row_before(&convex_relation->matrix.mpz, j);
+    gho_matrix_mpz_add_row(&convex_relation->matrix.mpz);
+  }
+  #endif
+  else {
+    fprintf(stderr, "ERROR: osl1_convex_relation_add_row_: "
+                    "unknown precision!\n");
+    exit(1);
+  }
+}
+
+/**
+ * \brief Add a row before a row index
+ * \param[in] convex_relation An osl1_convex_relation_t
+ * \param[in] i               Row index
+ */
+void osl1_convex_relation_add_row_before_(
+                                        osl1_convex_relation_t* convex_relation,
+                                        const size_t i) {
+  if (convex_relation->precision == GHO_TYPE_LINT) {
+    gho_matrix_lint_add_row_before(&convex_relation->matrix.li, i);
+  }
+  else if (convex_relation->precision == GHO_TYPE_LLINT) {
+    gho_matrix_llint_add_row_before(&convex_relation->matrix.lli, i);
+  }
+  #ifdef osl_with_gmp
+  else if (convex_relation->precision == GHO_TYPE_GHO_MPZ_T) {
+    gho_matrix_mpz_add_row_before(&convex_relation->matrix.mpz, i);
   }
   #endif
   else {
@@ -842,22 +892,22 @@ void osl1_convex_relation_add_row_before_(
 }
 
 /**
- * \brief Add a dimension after a row index
+ * \brief Add a row after a row index
  * \param[in] convex_relation An osl1_convex_relation_t
- * \param[in] j               Row index
+ * \param[in] i               Row index
  */
 void osl1_convex_relation_add_row_after_(
                                         osl1_convex_relation_t* convex_relation,
-                                        const size_t j) {
+                                        const size_t i) {
   if (convex_relation->precision == GHO_TYPE_LINT) {
-    gho_matrix_lint_add_row_after(&convex_relation->matrix.li, j);
+    gho_matrix_lint_add_row_after(&convex_relation->matrix.li, i);
   }
   else if (convex_relation->precision == GHO_TYPE_LLINT) {
-    gho_matrix_llint_add_row_after(&convex_relation->matrix.lli, j);
+    gho_matrix_llint_add_row_after(&convex_relation->matrix.lli, i);
   }
   #ifdef osl_with_gmp
   else if (convex_relation->precision == GHO_TYPE_GHO_MPZ_T) {
-    gho_matrix_mpz_add_row_after(&convex_relation->matrix.mpz, j);
+    gho_matrix_mpz_add_row_after(&convex_relation->matrix.mpz, i);
   }
   #endif
   else {
