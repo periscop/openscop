@@ -121,6 +121,7 @@ size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
 osl_interface_p osl_strings_interface();
 osl_strings_p   osl_strings_generate(char *, int);
+void osl_strings_concat(osl_strings_p *, osl_strings_p, osl_strings_p);
 
 
 # if defined(__cplusplus)
