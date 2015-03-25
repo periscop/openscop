@@ -127,6 +127,7 @@ void          osl_generic_free(osl_generic_p);
  *****************************************************************************/
 int           osl_generic_number(osl_generic_p);
 osl_generic_p osl_generic_clone(osl_generic_p);
+osl_generic_p osl_generic_nclone(osl_generic_p, int);
 int           osl_generic_equal(osl_generic_p, osl_generic_p);
 int           osl_generic_has_URI(osl_const_generic_const_p,
                                   char const * const);
