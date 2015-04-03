@@ -81,6 +81,7 @@ extern "C"
 # define OSL_LOOP_DIRECTIVE_PARALLEL 1
 # define OSL_LOOP_DIRECTIVE_MPI      2
 # define OSL_LOOP_DIRECTIVE_VECTOR   4 
+# define OSL_LOOP_DIRECTIVE_USER     8 
 
 
 
@@ -96,7 +97,8 @@ struct osl_loop {
   int    nb_stmts;          /**< \brief Number of statements in the loop */
   int  * stmt_ids;          /**< \brief Array of statement identifiers. */
   char * private_vars;      /**< \brief \0 terminated variable names */
-  int    directive;         /**< \brief the OpenMP directive to implement */
+  int    directive;         /**< \brief Loop directive to implement */
+  char * user;              /**< \brief \0 terminated user string */
   struct osl_loop * next;
 };
 typedef struct osl_loop   osl_loop_t;
