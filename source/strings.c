@@ -503,7 +503,7 @@ osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
  * @param str1[in] The first osl_strings.
  * @param str2[in] The second osl_strings.
  */
-void osl_strings_concat(
+void osl_strings_add_strings(
         osl_strings_p * dest,
         osl_strings_p   str1,
         osl_strings_p   str2)
