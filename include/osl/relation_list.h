@@ -92,6 +92,7 @@ typedef struct osl_relation_list * osl_relation_list_p;
  *****************************************************************************/
 void osl_relation_list_idump(FILE *, osl_relation_list_p, int);
 void osl_relation_list_dump(FILE *, osl_relation_list_p);
+void osl_relation_list_pprint_n_elts(FILE *, osl_relation_list_p, osl_names_p, int);
 void osl_relation_list_pprint_elts(FILE *, osl_relation_list_p, osl_names_p);
 void osl_relation_list_pprint(FILE *, osl_relation_list_p, osl_names_p);
 void osl_relation_list_print(FILE *, osl_relation_list_p);
