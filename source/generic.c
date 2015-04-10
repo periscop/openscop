@@ -538,32 +538,13 @@ int osl_generic_number(osl_generic_p generic) {
  * \return A pointer to the clone of the input generic structure.
  */
 osl_generic_p osl_generic_clone(osl_generic_p generic) {
-  osl_generic_p clone = NULL, new;
-  osl_interface_p interface;
-  void * x;
-
-  while (generic != NULL) { 
-    if (generic->interface != NULL) {
-      x = generic->interface->clone(generic->data);
-      interface = osl_interface_clone(generic->interface);
-      new = osl_generic_malloc();
-      new->interface = interface;
-      new->data = x;
-      osl_generic_add(&clone, new);
-    }
-    else {
-      OSL_warning("unregistered interface, cloning ignored");
-    }
-    generic = generic->next;
-  }
-
-  return clone;
+  return osl_generic_nclone(generic,-1);
 }
 
 
 /**
- * @brief This function builds and returns a "hard copy" (not a pointer copy) of the
- * n first elements of an osl_generic_t list.
+ * @brief This function builds and returns a "hard copy" (not a pointer copy)
+ * of the n first elements of an osl_generic_t list.
  *
  * \param generic The pointer to the generic structure we want to clone.
  * \param n       The number of nodes we want to copy (n<0 for infinity).
@@ -579,25 +560,23 @@ osl_generic_p osl_generic_nclone(osl_generic_p generic, int n)
 
     if(n<0)
     {
-        clone = osl_generic_clone(generic);
+        n = osl_generic_count(generic);
     }
-    else
-    {
-        while ((generic != NULL) && (n>0)) { 
-            if (generic->interface != NULL) {
-                x = generic->interface->clone(generic->data);
-                interface = osl_interface_clone(generic->interface);
-                new = osl_generic_malloc();
-                new->interface = interface;
-                new->data = x;
-                osl_generic_add(&clone, new);
-            }
-            else {
-                OSL_warning("unregistered interface, cloning ignored");
-            }
-            generic = generic->next;
-            n--;
+
+    while ((generic != NULL) && (n>0)) { 
+        if (generic->interface != NULL) {
+            x = generic->interface->clone(generic->data);
+            interface = osl_interface_clone(generic->interface);
+            new = osl_generic_malloc();
+            new->interface = interface;
+            new->data = x;
+            osl_generic_add(&clone, new);
         }
+        else {
+            OSL_warning("unregistered interface, cloning ignored");
+        }
+        generic = generic->next;
+        n--;
     }
 
     return clone;
