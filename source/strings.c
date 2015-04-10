@@ -134,7 +134,7 @@ char * osl_strings_sprint(osl_strings_p strings) {
 
 
 /**
- * osl_strings_sprint function:
+ * osl_strings_sprint_with_separator function:
  * this function prints the content of an osl_strings_t structure
  * (*strings) into a string (returned) in the OpenScop textual format.
  * All the individuals string of the list are separated by the separator strings.
