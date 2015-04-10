@@ -179,6 +179,7 @@ typedef struct osl_dependence * osl_dependence_p;
  *****************************************************************************/
 void            osl_dependence_idump(FILE *, osl_dependence_p, int);
 void            osl_dependence_dump(FILE *, osl_dependence_p);
+char *          osl_dependence_n_sprint(osl_dependence_p, int);
 char *          osl_dependence_sprint(osl_dependence_p);
 void            osl_dependence_print(FILE *, osl_dependence_p);
 

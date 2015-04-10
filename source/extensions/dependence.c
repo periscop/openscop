@@ -229,13 +229,12 @@ void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
   free(string);
 }
 
-
 /**
- * osl_dependence_sprint function:
- * Returns a string containing the dependence, formatted to fit the
+ * osl_dependence_n_sprint function:
+ * Returns a string containing the N first dependences, formatted to fit the
  * .scop representation.
  */
-char* osl_dependence_sprint(osl_dependence_p dependence) {
+char* osl_dependence_n_sprint(osl_dependence_p dependence, int n) {
   
   osl_dependence_p tmp = dependence;
   int nb_deps;
@@ -252,9 +251,14 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
    ;
   snprintf(buff, OSL_MAX_STRING, "# Number of dependences\n%d\n", nb_deps);
   strcat(buffer, buff);
-  
+ 
+  if(n<0)
+  {
+      n = nb_deps;
+  }
+
   if (nb_deps) {
-    for (tmp = dependence, nb_deps = 1; tmp; tmp = tmp->next, ++nb_deps) {
+    for (tmp = dependence, nb_deps = 1; tmp && (nb_deps <= n); tmp = tmp->next, ++nb_deps) {
       
       switch (tmp->type) {
         case OSL_UNDEFINED:
@@ -306,6 +310,16 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
   }
   
   return buffer;
+}
+
+
+/**
+ * osl_dependence_sprint function:
+ * Returns a string containing the dependence, formatted to fit the
+ * .scop representation.
+ */
+char* osl_dependence_sprint(osl_dependence_p dependence) {
+    return osl_dependence_n_sprint(dependence, -1);
 }
 
 
