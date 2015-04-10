@@ -230,11 +230,11 @@ void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
 }
 
 /**
- * osl_dependence_n_sprint function:
+ * osl_dependence_sprint_n function:
  * Returns a string containing the N first dependences, formatted to fit the
  * .scop representation.
  */
-char* osl_dependence_n_sprint(osl_dependence_p dependence, int n) {
+char* osl_dependence_sprint_n(osl_dependence_p dependence, int n) {
   
   osl_dependence_p tmp = dependence;
   int nb_deps;
@@ -319,7 +319,7 @@ char* osl_dependence_n_sprint(osl_dependence_p dependence, int n) {
  * .scop representation.
  */
 char* osl_dependence_sprint(osl_dependence_p dependence) {
-    return osl_dependence_n_sprint(dependence, -1);
+    return osl_dependence_sprint_n(dependence, -1);
 }
 
 
