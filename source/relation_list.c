@@ -167,20 +167,20 @@ void osl_relation_list_pprint_n_elts(FILE * file, osl_relation_list_p list,
       n = osl_relation_list_count(list);
   }
 
-  // Print each element of the relation list.
-  if (n > 0) {
-    while( (head != NULL) && (n > 0) ) {
-      if (head->elt != NULL) {
-        osl_relation_pprint(file, head->elt, names);
-        if (head->next != NULL)
-          fprintf(file, "\n");
-        n--;
-      }
-      head = head->next;
-    }
-  }
-  else {
+  //if after the count n still is <= 0, then we print a message and return.
+  if (n <= 0) {
     fprintf(file, "# NULL relation list\n");
+    return;
+  }
+  // Print each element of the relation list.
+  while( (head != NULL) && (n > 0) ) {
+    if (head->elt != NULL) {
+      osl_relation_pprint(file, head->elt, names);
+      if (head->next != NULL)
+        fprintf(file, "\n");
+      n--;
+    }
+    head = head->next;
   }
 }
 
