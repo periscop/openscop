@@ -186,6 +186,16 @@ cmake_minimum_required(VERSION 2.6)
 		tests
 		tests/*.c
 	)
+	file(
+		GLOB
+		osl_scops
+		tests/*.scop
+	)
+	file(
+		GLOB
+		osl1_scops
+		tests/osl1_scop/*.scop
+	)
 	foreach(test_source ${tests})
 	
 		# Get test name and source
@@ -204,8 +214,8 @@ cmake_minimum_required(VERSION 2.6)
 			target_link_libraries(${test_name} osl_static)
 			
 			# Test
-			if (${test_name} STREQUAL "test__osl_test")
-				foreach (scop ${scops})
+			if (${test_name} STREQUAL "test_osl__osl_test")
+				foreach (scop ${osl_scops})
 					string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "" scop_name ${scop})
 					message(STATUS "- ${scop_name}")
 					add_test("${test_name}__${scop_name}" "${test_name}" "${scop}")
@@ -221,9 +231,25 @@ cmake_minimum_required(VERSION 2.6)
 		
 			# Test
 			if (VALGRIND_EXE)
-				add_test(${test_name} "${VALGRIND_EXE}" "./${test_name}")
+				if (${test_name} STREQUAL "test_osl1__read_scop")
+					foreach (scop ${osl1_scops})
+						string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/osl1_scop/" "" scop_name ${scop})
+						message(STATUS "- ${scop_name}")
+						add_test("${test_name}__${scop_name}" "${VALGRIND_EXE}" "./${test_name}" "${scop}")
+					endforeach()
+				else()
+					add_test(${test_name} "${VALGRIND_EXE}" "./${test_name}")
+				endif()
 			else()
-				add_test(${test_name} "./${test_name}")
+				if (${test_name} STREQUAL "test_osl1__read_scop")
+					foreach (scop ${osl1_scops})
+						string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/osl1_scop/" "" scop_name ${scop})
+						message(STATUS "- ${scop_name}")
+						add_test("${test_name}__${scop_name}" "./${test_name}" "${scop}")
+					endforeach()
+				else()
+					add_test(${test_name} "./${test_name}")
+				endif()
 			endif()
 		
 		endif()
