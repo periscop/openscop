@@ -95,7 +95,9 @@ typedef struct osl_strings const * const osl_const_strings_const_p;
 void            osl_strings_idump(FILE *, osl_strings_p, int);
 void            osl_strings_dump(FILE *, osl_strings_p);
 char *          osl_strings_sprint(osl_strings_p);
+char *          osl_strings_sprint_with_separator(osl_strings_p, char *);
 void            osl_strings_print(FILE *, osl_strings_p);
+void            osl_strings_print_with_separator(FILE *, osl_strings_p, char *);
 
 
 /*****************************************************************************
@@ -121,6 +123,7 @@ size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
 osl_interface_p osl_strings_interface();
 osl_strings_p   osl_strings_generate(char *, int);
+void osl_strings_add_strings(osl_strings_p *, osl_strings_p, osl_strings_p);
 
 
 # if defined(__cplusplus)

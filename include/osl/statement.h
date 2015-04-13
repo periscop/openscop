@@ -105,6 +105,7 @@ void            osl_statement_idump(FILE *, osl_statement_p, int);
 void            osl_statement_dump(FILE *, osl_statement_p);
 void            osl_statement_pprint(FILE *, osl_statement_p, osl_names_p);
 void            osl_statement_print(FILE *, osl_statement_p);
+void            osl_statement_pprint_n(FILE *, osl_statement_p, osl_names_p, int);
 
 // SCoPLib Compatibility
 void            osl_statement_pprint_scoplib(FILE *, osl_statement_p,

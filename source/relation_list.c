@@ -147,6 +147,45 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
 
 /**
  * osl_relation_list_pprint_elts function:
+ * This function pretty-prints N elements of a osl_relation_list_t structure
+ * into a file (file, possibly stdout) in the OpenScop format. I.e., it prints
+ * only the elements and not the number of elements. It prints an element of the
+ * list only if it is not NULL.
+ * \param file  File where informations are printed.
+ * \param list  The relation list whose information has to be printed.
+ * \param[in] names Array of constraint columns names.
+ * \param[in] n The number of elements in the list to print.
+ */
+void osl_relation_list_pprint_n_elts(FILE * file, osl_relation_list_p list,
+                                   osl_names_p names, int n) {
+  osl_relation_list_p head = list;
+
+  //If n<0, print all the elements in the list, so we need to count count the
+  //number of elements in the list with non-NULL content.
+  if(n<0)
+  {
+      n = osl_relation_list_count(list);
+  }
+
+  //if after the count n still is <= 0, then we print a message and return.
+  if (n <= 0) {
+    fprintf(file, "# NULL relation list\n");
+    return;
+  }
+  // Print each element of the relation list.
+  while( (head != NULL) && (n > 0) ) {
+    if (head->elt != NULL) {
+      osl_relation_pprint(file, head->elt, names);
+      if (head->next != NULL)
+        fprintf(file, "\n");
+      n--;
+    }
+    head = head->next;
+  }
+}
+
+/**
+ * osl_relation_list_pprint_elts function:
  * This function pretty-prints the elements of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. I.e., it prints
  * only the elements and not the number of elements. It prints an element of the
@@ -157,28 +196,7 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
  */
 void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
                                    osl_names_p names) {
-  size_t i;
-  osl_relation_list_p head = list;
-
-  // Count the number of elements in the list with non-NULL content.
-  i = osl_relation_list_count(list);
-  
-  // Print each element of the relation list.
-  if (i > 0) {
-    i = 0;
-    while (head) {
-      if (head->elt != NULL) {
-        osl_relation_pprint(file, head->elt, names);
-        if (head->next != NULL)
-          fprintf(file, "\n");
-        i++;
-      }
-      head = head->next;
-    }
-  }
-  else {
-    fprintf(file, "# NULL relation list\n");
-  }
+    osl_relation_list_pprint_n_elts(file, list, names, -1);
 }
 
 
