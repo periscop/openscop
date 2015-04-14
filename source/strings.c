@@ -495,28 +495,26 @@ osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
   return generated;
 }
 
-
 /**
- * @brief Concatenate two osl_strings into one. The parameter are cloned and not modified.
+ * \brief Concatenate two osl_strings into one. The parameter are cloned and not modified.
  *
- * @param dest[out] A pointer to the destination osl_strings.
- * @param str1[in] The first osl_strings.
- * @param str2[in] The second osl_strings.
+ * \param dest[out] A pointer to the destination osl_strings.
+ * \param str1[in] The first osl_strings.
+ * \param str2[in] The second osl_strings.
  */
 void osl_strings_add_strings(
         osl_strings_p * dest,
         osl_strings_p   str1,
-        osl_strings_p   str2)
-{
-    struct osl_strings * res = NULL;
-    unsigned int i = 0;
+        osl_strings_p   str2) {
+  struct osl_strings * res = NULL;
+  unsigned int i = 0;
 
-    res = osl_strings_clone(str1);
-    while(str2->string[i] != NULL)
-    {
-        osl_strings_add(res, str2->string[i]);
-        i++;
-    }
-    
-    *dest = res;
+  res = osl_strings_clone(str1);
+  while (str2->string[i] != NULL) {
+    osl_strings_add(res, str2->string[i]);
+    i++;
+  }
+
+  *dest = res;
 }
+
