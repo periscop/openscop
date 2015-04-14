@@ -19,6 +19,17 @@
 #include "../include/osl1/print.h"
 
 
+// Id
+
+/**
+ * \brief Return a new id for osl1_statement_t
+ * \return a new id for osl1_statement_t
+ */
+size_t osl1_statement_new_id() {
+  static size_t id = 0;
+  return id++;
+}
+
 // Create & destroy
 
 /**
@@ -27,6 +38,7 @@
  */
 osl1_statement_t osl1_statement_create() {
   osl1_statement_t statement;
+  statement.id = osl1_statement_new_id();
   statement.domain = osl1_relation_create();
   statement.scattering = osl1_relation_create();
   statement.accesses_read = osl1_vector_relation_create();
@@ -130,8 +142,8 @@ osl1_statement_t osl1_statement_fread(FILE* file) {
   statement.scattering = osl1_relation_fread(file);
   
   // Accesses (read)
-  osl1_vector_relation_destroy(&statement.accesses_write);
-  statement.accesses_write = osl1_vector_relation_fread(file);
+  osl1_vector_relation_destroy(&statement.accesses_read);
+  statement.accesses_read = osl1_vector_relation_fread(file);
   
   // Accesses (write)
   osl1_vector_relation_destroy(&statement.accesses_write);
@@ -162,8 +174,8 @@ osl1_statement_t osl1_statement_sread(const char** c_str) {
   statement.scattering = osl1_relation_sread(c_str);
   
   // Accesses (read)
-  osl1_vector_relation_destroy(&statement.accesses_write);
-  statement.accesses_write = osl1_vector_relation_sread(c_str);
+  osl1_vector_relation_destroy(&statement.accesses_read);
+  statement.accesses_read = osl1_vector_relation_sread(c_str);
   
   // Accesses (write)
   osl1_vector_relation_destroy(&statement.accesses_write);
@@ -197,6 +209,7 @@ osl1_statement_t osl1_statement_copy(const osl1_statement_t* const statement) {
  */
 void osl1_statement_copy_(const osl1_statement_t* const statement,
                           osl1_statement_t* copy) {
+  copy->id = osl1_statement_new_id();
   copy->domain = osl1_relation_copy(&statement->domain);
   copy->scattering = osl1_relation_copy(&statement->scattering);
   copy->accesses_read = osl1_vector_relation_copy(&statement->accesses_read);

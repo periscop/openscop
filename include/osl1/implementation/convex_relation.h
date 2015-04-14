@@ -47,7 +47,7 @@ osl1_convex_relation_t osl1_convex_relation_create_args(
                                                     size_t const nb_parameter) {
   return osl1_convex_relation_create_args_and_int_type(
            nb_row, nb_output_dim, nb_input_dim, nb_local_dim, nb_parameter,
-           OSL_CONVEX_RELATION_DEFAULT_INT_TYPE);
+           osl1_convex_relation_get_precision());
 }
 
 /**
@@ -69,6 +69,7 @@ osl1_convex_relation_t osl1_convex_relation_create_args_and_int_type(
                                                    gho_type_t const precision) {
   osl1_convex_relation_t convex_relation;
   convex_relation.type = GHO_TYPE_OSL_CONVEX_RELATION;
+  convex_relation.id = osl1_convex_relation_new_id();
   
   convex_relation.nb_output_dim = nb_output_dim;
   convex_relation.nb_input_dim = nb_input_dim;
@@ -216,13 +217,16 @@ osl1_convex_relation_t osl1_convex_relation_sread(const char** c_str) {
   for (size_t i = 0; i < nb_row; ++i) {
     for (size_t j = 0; j < nb_column; ++j) {
       if (r.precision == GHO_TYPE_LINT) {
+        gho_lint_destroy(&r.matrix.li.array[i][j]);
         r.matrix.li.array[i][j] = gho_lint_sread(c_str);
       }
       else if (r.precision == GHO_TYPE_LLINT) {
+        gho_llint_destroy(&r.matrix.lli.array[i][j]);
         r.matrix.lli.array[i][j] = gho_llint_sread(c_str);
       }
       #ifdef osl_with_gmp
       else if (r.precision == GHO_TYPE_GHO_MPZ_T) {
+        gho_mpz_destroy(&r.matrix.mpz.array[i][j]);
         r.matrix.mpz.array[i][j] = gho_mpz_sread(c_str);
       }
       #endif
@@ -266,6 +270,7 @@ void osl1_convex_relation_copy_(
                             const osl1_convex_relation_t* const convex_relation,
                             osl1_convex_relation_t* copy) {
   copy->type = convex_relation->type;
+  copy->id = osl1_convex_relation_new_id();
   
   copy->nb_output_dim = convex_relation->nb_output_dim;
   copy->nb_input_dim = convex_relation->nb_input_dim;

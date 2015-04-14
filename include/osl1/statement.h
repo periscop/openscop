@@ -40,6 +40,9 @@ extern "C"
  */
 typedef struct {
   
+  /// \brief Id
+  size_t id;
+  
   /// \brief Iteration domain
   osl1_relation_t domain;
   
@@ -56,6 +59,9 @@ typedef struct {
   gho_vector_any_t extensions;
   
 } osl1_statement_t;
+
+// Id
+size_t osl1_statement_new_id();
 
 // Create & destroy
 osl1_statement_t osl1_statement_create();

@@ -134,6 +134,7 @@ osl1_scop_t osl1_scop_fread(FILE* file) {
   osl1_skip_comments(file);
   
   // Context
+  osl1_relation_destroy(&scop.context);
   scop.context = osl1_relation_fread(file);
   
   // Parameters
@@ -199,6 +200,7 @@ osl1_scop_t osl1_scop_sread(const char** c_str) {
   osl1_skip_comments_from_c_str(c_str);
   
   // Context
+  osl1_relation_destroy(&scop.context);
   scop.context = osl1_relation_sread(c_str);
   
   // Parameters

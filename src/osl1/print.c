@@ -215,14 +215,9 @@ void osl1_convex_relation_fprint_name(FILE * file,
                                       const gho_uint column_size) {
   const gho_uint name_size = (gho_uint)gho_string_size(name);
   
-  const gho_uint space_before =
-    (column_size > name_size) ? ((column_size - name_size) / 2) : 0;
-  const gho_uint space_after = (gho_uint)
-    gho_T_max((int)column_size - (int)space_before - (int)name_size, 0);
-  
-  gho_fprinti(file, space_before);
+  gho_fprinti(file, column_size - name_size - 1);
   gho_string_fprint(file, name);
-  gho_fprinti(file, space_after);
+  gho_fprinti(file, 1);
 }
 
 /**
@@ -236,14 +231,9 @@ void osl1_convex_relation_sprint_name(char** c_str,
                                       const gho_uint column_size) {
   const gho_uint name_size = (gho_uint)gho_string_size(name);
   
-  const gho_uint space_before =
-    (column_size > name_size) ? ((column_size - name_size + 1) / 2) : 0;
-  const gho_uint space_after = (gho_uint)
-    gho_T_max((int)column_size - (int)space_before - (int)name_size, 0);
-  
-  gho_sprinti(c_str, space_before);
+  gho_sprinti(c_str, column_size - name_size - 1);
   gho_string_sprint(c_str, name);
-  gho_sprinti(c_str, space_after);
+  gho_sprinti(c_str, 1);
 }
 
 /**
@@ -266,7 +256,7 @@ gho_vector_uint_t osl1_convex_relation_column_sizes(
   for (size_t i = 0; i < nb_col; ++i) {
     gho_string_t name =
       osl1_convex_relation_name_column(convex_relation, i, scop, statement);
-    r.array[i] = gho_T_max(r.array[i], (gho_uint)gho_string_size(&name) + 2);
+    r.array[i] = gho_T_max(r.array[i], (gho_uint)gho_string_size(&name) + 1);
     gho_string_destroy(&name);
   }
   
@@ -274,8 +264,8 @@ gho_vector_uint_t osl1_convex_relation_column_sizes(
     for (size_t j = 0; j < nb_col; ++j) {
       gho_coperand_t cop = osl1_convex_relation_cat(convex_relation, i, j);
       gho_string_t cop_string = gho_coperand_to_string(&cop);
-      r.array[i] =
-        gho_T_max(r.array[i], (gho_uint)gho_string_size(&cop_string) + 2);
+      r.array[j] =
+        gho_T_max(r.array[j], (gho_uint)gho_string_size(&cop_string) + 1);
       gho_string_destroy(&cop_string);
     }
   }
@@ -306,6 +296,9 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
   const size_t nb_local_dim = convex_relation->nb_local_dim;
   const size_t nb_parameter = convex_relation->nb_parameter;
   
+  gho_c_str_fprinti(file, "# Id = ", indent);
+  gho_size_t_fprint(file, &convex_relation->id);
+  gho_c_str_fprint(file, "\n");
   gho_c_str_fprinti(file, "# nb row, col, output, input, local, param\n",
                     indent);
   gho_fprinti(file, indent);
@@ -343,7 +336,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
   gho_vector_uint_t column_sizes =
     osl1_convex_relation_column_sizes(convex_relation, scop, statement);
   
-  gho_c_str_fprinti(file, "#", indent);
+  gho_c_str_fprinti(file, "# ", indent);
   // (In)equation
   {
     const size_t i = 0;
@@ -352,7 +345,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
     osl1_convex_relation_fprint_name(file, &name, column_sizes.array[0]);
     gho_string_destroy(&name);
   }
-  gho_c_str_fprint(file, "|");
+  gho_c_str_fprint(file, "| ");
   // Output dimensions
   for (size_t i = 0; i < nb_output_dim; ++i) {
     gho_string_t name =
@@ -362,7 +355,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_fprint(file, "|");
+  gho_c_str_fprint(file, "| ");
   // Input dimensions
   for (size_t i = 0; i < nb_input_dim; ++i) {
     gho_string_t name =
@@ -372,7 +365,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_fprint(file, "|");
+  gho_c_str_fprint(file, "| ");
   // Local dimensions
   for (size_t i = 0; i < nb_local_dim; ++i) {
     gho_string_t name =
@@ -382,7 +375,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_fprint(file, "|");
+  gho_c_str_fprint(file, "| ");
   // Parameters
   for (size_t i = 0; i < nb_parameter; ++i) {
     gho_string_t name =
@@ -393,7 +386,7 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_fprint(file, "|");
+  gho_c_str_fprint(file, "| ");
   // Constant
   {
     const size_t i = nb_col - 1;
@@ -409,23 +402,23 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
   
   for (size_t i = 0; i < nb_row; ++i) {
     gho_fprinti(file, indent);
-    gho_c_str_fprint(file, " ");
+    gho_c_str_fprint(file, "  ");
     for (size_t j = 0; j < nb_col; ++j) {
       // |
       if (j == 1) {
-        gho_c_str_fprint(file, " ");
+        gho_c_str_fprint(file, "  ");
       }
       if (j == 1 + nb_output_dim) {
-        gho_c_str_fprint(file, " ");
+        gho_c_str_fprint(file, "  ");
       }
       if (j == 1 + nb_output_dim + nb_input_dim) {
-        gho_c_str_fprint(file, " ");
+        gho_c_str_fprint(file, "  ");
       }
       if (j == 1 + nb_output_dim + nb_input_dim + nb_local_dim) {
-        gho_c_str_fprint(file, " ");
+        gho_c_str_fprint(file, "  ");
       }
       if (j == 1 + nb_output_dim + nb_input_dim + nb_local_dim + nb_parameter) {
-        gho_c_str_fprint(file, " ");
+        gho_c_str_fprint(file, "  ");
       }
       // Get convex_relation[i][j]
       gho_coperand_t cop = osl1_convex_relation_cat(convex_relation, i, j);
@@ -516,6 +509,9 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
   const size_t nb_local_dim = convex_relation->nb_local_dim;
   const size_t nb_parameter = convex_relation->nb_parameter;
   
+  gho_c_str_sprinti(c_str, "# Id = ", indent);
+  gho_size_t_sprint(c_str, &convex_relation->id);
+  gho_c_str_sprint(c_str, "\n");
   gho_c_str_sprinti(c_str, "# nb row, col, output, input, local, param\n",
                     indent);
   gho_sprinti(c_str, indent);
@@ -553,7 +549,7 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
   gho_vector_uint_t column_sizes =
     osl1_convex_relation_column_sizes(convex_relation, scop, statement);
   
-  gho_c_str_sprinti(c_str, "#", indent);
+  gho_c_str_sprinti(c_str, "# ", indent);
   // (In)equation
   {
     const size_t i = 0;
@@ -562,7 +558,7 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
     osl1_convex_relation_sprint_name(c_str, &name, column_sizes.array[0]);
     gho_string_destroy(&name);
   }
-  gho_c_str_sprint(c_str, "|");
+  gho_c_str_sprint(c_str, "| ");
   // Output dimensions
   for (size_t i = 0; i < nb_output_dim; ++i) {
     gho_string_t name =
@@ -572,7 +568,7 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_sprint(c_str, "|");
+  gho_c_str_sprint(c_str, "| ");
   // Input dimensions
   for (size_t i = 0; i < nb_input_dim; ++i) {
     gho_string_t name =
@@ -582,7 +578,7 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_sprint(c_str, "|");
+  gho_c_str_sprint(c_str, "| ");
   // Local dimensions
   for (size_t i = 0; i < nb_local_dim; ++i) {
     gho_string_t name =
@@ -592,7 +588,7 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_sprint(c_str, "|");
+  gho_c_str_sprint(c_str, "| ");
   // Parameters
   for (size_t i = 0; i < nb_parameter; ++i) {
     gho_string_t name =
@@ -603,7 +599,7 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
                                      column_sizes.array[column_sizes_i]);
     gho_string_destroy(&name);
   }
-  gho_c_str_sprint(c_str, "|");
+  gho_c_str_sprint(c_str, "| ");
   // Constant
   {
     const size_t i = nb_col - 1;
@@ -619,23 +615,23 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
   
   for (size_t i = 0; i < nb_row; ++i) {
     gho_sprinti(c_str, indent);
-    gho_c_str_sprint(c_str, " ");
+    gho_c_str_sprint(c_str, "  ");
     for (size_t j = 0; j < nb_col; ++j) {
       // |
       if (j == 1) {
-        gho_c_str_sprint(c_str, " ");
+        gho_c_str_sprint(c_str, "  ");
       }
       if (j == 1 + nb_output_dim) {
-        gho_c_str_sprint(c_str, " ");
+        gho_c_str_sprint(c_str, "  ");
       }
       if (j == 1 + nb_output_dim + nb_input_dim) {
-        gho_c_str_sprint(c_str, " ");
+        gho_c_str_sprint(c_str, "  ");
       }
       if (j == 1 + nb_output_dim + nb_input_dim + nb_local_dim) {
-        gho_c_str_sprint(c_str, " ");
+        gho_c_str_sprint(c_str, "  ");
       }
       if (j == 1 + nb_output_dim + nb_input_dim + nb_local_dim + nb_parameter) {
-        gho_c_str_sprint(c_str, " ");
+        gho_c_str_sprint(c_str, "  ");
       }
       // Get convex_relation[i][j]
       gho_coperand_t cop = osl1_convex_relation_cat(convex_relation, i, j);
@@ -893,6 +889,10 @@ void osl1_statement_fprinti_openscop(FILE* file,
                                      const unsigned int indent,
                                      const osl1_scop_t* const scop) {
   
+  gho_c_str_fprinti(file, "# Id = ", indent);
+  gho_size_t_fprint(file, &statement->id);
+  gho_c_str_fprint(file, "\n\n");
+  
   gho_c_str_fprinti(file, "# Domain\n", indent);
   gho_c_str_fprinti(file, "# ------\n\n", indent);
   osl1_relation_fprinti_openscop(file, &statement->domain, indent,
@@ -946,6 +946,10 @@ void osl1_statement_sprinti_openscop(char** c_str,
                                      const osl1_statement_t* const statement,
                                      const unsigned int indent,
                                      const osl1_scop_t* const scop) {
+  
+  gho_c_str_sprinti(c_str, "# Id = ", indent);
+  gho_size_t_sprint(c_str, &statement->id);
+  gho_c_str_sprint(c_str, "\n\n");
   
   gho_c_str_sprinti(c_str, "# Domain\n", indent);
   gho_c_str_sprinti(c_str, "# ------\n\n", indent);

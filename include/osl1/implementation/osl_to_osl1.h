@@ -55,7 +55,7 @@ osl1_relation_t osl_to_osl1_relation(const osl_relation_t* const relation_osl) {
     }
     #endif
     // Create convex relation
-    gho_type_t precision = OSL_CONVEX_RELATION_DEFAULT_INT_TYPE;
+    gho_type_t precision = osl1_convex_relation_get_precision();
     if (p->precision == OSL_PRECISION_SP) { precision = GHO_TYPE_LINT; }
     if (p->precision == OSL_PRECISION_DP) { precision = GHO_TYPE_LLINT; }
     #ifdef osl_with_gmp

@@ -56,6 +56,9 @@ typedef struct {
   /// \brief Type
   gho_type_t type;
   
+  /// \brief Id
+  size_t id;
+  
   /// \brief Number of output dimensions
   size_t nb_output_dim;
   
@@ -93,13 +96,17 @@ typedef struct {
 } osl1_convex_relation_t;
 
 
-/// \brief Default precision used by osl1_convex_relation_t
-#ifdef osl_with_gmp
-  #define OSL_CONVEX_RELATION_DEFAULT_INT_TYPE GHO_TYPE_GHO_MPZ_T
-#else
-  #define OSL_CONVEX_RELATION_DEFAULT_INT_TYPE GHO_TYPE_LLINT
-#endif
+// Id
+size_t osl1_convex_relation_new_id();
 
+// Precision
+gho_type_t osl1_convex_relation_get_precision();
+void osl1_convex_relation_set_precision(const gho_type_t type);
+void osl1_convex_relation_set_precision_lint();
+void osl1_convex_relation_set_precision_llint();
+#ifdef osl_with_gmp
+void osl1_convex_relation_set_precision_mpz();
+#endif
 
 // Create & destroy
 static inline
