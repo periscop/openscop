@@ -129,7 +129,7 @@ void osl_strings_dump(FILE * file, osl_strings_p strings) {
  * \return A string containing the OpenScop dump of the strings structure.
  */
 char * osl_strings_sprint(osl_strings_p strings) {
-    osl_strings_sprint_with_separator(strings, " ");
+    return osl_strings_sprint_with_separator(strings, " ");
 }
 
 
