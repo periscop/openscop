@@ -15,20 +15,6 @@
 
 #include <stdlib.h>
 
-#include "../include/osl1/statement.h"
-#include "../include/osl1/print.h"
-
-
-// Id
-
-/**
- * \brief Return a new id for osl1_statement_t
- * \return a new id for osl1_statement_t
- */
-size_t osl1_statement_new_id() {
-  static size_t id = 0;
-  return id++;
-}
 
 // Create & destroy
 
@@ -70,57 +56,7 @@ void osl1_statement_erase(osl1_statement_t* statement) {
 
 // Output
 
-/**
- * \brief Print an osl1_statement in a file with indentation
- * \param[in] file      A C file
- * \param[in] statement An osl1_statement
- * \param[in] indent    Indentation (number of spaces)
- */
-void osl1_statement_fprinti(FILE* file,
-                            const osl1_statement_t* const statement,
-                            const unsigned int indent) {
-  osl1_statement_fprinti_openscop(file, statement, indent, NULL);
-}
-
-/**
- * \brief Print an osl1_statement in a file
- * \param[in] file      A C file
- * \param[in] statement An osl1_statement
- */
-void osl1_statement_fprint(FILE* file,
-                           const osl1_statement_t* const statement) {
-  osl1_statement_fprinti(file, statement, 0);
-}
-
-/**
- * \brief Print an osl1_statement in stdout
- * \param[in] statement An osl1_statement
- */
-void osl1_statement_print(const osl1_statement_t* const statement) {
-  osl1_statement_fprint(stdout, statement);
-}
-
-/**
- * \brief Print an osl1_statement in a C string with indentation
- * \param[in] c_str     A C string
- * \param[in] statement An osl1_statement
- * \param[in] indent    Indentation (number of spaces)
- */
-void osl1_statement_sprinti(char** c_str,
-                            const osl1_statement_t* const statement,
-                            const unsigned int indent) {
-  osl1_statement_sprinti_openscop(c_str, statement, indent, NULL);
-}
-
-/**
- * \brief Print an osl1_statement in a C string
- * \param[in] c_str     A C string
- * \param[in] statement An osl1_statement
- */
-void osl1_statement_sprint(char** c_str,
-                           const osl1_statement_t* const statement) {
-  osl1_statement_sprinti(c_str, statement, 0);
-}
+// See "print_statement.h"
 
 // Input
 

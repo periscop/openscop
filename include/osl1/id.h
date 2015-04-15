@@ -13,28 +13,25 @@
 // limitations under the License.
 
 
-#include <gho/int/size_t.h>
+#ifndef OSL1_ID_H
+#define OSL1_ID_H
 
-#include "../include/osl1/vector/scop.h"
-#include "../include/osl1/input.h"
+#include <stddef.h>
+
+#include <gho/type.h>
 
 
-// Input
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
-/**
- * \brief Read an osl1_vector_scop_t from a file in OpenScop format
- * \param[in] file A C file
- * \return the osl1_vector_scop_t read
- */
-// osl1_vector_scop_t osl1_vector_scop_fread(FILE* file) {
-//   // TODO
-// }
+// Id
+size_t osl1_convex_relation_new_id();
+size_t osl1_statement_new_id();
 
-/**
- * \brief Read an osl1_vector_scop_t from a C string in OpenScop format
- * \param[in] c_str A C string
- * \return the osl1_vector_scop_t read
- */
-// osl1_vector_scop_t osl1_vector_scop_sread(const char** c_str) {
-//   // TODO
-// }
+#if defined(__cplusplus)
+}
+#endif
+
+#endif

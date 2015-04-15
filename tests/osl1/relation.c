@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include <osl1/relation.h>
+#include <osl1/print.h>
 #include <gho/test.h>
 
 

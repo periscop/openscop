@@ -23,12 +23,6 @@
 #include <gho/any.h>
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
-
 /**
  * \brief osl1_extension_unknown_t stores an unknown extension
  */
@@ -41,6 +35,12 @@ typedef struct {
   gho_string_t extension;
   
 } osl1_extension_unknown_t;
+
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 
 // Create & destroy
@@ -83,11 +83,18 @@ bool osl1_extension_unknown_equal(const osl1_extension_unknown_t* const a,
 // Conversion
 gho_string_t osl1_extension_unknown_to_string(
                                 const osl1_extension_unknown_t* const unknown);
-gho_any_t osl1_extension_unknown_to_any(
-                                const osl1_extension_unknown_t* const unknown);
 
 #if defined(__cplusplus)
 }
 #endif
+
+
+// Conversion
+static inline
+gho_any_t osl1_extension_unknown_to_any(
+                                const osl1_extension_unknown_t* const unknown);
+
+
+#include "../implementation/extension/unknown.h"
 
 #endif

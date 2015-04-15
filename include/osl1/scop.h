@@ -27,13 +27,6 @@
 
 #include "relation.h"
 #include "vector/statement.h"
-#include "extension.h"
-
-
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
 
 
 /**
@@ -55,36 +48,51 @@ typedef struct {
   
 } osl1_scop_t;
 
+
 // Create & destroy
+static inline
 osl1_scop_t osl1_scop_create();
+static inline
 void osl1_scop_destroy(osl1_scop_t* scop);
-void osl1_scop_erase(osl1_scop_t* scop);
+static inline
+void osl1_scop_reset(osl1_scop_t* scop);
 
 // Output
+static inline
 void osl1_scop_fprinti(FILE* file, const osl1_scop_t* const scop,
                        const unsigned int indent);
+static inline
 void osl1_scop_fprint(FILE* file, const osl1_scop_t* const scop);
+static inline
 void osl1_scop_print(const osl1_scop_t* const scop);
+static inline
 void osl1_scop_sprinti(char** c_str, const osl1_scop_t* const scop,
                        const unsigned int indent);
+static inline
 void osl1_scop_sprint(char** c_str, const osl1_scop_t* const scop);
 // Input
+static inline
 osl1_scop_t osl1_scop_fread(FILE* file);
+static inline
 osl1_scop_t osl1_scop_sread(const char** c_str);
 
 // Copy & comparisons
+static inline
 osl1_scop_t osl1_scop_copy(const osl1_scop_t* const scop);
+static inline
 void osl1_scop_copy_(const osl1_scop_t* const scop, osl1_scop_t* copy);
+static inline
 bool osl1_scop_equal(const osl1_scop_t* const a, const osl1_scop_t* const b);
 
 // Conversion
+static inline
 gho_string_t osl1_scop_to_string(const osl1_scop_t* const scop);
+static inline
 gho_any_t osl1_scop_to_any(const osl1_scop_t* const scop);
 
-#include "print.h"
 
-#if defined(__cplusplus)
-}
-#endif
+#include "implementation/scop.h"
+
+#include "print.h"
 
 #endif

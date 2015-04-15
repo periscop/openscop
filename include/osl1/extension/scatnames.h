@@ -24,12 +24,6 @@
 #include <gho/vector/string.h>
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
-
 /**
  * \brief osl1_extension_scatnames_t stores names of output dimensions
  *        of scattering
@@ -40,6 +34,12 @@ typedef struct {
   gho_vector_string_t scatnames;
   
 } osl1_extension_scatnames_t;
+
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 // Create & destroy
 osl1_extension_scatnames_t osl1_extension_scatnames_create();
@@ -76,11 +76,18 @@ bool osl1_extension_scatnames_equal(const osl1_extension_scatnames_t* const a,
 // Conversion
 gho_string_t osl1_extension_scatnames_to_string(
                             const osl1_extension_scatnames_t* const scatnames);
-gho_any_t osl1_extension_scatnames_to_any(
-                            const osl1_extension_scatnames_t* const scatnames);
 
 #if defined(__cplusplus)
 }
 #endif
+
+
+// Conversion
+static inline
+gho_any_t osl1_extension_scatnames_to_any(
+                            const osl1_extension_scatnames_t* const scatnames);
+
+
+#include "../implementation/extension/scatnames.h"
 
 #endif

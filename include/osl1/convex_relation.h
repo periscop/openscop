@@ -32,8 +32,6 @@
 #include <gho/operand.h>
 #include <gho/vector/size_t.h>
 
-#include "extension.h"
-
 
 /**
  * \brief Convex relation type (domain, scattering, access read, access write)
@@ -96,15 +94,17 @@ typedef struct {
 } osl1_convex_relation_t;
 
 
-// Id
-size_t osl1_convex_relation_new_id();
-
 // Precision
+static inline
 gho_type_t osl1_convex_relation_get_precision();
+static inline
 void osl1_convex_relation_set_precision(const gho_type_t type);
+static inline
 void osl1_convex_relation_set_precision_lint();
+static inline
 void osl1_convex_relation_set_precision_llint();
 #ifdef osl_with_gmp
+static inline
 void osl1_convex_relation_set_precision_mpz();
 #endif
 
@@ -132,25 +132,23 @@ static inline
 void osl1_convex_relation_reset(osl1_convex_relation_t* convex_relation);
 
 // Output
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
+static inline
 void osl1_convex_relation_fprinti(FILE* file,
                             const osl1_convex_relation_t* const convex_relation,
                             const unsigned int indent);
+static inline
 void osl1_convex_relation_fprint(FILE* file,
                           const osl1_convex_relation_t* const convex_relation);
+static inline
 void osl1_convex_relation_print(
                           const osl1_convex_relation_t* const convex_relation);
+static inline
 void osl1_convex_relation_sprinti(char** c_str,
                             const osl1_convex_relation_t* const convex_relation,
                             const unsigned int indent);
+static inline
 void osl1_convex_relation_sprint(char** c_str,
                           const osl1_convex_relation_t* const convex_relation);
-#if defined(__cplusplus)
-}
-#endif
 
 // Input
 static inline
@@ -363,6 +361,7 @@ static inline
 gho_vector_size_t_t osl1_convex_relation_output_dims_used_in_row(
                             const osl1_convex_relation_t* const convex_relation,
                             const size_t i);
+
 
 #include "implementation/convex_relation.h"
 

@@ -18,27 +18,25 @@
 
 #include "scop.h"
 #include "vector/scop.h"
+
 #include "../osl/osl.h"
 
 
 // osl to osl1
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
+
+static inline
 osl1_vector_scop_t osl_to_osl1(const osl_scop_t* const scop_osl);
+static inline
 osl1_scop_t osl_to_osl1_scop(const osl_scop_t* const scop_osl);
+static inline
 osl1_vector_statement_t osl_to_osl1_statement(
                                    const osl_statement_t* const statement_osl);
+static inline
 gho_vector_any_t osl_to_osl1_extensions(
                                     const osl_generic_t* const extensions_osl);
-#if defined(__cplusplus)
-}
-#endif
-
-// osl to osl1
 static inline
 osl1_relation_t osl_to_osl1_relation(const osl_relation_t* const relation_osl);
+
 
 #include "implementation/osl_to_osl1.h"
 

@@ -13,10 +13,7 @@
 // limitations under the License.
 
 
-#include <gho/int/size_t.h>
-
-#include "../include/osl1/vector/relation.h"
-#include "../include/osl1/input.h"
+#include "../../input.h"
 
 
 // Input

@@ -18,6 +18,61 @@
 #include <gho/c_str.h>
 
 #include "../input.h"
+#include "../extension.h"
+#include "../id.h"
+
+
+// Precision
+
+gho_type_t* osl1_convex_relation_precision();
+
+/**
+ * \brief Return int precision used for osl1_convex_relation_t
+ * \return int precision used for osl1_convex_relation_t
+ */
+gho_type_t osl1_convex_relation_get_precision() {
+  gho_type_t* precision = osl1_convex_relation_precision();
+  if (*precision == 0) {
+    #ifdef osl_with_gmp
+      *precision = GHO_TYPE_GHO_MPZ_T;
+    #else
+      *precision = GHO_TYPE_LLINT;
+    #endif
+  }
+  return *precision;
+}
+
+/**
+ * \brief Set int precision used for osl1_convex_relation_t
+ * \param[in] precision gho type of the precision
+ */
+void osl1_convex_relation_set_precision(const gho_type_t type) {
+  *osl1_convex_relation_precision() = type;
+}
+
+/**
+ * \brief Set int precision used for osl1_convex_relation_t to long int
+ */
+void osl1_convex_relation_set_precision_lint() {
+  osl1_convex_relation_set_precision(GHO_TYPE_LINT);
+}
+
+/**
+ * \brief Set int precision used for osl1_convex_relation_t to long long int
+ */
+void osl1_convex_relation_set_precision_llint() {
+  osl1_convex_relation_set_precision(GHO_TYPE_LLINT);
+}
+
+#ifdef osl_with_gmp
+
+/**
+ * \brief Set int precision used for osl1_convex_relation_t to mpz
+ */
+void osl1_convex_relation_set_precision_mpz() {
+  osl1_convex_relation_set_precision(GHO_TYPE_GHO_MPZ_T);
+}
+#endif
 
 
 // Create & destroy
@@ -143,7 +198,7 @@ void osl1_convex_relation_reset(osl1_convex_relation_t* convex_relation) {
 
 // Output
 
-// See "scr/osl1/print.c"
+// See "print_convex_relation.h"
 
 // Input
 

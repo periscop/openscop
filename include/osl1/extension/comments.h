@@ -24,12 +24,6 @@
 #include <gho/vector/string.h>
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
-
 /**
  * \brief osl1_extension_comments_t stores first comments of the source code
  */
@@ -39,6 +33,12 @@ typedef struct {
   gho_vector_string_t comments;
   
 } osl1_extension_comments_t;
+
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 // Create & destroy
 osl1_extension_comments_t osl1_extension_comments_create();
@@ -75,8 +75,6 @@ bool osl1_extension_comments_equal(const osl1_extension_comments_t* const a,
 // Conversion
 gho_string_t osl1_extension_comments_to_string(
                               const osl1_extension_comments_t* const comments);
-gho_any_t osl1_extension_comments_to_any(
-                              const osl1_extension_comments_t* const comments);
 
 // Extract
 osl1_extension_comments_t osl1_extension_comments_extract(FILE* file,
@@ -85,5 +83,14 @@ osl1_extension_comments_t osl1_extension_comments_extract(FILE* file,
 #if defined(__cplusplus)
 }
 #endif
+
+
+// Conversion
+static inline
+gho_any_t osl1_extension_comments_to_any(
+                              const osl1_extension_comments_t* const comments);
+
+
+#include "../implementation/extension/comments.h"
 
 #endif

@@ -24,12 +24,6 @@
 #include <gho/any.h>
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
-
 /**
  * \brief osl1_extension_coordinates_t stores informations about coordinates of a scop
  */
@@ -54,6 +48,12 @@ typedef struct {
   size_t indent;
   
 } osl1_extension_coordinates_t;
+
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 // Create & destroy
 osl1_extension_coordinates_t osl1_extension_coordinates_create();
@@ -92,11 +92,18 @@ bool osl1_extension_coordinates_equal(
 // Conversion
 gho_string_t osl1_extension_coordinates_to_string(
                                const osl1_extension_coordinates_t* const scop);
-gho_any_t osl1_extension_coordinates_to_any(
-                               const osl1_extension_coordinates_t* const scop);
 
 #if defined(__cplusplus)
 }
 #endif
+
+
+// Conversion
+static inline
+gho_any_t osl1_extension_coordinates_to_any(
+                        const osl1_extension_coordinates_t* const coordinates);
+
+
+#include "../implementation/extension/coordinates.h"
 
 #endif

@@ -32,6 +32,11 @@
 #include "extension/unknown.h"
 
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 // Get
 void* osl1_get_extension_ptr(gho_type_t const type,
                              gho_vector_any_t* extensions);
@@ -46,6 +51,11 @@ void osl1_extensions_sprinti_openscop(char** c_str,
                                       const gho_vector_any_t* const extensions,
                                       const unsigned int indent);
 
+#if defined(__cplusplus)
+}
+#endif
+
+
 // Input
 static inline
 gho_vector_any_t osl1_extensions_fread(FILE* file);
@@ -58,6 +68,7 @@ static inline
 gho_any_t osl1_extension_sread_with_mark(const char** c_str,
                                          const gho_string_t* const mark);
 
-#include "extension/extension.h"
+
+#include "implementation/extension.h"
 
 #endif

@@ -51,7 +51,12 @@
 
 
 // Input
+static inline
 osl1_vector_relation_t osl1_vector_relation_fread(FILE* file);
+static inline
 osl1_vector_relation_t osl1_vector_relation_sread(const char** c_str);
+
+
+#include "../implementation/vector/relation.h"
 
 #endif

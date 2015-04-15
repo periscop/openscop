@@ -49,9 +49,4 @@
 
 #include <gho/vector_T.h>
 
-
-// Input
-osl1_vector_scop_t osl1_vector_scop_fread(FILE* file);
-osl1_vector_scop_t osl1_vector_scop_sread(const char** c_str);
-
 #endif

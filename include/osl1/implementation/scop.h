@@ -15,8 +15,6 @@
 
 #include <stdlib.h>
 
-#include "../include/osl1/scop.h"
-
 
 // Create & destroy
 
@@ -55,53 +53,7 @@ void osl1_scop_reset(osl1_scop_t* scop) {
 
 // Output
 
-/**
- * \brief Print an osl1_scop in a file with indentation
- * \param[in] file   A C file
- * \param[in] scop   An osl1_scop
- * \param[in] indent Indentation (number of spaces)
- */
-void osl1_scop_fprinti(FILE* file, const osl1_scop_t* const scop,
-                       const unsigned int indent) {
-  osl1_scop_fprinti_openscop(file, scop, indent);
-}
-
-/**
- * \brief Print an osl1_scop in a file
- * \param[in] file A C file
- * \param[in] scop An osl1_scop
- */
-void osl1_scop_fprint(FILE* file, const osl1_scop_t* const scop) {
-  osl1_scop_fprinti(file, scop, 0);
-}
-
-/**
- * \brief Print an osl1_scop in stdout
- * \param[in] scop An osl1_scop
- */
-void osl1_scop_print(const osl1_scop_t* const scop) {
-  osl1_scop_fprint(stdout, scop);
-}
-
-/**
- * \brief Print an osl1_scop in a C string with indentation
- * \param[in] c_str  A C string
- * \param[in] scop   An osl1_scop
- * \param[in] indent Indentation (number of spaces)
- */
-void osl1_scop_sprinti(char** c_str, const osl1_scop_t* const scop,
-                       const unsigned int indent) {
-  osl1_scop_sprinti_openscop(c_str, scop, indent);
-}
-
-/**
- * \brief Print an osl1_scop in a C string
- * \param[in] c_str A C string
- * \param[in] scop  An osl1_scop
- */
-void osl1_scop_sprint(char** c_str, const osl1_scop_t* const scop) {
-  osl1_scop_sprinti(c_str, scop, 0);
-}
+// See "print_scop.h"
 
 // Input
 

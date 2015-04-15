@@ -18,7 +18,7 @@
 #include <gho/output.h>
 #include <gho/c_str.h>
 
-#include "../include/osl1/print_polylib.h"
+#include "../../print.h"
 
 
 // Relation

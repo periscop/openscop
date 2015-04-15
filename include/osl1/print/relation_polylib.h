@@ -1,4 +1,4 @@
-// Copyright © 2014-2015 Inria, Written by Lénaïc Bagnères, lenaic.bagneres@inria.fr
+// Copyright © 2015 Inria, Written by Lénaïc Bagnères, lenaic.bagneres@inria.fr
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,26 +13,20 @@
 // limitations under the License.
 
 
+#ifndef OSL1_PRINT_RELATION_POLYLIB_H
+#define OSL1_PRINT_RELATION_POLYLIB_H
+
 #include <stdio.h>
-#include <stdlib.h>
 
-#include <osl1/input.h>
-#include <gho/test.h>
+#include "../relation.h"
 
 
-int main(int argc, char** argv) {
-  
-  printf("\n");
-  
-  if (argc > 1) { printf("%s: argv are ignored\n", argv[0]); }
+// Relation
+static inline
+void osl1_relation_fprint_polylib(FILE* file,
+                                  const osl1_relation_t* const relation);
+static inline
+void osl1_relation_sprint_polylib(char** c_str,
+                                  const osl1_relation_t* const relation);
 
-  int nb_fail = 0;
-  
-  
-  
-  printf("%s ", argv[0]);
-  printf("fails = %d\n", nb_fail);
-  printf("\n");
-  
-  return nb_fail;
-}
+#endif

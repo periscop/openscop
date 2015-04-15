@@ -25,12 +25,6 @@
 #include <gho/vector/start_and_size.h>
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
-
 /**
  * \brief osl1_extension_body_t stores informations about one statement
  */
@@ -46,6 +40,12 @@ typedef struct {
   gho_vector_start_and_size_t accesses;
   
 } osl1_extension_body_t;
+
+
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
 
 // Create & destroy
 osl1_extension_body_t osl1_extension_body_create();
@@ -80,10 +80,17 @@ bool osl1_extension_body_equal(const osl1_extension_body_t* const a,
 // Conversion
 gho_string_t osl1_extension_body_to_string(
                                       const osl1_extension_body_t* const body);
-gho_any_t osl1_extension_body_to_any(const osl1_extension_body_t* const body);
 
 #if defined(__cplusplus)
 }
 #endif
+
+
+// Conversion
+static inline
+gho_any_t osl1_extension_body_to_any(const osl1_extension_body_t* const body);
+
+
+#include "../implementation/extension/body.h"
 
 #endif

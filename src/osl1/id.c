@@ -13,23 +13,36 @@
 // limitations under the License.
 
 
-#ifndef OSL1_INPUT_H
-#define OSL1_INPUT_H
-
-#include <stdio.h>
-#include <stdbool.h>
+#include <osl1/id.h>
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
+// Id
 
-void osl1_skip_comments(FILE* file);
-void osl1_skip_comments_from_c_str(const char** c_str);
-
-#if defined(__cplusplus)
+/**
+ * \brief Return a new id for osl1_convex_relation_t
+ * \return a new id for osl1_convex_relation_t
+ */
+size_t osl1_convex_relation_new_id() {
+  static size_t id = 0;
+  return id++;
 }
-#endif
 
-#endif
+/**
+ * \brief Return a new id for osl1_statement_t
+ * \return a new id for osl1_statement_t
+ */
+size_t osl1_statement_new_id() {
+  static size_t id = 0;
+  return id++;
+}
+
+// Convex relation precision
+
+/**
+ * \brief Return int precision used for osl1_convex_relation_t
+ * \return int precision used for osl1_convex_relation_t
+ */
+gho_type_t* osl1_convex_relation_precision() {
+  static gho_type_t precision = 0;
+  return &precision;
+}

@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include <osl1/vector/convex_relation_ptr.h>
+#include <osl1/print.h>
 #include <gho/test.h>
 
 

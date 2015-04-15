@@ -13,11 +13,11 @@
 // limitations under the License.
 
 
-#include <gho/int/size_t.h>
-#include <gho/math.h>
+#include <stdlib.h>
 
-#include "../include/osl1/relation.h"
-#include "../include/osl1/input.h"
+#include <gho/int/size_t.h>
+
+#include "../input.h"
 
 
 // Input

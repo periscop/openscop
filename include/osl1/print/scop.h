@@ -1,4 +1,4 @@
-// Copyright © 2015 Inria, Written by Lénaïc Bagnères, lenaic.bagneres@inria.fr
+// Copyright © 2014-2015 Inria, Written by Lénaïc Bagnères, lenaic.bagneres@inria.fr
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,28 +13,22 @@
 // limitations under the License.
 
 
-#ifndef OSL1_PRINT_POLYLIB_H
-#define OSL1_PRINT_POLYLIB_H
+#ifndef OSL1_PRINT_SCOP_H
+#define OSL1_PRINT_SCOP_H
 
 #include <stdio.h>
 
-#include "relation.h"
+#include "../scop.h"
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
-
-// Relation
-void osl1_relation_fprint_polylib(FILE* file,
-                                  const osl1_relation_t* const relation);
-void osl1_relation_sprint_polylib(char** c_str,
-                                  const osl1_relation_t* const relation);
-
-#if defined(__cplusplus)
-}
-#endif
+// SCoP
+static inline
+void osl1_scop_fprinti_openscop(FILE* file,
+                                const osl1_scop_t* const scop,
+                                const unsigned int indent);
+static inline
+void osl1_scop_sprinti_openscop(char** c_str,
+                                const osl1_scop_t* const scop,
+                                const unsigned int indent);
 
 #endif

@@ -132,27 +132,8 @@ osl1_extension_comments_t osl1_extension_comments_fread(FILE* file) {
   osl1_skip_comments(file);
   osl1_extension_comments_t r = osl1_extension_comments_create();
   
-  // TODO
-  
-//   int nb_iterator = gho_int_fread(file);
-//   osl1_skip_comments(file);
-//   
-//   if (nb_iterator > 0) {
-//     for (size_t i = 0; i < (size_t)nb_iterator; ++i) {
-//       gho_string_t iterator = gho_string_fread(file);
-//       gho_vector_string_add(&r.original_iterators, &iterator);
-//       gho_string_destroy(&iterator);
-//     }
-//   }
-//   osl1_skip_comments(file);
-//   
-//   gho_string_t expression = gho_string_get_line(file);
-//   gho_string_add(&r.expression, &expression);
-//   gho_string_destroy(&expression);
-//   osl1_skip_comments(file);
-  
-  // TODO accesses
-  //fprintf(stderr, "TODO: osl1_extension_comments_fread IS NOT FULLY IMPLEMENTED!\n");
+  fprintf(stderr, "ERROR: osl1_extension_comments_fread is not implemented!\n");
+  exit(1);
   
   return r;
 }
@@ -166,7 +147,8 @@ osl1_extension_comments_t osl1_extension_comments_sread(const char** c_str) {
   osl1_skip_comments_from_c_str(c_str);
   osl1_extension_comments_t r = osl1_extension_comments_create();
   
-  // TODO
+  fprintf(stderr, "ERROR: osl1_extension_comments_sread is not implemented!\n");
+  exit(1);
   
   return r;
 }
@@ -219,28 +201,6 @@ gho_string_t osl1_extension_comments_to_string(
                               const osl1_extension_comments_t* const comments) {
   gho_string_t r = gho_string_create();
   osl1_extension_comments_sprint(&r.c_str, comments);
-  return r;
-}
-
-/**
- * \brief Convert an osl1_extension_comments_t into a gho_any
- * \param[in] comments An osl1_extension_comments_t
- * \return the gho_any from the osl1_extension_comments_t
- */
-gho_any_t osl1_extension_comments_to_any(
-                              const osl1_extension_comments_t* const comments) {
-  gho_any_t r = gho_any_create();
-  r.type = GHO_TYPE_OSL_EXTENSION_COMMENTS;
-  r.size_of_struct = sizeof(osl1_extension_comments_t);
-  osl1_extension_comments_t* p = gho_alloc(osl1_extension_comments_t);
-  osl1_extension_comments_copy_(comments, p);
-  r.any = p; p = NULL;
-  r.destroy_fct = (gho_destroy_fct_t)osl1_extension_comments_destroy;
-  r.fprinti_fct = (gho_fprinti_fct_t)osl1_extension_comments_fprinti;
-  r.sprinti_fct = (gho_sprinti_fct_t)osl1_extension_comments_sprinti;
-  r.copy_fct = (gho_copy_fct_t)osl1_extension_comments_copy_;
-  r.equal_fct = (gho_equal_fct_t)osl1_extension_comments_equal;
-  r.to_string_fct = (gho_to_string_fct_t)osl1_extension_comments_to_string;
   return r;
 }
 

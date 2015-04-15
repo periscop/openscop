@@ -51,7 +51,12 @@
 
 
 // Input
+static inline
 osl1_vector_statement_t osl1_vector_statement_fread(FILE* file);
+static inline
 osl1_vector_statement_t osl1_vector_statement_sread(const char** c_str);
+
+
+#include "../implementation/vector/statement.h"
 
 #endif

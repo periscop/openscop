@@ -13,11 +13,6 @@
 // limitations under the License.
 
 
-#include <stdlib.h>
-
-#include "../include/osl1/convex_relation_ptr.h"
-
-
 // Create & destroy
 
 /**
