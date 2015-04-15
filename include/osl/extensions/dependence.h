@@ -182,6 +182,7 @@ void            osl_dependence_dump(FILE *, osl_dependence_p);
 char *          osl_dependence_sprint_n(osl_dependence_p, int);
 char *          osl_dependence_sprint(osl_dependence_p);
 void            osl_dependence_print(FILE *, osl_dependence_p);
+void            osl_dependence_print_n(FILE *, osl_dependence_p, int);
 
 
 /*****************************************************************************

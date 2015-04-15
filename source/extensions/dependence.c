@@ -224,7 +224,16 @@ void osl_dependence_dump(FILE * file, osl_dependence_p dependence) {
  * Print the dependence, formatted to fit the .scop representation.
  */
 void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
-  char *string = osl_dependence_sprint(dependence);
+  osl_dependence_print_n(file, dependence, -1);  
+}
+
+
+/**
+ * osl_dependence_print function:
+ * Print N dependences, formatted to fit the .scop representation.
+ */
+void osl_dependence_print_n(FILE *file, osl_dependence_p dependence, int n) {
+  char *string = osl_dependence_sprint_n(dependence, n);
   fprintf(file, "%s\n", string);
   free(string);
 }
