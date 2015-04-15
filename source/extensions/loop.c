@@ -145,6 +145,10 @@ void osl_loop_idump(FILE * file, osl_loop_p loop, int level) {
       fprintf(file, "|\t");
     fprintf(file, "+--directive: %d\n", loop->directive);
 
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
+    fprintf(file, "+--user: %s\n", loop->user);
+
     loop = loop->next;
     number++;
 
@@ -229,7 +233,15 @@ char * osl_loop_sprint(osl_loop_p loop) {
 
     sprintf(buffer, "# Directive\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    sprintf(buffer, "%d\n", loop->directive);
+    sprintf(buffer, "%d", loop->directive);
+    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+
+    // special case for OSL_LOOP_DIRECTIVE_USER
+    if (loop->directive == OSL_LOOP_DIRECTIVE_USER) {
+      sprintf(buffer, " %s", loop->user);
+      osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    }
+    sprintf(buffer, "\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     loop = loop->next;
@@ -292,6 +304,15 @@ osl_loop_p osl_loop_sread(char **input) {
 
     loop->directive = osl_util_read_int(NULL, input);
 
+    // special case for OSL_LOOP_DIRECTIVE_USER
+    if (loop->directive == OSL_LOOP_DIRECTIVE_USER) {
+      loop->user = osl_util_read_line(NULL, input);
+      if (!strcmp(loop->user, "(null)")) {
+        free(loop->user);
+        loop->user=NULL;
+      }
+    }
+
     nb_loops--;
     if (nb_loops != 0) {
       loop->next = osl_loop_malloc ();
@@ -326,6 +347,7 @@ osl_loop_p osl_loop_malloc() {
   loop->stmt_ids      = NULL;
   loop->private_vars  = NULL;
   loop->directive     = 0;
+  loop->user          = NULL;
   loop->next          = NULL;
 
   return loop;
@@ -346,6 +368,7 @@ void osl_loop_free(osl_loop_p loop) {
     if (loop->iter) free(loop->iter);
     if (loop->stmt_ids) free(loop->stmt_ids);
     if (loop->private_vars) free(loop->private_vars);
+    if (loop->user) free(loop->user);
 
     loop = loop->next;
 
@@ -387,6 +410,9 @@ osl_loop_p osl_loop_clone_one(osl_loop_p loop) {
 
   if(loop->private_vars != NULL)
     OSL_strdup(clone->private_vars, loop->private_vars);
+
+  if(loop->user != NULL)
+    OSL_strdup(clone->user, loop->user);
 
   return clone;
 }
@@ -482,6 +508,12 @@ int osl_loop_equal_one(osl_loop_p a1, osl_loop_p a2) {
   if (a1->directive != a2->directive) {
     //OSL_info("loops are not the same (directive)");
     return 0;
+  }
+
+  if (a1->user != a2->user) { // NULL check
+    if (strcmp(a1->user, a2->user)) {
+      return 0;
+    }
   }
 
   return 1;
