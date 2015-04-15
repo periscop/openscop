@@ -154,17 +154,16 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
  * \param[in] names Array of constraint columns names.
- * \param[in] n The number of elements in the list to print.
+ * \param[in] n     The number of elements in the list to print.
  */
-void osl_relation_list_pprint_n_elts(FILE * file, osl_relation_list_p list,
+void osl_relation_list_pprint_elts_n(FILE * file, osl_relation_list_p list,
                                    osl_names_p names, int n) {
   osl_relation_list_p head = list;
 
   //If n<0, print all the elements in the list, so we need to count count the
   //number of elements in the list with non-NULL content.
-  if(n<0)
-  {
-      n = osl_relation_list_count(list);
+  if (n < 0) {
+    n = osl_relation_list_count(list);
   }
 
   //if after the count n still is <= 0, then we print a message and return.
@@ -196,7 +195,7 @@ void osl_relation_list_pprint_n_elts(FILE * file, osl_relation_list_p list,
  */
 void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
                                    osl_names_p names) {
-    osl_relation_list_pprint_n_elts(file, list, names, -1);
+    osl_relation_list_pprint_elts_n(file, list, names, -1);
 }
 
 
@@ -313,19 +312,37 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * file,
  */
 void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
                               osl_names_p names) {
+    osl_relation_list_pprint_n(file, list, names, -1);
+}
+
+/**
+ * osl_relation_list_pprint function:
+ * This function pretty-prints the content of a osl_relation_list_t structure
+ * into a file (file, possibly stdout) in the OpenScop format. It prints
+ * an element of the list only if it is not NULL.
+ * \param[in] file  File where informations are printed.
+ * \param[in] list  The relation list whose information has to be printed.
+ * \param[in] names Array of constraint columns names.
+ * \param[in] n     Number of relation to print.
+ */
+void osl_relation_list_pprint_n(FILE * file, osl_relation_list_p list,
+                              osl_names_p names, int n) {
   size_t i;
 
   // Count the number of elements in the list with non-NULL content.
   i = osl_relation_list_count(list);
+  if ( (n < 0) || (n > i) ) {
+      n = i;
+  }
   
   // Print it.
-  if (i > 1)
-    fprintf(file,"# List of %lu elements\n%lu\n", i, i);
+  if (n > 1)
+    fprintf(file,"# List of %lu elements\n%lu\n", n, n);
   else
-    fprintf(file,"# List of %lu element \n%lu\n", i, i);
+    fprintf(file,"# List of %lu element \n%lu\n", n, n);
 
   // Print each element of the relation list.
-  osl_relation_list_pprint_elts(file, list, names);
+  osl_relation_list_pprint_elts_n(file, list, names, n);
 }
 
 
@@ -338,8 +355,21 @@ void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
  * \param list  The relation list whose information has to be printed.
  */
 void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
+    osl_relation_list_print_n(file, list, -1);
+}
 
-  osl_relation_list_pprint(file, list, NULL);
+
+/**
+ * osl_relation_list_print function:
+ * This function prints the content of a osl_relation_list_t structure
+ * into a file (file, possibly stdout) in the OpenScop format. It prints
+ * an element of the list only if it is not NULL.
+ * \param file  File where informations are printed.
+ * \param list  The relation list whose information has to be printed.
+ * \param[in] n Number of relation to print.
+ */
+void osl_relation_list_print_n(FILE * file, osl_relation_list_p list, int n) {
+  osl_relation_list_pprint_n(file, list, NULL, n);
 }
 
 /*****************************************************************************
