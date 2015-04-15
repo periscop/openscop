@@ -147,7 +147,6 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
   osl_generic_idump(file, generic, 0); 
 }
 
-
 /**
  * osl_generic_sprint function:
  * this function prints the content of an osl_generic_t structure
@@ -156,6 +155,18 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
  * \return A string containing the OpenScop dump of the generic structure.
  */
 char * osl_generic_sprint(osl_generic_p generic) {
+    return osl_generic_sprint_n(generic, -1);
+}
+
+/**
+ * osl_generic_sprint_n function:
+ * this function prints the content of an osl_generic_t structure
+ * (*strings) into a string (returned) in the OpenScop textual format.
+ * \param[in] generic  The generic structure which has to be printed.
+ * \patam[in] n        The number of element in the list that will be printed
+ * \return A string containing the OpenScop dump of the generic structure.
+ */
+char * osl_generic_sprint_n(osl_generic_p generic, int n) {
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL, * content;
   char buffer[OSL_MAX_STRING];
@@ -163,7 +174,11 @@ char * osl_generic_sprint(osl_generic_p generic) {
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
 
-  while (generic != NULL) {
+  if (n<0) {
+    n = osl_generic_count(generic);
+  }
+
+  while ( (generic != NULL) && (n > 0) ) {
     if (generic->interface != NULL) {
       content = generic->interface->sprint(generic->data);
       if (content != NULL) {
@@ -180,11 +195,11 @@ char * osl_generic_sprint(osl_generic_p generic) {
       sprintf(buffer, "\n");
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
+    n--;
   }
 
   return string;
 }
-
 
 /**
  * osl_generic_print function:
@@ -194,9 +209,21 @@ char * osl_generic_sprint(osl_generic_p generic) {
  * \param[in] generic The generic structure to print.
  */
 void osl_generic_print(FILE * file, osl_generic_p generic) {
+    osl_generic_print_n(file, generic, -1);
+}
+
+/**
+ * osl_generic_print_n function:
+ * this function prints the content of an osl_generic_t structure
+ * (*generic) into a string (returned) in the OpenScop format.
+ * \param[in] file    File where the information has to be printed.
+ * \param[in] generic The generic structure to print.
+ * \patam[in] n       The number of element in the list that will be printed
+ */
+void osl_generic_print_n(FILE * file, osl_generic_p generic, int n) {
   char * string;
   
-  string = osl_generic_sprint(generic);
+  string = osl_generic_sprint_n(generic, n);
   if (string != NULL) {
     fprintf(file, "%s", string);
     free(string);

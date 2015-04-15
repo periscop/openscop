@@ -97,7 +97,9 @@ typedef struct osl_generic const * const osl_const_generic_const_p;
 void          osl_generic_idump(FILE *, osl_generic_p, int);
 void          osl_generic_dump(FILE *, osl_generic_p);
 void          osl_generic_print(FILE *, osl_generic_p);
+void          osl_generic_print_n(FILE *, osl_generic_p, int);
 char*         osl_generic_sprint(osl_generic_p);
+char*         osl_generic_sprint_n(osl_generic_p, int);
 
 // SCoPLib Compatibility
 void          osl_generic_print_options_scoplib(FILE *, osl_generic_p);
