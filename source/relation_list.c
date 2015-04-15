@@ -158,12 +158,13 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
  */
 void osl_relation_list_pprint_elts_n(FILE * file, osl_relation_list_p list,
                                    osl_names_p names, int n) {
+  int i = 0;
   osl_relation_list_p head = list;
 
-  //If n<0, print all the elements in the list, so we need to count count the
-  //number of elements in the list with non-NULL content.
-  if (n < 0) {
-    n = osl_relation_list_count(list);
+  //If n<0 or n>i, print all the elements in the list.
+  i = osl_relation_list_count(list);
+  if ((n < 0) || (n > i)) {
+    n = i;
   }
 
   //if after the count n still is <= 0, then we print a message and return.

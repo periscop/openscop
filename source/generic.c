@@ -167,6 +167,7 @@ char * osl_generic_sprint(osl_generic_p generic) {
  * \return A string containing the OpenScop dump of the generic structure.
  */
 char * osl_generic_sprint_n(osl_generic_p generic, int n) {
+  int i = 0;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL, * content;
   char buffer[OSL_MAX_STRING];
@@ -174,8 +175,9 @@ char * osl_generic_sprint_n(osl_generic_p generic, int n) {
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
 
-  if (n<0) {
-    n = osl_generic_count(generic);
+  i = osl_generic_count(generic);
+  if ((n < 0) || (n > i)) {
+    n = i;
   }
 
   while ( (generic != NULL) && (n > 0) ) {
