@@ -146,7 +146,7 @@ void osl_relation_list_dump(FILE * file, osl_relation_list_p list) {
 
 
 /**
- * osl_relation_list_pprint_elts function:
+ * osl_relation_list_pprint_elts_n function:
  * This function pretty-prints N elements of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. I.e., it prints
  * only the elements and not the number of elements. It prints an element of the
@@ -317,7 +317,7 @@ void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
 }
 
 /**
- * osl_relation_list_pprint function:
+ * osl_relation_list_pprint_n function:
  * This function pretty-prints the content of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. It prints
  * an element of the list only if it is not NULL.
@@ -361,7 +361,7 @@ void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
 
 
 /**
- * osl_relation_list_print function:
+ * osl_relation_list_print_n function:
  * This function prints the content of a osl_relation_list_t structure
  * into a file (file, possibly stdout) in the OpenScop format. It prints
  * an element of the list only if it is not NULL.

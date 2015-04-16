@@ -229,7 +229,7 @@ void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
 
 
 /**
- * osl_dependence_print function:
+ * osl_dependence_print_n function:
  * Print N dependences, formatted to fit the .scop representation.
  */
 void osl_dependence_print_n(FILE *file, osl_dependence_p dependence, int n) {
