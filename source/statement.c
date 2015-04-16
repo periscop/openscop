@@ -403,7 +403,7 @@ void osl_statement_print(FILE * file, osl_statement_p statement) {
 
 
 /**
- * osl_statement_print function:
+ * osl_statement_print_n function:
  * this function prints the content of an osl_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file      The file where the information has to be printed.
