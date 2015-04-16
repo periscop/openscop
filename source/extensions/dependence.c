@@ -261,9 +261,8 @@ char* osl_dependence_sprint_n(osl_dependence_p dependence, int n) {
   snprintf(buff, OSL_MAX_STRING, "# Number of dependences\n%d\n", nb_deps);
   strcat(buffer, buff);
  
-  if(n<0)
-  {
-      n = nb_deps;
+  if ((n < 0) || (n > nb_deps)) {
+    n = nb_deps;
   }
 
   if (nb_deps) {
