@@ -141,6 +141,7 @@ void       osl_scop_free(osl_scop_p);
 void       osl_scop_add(osl_scop_p *, osl_scop_p);
 size_t     osl_scop_number(osl_scop_p);
 osl_scop_p osl_scop_clone(osl_scop_p);
+osl_scop_p osl_scop_remove_unions(osl_scop_p);
 int        osl_scop_equal(osl_scop_p, osl_scop_p);
 int        osl_scop_integrity_check(osl_scop_p);
 int        osl_scop_check_compatible_scoplib(osl_scop_p);
