@@ -57,6 +57,7 @@ static inline
 osl1_relation_t osl1_relation_sread(const char** c_str);
 
 // Output dimensions
+static inline
 size_t osl1_relation_max_nb_output_dim(const osl1_relation_t* const relation);
 
 
