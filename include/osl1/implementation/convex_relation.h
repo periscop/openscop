@@ -130,6 +130,10 @@ osl1_convex_relation_t osl1_convex_relation_create_args_and_int_type(
   convex_relation.nb_input_dim = nb_input_dim;
   convex_relation.nb_local_dim = nb_local_dim;
   convex_relation.nb_parameter = nb_parameter;
+  
+  convex_relation.output_dims_types =
+    osl1_vector_dimension_type_create_n(convex_relation.nb_output_dim);
+  
   convex_relation.precision = precision;
   
   const size_t nb_col = nb_output_dim + nb_input_dim + nb_local_dim +
@@ -166,6 +170,8 @@ void osl1_convex_relation_destroy(osl1_convex_relation_t* convex_relation) {
   gho_size_t_destroy(&convex_relation->nb_input_dim);
   gho_size_t_destroy(&convex_relation->nb_local_dim);
   gho_size_t_destroy(&convex_relation->nb_parameter);
+  
+  osl1_vector_dimension_type_destroy(&convex_relation->output_dims_types);
   
   if (convex_relation->precision == GHO_TYPE_LINT) {
     gho_matrix_lint_destroy(&convex_relation->matrix.li);
@@ -220,6 +226,9 @@ osl1_convex_relation_t osl1_convex_relation_fread(FILE* file) {
   osl1_convex_relation_t r = osl1_convex_relation_create_args(
     nb_row, nb_output_dim, nb_input_dim, nb_local_dim, nb_parameter);
   
+  osl1_vector_dimension_type_destroy(&r.output_dims_types);
+  r.output_dims_types = osl1_vector_dimension_type_fread(file);
+  
   for (size_t i = 0; i < nb_row; ++i) {
     for (size_t j = 0; j < nb_column; ++j) {
       if (r.precision == GHO_TYPE_LINT) {
@@ -268,6 +277,9 @@ osl1_convex_relation_t osl1_convex_relation_sread(const char** c_str) {
   
   osl1_convex_relation_t r = osl1_convex_relation_create_args(
     nb_row, nb_output_dim, nb_input_dim, nb_local_dim, nb_parameter);
+  
+  osl1_vector_dimension_type_destroy(&r.output_dims_types);
+  r.output_dims_types = osl1_vector_dimension_type_sread(c_str);
   
   for (size_t i = 0; i < nb_row; ++i) {
     for (size_t j = 0; j < nb_column; ++j) {
@@ -332,6 +344,9 @@ void osl1_convex_relation_copy_(
   copy->nb_local_dim = convex_relation->nb_local_dim;
   copy->nb_parameter = convex_relation->nb_parameter;
   
+  copy->output_dims_types =
+    osl1_vector_dimension_type_copy(&convex_relation->output_dims_types);
+  
   copy->precision = convex_relation->precision;
   
   if (convex_relation->precision == GHO_TYPE_LINT) {
@@ -366,6 +381,11 @@ bool osl1_convex_relation_equal(const osl1_convex_relation_t* const a,
   if (a->nb_input_dim != b->nb_input_dim) { return false; }
   if (a->nb_local_dim != b->nb_local_dim) { return false; }
   if (a->nb_parameter != b->nb_parameter) { return false; }
+  
+  if (osl1_vector_dimension_type_equal(&a->output_dims_types,
+                                       &b->output_dims_types) == false) {
+    return false;
+  }
   
   if (a->precision == b->precision) {
     if (a->precision == GHO_TYPE_LINT) {

@@ -32,6 +32,8 @@
 #include <gho/operand.h>
 #include <gho/vector/size_t.h>
 
+#include "vector/dimension_type.h"
+
 
 /**
  * \brief Convex relation type (domain, scattering, access read, access write)
@@ -68,6 +70,9 @@ typedef struct {
   
   /// \brief Number of parameters
   size_t nb_parameter;
+  
+  /// \brief Types of output dimensions
+  osl1_vector_dimension_type_t output_dims_types;
   
   /// \brief Precision used for matrix
   gho_type_t precision;

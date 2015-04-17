@@ -32,11 +32,6 @@
 typedef osl1_convex_relation_t* osl1_convex_relation_ptr_t;
 
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 // Create & destroy
 osl1_convex_relation_ptr_t osl1_convex_relation_ptr_create();
 void osl1_convex_relation_ptr_destroy(
@@ -71,8 +66,7 @@ bool osl1_convex_relation_ptr_equal(const osl1_convex_relation_ptr_t* const a,
 gho_string_t osl1_convex_relation_ptr_to_string(
                   const osl1_convex_relation_ptr_t* const convex_relation_ptr);
 
-#if defined(__cplusplus)
-}
-#endif
+
+#include "implementation/convex_relation_ptr.h"
 
 #endif

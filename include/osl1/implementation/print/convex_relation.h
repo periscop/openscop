@@ -379,6 +379,16 @@ void osl1_convex_relation_fprinti_openscop(FILE* file,
     exit(1);
   }
   
+  gho_c_str_fprinti(file, "# Types of output dimensions\n", indent);
+  gho_size_t_fprinti(file, &convex_relation->output_dims_types.size, indent);
+  gho_c_str_fprint(file, " ");
+  for (size_t i = 0; i < convex_relation->output_dims_types.size; ++i) {
+    osl1_dimension_type_fprint(
+      file, &convex_relation->output_dims_types.array[i]);
+    gho_c_str_fprint(file, " ");
+  }
+  gho_c_str_fprint(file, "\n");
+  
   gho_vector_uint_t column_sizes =
     osl1_convex_relation_column_sizes(convex_relation, scop, statement);
   
@@ -591,6 +601,16 @@ void osl1_convex_relation_sprinti_openscop(char** c_str,
                     "unknown precision!\n");
     exit(1);
   }
+  
+  gho_c_str_sprinti(c_str, "# Types of output dimensions\n", indent);
+  gho_size_t_sprinti(c_str, &convex_relation->output_dims_types.size, indent);
+  gho_c_str_sprint(c_str, " ");
+  for (size_t i = 0; i < convex_relation->output_dims_types.size; ++i) {
+    osl1_dimension_type_sprint(
+      c_str, &convex_relation->output_dims_types.array[i]);
+    gho_c_str_sprint(c_str, " ");
+  }
+  gho_c_str_sprint(c_str, "\n");
   
   gho_vector_uint_t column_sizes =
     osl1_convex_relation_column_sizes(convex_relation, scop, statement);
