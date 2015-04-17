@@ -663,6 +663,53 @@ osl_scop_p osl_scop_clone(osl_scop_p scop) {
   return clone;
 }
 
+/**
+ * osl_scop_remove_unions function:
+ * Replace each statement having unions of relations by a list of statements,
+ * each of which has exactly one domain relation and one scattering relation.
+ * \param[in] scop A SCoP with statements featuring unions of relations.
+ * \returns  An identical SCoP without unions of relations.
+ */
+osl_scop_p osl_scop_remove_unions(osl_scop_p scop) {
+  osl_statement_p statement, new_statement, scop_statement_ptr;
+  osl_scop_p new_scop, scop_ptr, result = NULL;
+
+  for ( ; scop != NULL; scop = scop->next) {
+    statement = scop->statement;
+    scop_statement_ptr = NULL;
+    new_scop = osl_scop_malloc();
+
+    for ( ; statement != NULL; statement = statement->next) {
+      new_statement = osl_statement_remove_unions(statement);
+      if (!scop_statement_ptr) {
+        scop_statement_ptr = new_statement;
+        new_scop->statement = scop_statement_ptr;
+      } else {
+        scop_statement_ptr->next = new_statement;
+        scop_statement_ptr = scop_statement_ptr->next;
+      }
+    }
+
+    new_scop->context = osl_relation_clone(scop->context);
+    new_scop->extension = osl_generic_clone(scop->extension);
+    if (scop->language != NULL) {
+      new_scop->language = (char *) malloc(strlen(scop->language) + 1);
+      new_scop->language = strcpy(new_scop->language, scop->language);
+    }
+    new_scop->parameters = osl_generic_clone(scop->parameters);
+    new_scop->registry = osl_interface_clone(scop->registry);
+    new_scop->version = scop->version;
+    if (!result) {
+      result = new_scop;
+      scop_ptr = new_scop;
+    } else {
+      scop_ptr->next = new_scop;
+      scop_ptr = scop_ptr->next;
+    }
+  }
+
+  return result;
+}
 
 /**
  * osl_scop_equal function:
