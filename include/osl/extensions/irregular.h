@@ -76,8 +76,8 @@ extern "C"
 
 
 # define OSL_URI_IRREGULAR        "irregular"
-# define OSL_TAG_IRREGULAR_START  "<"OSL_URI_IRREGULAR">"
-# define OSL_TAG_IRREGULAR_STOP   "</"OSL_URI_IRREGULAR">"
+# define OSL_TAG_IRREGULAR_START  "<"  OSL_URI_IRREGULAR ">"
+# define OSL_TAG_IRREGULAR_STOP   "</" OSL_URI_IRREGULAR ">"
 
 
 /**

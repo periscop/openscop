@@ -132,6 +132,7 @@ void            osl_statement_compact(osl_statement_p, int);
 int             osl_statement_number(osl_statement_p);
 osl_statement_p osl_statement_nclone(osl_statement_p, int);
 osl_statement_p osl_statement_clone(osl_statement_p);
+osl_statement_p osl_statement_remove_unions(osl_statement_p);
 int             osl_statement_equal(osl_statement_p, osl_statement_p);
 int             osl_statement_integrity_check(osl_statement_p, int);
 int             osl_statement_get_nb_iterators(osl_statement_p);
