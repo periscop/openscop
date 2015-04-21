@@ -129,7 +129,7 @@ void osl_strings_dump(FILE * file, osl_strings_p strings) {
  * \return A string containing the OpenScop dump of the strings structure.
  */
 char * osl_strings_sprint(osl_strings_p strings) {
-    return osl_strings_sprint_with_separator(strings, " ");
+  return osl_strings_sprint_with_separator(strings, " ");
 }
 
 
@@ -541,17 +541,15 @@ osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
 void osl_strings_add_strings(
         osl_strings_p * dest,
         osl_strings_p   str1,
-        osl_strings_p   str2)
-{
-    struct osl_strings * res = NULL;
-    unsigned int i = 0;
+        osl_strings_p   str2) {
+  struct osl_strings * res = NULL;
+  unsigned int i = 0;
 
-    res = osl_strings_clone(str1);
-    while(str2->string[i] != NULL)
-    {
-        osl_strings_add(res, str2->string[i]);
-        i++;
-    }
-    
-    *dest = res;
+  res = osl_strings_clone(str1);
+  while(str2->string[i] != NULL) {
+    osl_strings_add(res, str2->string[i]);
+    i++;
+  }
+  
+  *dest = res;
 }

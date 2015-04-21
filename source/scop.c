@@ -216,7 +216,7 @@ osl_names_p osl_scop_names(osl_scop_p scop) {
  * \param scop The scop structure whose information has to be printed.
  */
 void osl_scop_print(FILE * file, osl_scop_p scop) {
-    osl_scop_print_n(file, scop, -1);
+  osl_scop_print_n(file, scop, -1);
 }
 
 /**
@@ -253,7 +253,7 @@ void osl_scop_print_n(FILE * file, osl_scop_p scop, int n) {
 
   i = osl_scop_number(scop);
   if ((n < 0) || (n > i)) {
-      n = i;
+    n = i;
   }
 
   while ((scop != NULL) && (n > 0)) {

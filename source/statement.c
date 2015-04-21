@@ -198,7 +198,7 @@ osl_names_p osl_statement_names(osl_statement_p statement) {
  */
 void osl_statement_pprint(FILE * file, osl_statement_p statement,
                           osl_names_p names) {
-    osl_statement_pprint_n(file, statement, names, -1);
+  osl_statement_pprint_n(file, statement, names, -1);
 }
 
 
@@ -411,7 +411,6 @@ void osl_statement_print(FILE * file, osl_statement_p statement) {
  * \param[in] n         The number of statement to print
  */
 void osl_statement_print_n(FILE * file, osl_statement_p statement, int n) {
-
   osl_statement_pprint_n(file, statement, NULL, n);
 }
 
