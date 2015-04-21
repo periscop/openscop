@@ -195,7 +195,7 @@ void osl_relation_list_pprint_elts_n(FILE * file, osl_relation_list_p list,
  */
 void osl_relation_list_pprint_elts(FILE * file, osl_relation_list_p list,
                                    osl_names_p names) {
-    osl_relation_list_pprint_elts_n(file, list, names, -1);
+  osl_relation_list_pprint_elts_n(file, list, names, -1);
 }
 
 
@@ -312,7 +312,7 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * file,
  */
 void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
                               osl_names_p names) {
-    osl_relation_list_pprint_n(file, list, names, -1);
+  osl_relation_list_pprint_n(file, list, names, -1);
 }
 
 /**
@@ -332,7 +332,7 @@ void osl_relation_list_pprint_n(FILE * file, osl_relation_list_p list,
   // Count the number of elements in the list with non-NULL content.
   i = osl_relation_list_count(list);
   if ( (n < 0) || (n > i) ) {
-      n = i;
+    n = i;
   }
   
   // Print it.
@@ -355,7 +355,7 @@ void osl_relation_list_pprint_n(FILE * file, osl_relation_list_p list,
  * \param list  The relation list whose information has to be printed.
  */
 void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
-    osl_relation_list_print_n(file, list, -1);
+  osl_relation_list_print_n(file, list, -1);
 }
 
 

@@ -327,7 +327,7 @@ char* osl_dependence_sprint_n(osl_dependence_p dependence, int n) {
  * .scop representation.
  */
 char* osl_dependence_sprint(osl_dependence_p dependence) {
-    return osl_dependence_sprint_n(dependence, -1);
+  return osl_dependence_sprint_n(dependence, -1);
 }
 
 
