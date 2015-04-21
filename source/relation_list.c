@@ -1,4 +1,3 @@
-
     /*+-----------------------------------------------------------------**
      **                       OpenScop Library                          **
      **-----------------------------------------------------------------**
@@ -318,9 +317,9 @@ void osl_relation_list_pprint(FILE * file, osl_relation_list_p list,
 
 /**
  * osl_relation_list_pprint_n function:
- * This function pretty-prints the content of a osl_relation_list_t structure
- * into a file (file, possibly stdout) in the OpenScop format. It prints
- * an element of the list only if it is not NULL.
+ * This function pretty-prints the content of the n first osl_relation_list_t
+ * structure into a file (file, possibly stdout) in the OpenScop format.
+ * It prints an element of the list only if it is not NULL.
  * \param[in] file  File where informations are printed.
  * \param[in] list  The relation list whose information has to be printed.
  * \param[in] names Array of constraint columns names.
@@ -362,9 +361,9 @@ void osl_relation_list_print(FILE * file, osl_relation_list_p list) {
 
 /**
  * osl_relation_list_print_n function:
- * This function prints the content of a osl_relation_list_t structure
- * into a file (file, possibly stdout) in the OpenScop format. It prints
- * an element of the list only if it is not NULL.
+ * This function prints the content of the n first osl_relation_list_t
+ * structure into a file (file, possibly stdout) in the OpenScop format.
+ * It prints an element of the list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
  * \param[in] n Number of relation to print.

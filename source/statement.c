@@ -204,7 +204,7 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
 
 /**
  * osl_statement_pprint_n function:
- * this function pretty-prints the content of the N first osl_statement_t 
+ * this function pretty-prints the content of the n first osl_statement_t 
  * structure of the list (*statement) into a file (file, possibly stdout)
  * in the OpenScop format.
  *
@@ -404,7 +404,7 @@ void osl_statement_print(FILE * file, osl_statement_p statement) {
 
 /**
  * osl_statement_print_n function:
- * this function prints the content of an osl_statement_t structure
+ * this function prints the content of the n first osl_statement_t structure
  * (*statement) into a file (file, possibly stdout) in the OpenScop format.
  * \param[in] file      The file where the information has to be printed.
  * \param[in] statement The statement whose information has to be printed.
