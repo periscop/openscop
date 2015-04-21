@@ -223,6 +223,7 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
  * osl_scop_print_n function:
  * this function prints the content of the n first osl_scop_t structure (*scop)
  * into a file (file, possibly stdout) in the OpenScop textual format.
+ * Print all structures if (n<0).
  * \param file   The file where the information has to be printed.
  * \param scop   The scop structure whose information has to be printed.
  * \param[in] n  The number of scop in the list to print.

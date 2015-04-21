@@ -162,6 +162,7 @@ char * osl_generic_sprint(osl_generic_p generic) {
  * osl_generic_sprint_n function:
  * this function prints the content of the n first osl_generic_t structure
  * (*strings) into a string (returned) in the OpenScop textual format.
+ * Print all the structure if (n<0).
  * \param[in] generic  The generic structure which has to be printed.
  * \patam[in] n        The number of element in the list that will be printed
  * \return A string containing the OpenScop dump of the generic structure.
@@ -218,6 +219,7 @@ void osl_generic_print(FILE * file, osl_generic_p generic) {
  * osl_generic_print_n function:
  * this function prints the content of the n first osl_generic_t structure
  * in the OpenScop format.
+ * Print all the structure if (n<0).
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  * \patam[in] n       The number of element in the list that will be printed
