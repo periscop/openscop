@@ -669,6 +669,61 @@ osl_statement_p osl_statement_clone(osl_statement_p statement) {
   return osl_statement_nclone(statement, -1);
 }
 
+/// Clone first part of the union, return NULL if input is NULL.
+static osl_relation_p osl_relation_clone_one_safe(osl_relation_p relation) {
+  if (relation == NULL)
+    return NULL;
+  return osl_relation_nclone(relation, 1);
+}
+
+/**
+ * osl_statement_remove_unions function:
+ * Create a statement list from a statement containing unions of relations in
+ * domain and/or scattering.  This functions constructs multiple new statements
+ * and keeps the original statement intact.  Each new statement has exactly one
+ * domain union component and exactly one scattering union component.  If the
+ * statement does not have the domain relation or the scattering relation, this
+ * function returns \c NULL.
+ * \param[in] statement A pointer to the statement
+ * \return    A pointer to the head of the newly created statement list.
+ */
+osl_statement_p osl_statement_remove_unions(osl_statement_p statement) {
+  osl_relation_p domain, scattering;
+  osl_statement_p statement_ptr, result;
+  if (!statement)
+    return NULL;
+
+  // Make at least one new statement, even if there are no relations.
+  domain = statement->domain;
+  scattering = statement->scattering;
+  result = NULL;
+  do {
+    do {
+      osl_statement_p new_statement = osl_statement_malloc();
+      new_statement->domain = osl_relation_clone_one_safe(domain);
+      new_statement->scattering = osl_relation_clone_one_safe(scattering);
+      new_statement->access = osl_relation_list_clone(statement->access);
+      new_statement->extension = osl_generic_clone(statement->extension);
+      if (!result) {
+        statement_ptr = new_statement;
+        result = new_statement;
+      } else {
+        statement_ptr->next = new_statement;
+        statement_ptr = statement_ptr->next;
+      }
+      if (scattering == NULL || scattering->next == NULL)
+        break;
+      scattering = scattering->next;
+    } while (1);
+    if (domain == NULL || domain->next == NULL)
+      break;
+    domain = domain->next;
+  } while (1);
+
+  return result;
+}
+
+
 
 /**
  * osl_statement_equal function:

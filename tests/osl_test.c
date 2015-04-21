@@ -76,6 +76,49 @@
 #define TEST_DIR    "."      // Directory to scan for OpenScop files
 #define TEST_SUFFIX ".scop"  // Suffix of OpenScop files
 
+/// Check if a scop without unions corresponds to the one with unions.
+static int test_unions(osl_scop_p scop) {
+  osl_statement_p stmt, nounion_stmt;
+  osl_scop_p nounion_scop = osl_scop_remove_unions(scop);
+  osl_relation_p domain, scattering;
+  int result = 1;
+  osl_scop_print(stderr, nounion_scop);
+  for ( ; scop != NULL && nounion_scop != NULL; scop = scop->next, nounion_scop = nounion_scop->next) {
+    nounion_stmt = nounion_scop->statement;
+    for (stmt = scop->statement; stmt != NULL; stmt = stmt->next) {
+      domain = stmt->domain;
+      scattering = stmt->scattering;
+      do {
+        do {
+          if (nounion_stmt == NULL)
+            return 0;
+          result = result && osl_relation_part_equal(domain, nounion_stmt->domain);
+          result = result && osl_relation_part_equal(scattering, nounion_stmt->scattering);
+          result = result && (nounion_stmt->domain == NULL || nounion_stmt->domain->next == NULL);
+          result = result && (nounion_stmt->scattering == NULL || nounion_stmt->scattering->next == NULL);
+          result = result && osl_relation_list_equal(nounion_stmt->access, stmt->access);
+          result = result && osl_generic_equal(nounion_stmt->extension, stmt->extension);
+          if (result == 0)
+            return 0;
+          nounion_stmt = nounion_stmt->next;
+
+          if (scattering == NULL || scattering->next == NULL)
+            break;
+          scattering = scattering->next;
+        } while (1);
+        if (domain == NULL || domain->next == NULL)
+          break;
+        domain = domain->next;
+      } while (1);
+    }
+    if (nounion_stmt != NULL)
+      return 0;
+  }
+  if (scop != NULL || nounion_scop != NULL)
+    return 0;
+  osl_scop_free(nounion_scop);
+  return 1;
+}
 
 /**
  * test_file function
@@ -95,6 +138,7 @@ int test_file(char* input_name, int verbose) {
   int cloning = 0;
   int dumping = 0;
   int equal   = 0;
+  int unions  = 0;
   FILE* input_file;
   FILE* output_file;
   osl_scop_p input_scop;
@@ -151,8 +195,11 @@ int test_file(char* input_name, int verbose) {
   else
     printf("- dumping failed\n");
 
+  // PART V. Remove unions.
+  unions = test_unions(input_scop);
+
   // PART IV. Report.
-  if ((equal = (cloning + dumping > 1) ? 1 : 0))
+  if ((equal = (cloning + dumping + unions > 2) ? 1 : 0))
     printf("Success :-)\n");
   else
     printf("Failure :-(\n");

@@ -569,7 +569,7 @@ int osl_generic_number(osl_generic_p generic) {
  * \return A pointer to the clone of the input generic structure.
  */
 osl_generic_p osl_generic_clone(osl_generic_p generic) {
-  return osl_generic_nclone(generic,-1);
+  return osl_generic_nclone(generic, -1);
 }
 
 
@@ -581,14 +581,14 @@ osl_generic_p osl_generic_clone(osl_generic_p generic) {
  * \param n       The number of nodes we want to copy (n<0 for infinity).
  * \return The clone of the n first nodes of the generic list.
  *
- * \return A pointer to the clone of the input generic structure.
+ * \return A pointer to the clone of the n input generic structure.
  */
 osl_generic_p osl_generic_nclone(osl_generic_p generic, int n) {
   osl_generic_p clone = NULL, new;
   osl_interface_p interface;
   void * x;
 
-  if(n<0) {
+  if (n < 0) {
     n = osl_generic_count(generic);
   }
 
