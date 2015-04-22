@@ -132,8 +132,23 @@ osl1_extension_comments_t osl1_extension_comments_fread(FILE* file) {
   osl1_skip_comments(file);
   osl1_extension_comments_t r = osl1_extension_comments_create();
   
-  fprintf(stderr, "ERROR: osl1_extension_comments_fread is not implemented!\n");
-  exit(1);
+  gho_string_t word = gho_string_peek_line(file);
+  
+  while (gho_string_contains_c_str(&word, "</comments>") == false) {
+    
+    gho_string_t line = gho_string_get_line(file);
+    gho_vector_string_add(&r.comments, &line);
+    gho_string_destroy(&line);
+    
+    osl1_skip_comments(file);
+    
+    gho_string_destroy(&word);
+    word = gho_string_peek_line(file);
+  }
+  
+  gho_string_destroy(&word);
+  
+  osl1_skip_comments(file);
   
   return r;
 }
@@ -147,8 +162,23 @@ osl1_extension_comments_t osl1_extension_comments_sread(const char** c_str) {
   osl1_skip_comments_from_c_str(c_str);
   osl1_extension_comments_t r = osl1_extension_comments_create();
   
-  fprintf(stderr, "ERROR: osl1_extension_comments_sread is not implemented!\n");
-  exit(1);
+  gho_string_t word = gho_string_peek_line_from_c_str(c_str);
+  
+  while (gho_string_contains_c_str(&word, "</comments>") == false) {
+    
+    gho_string_t line = gho_string_get_line_from_c_str(c_str);
+    gho_vector_string_add(&r.comments, &line);
+    gho_string_destroy(&line);
+    
+    osl1_skip_comments_from_c_str(c_str);
+    
+    gho_string_destroy(&word);
+    word = gho_string_peek_line_from_c_str(c_str);
+  }
+  
+  gho_string_destroy(&word);
+  
+  osl1_skip_comments_from_c_str(c_str);
   
   return r;
 }
