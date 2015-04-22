@@ -13,6 +13,10 @@
 // limitations under the License.
 
 
+#include "../../include/osl1/convex_relation_ptr.h"
+#include "../../include/osl1/scop.h"
+
+
 // Create & destroy
 
 /**
