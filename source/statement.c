@@ -655,9 +655,9 @@ osl_statement_p osl_statement_remove_unions(osl_statement_p statement) {
 
   // Make at least one new statement, even if there are no relations.
   domain = statement->domain;
-  scattering = statement->scattering;
   result = NULL;
   do {
+    scattering = statement->scattering;
     do {
       osl_statement_p new_statement = osl_statement_malloc();
       new_statement->domain = osl_relation_clone_one_safe(domain);

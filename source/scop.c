@@ -689,6 +689,8 @@ osl_scop_p osl_scop_remove_unions(osl_scop_p scop) {
         scop_statement_ptr = scop_statement_ptr->next;
       }
     }
+    while (scop_statement_ptr && scop_statement_ptr->next != NULL)
+      scop_statement_ptr = scop_statement_ptr->next;
 
     new_scop->context = osl_relation_clone(scop->context);
     new_scop->extension = osl_generic_clone(scop->extension);
