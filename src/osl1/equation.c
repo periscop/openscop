@@ -87,7 +87,7 @@ bool osl1_is_parameter_equation(
 /**
  * \brief The equation is a beta equation
  * \param[in] convex_relation An osl1_convex_relation
- * \param[in] i          Row index
+ * \param[in] i               Row index
  * \return true if the row is a beta equation, false otherwise
  */
 bool osl1_is_beta_equation(const osl1_convex_relation_t* const convex_relation,
@@ -139,7 +139,7 @@ bool osl1_is_beta_equation(const osl1_convex_relation_t* const convex_relation,
 /**
  * \brief The equation is an alpha equation
  * \param[in] convex_relation An osl1_convex_relation
- * \param[in] i          Row index
+ * \param[in] i               Row index
  * \return true if the row is an alpha equation, false otherwise
  */
 bool osl1_is_alpha_equation(
