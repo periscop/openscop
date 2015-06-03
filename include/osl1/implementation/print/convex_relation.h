@@ -86,18 +86,22 @@ gho_string_t osl1_convex_relation_name_column(
   
   // Get body
   const osl1_extension_body_t* const body =
-    (statement != NULL) ?
-      osl1_get_extension_cptr(GHO_TYPE_OSL_EXTENSION_BODY,
-                              &statement->extensions)
-    :
-      NULL;
+    (const osl1_extension_body_t* const)(
+      (statement != NULL) ?
+        osl1_get_extension_cptr(GHO_TYPE_OSL_EXTENSION_BODY,
+                                &statement->extensions)
+      :
+          NULL
+    );
   // Get scatnames
   const osl1_extension_scatnames_t* const scatnames =
-    (scop != NULL) ?
-      osl1_get_extension_cptr(GHO_TYPE_OSL_EXTENSION_SCATNAMES,
-                              &scop->extensions)
-    :
-      NULL;
+    (const osl1_extension_scatnames_t* const)(
+      (scop != NULL) ?
+        osl1_get_extension_cptr(GHO_TYPE_OSL_EXTENSION_SCATNAMES,
+                                &scop->extensions)
+      :
+        NULL
+    );
   
   if (j == 0) { gho_string_add_c_str(&r, "e/i"); }
   
