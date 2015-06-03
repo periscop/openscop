@@ -13,6 +13,7 @@
 // limitations under the License.
 
 
+#include "../../include/osl1/dimensions.h"
 #include "../../include/osl1/equation.h"
 #include "../../include/osl1/scop.h"
 
