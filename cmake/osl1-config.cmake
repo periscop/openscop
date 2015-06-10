@@ -40,3 +40,5 @@ else()
 	message(STATUS "Library OpenScop 1 not found :(")
 	
 endif()
+
+find_package(osl_gmp)
