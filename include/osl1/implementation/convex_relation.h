@@ -24,8 +24,6 @@
 
 // Precision
 
-gho_type_t* osl1_convex_relation_precision();
-
 /**
  * \brief Return int precision used for osl1_convex_relation_t
  * \return int precision used for osl1_convex_relation_t
@@ -65,7 +63,6 @@ void osl1_convex_relation_set_precision_llint() {
 }
 
 #ifdef osl_with_gmp
-
 /**
  * \brief Set int precision used for osl1_convex_relation_t to mpz
  */

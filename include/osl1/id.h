@@ -30,6 +30,9 @@ extern "C"
 size_t osl1_convex_relation_new_id();
 size_t osl1_statement_new_id();
 
+// Precision
+gho_type_t* osl1_convex_relation_precision();
+
 #if defined(__cplusplus)
 }
 #endif
