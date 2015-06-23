@@ -203,6 +203,7 @@ osl_relation_p  osl_relation_extend_output(osl_relation_p, int);
 osl_interface_p osl_relation_interface();
 void            osl_relation_set_precision(int const, osl_relation_p);
 void            osl_relation_set_same_precision(osl_relation_p, osl_relation_p);
+size_t          osl_relation_count(osl_relation_p);
 
 # if defined(__cplusplus)
   }

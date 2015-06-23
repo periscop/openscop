@@ -3055,3 +3055,20 @@ void osl_relation_set_same_precision(osl_relation_p a, osl_relation_p b) {
     }
   }
 }
+
+/**
+ * This function returns the number of elements with non-NULL content
+ * in a relation.
+ * \param list The relation to count the number of elements.
+ * \return The number of nodes with non-NULL content in the relation list.
+ */
+size_t osl_relation_count(osl_relation_p list) {
+  size_t i = 0;
+  
+  while (list != NULL) {
+    i++;
+    list = list->next;
+  }
+
+  return i;
+}
