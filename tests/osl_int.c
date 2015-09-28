@@ -297,6 +297,23 @@ int main(int argc, char** argv)
           error++; printf("Error osl_int_gcd\n");
         }
       }
+
+      // osl_int_lcm
+      fprintf(stderr, "%d %d\n", i, j);
+      fflush(stderr);
+      if (!error) {
+        osl_int_lcm(OSL_PRECISION_SP, &c_sp, a_sp, b_sp);
+        osl_int_lcm(OSL_PRECISION_DP, &c_dp, a_dp, b_dp);
+        osl_int_lcm(OSL_PRECISION_MP, &c_mp, a_mp, b_mp);
+
+        int c_sp_i = osl_int_get_si(OSL_PRECISION_SP, c_sp);
+        int c_dp_i = osl_int_get_si(OSL_PRECISION_DP, c_dp);
+        int c_mp_i = osl_int_get_si(OSL_PRECISION_MP, c_mp);
+
+        if (c_sp_i != c_dp_i || c_sp_i != c_mp_i) {
+          error++; printf("Error osl_int_lcm\n");
+        }
+      }
       
       // osl_int_oppose
       if (!error) {
