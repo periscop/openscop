@@ -982,33 +982,26 @@ void osl_int_gcd(int const precision, osl_int_const_p gcd,
 void osl_int_lcm(int const precision, osl_int_p lcm,
                  osl_const_int_t a, osl_const_int_t b) {
   osl_int_t gcd;
-  osl_int_t multiple;
   osl_int_t pa, pb;
 
   osl_int_init(precision, &gcd);
-  osl_int_init(precision, &multiple);
   osl_int_init(precision, &pa);
   osl_int_init(precision, &pb);
 
-  if (osl_int_neg(precision, a)) {
-    osl_int_oppose(precision, &pa, a);
-  } else {
-    osl_int_assign(precision, &pa, a);
-  }
-
-  if (osl_int_neg(precision, b)) {
-    osl_int_oppose(precision, &pb, b);
-  } else {
-    osl_int_assign(precision, &pb, b);
-  }
+  osl_int_abs(precision, &pa, a);
+  osl_int_abs(precision, &pb, b);
 
   osl_int_gcd(precision, &gcd, pa, pb);
   if (osl_int_zero(precision, gcd)) {
     osl_int_set_si(precision, lcm, 0);
   } else {
     osl_int_div_exact(precision, &pa, pa, gcd);
-    osl_int_mul(precision, &multiple, pa, pb);
+    osl_int_mul(precision, lcm, pa, pb);
   }
+
+  osl_int_clear(precision, &gcd);
+  osl_int_clear(precision, &pa);
+  osl_int_clear(precision, &pb);
 }
 
 
