@@ -1172,6 +1172,97 @@ int osl_int_ne(int precision, osl_const_int_t val1, osl_const_int_t val2) {
   return !osl_int_eq(precision, val1, val2);
 }
 
+/**
+ * \brief val1 < val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if val1 is less than val2
+ */
+int osl_int_lt(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+    case OSL_PRECISION_DP:
+      return (val1.sp < val2.sp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      return (mpz_cmp(*val1.mp, *val2.mp) < 0);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
+ * \brief val1 <= val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if val1 is less than or equal to val2
+ */
+int osl_int_le(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+    case OSL_PRECISION_DP:
+      return (val1.sp <= val2.sp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      return (mpz_cmp(*val1.mp, *val2.mp) <= 0);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
+ * \brief val1 > val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if val1 is greater than val2
+ */
+int osl_int_gt(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+    case OSL_PRECISION_DP:
+      return (val1.sp > val2.sp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      return (mpz_cmp(*val1.mp, *val2.mp) > 0);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
+ * \brief val1 >= val2
+ * \param[in] precision Precision of the osl int
+ * \param[in] val1      Value of first osl int
+ * \param[in] val2      Value of second osl int
+ * \return 1 if val1 is greater than or equal to val2
+ */
+int osl_int_ge(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+    case OSL_PRECISION_DP:
+      return (val1.sp >= val2.sp);
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+      return (mpz_cmp(*val1.mp, *val2.mp) >= 0);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
 
 /**
  * \brief value > 0

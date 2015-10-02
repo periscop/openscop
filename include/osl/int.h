@@ -157,6 +157,10 @@ size_t    osl_int_size_in_base_10(int const, osl_const_int_t);
 
 int       osl_int_eq(int, osl_const_int_t, osl_const_int_t);
 int       osl_int_ne(int, osl_const_int_t, osl_const_int_t);
+int       osl_int_lt(int, osl_const_int_t, osl_const_int_t);
+int       osl_int_le(int, osl_const_int_t, osl_const_int_t);
+int       osl_int_gt(int, osl_const_int_t, osl_const_int_t);
+int       osl_int_ge(int, osl_const_int_t, osl_const_int_t);
 int       osl_int_pos(int, osl_const_int_t);
 int       osl_int_neg(int, osl_const_int_t);
 int       osl_int_zero(int, osl_const_int_t);
