@@ -371,23 +371,102 @@ int main(int argc, char** argv)
 //         if (r_sp != r_dp || r_sp != r_mp)
 //           { error++; printf("Error osl_int_size_in_base_10\n"); }
 //       }
-      
       // osl_int_eq
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_eq(OSL_PRECISION_SP, a_sp, b_sp);
+        c2 = osl_int_eq(OSL_PRECISION_DP, a_dp, b_dp);
+        c3 = osl_int_eq(OSL_PRECISION_MP, a_mp, b_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i == j)) {
+          error++; printf("Error osl_int_eq\n");
+        }
+      }
+
       // osl_int_ne
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_ne(OSL_PRECISION_SP, a_sp, b_sp);
+        c2 = osl_int_ne(OSL_PRECISION_DP, a_dp, b_dp);
+        c3 = osl_int_ne(OSL_PRECISION_MP, a_mp, b_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i != j)) {
+          error++; printf("Error osl_int_ne\n");
+        }
+      }
+
       // osl_int_pos
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_pos(OSL_PRECISION_SP, a_sp);
+        c2 = osl_int_pos(OSL_PRECISION_DP, a_dp);
+        c3 = osl_int_pos(OSL_PRECISION_MP, a_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i > 0)) {
+          error++; printf("Error osl_int_pos\n");
+        }
+      }
+
       // osl_int_neg
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_neg(OSL_PRECISION_SP, a_sp);
+        c2 = osl_int_neg(OSL_PRECISION_DP, a_dp);
+        c3 = osl_int_neg(OSL_PRECISION_MP, a_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i < 0)) {
+          error++; printf("Error osl_int_neg\n");
+        }
+      }
+
       // osl_int_zero
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_zero(OSL_PRECISION_SP, a_sp);
+        c2 = osl_int_zero(OSL_PRECISION_DP, a_dp);
+        c3 = osl_int_zero(OSL_PRECISION_MP, a_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i == 0)) {
+          error++; printf("Error osl_int_zero\n");
+        }
+      }
+
       // osl_int_one
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_one(OSL_PRECISION_SP, a_sp);
+        c2 = osl_int_one(OSL_PRECISION_DP, a_dp);
+        c3 = osl_int_one(OSL_PRECISION_MP, a_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i == 1)) {
+          error++; printf("Error osl_int_one\n");
+        }
+      }
+
       // osl_int_mone
-      
+      if (!error) {
+        int c1, c2, c3;
+        c1 = osl_int_mone(OSL_PRECISION_SP, a_sp);
+        c2 = osl_int_mone(OSL_PRECISION_DP, a_dp);
+        c3 = osl_int_mone(OSL_PRECISION_MP, a_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (i == -1)) {
+          error++; printf("Error osl_int_mone\n");
+        }
+      }
+
       // osl_int_divisible
-      
+      if (!error && j != 0) {
+        int c1, c2, c3;
+        c1 = osl_int_divisible(OSL_PRECISION_SP, a_sp, b_sp);
+        c2 = osl_int_divisible(OSL_PRECISION_DP, a_dp, b_dp);
+        c3 = osl_int_divisible(OSL_PRECISION_MP, a_mp, b_mp);
+
+        if (c1 != c2 || c1 != c3 || c2 != c3 || c1 != (0 == (i % j))) {
+          error++; printf("Error osl_int_divisible\n");
+        }
+      }
+
       // osl_int_lt
       if (!error) {
         int c1, c2, c3;
