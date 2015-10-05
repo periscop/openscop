@@ -3055,3 +3055,38 @@ void osl_relation_set_same_precision(osl_relation_p a, osl_relation_p b) {
     }
   }
 }
+
+/**
+ * Removes a union part from the relation union.
+ * Does not perform deep relation comparison, only pointer comparison.
+ * If the union list does not contain the relation pointed to by #part, does
+ * nothing.
+ * \param[in,out] relation_list Pointer to the head of relation union list.
+ * \param[in]     part          The part to remove (must be in the list).
+ */
+void osl_relation_remove_part(osl_relation_p *relation_list,
+                              osl_relation_p part) {
+  osl_relation_p relation, previous;
+
+  if (relation_list == NULL || *relation_list == NULL || part == NULL) {
+    return;
+  }
+
+  if (*relation_list == part) {
+    *relation_list = (*relation_list)->next;
+    return;
+  }
+
+  previous = *relation_list;
+  for (relation = (*relation_list)->next; relation != NULL;
+       relation = relation->next) {
+    if (relation == part) {
+      previous->next = relation->next;
+      relation->next = NULL;
+      osl_relation_free(relation);
+      return;
+    }
+    previous = relation;
+  }
+}
+
