@@ -1,0 +1,3 @@
+[submodule "include/gho"]
+	path = include/gho
+	url = https://github.com/Lnc/gho_include

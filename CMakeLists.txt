@@ -1,187 +1,299 @@
+# Copyright © 2015 Inria, Written by Lénaïc Bagnères, lenaic.bagneres@inria.fr
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 cmake_minimum_required(VERSION 2.6)
 
 
-set(PACKAGE_VERSION "0.8.4")
-set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
+# Release / Debug flags
 
-
-# User's settings - C Flags
-
-# 	set(release "TRUE")
-	set(release "FALSE")
-
-	# Release
-	if (release)
-		set(CMAKE_C_FLAGS "-O3")
-	# Debug # valgrind --show-reachable=yes --leak-check=full -v exe
+	if (RELEASE STREQUAL "FALSE" OR RELEASE STREQUAL "DEBUG")
+		set(RELEASE "FALSE")
 	else()
-		set(CMAKE_C_FLAGS "-O0 -g3")
+		set(RELEASE "TRUE")
 	endif()
 
-# User's settings - General C Flags
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -std=c99 -pedantic")
+	if (RELEASE)
+		set(CMAKE_C_FLAGS "-O3 -DNDEBUG -march=native -ffast-math")
+	else()
+		set(CMAKE_C_FLAGS "-Og -g3")
+	endif()
+
+# General C flags
+	# General
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wconversion -Wsign-conversion -std=c11 -pedantic")
+	# Thread support
+	if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+	else()
+		link_libraries(pthread)
+		message(STATUS "Your compiler id \"${CMAKE_C_COMPILER_ID}\" is not GNU, OpenMP is disabled")
+	endif()
 
 
-# Build doxygen
+# Get local directory where .cmake are
+	set(FIND_PACKAGE_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# Get gho_include
+	message(STATUS "---")
+	execute_process(COMMAND "git" "submodule" "init")
+	execute_process(COMMAND "git" "submodule" "update")
+
+# GMP
+	message(STATUS "---")
+	find_package(osl_gmp PATHS "${FIND_PACKAGE_LOCAL_PATH}" NO_DEFAULT_PATH)
+	if (OSL_GMP_FOUND)
+		add_definitions(-DOSL_GMP_IS_HERE)
+	endif()
+
+# OpenScop include/osl/scop.h
+	configure_file("include/osl/scop.h.in" "include/osl/scop.h")
+	include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+
+# OpenScop
+	message(STATUS "---")
+	set(osl_INCLUDE "./include")
+	message(STATUS "Include OpenScop = ${osl_INCLUDE}")
+	include_directories("${osl_INCLUDE}")
+
+
+# Build OpenScop doxygen
+	message(STATUS "---")
 	find_package(Doxygen)
-	if(DOXYGEN_FOUND)
-		configure_file("doc/Doxyfile.in" "Doxyfile")
+	if (DOXYGEN_FOUND)
+		message(STATUS "Doxygen found =) ${DOXYGEN_EXECUTABLE}")
 		add_custom_target(
 			doxygen
-			${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+			${DOXYGEN_EXECUTABLE}
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include"
 			COMMENT "Generating API documentation with Doxygen" VERBATIM
 		)
 	else()
-		message (STATUS "Doxygen not found :( API documentation can not be built")
+		message(STATUS "Doxygen not found :(")
 	endif()
 
 # Build documentation
 	find_program(texi2pdf_exe texi2pdf)
 	if(texi2pdf_exe)
 		add_custom_target(
-			doc
+			documentation
 			${texi2pdf_exe} ${CMAKE_CURRENT_SOURCE_DIR}/doc/openscop.texi --output=${CMAKE_CURRENT_BINARY_DIR}/openscop.pdf
 			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 			COMMENT "Generating documentation (pdf) (with texi2pdf)" VERBATIM
 		)
 	else()
-		message (STATUS "texi2pdf not found :( Documentation can not be built")
+		message (STATUS "texi2pdf not found :(")
 	endif()
-
-
-# GMP
-	message(STATUS "---")
-	find_library(gmp_LIB gmp)
-	if (gmp_LIB)
-		message (STATUS "Library gmp found =) ${gmp_LIB}")
-		add_definitions(-DOSL_GMP_IS_HERE)
-	else()
-		message(STATUS "Library gmp not found :(")
-	endif()
-
-# Include directories (to use #include <> instead of #include "")
-
-	# include/osl/scop.h
-	configure_file("include/osl/scop.h.in" "include/osl/scop.h")
-	include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-	# osl
-	set(osl_INCLUDE "./include")
-	message(STATUS "Include osl = ${osl_INCLUDE}")
-	include_directories("${osl_INCLUDE}")
 
 
 # Compiler log
 	message(STATUS "---")
 	message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
-	if (release)
-		message(STATUS "Mode Release")
+	if (RELEASE)
+		message(STATUS "Release mode")
 	else()
-		message(STATUS "Mode Debug")
+		message(STATUS "Debug mode")
 	endif()
 	message(STATUS "C flags    = ${CMAKE_C_FLAGS}")
 
 
-# files .c
+# Library OpenScop
+	
 	file(
 		GLOB_RECURSE
-		sources
+		osl_sources
 		source/*
 	)
 	
-# Library
-
 	# Shared
 	add_library(
 		osl
 		SHARED
-		${sources}
+		${osl_sources}
 	)
-	if (gmp_LIB)
-		target_link_libraries(osl ${gmp_LIB})
+	if (OSL_GMP_FOUND)
+		target_link_libraries(osl ${OSL_GMP_LIBRARY})
 	endif()
-	get_property(osl_lib_location TARGET osl PROPERTY LOCATION)
-	message(STATUS "Add osl library (shared) ${osl_lib_location}")
+	message(STATUS "Add OpenScop library (shared)")
 	
 	# Static
 	add_library(
 		osl_static
 		STATIC
-		${sources}
+		${osl_sources}
 	)
 	set_target_properties(osl_static PROPERTIES OUTPUT_NAME osl)
-	if (gmp_LIB)
-		target_link_libraries(osl_static ${gmp_LIB})
+	if (OSL_GMP_FOUND)
+		target_link_libraries(osl_static ${OSL_GMP_LIBRARY})
 	endif()
-	get_property(osl_static_lib_location TARGET osl_static PROPERTY LOCATION)
-	message(STATUS "Add osl library (static) ${osl_static_lib_location}")
+	message(STATUS "Add OpenScop library (static)")
 
 
-# Executables & tests
-
-	enable_testing()
+# Library OpenScop 1
 	
 	file(
 		GLOB_RECURSE
-		scops
-		tests/*.scop
+		osl1_src
+		src/osl1/*
 	)
 	
+	# Shared
+	add_library(
+		osl1
+		SHARED
+		${osl1_src}
+	)
+	if (OSL_GMP_FOUND)
+		target_link_libraries(osl1 ${OSL_GMP_LIBRARY})
+	endif()
+	message(STATUS "Add OpenScop 1 library (shared)")
+	
+	# Static
+	add_library(
+		osl1_static
+		STATIC
+		${osl1_src}
+	)
+	set_target_properties(osl1_static PROPERTIES OUTPUT_NAME osl1)
+	if (OSL_GMP_FOUND)
+		target_link_libraries(osl1_static ${OSL_GMP_LIBRARY})
+	endif()
+	message(STATUS "Add OpenScop 1 library (static)")
+
+
+# Executables & tests
+	
+	enable_testing()
+	message(STATUS "---")
+	
+	# Valgrind
+	find_program(VALGRIND_EXE NAMES valgrind)
+	
+	# Tests
 	file(
 		GLOB_RECURSE
 		tests
 		tests/*.c
 	)
-
-	message(STATUS "---")
-	
+	file(
+		GLOB
+		osl_scops
+		tests/*.scop
+	)
+	file(
+		GLOB
+		osl1_scops
+		tests/osl1_scop/*.scop
+	)
 	foreach(test_source ${tests})
 	
+		# Get test name and source
 		string(REPLACE ".c" "" test_name ${test_source})
-		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "test__" test_name ${test_name})
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/osl1/" "test_osl1__" test_name ${test_name})
+		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "test_osl__" test_name ${test_name})
 		
-		message(STATUS "Add executable tests/${test_name}")
+		message(STATUS "Add test ${test_name}")
+		
+		# Executable
 		add_executable(${test_name} "${test_source}")
-		target_link_libraries(${test_name} osl_static)
 		
-		if (${test_name} STREQUAL "test__osl_test")
-			foreach (scop ${scops})
-				string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "" scop_name ${scop})
-				message(STATUS "- ${scop_name}")
-				add_test("${test_name}__${scop_name}" "${test_name}" "${scop}")
-			endforeach()
+		# OpenScop
+		if ("${test_name}" MATCHES ".*test_osl_.*")
+			
+			target_link_libraries(${test_name} osl_static)
+			
+			# Test
+			if (${test_name} STREQUAL "test_osl__osl_test")
+				foreach (scop ${osl_scops})
+					string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "" scop_name ${scop})
+					message(STATUS "- ${scop_name}")
+					add_test("${test_name}__${scop_name}" "${test_name}" "${scop}")
+				endforeach()
+			else()
+				add_test("${test_name}" "${test_name}")
+			endif()
+		
+		# OpenScop 1
 		else()
-			add_test("${test_name}" "${test_name}")
+			
+			target_link_libraries(${test_name} osl1_static)
+		
+			# Test
+			if (VALGRIND_EXE)
+				if (${test_name} STREQUAL "test_osl1__read_scop")
+					foreach (scop ${osl1_scops})
+						string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/osl1_scop/" "" scop_name ${scop})
+						message(STATUS "- ${scop_name}")
+						add_test("${test_name}__${scop_name}" "${VALGRIND_EXE}" "./${test_name}" "${scop}")
+					endforeach()
+				else()
+					add_test(${test_name} "${VALGRIND_EXE}" "./${test_name}")
+				endif()
+			else()
+				if (${test_name} STREQUAL "test_osl1__read_scop")
+					foreach (scop ${osl1_scops})
+						string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/osl1_scop/" "" scop_name ${scop})
+						message(STATUS "- ${scop_name}")
+						add_test("${test_name}__${scop_name}" "./${test_name}" "${scop}")
+					endforeach()
+				else()
+					add_test(${test_name} "./${test_name}")
+				endif()
+			endif()
+		
 		endif()
 		
 	endforeach()
-	
-	message(STATUS "---")
 
 
 # Install
-
+	# Library
 	install(TARGETS osl LIBRARY DESTINATION lib)
-	install(TARGETS osl_static ARCHIVE DESTINATION lib)
+	install(TARGETS osl_static ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+	install(TARGETS osl1 LIBRARY DESTINATION lib)
+	install(TARGETS osl1_static ARCHIVE DESTINATION lib LIBRARY DESTINATION lib)
+	# .h
 	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 	install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/" DESTINATION include FILES_MATCHING PATTERN "*.h")
-	install(FILES osl-config.cmake DESTINATION lib/osl)
+	# .cmake
+	install(FILES cmake/osl-config.cmake DESTINATION lib/osl)
+	install(FILES cmake/osl1-config.cmake DESTINATION lib/osl1)
+	install(FILES cmake/osl_gmp-config.cmake DESTINATION lib/osl_gmp)
+	# Doxygen
+	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxygen)
+		install(DIRECTORY doc/doxygen DESTINATION share/osl)
+	endif()
+	# Documentation
+	if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/openscop.pdf)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/openscop.pdf DESTINATION share/osl)
+	endif()
 
 
 # Little help
-
+	message(STATUS "---")
 	message(STATUS "You can execute:")
-	message(STATUS "    make         # To compile osl library")
-	message(STATUS "    make test    # To execute tests")
-	message(STATUS "    make install # To install library, include and CMake module")
-	message(STATUS "                 # If you need root access:")
-	message(STATUS "                 #     sudo make install")
-	message(STATUS "                 #     su -c \"make install\"")
-	if(DOXYGEN_FOUND)
-		message(STATUS "    make doxygen # To generate the Doxygen")
+	message(STATUS "    make               # To compile OpenScop tests")
+	message(STATUS "    make test          # To execute tests")
+	message(STATUS "    make install       # To install library, include and CMake module")
+	message(STATUS "                       # If you need root access:")
+	message(STATUS "                       #     sudo make install")
+	message(STATUS "                       #     su -c \"make install\"")
+	if (DOXYGEN_FOUND)
+		message(STATUS "    make doxygen       # To generate the Doxygen")
 	endif()
-	if(texi2pdf_exe)
-		message(STATUS "    make doc     # To generate the documentation")
+	if (texi2pdf_exe)
+		message(STATUS "    make documentation # To generate the documentation")
 	endif()
 
 	message(STATUS "---")
