@@ -129,10 +129,26 @@ void osl_strings_dump(FILE * file, osl_strings_p strings) {
  * \return A string containing the OpenScop dump of the strings structure.
  */
 char * osl_strings_sprint(osl_strings_p strings) {
+  return osl_strings_sprint_with_separator(strings, " ");
+}
+
+
+/**
+ * osl_strings_sprint_with_separator function:
+ * this function prints the content of an osl_strings_t structure
+ * (*strings) into a string (returned) in the OpenScop textual format.
+ * All the individuals string of the list are separated by the separator strings.
+ * \param[in] strings The strings structure which has to be printed.
+ * \param[in] separator The strings that is used to separate each string of the osl_strings
+ * \return A string containing the OpenScop dump of the strings structure.
+ */
+char * osl_strings_sprint_with_separator(osl_strings_p strings, char * separator) {
   size_t i;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
+
+  if(separator == NULL) separator = " ";//default separator
 
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -142,7 +158,7 @@ char * osl_strings_sprint(osl_strings_p strings) {
       sprintf(buffer, "%s", strings->string[i]);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
       if (i < osl_strings_size(strings) - 1)
-        osl_util_safe_strcat(&string, " ", &high_water_mark);
+        osl_util_safe_strcat(&string, separator , &high_water_mark);
     }
     sprintf(buffer, "\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -167,6 +183,25 @@ void osl_strings_print(FILE * file, osl_strings_p strings) {
   char * string;
   
   string = osl_strings_sprint(strings);
+  if (string != NULL) {
+    fprintf(file, "%s", string);
+    free(string);
+  }
+}
+
+
+/**
+ * osl_strings_print_with_separator function:
+ * this function prints the content of an osl_strings_t structure
+ * (*body) into a file (file, possibly stdout) in the OpenScop format.
+ * \param[in] file    File where informations are printed.
+ * \param[in] strings The strings whose information has to be printed.
+ * \param[in] separator The string used to separate all the string in the osl_strings. 
+ */
+void osl_strings_print_with_separator(FILE * file, osl_strings_p strings, char * separator) {
+  char * string;
+  
+  string = osl_strings_sprint_with_separator(strings, separator);
   if (string != NULL) {
     fprintf(file, "%s", string);
     free(string);
@@ -514,7 +549,6 @@ void osl_strings_add_strings(
     osl_strings_add(res, str2->string[i]);
     i++;
   }
-
   *dest = res;
 }
 

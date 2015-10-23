@@ -198,6 +198,25 @@ osl_names_p osl_statement_names(osl_statement_p statement) {
  */
 void osl_statement_pprint(FILE * file, osl_statement_p statement,
                           osl_names_p names) {
+  osl_statement_pprint_n(file, statement, names, -1);
+}
+
+
+/**
+ * osl_statement_pprint_n function:
+ * this function pretty-prints the content of the n first osl_statement_t 
+ * structure of the list (*statement) into a file (file, possibly stdout)
+ * in the OpenScop format.
+ * Print all the structures if (n<0).
+ *
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
+ * \param[in] names     The names of the constraint columns for comments. 
+ * \param[in] n         The number of statement to print
+ */
+void osl_statement_pprint_n(FILE * file, osl_statement_p statement,
+                          osl_names_p names, int n) {
+  int i = 0;
   size_t nb_relations;
   int number = 1;
   int generated_names = 0;
@@ -213,7 +232,12 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
     names = osl_statement_names(statement);
   }
 
-  while (statement != NULL) {
+  i = osl_statement_number(statement);
+  if ((n < 0) || (n > i)) {
+      n = osl_statement_number(statement);
+  }
+
+  while( (statement != NULL) && (n > 0) ) {
     // If possible, replace iterator names with statement iterator names.
     body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
     if (body && body->iterators != NULL) {
@@ -270,6 +294,7 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
 
     statement = statement->next;
     number++;
+    n--;
   }
 
   if (generated_names)
@@ -375,6 +400,21 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
 void osl_statement_print(FILE * file, osl_statement_p statement) {
 
   osl_statement_pprint(file, statement, NULL);
+}
+
+
+/**
+ * osl_statement_print_n function:
+ * this function prints the content of the n first osl_statement_t structure
+ * (*statement) into a file (file, possibly stdout) in the OpenScop format.
+ * Print all the structures if (n<0).
+ *
+ * \param[in] file      The file where the information has to be printed.
+ * \param[in] statement The statement whose information has to be printed.
+ * \param[in] n         The number of statement to print
+ */
+void osl_statement_print_n(FILE * file, osl_statement_p statement, int n) {
+  osl_statement_pprint_n(file, statement, NULL, n);
 }
 
 

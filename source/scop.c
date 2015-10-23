@@ -216,6 +216,20 @@ osl_names_p osl_scop_names(osl_scop_p scop) {
  * \param scop The scop structure whose information has to be printed.
  */
 void osl_scop_print(FILE * file, osl_scop_p scop) {
+  osl_scop_print_n(file, scop, -1);
+}
+
+/**
+ * osl_scop_print_n function:
+ * this function prints the content of the n first osl_scop_t structure (*scop)
+ * into a file (file, possibly stdout) in the OpenScop textual format.
+ * Print all structures if (n<0).
+ * \param file   The file where the information has to be printed.
+ * \param scop   The scop structure whose information has to be printed.
+ * \param[in] n  The number of scop in the list to print.
+ */
+void osl_scop_print_n(FILE * file, osl_scop_p scop, int n) {
+  int i = 0;
   int parameters_backedup = 0;
   int arrays_backedup = 0;
   osl_strings_p parameters_backup = NULL;
@@ -238,7 +252,12 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
   // Generate the names for the various dimensions.
   names = osl_scop_names(scop);
 
-  while (scop != NULL) {
+  i = osl_scop_number(scop);
+  if ((n < 0) || (n > i)) {
+    n = i;
+  }
+
+  while ((scop != NULL) && (n > 0)) {
     // If possible, replace parameter names with scop parameter names.
     if (osl_generic_has_URI(scop->parameters, OSL_URI_STRINGS)) {
       parameters_backedup = 1;
@@ -295,6 +314,7 @@ void osl_scop_print(FILE * file, osl_scop_p scop) {
     }
 
     scop = scop->next;
+    n--;
   }
 
   osl_names_free(names);

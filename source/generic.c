@@ -147,7 +147,6 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
   osl_generic_idump(file, generic, 0); 
 }
 
-
 /**
  * osl_generic_sprint function:
  * this function prints the content of an osl_generic_t structure
@@ -156,6 +155,20 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
  * \return A string containing the OpenScop dump of the generic structure.
  */
 char * osl_generic_sprint(osl_generic_p generic) {
+  return osl_generic_sprint_n(generic, -1);
+}
+
+/**
+ * osl_generic_sprint_n function:
+ * this function prints the content of the n first osl_generic_t structure
+ * (*strings) into a string (returned) in the OpenScop textual format.
+ * Print all the structure if (n<0).
+ * \param[in] generic  The generic structure which has to be printed.
+ * \patam[in] n        The number of element in the list that will be printed
+ * \return A string containing the OpenScop dump of the generic structure.
+ */
+char * osl_generic_sprint_n(osl_generic_p generic, int n) {
+  int i = 0;
   int high_water_mark = OSL_MAX_STRING;
   char * string = NULL, * content;
   char buffer[OSL_MAX_STRING];
@@ -163,7 +176,12 @@ char * osl_generic_sprint(osl_generic_p generic) {
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
   string[0] = '\0';
 
-  while (generic != NULL) {
+  i = osl_generic_count(generic);
+  if ((n < 0) || (n > i)) {
+    n = i;
+  }
+
+  while ( (generic != NULL) && (n > 0) ) {
     if (generic->interface != NULL) {
       content = generic->interface->sprint(generic->data);
       if (content != NULL) {
@@ -180,23 +198,36 @@ char * osl_generic_sprint(osl_generic_p generic) {
       sprintf(buffer, "\n");
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
+    n--;
   }
 
   return string;
 }
 
-
 /**
  * osl_generic_print function:
  * this function prints the content of an osl_generic_t structure
- * (*generic) into a string (returned) in the OpenScop format.
+ * in the OpenScop format.
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  */
 void osl_generic_print(FILE * file, osl_generic_p generic) {
+    osl_generic_print_n(file, generic, -1);
+}
+
+/**
+ * osl_generic_print_n function:
+ * this function prints the content of the n first osl_generic_t structure
+ * in the OpenScop format.
+ * Print all the structure if (n<0).
+ * \param[in] file    File where the information has to be printed.
+ * \param[in] generic The generic structure to print.
+ * \patam[in] n       The number of element in the list that will be printed
+ */
+void osl_generic_print_n(FILE * file, osl_generic_p generic, int n) {
   char * string;
   
-  string = osl_generic_sprint(generic);
+  string = osl_generic_sprint_n(generic, n);
   if (string != NULL) {
     fprintf(file, "%s", string);
     free(string);
@@ -549,33 +580,35 @@ osl_generic_p osl_generic_clone(osl_generic_p generic) {
  * \param generic The pointer to the generic structure we want to clone.
  * \param n       The number of nodes we want to copy (n<0 for infinity).
  * \return The clone of the n first nodes of the generic list.
+ *
+ * \return A pointer to the clone of the n input generic structure.
  */
-osl_generic_p osl_generic_nclone(osl_generic_p generic, int n)
-{
-    osl_generic_p clone = NULL, new;
-    osl_interface_p interface;
-    void * x;
+osl_generic_p osl_generic_nclone(osl_generic_p generic, int n) {
+  osl_generic_p clone = NULL, new;
+  osl_interface_p interface;
+  void * x;
 
-    if (n < 0) {
-        n = osl_generic_count(generic);
+  if (n < 0) {
+    n = osl_generic_count(generic);
+  }
+
+  while ((generic != NULL) && (n>0)) { 
+    if (generic->interface != NULL) {
+      x = generic->interface->clone(generic->data);
+      interface = osl_interface_clone(generic->interface);
+      new = osl_generic_malloc();
+      new->interface = interface;
+      new->data = x;
+      osl_generic_add(&clone, new);
     }
-
-    while ((generic != NULL) && (n > 0)) {
-        if (generic->interface != NULL) {
-            x = generic->interface->clone(generic->data);
-            interface = osl_interface_clone(generic->interface);
-            new = osl_generic_malloc();
-            new->interface = interface;
-            new->data = x;
-            osl_generic_add(&clone, new);
-        } else {
-            OSL_warning("unregistered interface, cloning ignored");
-        }
-        generic = generic->next;
-        n--;
+    else {
+      OSL_warning("unregistered interface, cloning ignored");
     }
+    generic = generic->next;
+    n--;
+  }
 
-    return clone;
+  return clone;
 }
 
 

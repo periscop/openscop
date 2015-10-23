@@ -224,18 +224,27 @@ void osl_dependence_dump(FILE * file, osl_dependence_p dependence) {
  * Print the dependence, formatted to fit the .scop representation.
  */
 void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
-  char *string = osl_dependence_sprint(dependence);
-  fprintf(file, "%s\n", string);
-  free(string);
+  osl_dependence_print_n(file, dependence, -1);  
 }
 
 
 /**
- * osl_dependence_sprint function:
- * Returns a string containing the dependence, formatted to fit the
- * .scop representation.
+ * osl_dependence_print_n function:
+ * Print the n first dependences, formatted to fit the .scop representation.
  */
-char* osl_dependence_sprint(osl_dependence_p dependence) {
+void osl_dependence_print_n(FILE *file, osl_dependence_p dependence, int n) {
+  char *string = osl_dependence_sprint_n(dependence, n);
+  fprintf(file, "%s\n", string);
+  free(string);
+}
+
+/**
+ * osl_dependence_sprint_n function:
+ * Returns a string containing the n first dependences, formatted to fit the
+ * .scop representation.
+ * If n is negative, the returned string will contained all the dependences.
+ */
+char* osl_dependence_sprint_n(osl_dependence_p dependence, int n) {
   
   osl_dependence_p tmp = dependence;
   int nb_deps;
@@ -252,9 +261,13 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
    ;
   snprintf(buff, OSL_MAX_STRING, "# Number of dependences\n%d\n", nb_deps);
   strcat(buffer, buff);
-  
+ 
+  if ((n < 0) || (n > nb_deps)) {
+    n = nb_deps;
+  }
+
   if (nb_deps) {
-    for (tmp = dependence, nb_deps = 1; tmp; tmp = tmp->next, ++nb_deps) {
+    for (tmp = dependence, nb_deps = 1; tmp && (nb_deps <= n); tmp = tmp->next, ++nb_deps) {
       
       switch (tmp->type) {
         case OSL_UNDEFINED:
@@ -306,6 +319,16 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
   }
   
   return buffer;
+}
+
+
+/**
+ * osl_dependence_sprint function:
+ * Returns a string containing the dependence, formatted to fit the
+ * .scop representation.
+ */
+char* osl_dependence_sprint(osl_dependence_p dependence) {
+  return osl_dependence_sprint_n(dependence, -1);
 }
 
 
