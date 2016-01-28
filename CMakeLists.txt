@@ -1,187 +1,154 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.1)
 
+#///////////////////////////////////////////////////////////////////#
+#                              PROJECT                              #
+#///////////////////////////////////////////////////////////////////#
 
-set(PACKAGE_VERSION "0.8.4")
-set(top_srcdir "${CMAKE_CURRENT_SOURCE_DIR}")
+set(OSL_VERSION_MAJOR 0)
+set(OSL_VERSION_MINOR 8)
+set(OSL_VERSION_PATCH 4)
+set(PACKAGE_VERSION
+  ${OSL_VERSION_MAJOR}.${OSL_VERSION_MINOR}.${OSL_VERSION_PATCH})
 
+project(osl
+  LANGUAGES C)
 
-# User's settings - C Flags
+# Default to Debug build
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+  message(STATUS "No building type advertised, default to Release")
+endif()
 
-# 	set(release "TRUE")
-	set(release "FALSE")
+#///////////////////////////////////////////////////////////////////#
+#                           DEPENDENCIES                            #
+#///////////////////////////////////////////////////////////////////#
 
-	# Release
-	if (release)
-		set(CMAKE_C_FLAGS "-O3")
-	# Debug # valgrind --show-reachable=yes --leak-check=full -v exe
-	else()
-		set(CMAKE_C_FLAGS "-O0 -g3")
-	endif()
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
-# User's settings - General C Flags
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -std=c99 -pedantic")
+find_package(GMP)
+if(GMP_FOUND)
+  add_library(gmp INTERFACE IMPORTED)
+  set_property(TARGET gmp
+    PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${GMP_INCLUDE_DIRS})
+  set_property(TARGET gmp
+    PROPERTY INTERFACE_LINK_LIBRARIES ${GMP_LIBRARIES})
+else()
+  message(STATUS "GMP not found, using old style integers")
+endif()
 
+#///////////////////////////////////////////////////////////////////#
+#                        COMPILATION OPTIONS                        #
+#///////////////////////////////////////////////////////////////////#
 
-# Build doxygen
-	find_package(Doxygen)
-	if(DOXYGEN_FOUND)
-		configure_file("doc/Doxyfile.in" "Doxyfile")
-		add_custom_target(
-			doxygen
-			${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-			COMMENT "Generating API documentation with Doxygen" VERBATIM
-		)
-	else()
-		message (STATUS "Doxygen not found :( API documentation can not be built")
-	endif()
+option(BUILD_SHARED_LIBS
+  "Build as shared lib (default). Set to FALSE if you want static library"
+  TRUE)
 
-# Build documentation
-	find_program(texi2pdf_exe texi2pdf)
-	if(texi2pdf_exe)
-		add_custom_target(
-			doc
-			${texi2pdf_exe} ${CMAKE_CURRENT_SOURCE_DIR}/doc/openscop.texi --output=${CMAKE_CURRENT_BINARY_DIR}/openscop.pdf
-			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-			COMMENT "Generating documentation (pdf) (with texi2pdf)" VERBATIM
-		)
-	else()
-		message (STATUS "texi2pdf not found :( Documentation can not be built")
-	endif()
+include(cmake/compiler-flags.cmake)
 
+set(CMAKE_C_FLAGS_RELEASE "-O3 -mtune=generic")
+set(CMAKE_C_FLAGS_DEBUG
+  "${COMPILER_AVALIABLE_WARNINGS} ${COMPILER_ADDRESS_SANITIZER_FLAG} ${COMPILER_UNDEFINED_SANITIZER_FLAG} -Og -g")
+set(CMAKE_C_FLAGS_OPTIMIZED
+  "${COMPILER_LTO_FLAG} ${COMPILER_MARCH_NATIVE} -O3")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g")
 
-# GMP
-	message(STATUS "---")
-	find_library(gmp_LIB gmp)
-	if (gmp_LIB)
-		message (STATUS "Library gmp found =) ${gmp_LIB}")
-		add_definitions(-DOSL_GMP_IS_HERE)
-	else()
-		message(STATUS "Library gmp not found :(")
-	endif()
+# Use full RPATH on build tree
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+# Do not build with install RPATH
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+# Set the RPATH when install
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# Only set RPATH if the installation directory is not a system directory
+LIST(FIND
+  CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib"
+  isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+else()
+  set(CMAKE_INSTALL_RPATH "")
+endif()
 
-# Include directories (to use #include <> instead of #include "")
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/osl/scop.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/include/osl/scop.h)
 
-	# include/osl/scop.h
-	configure_file("include/osl/scop.h.in" "include/osl/scop.h")
-	include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-	# osl
-	set(osl_INCLUDE "./include")
-	message(STATUS "Include osl = ${osl_INCLUDE}")
-	include_directories("${osl_INCLUDE}")
+add_subdirectory(source)
 
+#///////////////////////////////////////////////////////////////////#
+#                           DOCUMENTATION                           #
+#///////////////////////////////////////////////////////////////////#
 
-# Compiler log
-	message(STATUS "---")
-	message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
-	if (release)
-		message(STATUS "Mode Release")
-	else()
-		message(STATUS "Mode Debug")
-	endif()
-	message(STATUS "C flags    = ${CMAKE_C_FLAGS}")
+add_subdirectory(doc)
 
+#///////////////////////////////////////////////////////////////////#
+#                               TEST                                #
+#///////////////////////////////////////////////////////////////////#
 
-# files .c
-	file(
-		GLOB_RECURSE
-		sources
-		source/*
-	)
-	
-# Library
+enable_testing()
+add_subdirectory(tests)
 
-	# Shared
-	add_library(
-		osl
-		SHARED
-		${sources}
-	)
-	if (gmp_LIB)
-		target_link_libraries(osl ${gmp_LIB})
-	endif()
-	get_property(osl_lib_location TARGET osl PROPERTY LOCATION)
-	message(STATUS "Add osl library (shared) ${osl_lib_location}")
-	
-	# Static
-	add_library(
-		osl_static
-		STATIC
-		${sources}
-	)
-	set_target_properties(osl_static PROPERTIES OUTPUT_NAME osl)
-	if (gmp_LIB)
-		target_link_libraries(osl_static ${gmp_LIB})
-	endif()
-	get_property(osl_static_lib_location TARGET osl_static PROPERTY LOCATION)
-	message(STATUS "Add osl library (static) ${osl_static_lib_location}")
+#///////////////////////////////////////////////////////////////////#
+#                             INSTALL                               #
+#///////////////////////////////////////////////////////////////////#
 
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
+  DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/"
+  DESTINATION include FILES_MATCHING PATTERN "*.h")
 
-# Executables & tests
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY)
+add_custom_target(uninstall
+  COMMAND ${CMAKE_COMMAND} -P
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
-	enable_testing()
-	
-	file(
-		GLOB_RECURSE
-		scops
-		tests/*.scop
-	)
-	
-	file(
-		GLOB_RECURSE
-		tests
-		tests/*.c
-	)
+#///////////////////////////////////////////////////////////////////#
+#                           USER INFOS                              #
+#///////////////////////////////////////////////////////////////////#
 
-	message(STATUS "---")
-	
-	foreach(test_source ${tests})
-	
-		string(REPLACE ".c" "" test_name ${test_source})
-		string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "test__" test_name ${test_name})
-		
-		message(STATUS "Add executable tests/${test_name}")
-		add_executable(${test_name} "${test_source}")
-		target_link_libraries(${test_name} osl_static)
-		
-		if (${test_name} STREQUAL "test__osl_test")
-			foreach (scop ${scops})
-				string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/tests/" "" scop_name ${scop})
-				message(STATUS "- ${scop_name}")
-				add_test("${test_name}__${scop_name}" "${test_name}" "${scop}")
-			endforeach()
-		else()
-			add_test("${test_name}" "${test_name}")
-		endif()
-		
-	endforeach()
-	
-	message(STATUS "---")
+message(STATUS "")
+message(STATUS "************************* OSL *************************")
+message(STATUS "")
+message(STATUS "Configuration done.")
 
+string(TOUPPER ${CMAKE_BUILD_TYPE} CURRENT_BUILD_TYPE)
+if (CURRENT_BUILD_TYPE MATCHES RELEASE)
+  message(STATUS "Build type is Release")
+  message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
+  message(STATUS "C flags    =  ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
+elseif(CURRENT_BUILD_TYPE MATCHES OPTIMIZED)
+  message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
+  message(STATUS "C flags    = ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_OPTIMIZED}")
+elseif(CURRENT_BUILD_TYPE MATCHES RELWITHDEBINFO)
+  message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
+  message(STATUS "C flags    = ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+else(CURRENT_BUILD_TYPE MATCHES DEBUG)
+  message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
+  message(STATUS "C flags    = ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
+else(CURRENT_BUILD_TYPE MATCHES DEBUG)
+  message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
+  message(STATUS "C flags    = ${CMAKE_C_FLAGS}")
+endif(CURRENT_BUILD_TYPE MATCHES RELEASE)
 
-# Install
-
-	install(TARGETS osl LIBRARY DESTINATION lib)
-	install(TARGETS osl_static ARCHIVE DESTINATION lib)
-	install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.h")
-	install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/" DESTINATION include FILES_MATCHING PATTERN "*.h")
-	install(FILES osl-config.cmake DESTINATION lib/osl)
-
-
-# Little help
-
-	message(STATUS "You can execute:")
-	message(STATUS "    make         # To compile osl library")
-	message(STATUS "    make test    # To execute tests")
-	message(STATUS "    make install # To install library, include and CMake module")
-	message(STATUS "                 # If you need root access:")
-	message(STATUS "                 #     sudo make install")
-	message(STATUS "                 #     su -c \"make install\"")
-	if(DOXYGEN_FOUND)
-		message(STATUS "    make doxygen # To generate the Doxygen")
-	endif()
-	if(texi2pdf_exe)
-		message(STATUS "    make doc     # To generate the documentation")
-	endif()
-
-	message(STATUS "---")
+message(STATUS "")
+message(STATUS "You can execute:")
+message(STATUS "    make          # To compile osl library")
+if (PYTHONINTERP_FOUND)
+  message(STATUS "    make test     # To execute tests")
+endif()
+message(STATUS "    make install  # To install library, include and CMake module")
+message(STATUS "                  # If you need root access:")
+message(STATUS "                  #     sudo make install")
+message(STATUS "                  #     su -c \"make install\"")
+if(DOXYGEN_FOUND)
+  message(STATUS "    make doxygen  # To generate the Doxygen")
+endif()
+if(texi2pdf_exe)
+  message(STATUS "    make doc      # To generate the documentation")
+endif()
+message(STATUS "")
+message(STATUS "******************************************************")
+message(STATUS "")
