@@ -111,7 +111,7 @@ osl_relation_list_p osl_relation_list_read(FILE *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_relation_list_p osl_relation_list_malloc();
+osl_relation_list_p osl_relation_list_malloc(void);
 void                osl_relation_list_free(osl_relation_list_p);
 
 

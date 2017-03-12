@@ -145,7 +145,7 @@ void osl_arrays_dump(FILE * file, osl_arrays_p arrays) {
  */
 char * osl_arrays_sprint(osl_arrays_p arrays) {
   int i;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
 
@@ -206,8 +206,8 @@ osl_arrays_p osl_arrays_sread(char ** input) {
 
   // Allocate the array of id and names.
   arrays = osl_arrays_malloc();
-  OSL_malloc(arrays->id, int *, nb_names * sizeof(int));
-  OSL_malloc(arrays->names, char **, nb_names * sizeof(char *));
+  OSL_malloc(arrays->id, int *, (size_t)nb_names * sizeof(int));
+  OSL_malloc(arrays->names, char **, (size_t)nb_names * sizeof(char *));
   arrays->nb_names = nb_names;
   for (i = 0; i < nb_names; i++)
     arrays->names[i] = NULL;
@@ -238,7 +238,7 @@ osl_arrays_p osl_arrays_sread(char ** input) {
  * \return A pointer to an empty arrays structure with fields set to
  *         default values.
  */
-osl_arrays_p osl_arrays_malloc() {
+osl_arrays_p osl_arrays_malloc(void) {
   osl_arrays_p arrays;
 
   OSL_malloc(arrays, osl_arrays_p, sizeof(osl_arrays_t));
@@ -289,8 +289,8 @@ osl_arrays_p osl_arrays_clone(osl_arrays_p arrays) {
 
   clone = osl_arrays_malloc();
   clone->nb_names = arrays->nb_names;
-  OSL_malloc(clone->id, int *, arrays->nb_names * sizeof(int));
-  OSL_malloc(clone->names, char **, arrays->nb_names * sizeof(char*));
+  OSL_malloc(clone->id, int *, (size_t)arrays->nb_names * sizeof(int));
+  OSL_malloc(clone->names, char **, (size_t)arrays->nb_names * sizeof(char*));
 
   for (i = 0; i < arrays->nb_names; i++) {
     clone->id[i] = arrays->id[i];
@@ -396,8 +396,8 @@ int osl_arrays_add(osl_arrays_p arrays, int id, char* name) {
   if (arrays == NULL || name == NULL)
     return -1;
 
-  OSL_realloc(arrays->id, int *, (arrays->nb_names+1) * sizeof(int));
-  OSL_realloc(arrays->names, char **, (arrays->nb_names+1) * sizeof(char *));
+  OSL_realloc(arrays->id, int *, (size_t)(arrays->nb_names+1) * sizeof(int));
+  OSL_realloc(arrays->names, char **, (size_t)(arrays->nb_names+1) * sizeof(char *));
   arrays->id[arrays->nb_names] = id;
   OSL_strdup(arrays->names[arrays->nb_names], name);
   arrays->nb_names++;
@@ -420,12 +420,12 @@ size_t osl_arrays_get_index_from_id(osl_arrays_p arrays, int id) {
   if (arrays == NULL)
     return 0;
 
-  for (i=0; i<arrays->nb_names; i++) {
+  for (i=0; i< (size_t)arrays->nb_names; i++) {
     if(arrays->id[i]==id)
       break;
   }
 
-  return i<arrays->nb_names? i: arrays->nb_names;
+  return i<(size_t)arrays->nb_names? i: (size_t)arrays->nb_names;
 }
 
 /**
@@ -442,12 +442,12 @@ size_t osl_arrays_get_index_from_name(osl_arrays_p arrays, char* name) {
   if (arrays == NULL || name == NULL)
     return 0;
 
-  for (i=0; i<arrays->nb_names; i++) {
+  for (i=0; i<(size_t)arrays->nb_names; i++) {
     if(!strcmp(arrays->names[i], name))
       break;
   }
 
-  return i<arrays->nb_names? i: arrays->nb_names;;
+  return i<(size_t)arrays->nb_names? i: (size_t)arrays->nb_names;;
 }
 
 /**
@@ -456,7 +456,7 @@ size_t osl_arrays_get_index_from_name(osl_arrays_p arrays, char* name) {
  * extension and returns it).
  * \return An interface structure for the arrays extension.
  */
-osl_interface_p osl_arrays_interface() {
+osl_interface_p osl_arrays_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_ARRAYS);

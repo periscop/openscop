@@ -212,7 +212,7 @@ void osl_symbols_dump(FILE * file, osl_symbols_p symbols) {
  */
 char * osl_symbols_sprint(osl_symbols_p symbols) {
   int i = 1;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char* string = NULL, *temp;
   char buffer[OSL_MAX_STRING];
 
@@ -389,7 +389,7 @@ osl_symbols_p osl_symbols_sread(char ** input) {
  * \return A pointer to an empty symbols structure with fields set to
  *         default values.
  */
-osl_symbols_p osl_symbols_malloc() {
+osl_symbols_p osl_symbols_malloc(void) {
   osl_symbols_p symbols;
 
   OSL_malloc(symbols, osl_symbols_p, sizeof(osl_symbols_t));
@@ -548,7 +548,7 @@ int osl_symbols_get_nb_symbols(osl_symbols_p symbols) {
  * extension and returns it).
  * \return An interface structure for the symbols extension.
  */
-osl_interface_p osl_symbols_interface() {
+osl_interface_p osl_symbols_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
 
   OSL_strdup(interface->URI, OSL_URI_SYMBOLS);

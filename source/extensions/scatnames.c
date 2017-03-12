@@ -188,7 +188,7 @@ osl_scatnames_p osl_scatnames_sread(char ** input) {
  * \return A pointer to an empty scatnames structure with fields set to
  *         default values.
  */
-osl_scatnames_p osl_scatnames_malloc() {
+osl_scatnames_p osl_scatnames_malloc(void) {
   osl_scatnames_p scatnames;
 
   OSL_malloc(scatnames, osl_scatnames_p, sizeof(osl_scatnames_t));
@@ -266,7 +266,7 @@ int osl_scatnames_equal(osl_scatnames_p s1, osl_scatnames_p s2) {
  * extension and returns it).
  * \return An interface structure for the scatnames extension.
  */
-osl_interface_p osl_scatnames_interface() {
+osl_interface_p osl_scatnames_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_SCATNAMES);

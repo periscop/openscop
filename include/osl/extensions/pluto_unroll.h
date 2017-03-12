@@ -112,7 +112,7 @@ osl_pluto_unroll_p osl_pluto_unroll_sread(char**);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_pluto_unroll_p osl_pluto_unroll_malloc();
+osl_pluto_unroll_p osl_pluto_unroll_malloc(void);
 void               osl_pluto_unroll_free(osl_pluto_unroll_p);
 
 
@@ -121,14 +121,14 @@ void               osl_pluto_unroll_free(osl_pluto_unroll_p);
  *****************************************************************************/
 void               osl_pluto_unroll_fill(osl_pluto_unroll_p,
                                          char const * const,
-                                         bool const, int const);
+                                         bool, unsigned int);
 osl_pluto_unroll_p osl_pluto_unroll_clone(osl_pluto_unroll_p);
 int                osl_pluto_unroll_equal_one(osl_pluto_unroll_p,
                                               osl_pluto_unroll_p);
 int                osl_pluto_unroll_equal(osl_pluto_unroll_p,
                                           osl_pluto_unroll_p);
 osl_strings_p      osl_pluto_unroll_to_strings(osl_pluto_unroll_p);
-osl_interface_p    osl_pluto_unroll_interface();
+osl_interface_p    osl_pluto_unroll_interface(void);
 
 
 #if defined(__cplusplus)

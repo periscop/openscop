@@ -350,7 +350,7 @@ char ** osl_relation_strings(osl_relation_p relation, osl_names_p names) {
     return NULL;
   }
 
-  OSL_malloc(strings, char **, (relation->nb_columns + 1)*sizeof(char *));
+  OSL_malloc(strings, char **, ((size_t)relation->nb_columns + 1)*sizeof(char *));
   strings[relation->nb_columns] = NULL;
 
   // 1. Equality/inequality marker.
@@ -540,7 +540,7 @@ static
 char * osl_relation_sprint_comment(osl_relation_p relation, int row,
                                    char ** strings, char ** arrays) {
   int sign;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char * expression;
   char buffer[OSL_MAX_STRING];
@@ -820,7 +820,7 @@ char * osl_relation_spprint_polylib(osl_relation_p relation,
   int i, j;
   int part, nb_parts;
   int generated_names = 0;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
   char ** name_array = NULL;
@@ -924,7 +924,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
   int part, nb_parts;
   int generated_names = 0;
   int is_access_array;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   int start_row; // for removing the first line in the access matrix
   int index_output_dims;
   int index_input_dims;
@@ -1178,7 +1178,7 @@ char * osl_relation_spprint_polylib_scoplib(osl_relation_p relation,
  * \return A string 
  */
 char * osl_relation_spprint(osl_relation_p relation, osl_names_p names) {
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char * temp;
   char buffer[OSL_MAX_STRING];
@@ -1214,7 +1214,7 @@ char * osl_relation_spprint(osl_relation_p relation, osl_names_p names) {
  */
 char * osl_relation_spprint_scoplib(osl_relation_p relation, osl_names_p names,
                                     int print_nth_part, int add_fakeiter) {
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char * temp;
   OSL_malloc(string, char *, high_water_mark * sizeof(char));
@@ -1512,11 +1512,14 @@ osl_relation_p osl_relation_psread_polylib(char ** input, int precision) {
       read_attributes = 0;
       // Read relation attributes.
       osl_util_sskip_blank_and_comments(input);
-      // make a copy of the first line
+      // make a copy of the first row
+      size_t row_size = 0;
       tmp = *input; 
-      while ((*tmp != '\0') && (*tmp != '\n'))
+      while ((*tmp != '\0') && (*tmp != '\n')) {
         tmp++;
-      strncpy(str, *input, sizeof(char) * (tmp-*input));
+        row_size += 1;
+      }
+      strncpy(str, *input, sizeof(char) * row_size);
       str[(tmp-*input)] = '\0'; 
       
       read = sscanf(str, " %d %d %d %d %d %d",
@@ -1668,8 +1671,8 @@ osl_relation_p osl_relation_pmalloc(int precision,
     relation->m = NULL;
   } 
   else {
-    OSL_malloc(p, osl_int_t**, nb_rows * sizeof(osl_int_t*));
-    OSL_malloc(q, osl_int_t*, nb_rows * nb_columns * sizeof(osl_int_t));
+    OSL_malloc(p, osl_int_t**, (size_t)nb_rows * sizeof(osl_int_t*));
+    OSL_malloc(q, osl_int_t*, (size_t)nb_rows * (size_t)nb_columns * sizeof(osl_int_t));
     relation->m = p;
     for (i = 0; i < nb_rows; i++) {
       relation->m[i] = q + i * nb_columns ;
@@ -2997,7 +3000,7 @@ osl_relation_p osl_relation_extend_output(osl_relation_p relation, int dim) {
  * and returns it.
  * \return An interface structure for the relation structure.
  */
-osl_interface_p osl_relation_interface() {
+osl_interface_p osl_relation_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_RELATION);

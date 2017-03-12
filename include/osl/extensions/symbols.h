@@ -113,7 +113,7 @@ osl_symbols_p   osl_symbols_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_symbols_p   osl_symbols_malloc();
+osl_symbols_p   osl_symbols_malloc(void);
 void            osl_symbols_free(osl_symbols_p);
 
 
@@ -127,7 +127,7 @@ int             osl_symbols_equal(osl_symbols_p, osl_symbols_p);
 osl_symbols_p   osl_symbols_lookup(osl_symbols_p, osl_generic_p);
 osl_symbols_p   osl_symbols_remove(osl_symbols_p*, osl_symbols_p);
 int             osl_symbols_get_nb_symbols(osl_symbols_p);
-osl_interface_p osl_symbols_interface();
+osl_interface_p osl_symbols_interface(void);
 
 
 # if defined(__cplusplus)

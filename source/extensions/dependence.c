@@ -239,7 +239,7 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
   
   osl_dependence_p tmp = dependence;
   int nb_deps;
-  int buffer_size = 2048;
+  size_t buffer_size = 2048;
   char* buffer;
   char buff[2048];
   char* type;
@@ -408,7 +408,7 @@ osl_dependence_p osl_dependence_psread(char **input, int precision) {
  * allocated space.
  * - 07/12/2005: first version.
  */
-osl_dependence_p osl_dependence_malloc() {
+osl_dependence_p osl_dependence_malloc(void) {
   osl_dependence_p dependence;
 
   /* Memory allocation for the osl_dependence_p structure. */
@@ -470,7 +470,7 @@ void osl_dependence_free(osl_dependence_p dependence) {
  * \param n         The number of nodes we want to copy (-1 for infinity).
  * \return The clone of the n first nodes of the dependence list.
  */
-osl_dependence_p osl_dependence_nclone(osl_dependence_p dep, int n) {
+static osl_dependence_p osl_dependence_nclone(osl_dependence_p dep, int n) {
   int first = 1, i = 0;
   osl_dependence_p clone = NULL, node, previous = NULL;
 
@@ -638,7 +638,7 @@ int osl_nb_dependences(osl_dependence_p deps) {
  * extension and returns it).
  * \return An interface structure for the dependence extension.
  */
-osl_interface_p osl_dependence_interface() {
+osl_interface_p osl_dependence_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_DEPENDENCE);

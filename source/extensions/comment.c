@@ -140,7 +140,7 @@ void osl_comment_dump(FILE * file, osl_comment_p comment) {
  * \return A string containing the OpenScop dump of the comment structure.
  */
 char * osl_comment_sprint(osl_comment_p comment) {
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
 
@@ -210,7 +210,7 @@ osl_comment_p osl_comment_sread(char ** input) {
  * \return A pointer to an empty comment structure with fields set to
  *         default values.
  */
-osl_comment_p osl_comment_malloc() {
+osl_comment_p osl_comment_malloc(void) {
   osl_comment_p comment;
 
   OSL_malloc(comment, osl_comment_p, sizeof(osl_comment_t));
@@ -294,7 +294,7 @@ int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
  * extension and returns it).
  * \return An interface structure for the comment extension.
  */
-osl_interface_p osl_comment_interface() {
+osl_interface_p osl_comment_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_COMMENT);

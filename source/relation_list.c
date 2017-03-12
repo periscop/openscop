@@ -388,7 +388,7 @@ osl_relation_list_p osl_relation_list_read(FILE * foo) {
  * \return A pointer to an empty relation list with fields set to default
  *         values.
  */
-osl_relation_list_p osl_relation_list_malloc() {
+osl_relation_list_p osl_relation_list_malloc(void) {
   osl_relation_list_p res;
   
   OSL_malloc(res, osl_relation_list_p, sizeof(osl_relation_list_t));

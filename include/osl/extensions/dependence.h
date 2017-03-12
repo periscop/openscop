@@ -192,7 +192,7 @@ osl_dependence_p     osl_dependence_psread(char **, int);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_dependence_p     osl_dependence_malloc();
+osl_dependence_p     osl_dependence_malloc(void);
 void                 osl_dependence_free(osl_dependence_p);
 
 /*+***************************************************************************
@@ -203,7 +203,7 @@ int                   osl_dependence_equal(osl_dependence_p, osl_dependence_p);
 void                  osl_dependence_add(osl_dependence_p*, osl_dependence_p*,
                                          osl_dependence_p);
 int                   osl_nb_dependences(osl_dependence_p);
-osl_interface_p       osl_dependence_interface();
+osl_interface_p       osl_dependence_interface(void);
 
 # if defined(__cplusplus)
   }

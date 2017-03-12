@@ -165,7 +165,7 @@ osl_vector_p osl_vector_pmalloc(int precision, int size) {
     vector->v = NULL;
   }
   else {
-    OSL_malloc(vector->v, osl_int_t*, size * sizeof(osl_int_t));
+    OSL_malloc(vector->v, osl_int_t*, (size_t)size * sizeof(osl_int_t));
     for (i = 0; i < size; i++)
       osl_int_init_set_si(precision, &vector->v[i], 0);
   }

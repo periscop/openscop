@@ -505,7 +505,7 @@ osl_statement_p osl_statement_read(FILE * foo) {
  * to the allocated space.
  * \return A pointer to an empty statement with fields set to default values.
  */
-osl_statement_p osl_statement_malloc() {
+osl_statement_p osl_statement_malloc(void) {
   osl_statement_p statement;
 
   OSL_malloc(statement, osl_statement_p, sizeof(osl_statement_t));

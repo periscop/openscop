@@ -94,7 +94,7 @@ extern "C"
  */
 struct osl_loop {
   char * iter;              /**< \brief \0 terminated iterator name */
-  int    nb_stmts;          /**< \brief Number of statements in the loop */
+  size_t    nb_stmts;          /**< \brief Number of statements in the loop */
   int  * stmt_ids;          /**< \brief Array of statement identifiers. */
   char * private_vars;      /**< \brief \0 terminated variable names */
   int    directive;         /**< \brief Loop directive to implement */
@@ -123,7 +123,7 @@ osl_loop_p      osl_loop_sread(char ** input);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_loop_p      osl_loop_malloc();
+osl_loop_p      osl_loop_malloc(void);
 void            osl_loop_free(osl_loop_p loop);
 
 
@@ -135,7 +135,7 @@ osl_loop_p      osl_loop_clone(osl_loop_p loop);
 int             osl_loop_equal_one(osl_loop_p a1, osl_loop_p a2);
 int             osl_loop_equal(osl_loop_p a1, osl_loop_p a2);
 osl_strings_p   osl_loop_to_strings(osl_loop_p);
-osl_interface_p osl_loop_interface();
+osl_interface_p osl_loop_interface(void);
 
 void            osl_loop_add(osl_loop_p loop, osl_loop_p *ll);
 int             osl_loop_count(osl_loop_p ll);

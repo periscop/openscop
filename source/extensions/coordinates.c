@@ -153,7 +153,7 @@ void osl_coordinates_dump(FILE* file, osl_coordinates_p coordinates) {
  * \return A string containing the OpenScop dump of the coordinates structure.
  */
 char* osl_coordinates_sprint(osl_coordinates_p coordinates) {
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char* string = NULL;
   char buffer[OSL_MAX_STRING];
 
@@ -239,7 +239,7 @@ osl_coordinates_p osl_coordinates_sread(char** input) {
  * \return A pointer to an empty coordinates structure with fields set to
  *         default values.
  */
-osl_coordinates_p osl_coordinates_malloc() {
+osl_coordinates_p osl_coordinates_malloc(void) {
   osl_coordinates_p coordinates;
   
   OSL_malloc(coordinates, osl_coordinates_p, sizeof(osl_coordinates_t));
@@ -353,7 +353,7 @@ int osl_coordinates_equal(osl_coordinates_p c1, osl_coordinates_p c2) {
  * extension and returns it).
  * \return An interface structure for the coordinates extension.
  */
-osl_interface_p osl_coordinates_interface() {
+osl_interface_p osl_coordinates_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_COORDINATES);

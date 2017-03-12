@@ -131,7 +131,7 @@ osl_scop_p osl_scop_read(FILE *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_scop_p osl_scop_malloc();
+osl_scop_p osl_scop_malloc(void);
 void       osl_scop_free(osl_scop_p);
 
 

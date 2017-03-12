@@ -238,7 +238,7 @@ osl_pluto_unroll_p osl_pluto_unroll_sread(char** input) {
     // jam
     p->jam = osl_util_read_int(NULL, input);
     // factor
-    p->factor = osl_util_read_int(NULL, input);
+    p->factor = (unsigned int) osl_util_read_int(NULL, input);
     // Next
     if (osl_util_read_int(NULL, input) == 1) {
       p->next = osl_pluto_unroll_malloc();
@@ -264,7 +264,7 @@ osl_pluto_unroll_p osl_pluto_unroll_sread(char** input) {
  * \return a pointer to an empty pluto_unroll structure with fields set to
  *         default values.
  */
-osl_pluto_unroll_p osl_pluto_unroll_malloc() {
+osl_pluto_unroll_p osl_pluto_unroll_malloc(void) {
   osl_pluto_unroll_p pluto_unroll = NULL;
 
   OSL_malloc(pluto_unroll, osl_pluto_unroll_p, sizeof(osl_pluto_unroll_t));
@@ -309,7 +309,7 @@ void osl_pluto_unroll_free(osl_pluto_unroll_p pluto_unroll) {
  */
 void osl_pluto_unroll_fill(osl_pluto_unroll_p pluto_unroll,
                            char const * const iterator_name,
-                           bool const jam, int const factor) {
+                           bool jam, unsigned int factor) {
   if (pluto_unroll != NULL) {
     // iter
     if (iterator_name != NULL) {
@@ -406,7 +406,7 @@ int osl_pluto_unroll_equal(osl_pluto_unroll_p a, osl_pluto_unroll_p b) {
  *
  * \return an interface structure for the pluto_unroll extension.
  */
-osl_interface_p osl_pluto_unroll_interface() {
+osl_interface_p osl_pluto_unroll_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_PLUTO_UNROLL);

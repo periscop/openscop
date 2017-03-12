@@ -209,7 +209,7 @@ void osl_interface_add(osl_interface_p * list, osl_interface_p interface) {
  * \return A pointer to an empty interface structure with fields set to
  *         default values.
  */
-osl_interface_p osl_interface_malloc() {
+osl_interface_p osl_interface_malloc(void) {
   osl_interface_p interface;
 
   OSL_malloc(interface, osl_interface_p,
@@ -383,7 +383,7 @@ osl_interface_lookup(osl_interface_p list, char * URI) {
  * including extensions) and returns it.
  * \return The list of known interfaces.
  */
-osl_interface_p osl_interface_get_default_registry() {
+osl_interface_p osl_interface_get_default_registry(void) {
   osl_interface_p registry = NULL;
 
   // Internal generics

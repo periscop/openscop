@@ -104,7 +104,7 @@ osl_comment_p   osl_comment_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_comment_p   osl_comment_malloc();
+osl_comment_p   osl_comment_malloc(void);
 void            osl_comment_free(osl_comment_p);
 
 
@@ -113,7 +113,7 @@ void            osl_comment_free(osl_comment_p);
  *****************************************************************************/
 osl_comment_p   osl_comment_clone(osl_comment_p);
 int             osl_comment_equal(osl_comment_p, osl_comment_p);
-osl_interface_p osl_comment_interface();
+osl_interface_p osl_comment_interface(void);
 
 
 # if defined(__cplusplus)

@@ -332,9 +332,9 @@ char * osl_util_read_tag(FILE * file, char ** str) {
  * \return The string that has been read.
  */
 char * osl_util_read_uptoflag(FILE * file, char ** str, char * flag) {
-  int high_water_mark = OSL_MAX_STRING;
-  int nb_chars = 0;
-  int lenflag = strlen(flag), lenstr;
+  size_t high_water_mark = OSL_MAX_STRING;
+  size_t nb_chars = 0;
+  size_t lenflag = strlen(flag), lenstr;
   int flag_found = 0;
   char * res;
 
@@ -348,7 +348,7 @@ char * osl_util_read_uptoflag(FILE * file, char ** str, char * flag) {
     lenstr = strlen(*str);
   while (((str  != NULL) && (nb_chars != lenstr)) ||
          ((file != NULL) && (!feof(file)))) {
-    res[nb_chars++] = (str != NULL) ? *((*str)++) : fgetc(file);
+    res[nb_chars++] = (str != NULL) ? *((*str)++) : (char)fgetc(file);
 
     if ((nb_chars >= lenflag) &&
         (!strncmp(&res[nb_chars - lenflag], flag, lenflag))) {
@@ -433,7 +433,7 @@ char * osl_util_tag_content(char * str, char * name) {
   char * stop;
   char tag[strlen(name) + 3];
   char endtag[strlen(name) + 4];
-  int size = 0;
+  size_t size = 0;
   size_t lentag;
   char * res = NULL;
 
@@ -480,9 +480,9 @@ char * osl_util_tag_content(char * str, char * name) {
  * \param[in]     src string to concatenate to dst.
  * \param[in,out] hwm pointer to the size of the *dst buffer (may be updated).
  */
-void osl_util_safe_strcat(char ** dst, char * src, int * hwm) {
+void osl_util_safe_strcat(char ** dst, char * src, size_t * hwm) {
 
-  while ((int)(strlen(*dst) + strlen(src)) >= *hwm) {
+  while ((strlen(*dst) + strlen(src)) >= *hwm) {
     *hwm += OSL_MAX_STRING;
     OSL_realloc(*dst, char *, *hwm * sizeof(char));
   }
@@ -515,7 +515,7 @@ char * osl_util_strdup(char const * str) {
  * variable or the highest available precision if it is not defined.
  * \return environment precision if defined or highest available precision.
  */
-int osl_util_get_precision() {
+int osl_util_get_precision(void) {
   int precision = OSL_PRECISION_DP;
   char * precision_env;
 
@@ -577,7 +577,7 @@ void osl_util_print_provided(FILE * file, int provided, char * title) {
  */
 static
 int osl_util_identifier_is_here(char * expression, char * identifier,
-                                int index) {
+                                size_t index) {
   size_t identifier_len = strlen(identifier);
   size_t expression_len = strlen(expression);
 
@@ -628,36 +628,38 @@ int osl_util_identifier_is_here(char * expression, char * identifier,
  */
 static
 int osl_util_lazy_isolated_identifier(char * expression, char * identifier,
-                                      int index) {
-  int look;
+                                      size_t index) {
+  size_t look;
+  size_t expression_len = strlen(expression);
+  size_t identifier_len = strlen(identifier);
 
   // If the first non-space character before is not in [\[(,\+=]: no. 
   look = index - 1;
-  while (look >= 0) {
+  while (look < index) {
     if (isspace(expression[look]))
       look--;
     else
       break;
   }
 
-  if ((look >= 0) &&
+  if ((look < index) &&
       (expression[look] != '[') &&
       (expression[look] != '(') &&
       (expression[look] != '+') &&
       (expression[look] != '=') &&
       (expression[look] != ','))
     return 0;
-        
+
   // If the first non-space character after is not in [\]),;\+]: no. 
-  look = index + strlen(identifier);
-  while (look < (int)strlen(expression)) {
+  look = index + identifier_len;
+  while (look < expression_len) {
     if (isspace(expression[look]))
       look++;
     else
       break;
   }
 
-  if ((look < (int)strlen(expression)) &&
+  if ((look < expression_len) &&
       (expression[look] != ']')   &&
       (expression[look] != ')')   &&
       (expression[look] != '+')   &&
@@ -688,7 +690,7 @@ char * osl_util_identifier_substitution(char * expression,
                                         char ** identifiers) {
   size_t index;
   int j, found;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char buffer[OSL_MAX_STRING];
   char * string;
  

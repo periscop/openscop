@@ -67,6 +67,8 @@
 # ifdef OSL_GMP_IS_HERE
 #  include <gmp.h>
 # endif
+#include <stdlib.h>
+#include <stdio.h>
 
 # if defined(__cplusplus)
 extern "C"

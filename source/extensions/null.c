@@ -182,7 +182,7 @@ osl_null_p osl_null_sread(char ** input) {
  * \return A pointer to an empty null structure with fields set to
  *         default values.
  */
-osl_null_p osl_null_malloc() {
+osl_null_p osl_null_malloc(void) {
   osl_null_p null;
 
   OSL_malloc(null, osl_null_p, sizeof(osl_null_t));
@@ -253,7 +253,7 @@ int osl_null_equal(osl_null_p c1, osl_null_p c2) {
  * extension and returns it).
  * \return An interface structure for the null extension.
  */
-osl_interface_p osl_null_interface() {
+osl_interface_p osl_null_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_NULL);

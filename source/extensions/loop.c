@@ -89,7 +89,8 @@
  * \param[in] level  Number of spaces before printing, for each line.
  */
 void osl_loop_idump(FILE * file, osl_loop_p loop, int level) {
-  int i, j, first = 1, number=1;
+  int j, first = 1, number=1;
+  size_t i;
 
   // Go to the right level.
   for (j = 0; j < level; j++)
@@ -124,7 +125,7 @@ void osl_loop_idump(FILE * file, osl_loop_p loop, int level) {
 
     for (j = 0; j <= level; j++)
       fprintf(file, "|\t");
-    fprintf(file, "+--nb_stmts: %d\n", loop->nb_stmts);
+    fprintf(file, "+--nb_stmts: %zu\n", loop->nb_stmts);
 
     // Display the id/name.
     for (j = 0; j <= level; j++)
@@ -188,9 +189,9 @@ void osl_loop_dump(FILE * file, osl_loop_p loop) {
  * \return         A string containing the OpenScop dump of the loop structure.
  */
 char * osl_loop_sprint(osl_loop_p loop) {
-  int i;
+  size_t i;
   int nloop = 0;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char *string = NULL;
   char buffer[OSL_MAX_STRING];
 
@@ -214,7 +215,7 @@ char * osl_loop_sprint(osl_loop_p loop) {
 
     sprintf(buffer, "# Number of stmts\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-    sprintf(buffer, "%d\n", loop->nb_stmts);
+    sprintf(buffer, "%zu\n", loop->nb_stmts);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     if (loop->nb_stmts) {
@@ -269,7 +270,7 @@ char * osl_loop_sprint(osl_loop_p loop) {
  * \return                A pointer to the loop structure that has been read.
  */
 osl_loop_p osl_loop_sread(char **input) {
-  int i;
+  size_t i;
   int nb_loops;
   osl_loop_p head;
   osl_loop_p loop;
@@ -290,7 +291,7 @@ osl_loop_p osl_loop_sread(char **input) {
   while (nb_loops != 0) {
 
     loop->iter = osl_util_read_string(NULL, input);
-    loop->nb_stmts = osl_util_read_int(NULL, input);
+    loop->nb_stmts = (size_t)osl_util_read_int(NULL, input);
     
     OSL_malloc(loop->stmt_ids, int *, loop->nb_stmts * sizeof(int));
     for (i = 0; i < loop->nb_stmts; i++)
@@ -338,7 +339,7 @@ osl_loop_p osl_loop_sread(char **input) {
  * \return  A pointer to an empty loop structure with fields set to
  *          default values.
  */
-osl_loop_p osl_loop_malloc() {
+osl_loop_p osl_loop_malloc(void) {
   osl_loop_p loop;
 
   OSL_malloc(loop, osl_loop_p, sizeof(osl_loop_t));
@@ -391,7 +392,7 @@ void osl_loop_free(osl_loop_p loop) {
  * \return          A pointer to the clone of the loop structure.
  */
 osl_loop_p osl_loop_clone_one(osl_loop_p loop) {
-  int i;
+  size_t i;
   osl_loop_p clone;
 
   if (loop == NULL)
@@ -460,7 +461,7 @@ osl_loop_p osl_loop_clone(osl_loop_p loop) {
  * \return       1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
 int osl_loop_equal_one(osl_loop_p a1, osl_loop_p a2) {
-  int i, j, found;
+  size_t i, j, found;
 
   if (a1 == a2)
     return 1;
@@ -576,7 +577,7 @@ int osl_loop_equal(osl_loop_p a1, osl_loop_p a2) {
  *
  * \return  An interface structure for the loop extension.
  */
-osl_interface_p osl_loop_interface() {
+osl_interface_p osl_loop_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_LOOP);

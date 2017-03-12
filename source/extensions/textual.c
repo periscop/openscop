@@ -174,7 +174,7 @@ char * osl_textual_sprint(osl_textual_p textual) {
  * \return NULL.
  */
 char * osl_textual_sprint(osl_textual_p textual) {
-
+  (void) textual;
   return NULL;
 }
 #endif
@@ -223,7 +223,7 @@ osl_textual_p osl_textual_sread(char ** extensions) {
  * \return A pointer to an empty textual structure with fields set to
  *         default values.
  */
-osl_textual_p osl_textual_malloc() {
+osl_textual_p osl_textual_malloc(void) {
   osl_textual_p textual;
 
   OSL_malloc(textual, osl_textual_p, sizeof(osl_textual_t));
@@ -306,7 +306,8 @@ int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
  * \return 1.
  */
 int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
-
+  (void) f1;
+  (void) f2;
   return 1;
 }
 #endif
@@ -318,7 +319,7 @@ int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
  * extension and returns it).
  * \return An interface structure for the textual extension.
  */
-osl_interface_p osl_textual_interface() {
+osl_interface_p osl_textual_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_TEXTUAL);

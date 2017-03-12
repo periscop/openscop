@@ -127,7 +127,7 @@ osl_irregular_p osl_irregular_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_irregular_p osl_irregular_malloc();
+osl_irregular_p osl_irregular_malloc(void);
 void            osl_irregular_free(osl_irregular_p);
 
 
@@ -139,7 +139,7 @@ int             osl_irregular_equal(osl_irregular_p, osl_irregular_p);
 osl_irregular_p osl_irregular_add_control(osl_irregular_p, char**, int, char*);
 osl_irregular_p osl_irregular_add_exit(osl_irregular_p, char**, int, char*);
 osl_irregular_p osl_irregular_add_predicates(osl_irregular_p, int*, int);
-osl_interface_p osl_irregular_interface();
+osl_interface_p osl_irregular_interface(void);
 
 
 # if defined(__cplusplus)

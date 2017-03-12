@@ -111,7 +111,7 @@ osl_coordinates_p osl_coordinates_sread(char**);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_coordinates_p osl_coordinates_malloc();
+osl_coordinates_p osl_coordinates_malloc(void);
 void              osl_coordinates_free(osl_coordinates_p);
 
 
@@ -120,7 +120,7 @@ void              osl_coordinates_free(osl_coordinates_p);
  *****************************************************************************/
 osl_coordinates_p osl_coordinates_clone(osl_coordinates_p);
 int               osl_coordinates_equal(osl_coordinates_p, osl_coordinates_p);
-osl_interface_p   osl_coordinates_interface();
+osl_interface_p   osl_coordinates_interface(void);
 
 
 # if defined(__cplusplus)

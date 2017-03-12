@@ -157,7 +157,8 @@ void osl_irregular_dump(FILE * file, osl_irregular_p irregular) {
  * \return A string containing the OpenScop dump of the irregular structure.
  */
 char * osl_irregular_sprint(osl_irregular_p irregular) {
-  int high_water_mark = OSL_MAX_STRING,i,j;
+  size_t high_water_mark = OSL_MAX_STRING;
+  int i,j;
   char * string = NULL;
   char * buffer;
 
@@ -312,7 +313,7 @@ osl_irregular_p osl_irregular_sread(char ** extensions_fixme) {
  * \return A pointer to an empty irregular structure with fields set to
  *         default values.
  */
-osl_irregular_p osl_irregular_malloc() {
+osl_irregular_p osl_irregular_malloc(void) {
   osl_irregular_p irregular;
 
   OSL_malloc(irregular, osl_irregular_p,
@@ -746,7 +747,7 @@ osl_irregular_p osl_irregular_add_predicates(
  * extension and returns it).
  * \return An interface structure for the irregular extension.
  */
-osl_interface_p osl_irregular_interface() {
+osl_interface_p osl_irregular_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_IRREGULAR);

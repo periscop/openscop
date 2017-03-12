@@ -108,7 +108,7 @@ osl_scatnames_p osl_scatnames_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_scatnames_p osl_scatnames_malloc();
+osl_scatnames_p osl_scatnames_malloc(void);
 void            osl_scatnames_free(osl_scatnames_p);
 
 
@@ -117,7 +117,7 @@ void            osl_scatnames_free(osl_scatnames_p);
  *****************************************************************************/
 osl_scatnames_p osl_scatnames_clone(osl_scatnames_p);
 int             osl_scatnames_equal(osl_scatnames_p, osl_scatnames_p);
-osl_interface_p osl_scatnames_interface();
+osl_interface_p osl_scatnames_interface(void);
 
 
 # if defined(__cplusplus)

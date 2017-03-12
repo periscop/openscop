@@ -84,7 +84,7 @@ extern "C"
  */
 struct osl_extbody {
   osl_body_p body;
-  int nb_access;   /**< Nb of access. */
+  size_t nb_access;   /**< Nb of access. */
   int * start;     /**< Array of nb_access start. */
   int * length;    /**< Array of nb_access length. */
 };
@@ -113,7 +113,7 @@ osl_extbody_p         osl_extbody_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_extbody_p         osl_extbody_malloc();
+osl_extbody_p         osl_extbody_malloc(void);
 void                  osl_extbody_free(osl_extbody_p);
 
 
@@ -123,7 +123,7 @@ void                  osl_extbody_free(osl_extbody_p);
 osl_extbody_p         osl_extbody_clone(osl_extbody_p);
 int                   osl_extbody_equal(osl_extbody_p,
                                               osl_extbody_p);
-osl_interface_p       osl_extbody_interface();
+osl_interface_p       osl_extbody_interface(void);
 void                  osl_extbody_add(osl_extbody_p, int, int);
 
 # if defined(__cplusplus)

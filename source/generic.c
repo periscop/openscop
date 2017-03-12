@@ -156,7 +156,7 @@ void osl_generic_dump(FILE * file, osl_generic_p generic) {
  * \return A string containing the OpenScop dump of the generic structure.
  */
 char * osl_generic_sprint(osl_generic_p generic) {
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL, * content;
   char buffer[OSL_MAX_STRING];
 
@@ -469,7 +469,7 @@ void osl_generic_remove(osl_generic_p *list, char * URI){
  * \return A pointer to an empty generic structure with fields set to
  *         default values.
  */
-osl_generic_p osl_generic_malloc() {
+osl_generic_p osl_generic_malloc(void) {
   osl_generic_p generic;
 
   OSL_malloc(generic, osl_generic_p, sizeof(osl_generic_t));

@@ -104,7 +104,7 @@ osl_clay_p      osl_clay_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_clay_p      osl_clay_malloc();
+osl_clay_p      osl_clay_malloc(void);
 void            osl_clay_free(osl_clay_p);
 
 
@@ -113,7 +113,7 @@ void            osl_clay_free(osl_clay_p);
  *****************************************************************************/
 osl_clay_p      osl_clay_clone(osl_clay_p);
 int             osl_clay_equal(osl_clay_p, osl_clay_p);
-osl_interface_p osl_clay_interface();
+osl_interface_p osl_clay_interface(void);
 
 
 # if defined(__cplusplus)

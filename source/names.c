@@ -147,7 +147,7 @@ void osl_names_dump(FILE * file, osl_names_p names) {
  * \return A pointer to an empty names structure with fields set to
  *         default values.
  */
-osl_names_p osl_names_malloc() {
+osl_names_p osl_names_malloc(void) {
   osl_names_p names;
 
   OSL_malloc(names, osl_names_p, sizeof(osl_names_t));

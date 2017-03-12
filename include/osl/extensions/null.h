@@ -104,7 +104,7 @@ osl_null_p      osl_null_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_null_p      osl_null_malloc();
+osl_null_p      osl_null_malloc(void);
 void            osl_null_free(osl_null_p);
 
 
@@ -113,7 +113,7 @@ void            osl_null_free(osl_null_p);
  *****************************************************************************/
 osl_null_p      osl_null_clone(osl_null_p);
 int             osl_null_equal(osl_null_p, osl_null_p);
-osl_interface_p osl_null_interface();
+osl_interface_p osl_null_interface(void);
 
 
 # if defined(__cplusplus)

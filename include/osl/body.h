@@ -114,7 +114,7 @@ osl_body_p      osl_body_sread(char **);
 /*+***************************************************************************
  *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-osl_body_p      osl_body_malloc();
+osl_body_p      osl_body_malloc(void);
 void            osl_body_free(osl_body_p);
 
 
@@ -123,7 +123,7 @@ void            osl_body_free(osl_body_p);
  *****************************************************************************/
 osl_body_p      osl_body_clone(osl_body_p);
 int             osl_body_equal(osl_body_p, osl_body_p);
-osl_interface_p osl_body_interface();
+osl_interface_p osl_body_interface(void);
 
 # if defined(__cplusplus)
   }

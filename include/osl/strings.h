@@ -107,7 +107,7 @@ osl_strings_p   osl_strings_read(FILE *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_strings_p   osl_strings_malloc();
+osl_strings_p   osl_strings_malloc(void);
 void            osl_strings_free(osl_strings_p);
 
 /*+***************************************************************************
@@ -119,7 +119,7 @@ size_t          osl_strings_find(osl_strings_p, char const * const);
 int             osl_strings_equal(osl_strings_p, osl_strings_p);
 size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
-osl_interface_p osl_strings_interface();
+osl_interface_p osl_strings_interface(void);
 osl_strings_p   osl_strings_generate(char *, int);
 void osl_strings_add_strings(osl_strings_p *, osl_strings_p, osl_strings_p);
 

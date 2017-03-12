@@ -87,9 +87,10 @@
  * \param[in] level   Number of spaces before printing, for each line.
  */
 void osl_strings_idump(FILE * file, osl_strings_p strings, int level) {
-  int i, nb_strings;
+  size_t i, nb_strings;
+  int j;
   
-  for (i = 0; i < level; i++)
+  for (j = 0; j < level; j++)
     fprintf(file, "|\t");
   
   if (strings != NULL) {
@@ -103,7 +104,7 @@ void osl_strings_idump(FILE * file, osl_strings_p strings, int level) {
     fprintf(file, "+-- NULL strings\n");
 
   // A blank line.
-  for (i = 0; i <= level; i++)
+  for (j = 0; j <= level; j++)
     fprintf(file, "|\t");
   fprintf(file, "\n");
 }
@@ -130,7 +131,7 @@ void osl_strings_dump(FILE * file, osl_strings_p strings) {
  */
 char * osl_strings_sprint(osl_strings_p strings) {
   size_t i;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
 
@@ -195,8 +196,8 @@ osl_strings_p osl_strings_sread(char ** input) {
   char tmp[OSL_MAX_STRING];
   char * s;
   char ** string = NULL;
-  int nb_strings;
-  int i, count;
+  size_t i, nb_strings;
+  int count;
   osl_strings_p strings = NULL;
 
   // Skip blank/commented lines and spaces before the strings.
@@ -280,7 +281,7 @@ osl_strings_p osl_strings_read(FILE * file) {
  * \return A pointer to an empty strings structure with fields set to
  *         default values.
  */
-osl_strings_p osl_strings_malloc() {
+osl_strings_p osl_strings_malloc(void) {
   osl_strings_p strings;
 
   OSL_malloc(strings, osl_strings_p, sizeof(osl_strings_t));
@@ -326,7 +327,7 @@ void osl_strings_free(osl_strings_p strings) {
  * \return The clone of the strings structure.
  */
 osl_strings_p osl_strings_clone(osl_strings_p strings) {
-  int i, nb_strings;
+  size_t i, nb_strings;
   osl_strings_p clone = NULL;
   
   if (strings == NULL)
@@ -447,7 +448,7 @@ osl_strings_p osl_strings_encapsulate(char * string) {
  * structure and returns it).
  * \return An interface structure for the strings structure.
  */
-osl_interface_p osl_strings_interface() {
+osl_interface_p osl_strings_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_STRINGS);
@@ -479,7 +480,7 @@ osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
   osl_strings_p generated;
 
   if (nb_strings) {
-    OSL_malloc(strings, char **, sizeof(char *) * (nb_strings + 1));
+    OSL_malloc(strings, char **, sizeof(char *) * (size_t)(nb_strings + 1));
     strings[nb_strings] = NULL;
     for (i = 0; i < nb_strings; i++) {
       sprintf(buff, "%s%d", prefix, i + 1);

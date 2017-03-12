@@ -139,12 +139,12 @@ void osl_body_dump(FILE * file, osl_body_p body) {
  * \param[in] body  The body whose information has to be printed.
  */
 void osl_body_print(FILE * file, osl_body_p body) {
-  int nb_iterators;
+  size_t nb_iterators;
 
   if (body != NULL) {
     nb_iterators = osl_strings_size(body->iterators);
     fprintf(file, "# Number of original iterators\n");
-    fprintf(file, "%d\n", nb_iterators);
+    fprintf(file, "%zu\n", nb_iterators);
 
     if (nb_iterators > 0) {
       fprintf(file, "\n# List of original iterators\n");
@@ -168,7 +168,7 @@ void osl_body_print(FILE * file, osl_body_p body) {
  * \param[in] body  The body whose information has to be printed.
  */
 void osl_body_print_scoplib(FILE * file, osl_body_p body) {
-  int nb_iterators;
+  size_t nb_iterators;
 
   if (body != NULL) {
     nb_iterators = osl_strings_size(body->iterators);
@@ -197,8 +197,8 @@ void osl_body_print_scoplib(FILE * file, osl_body_p body) {
  * \return A string containing the OpenScop dump of the body structure.
  */
 char * osl_body_sprint(osl_body_p body) {
-  int nb_iterators;
-  int high_water_mark = OSL_MAX_STRING;
+  size_t nb_iterators;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
   char * iterators, * expression;
@@ -208,7 +208,7 @@ char * osl_body_sprint(osl_body_p body) {
   
   if (body != NULL) {
     nb_iterators = osl_strings_size(body->iterators);
-    sprintf(buffer, "# Number of original iterators\n%d\n", nb_iterators);
+    sprintf(buffer, "# Number of original iterators\n%zu\n", nb_iterators);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     if (nb_iterators > 0) {
@@ -294,7 +294,7 @@ osl_body_p osl_body_sread(char ** input) {
  * to the allocated space.
  * \return A pointer to an empty body with fields set to default values.
  */
-osl_body_p osl_body_malloc() {
+osl_body_p osl_body_malloc(void) {
   osl_body_p body;
 
   OSL_malloc(body, osl_body_p, sizeof(osl_body_t));
@@ -387,7 +387,7 @@ int osl_body_equal(osl_body_p b1, osl_body_p b2) {
  * structure and returns it).
  * \return An interface structure for the body structure.
  */
-osl_interface_p osl_body_interface() {
+osl_interface_p osl_body_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_BODY);

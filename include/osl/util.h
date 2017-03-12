@@ -87,9 +87,9 @@ char * osl_util_read_uptoflag(FILE *, char **, char *);
 char * osl_util_read_uptotag(FILE *, char **, char *);
 char * osl_util_read_uptoendtag(FILE *, char **, char *);
 char * osl_util_tag_content(char *, char *);
-void   osl_util_safe_strcat(char **, char *, int *);
+void   osl_util_safe_strcat(char **, char *, size_t *);
 char * osl_util_strdup(char const *);
-int    osl_util_get_precision();
+int    osl_util_get_precision(void);
 void   osl_util_print_provided(FILE *, int, char *);
 char * osl_util_identifier_substitution(char *, char **);
 

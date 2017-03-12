@@ -75,7 +75,7 @@ extern "C"
 typedef void   (*osl_idump_f) (FILE *, void *, int);
 typedef char * (*osl_sprint_f)(void *);
 typedef void * (*osl_sread_f) (char **);
-typedef void * (*osl_malloc_f)();
+typedef void * (*osl_malloc_f)(void);
 typedef void   (*osl_free_f)  (void *);
 typedef void * (*osl_clone_f) (void *);
 typedef int    (*osl_equal_f) (void *, void *);
@@ -117,7 +117,7 @@ void            osl_interface_dump(FILE *, osl_interface_p);
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
 void            osl_interface_add(osl_interface_p *, osl_interface_p);
-osl_interface_p osl_interface_malloc();
+osl_interface_p osl_interface_malloc(void);
 void            osl_interface_free(osl_interface_p);
 
 
@@ -129,7 +129,7 @@ osl_interface_p osl_interface_nclone(osl_interface_p, int);
 osl_interface_p osl_interface_clone(osl_interface_p);
 int             osl_interface_equal(osl_interface_p, osl_interface_p);
 osl_interface_p osl_interface_lookup(osl_interface_p, char *);
-osl_interface_p osl_interface_get_default_registry();
+osl_interface_p osl_interface_get_default_registry(void);
 
 # if defined(__cplusplus)
   }

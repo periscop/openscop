@@ -544,7 +544,7 @@ osl_scop_p osl_scop_read(FILE * foo) {
  * allocated space.
  * \return A pointer to an empty scop with fields set to default values.
  */
-osl_scop_p osl_scop_malloc() {
+osl_scop_p osl_scop_malloc(void) {
   osl_scop_p scop;
 
   OSL_malloc(scop, osl_scop_p, sizeof(osl_scop_t));

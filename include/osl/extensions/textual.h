@@ -105,7 +105,7 @@ osl_textual_p   osl_textual_sread(char **);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_textual_p   osl_textual_malloc();
+osl_textual_p   osl_textual_malloc(void);
 void            osl_textual_free(osl_textual_p);
 
 
@@ -114,7 +114,7 @@ void            osl_textual_free(osl_textual_p);
  *****************************************************************************/
 osl_textual_p   osl_textual_clone(osl_textual_p);
 int             osl_textual_equal(osl_textual_p, osl_textual_p);
-osl_interface_p osl_textual_interface();
+osl_interface_p osl_textual_interface(void);
 
 # if defined(__cplusplus)
   }

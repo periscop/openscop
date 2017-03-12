@@ -140,7 +140,7 @@ void osl_clay_dump(FILE * file, osl_clay_p clay) {
  * \return A string containing the OpenScop dump of the clay structure.
  */
 char * osl_clay_sprint(osl_clay_p clay) {
-  int high_water_mark = OSL_MAX_STRING;
+  size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
 
@@ -217,7 +217,7 @@ osl_clay_p osl_clay_sread(char ** input) {
  * \return A pointer to an empty clay structure with fields set to
  *         default values.
  */
-osl_clay_p osl_clay_malloc() {
+osl_clay_p osl_clay_malloc(void) {
   osl_clay_p clay;
 
   OSL_malloc(clay, osl_clay_p, sizeof(osl_clay_t));
@@ -299,7 +299,7 @@ int osl_clay_equal(osl_clay_p c1, osl_clay_p c2) {
  * extension and returns it).
  * \return An interface structure for the clay extension.
  */
-osl_interface_p osl_clay_interface() {
+osl_interface_p osl_clay_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_CLAY);

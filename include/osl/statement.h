@@ -120,7 +120,7 @@ osl_statement_p osl_statement_read(FILE *);
 /*+***************************************************************************
  *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-osl_statement_p osl_statement_malloc();
+osl_statement_p osl_statement_malloc(void);
 void            osl_statement_free(osl_statement_p);
 
 
