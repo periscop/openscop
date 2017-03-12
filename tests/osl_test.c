@@ -80,6 +80,7 @@
 static int test_unions(osl_scop_p scop) {
   osl_statement_p stmt, nounion_stmt;
   osl_scop_p nounion_scop = osl_scop_remove_unions(scop);
+  osl_scop_p nounion_scop_first = nounion_scop;
   osl_relation_p domain, scattering;
   int result = 1;
   osl_scop_print(stderr, nounion_scop);
@@ -116,7 +117,7 @@ static int test_unions(osl_scop_p scop) {
   }
   if (scop != NULL || nounion_scop != NULL)
     return 0;
-  osl_scop_free(nounion_scop);
+  osl_scop_free(nounion_scop_first);
   return 1;
 }
 
@@ -134,7 +135,7 @@ static int test_unions(osl_scop_p scop) {
  * \param verbose    Verbose option (1 to set, 0 not to set).
  * \return 1 if the test is successful, 0 otherwise.
  */
-int test_file(char* input_name, int verbose) {
+static int test_file(char* input_name, int verbose) {
   int cloning = 0;
   int dumping = 0;
   int equal   = 0;
@@ -226,8 +227,8 @@ int main(int argc, char* argv[]) {
   int verbose = 0; // 1 if the verbose option is set, 0 otherwise.
   int dirtest = 1; // 1 if we check a whole directory, 0 for a single file.
   int fileidx = 0; // Index of the file to check in argv (0 if none).
-  int d_namlen;
-  int suffix_length;
+  size_t d_namlen;
+  size_t suffix_length;
   DIR * dir;
   struct dirent * dp;
 

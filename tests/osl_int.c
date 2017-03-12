@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 {
   if (argc > 1) { printf("argv are ignored\n"); }
   
-  unsigned int nb_fail = 0;
+  int nb_fail = 0;
   
   #ifdef OSL_GMP_IS_HERE
   
@@ -266,6 +266,13 @@ int main(int argc, char** argv)
         if (r_sp_i != r_dp_i || r_sp_i != r_mp_i) {
           error++; printf("Error osl_int_floor_div_q_r\n");
         }
+        osl_int_clear(OSL_PRECISION_SP, &q_sp);
+        osl_int_clear(OSL_PRECISION_DP, &q_dp);
+        osl_int_clear(OSL_PRECISION_MP, &q_mp);
+
+        osl_int_clear(OSL_PRECISION_SP, &r_sp);
+        osl_int_clear(OSL_PRECISION_DP, &r_dp);
+        osl_int_clear(OSL_PRECISION_MP, &r_mp);
       }
       
       // osl_int_mod
@@ -545,7 +552,17 @@ int main(int argc, char** argv)
         
         nb_fail += error;
       }
+      osl_int_clear(OSL_PRECISION_SP, &b_sp);
+      osl_int_clear(OSL_PRECISION_DP, &b_dp);
+      osl_int_clear(OSL_PRECISION_MP, &b_mp);
+
+      osl_int_clear(OSL_PRECISION_SP, &c_sp);
+      osl_int_clear(OSL_PRECISION_DP, &c_dp);
+      osl_int_clear(OSL_PRECISION_MP, &c_mp);
     }
+    osl_int_clear(OSL_PRECISION_SP, &a_sp);
+    osl_int_clear(OSL_PRECISION_DP, &a_dp);
+    osl_int_clear(OSL_PRECISION_MP, &a_mp);
   }
   
   printf("%s ", argv[0]);
