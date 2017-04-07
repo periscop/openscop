@@ -649,7 +649,7 @@ static osl_relation_p osl_relation_clone_one_safe(osl_relation_p relation) {
  */
 osl_statement_p osl_statement_remove_unions(osl_statement_p statement) {
   osl_relation_p domain, scattering;
-  osl_statement_p statement_ptr, result;
+  osl_statement_p statement_ptr = NULL, result;
   if (!statement)
     return NULL;
 
