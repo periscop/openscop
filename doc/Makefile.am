@@ -123,7 +123,7 @@ openscop.pdf: openscop.texi			\
 	images/basic1.pdf			\
 	images/basic2.pdf			\
 	images/tree.pdf
-	$(TEXI2PDF) openscop.texi
+	$(TEXI2PDF) $<
 
 DOCDIR			= htmldoc
 DOXYFILE		= Doxyfile
