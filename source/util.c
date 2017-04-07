@@ -344,8 +344,7 @@ char * osl_util_read_uptoflag(FILE * file, char ** str, char * flag) {
   OSL_malloc(res, char *, high_water_mark * sizeof(char));
 
   // Copy everything to the res string.
-  if (str != NULL)
-    lenstr = strlen(*str);
+  lenstr = str != NULL ? strlen(*str) : 0;
   while (((str  != NULL) && (nb_chars != lenstr)) ||
          ((file != NULL) && (!feof(file)))) {
     res[nb_chars++] = (str != NULL) ? *((*str)++) : (char)fgetc(file);
