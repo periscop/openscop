@@ -92,6 +92,8 @@ char * osl_util_strdup(char const *);
 int    osl_util_get_precision(void);
 void   osl_util_print_provided(FILE *, int, char *);
 char * osl_util_identifier_substitution(char *, char **);
+int    osl_util_read_arg_int(int, char**, int*);
+int    osl_util_read_arg_string(int, char**, char**);
 
 
 # if defined(__cplusplus)
