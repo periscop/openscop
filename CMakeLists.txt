@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.1)
 #///////////////////////////////////////////////////////////////////#
 
 set(OSL_VERSION_MAJOR 0)
-set(OSL_VERSION_MINOR 8)
-set(OSL_VERSION_PATCH 4)
+set(OSL_VERSION_MINOR 9)
+set(OSL_VERSION_PATCH 1)
 set(PACKAGE_VERSION
   ${OSL_VERSION_MAJOR}.${OSL_VERSION_MINOR}.${OSL_VERSION_PATCH})
 
