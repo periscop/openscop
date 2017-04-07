@@ -2131,7 +2131,7 @@ void osl_relation_replace_constraints(osl_relation_p r1,
 
   if ((r1 == NULL) || (r2 == NULL)       ||
       (r1->precision != r2->precision)   ||
-      (r1->nb_columns != r1->nb_columns) ||
+      (r1->nb_columns != r2->nb_columns) ||
       ((row + r2->nb_rows) > r1->nb_rows) || (row < 0))
     OSL_error("relation rows could not be replaced");
 
