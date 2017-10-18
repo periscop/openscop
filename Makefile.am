@@ -70,7 +70,7 @@
 #############################################################################
 
 AUTOMAKE_OPTIONS = subdir-objects
-SUBDIRS = . doc tests
+SUBDIRS = . tests
 ACLOCAL_AMFLAGS = -I m4
 
 #############################################################################
@@ -164,5 +164,76 @@ MAINTAINERCLEANFILES 	=			\
 
 ctags:
 	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q -f$(HOME)/.ctags .
+
+#############################################################################
+
+MAINTAINERCLEANFILES	+=			\
+	doc/htmldoc.tar.gz				\
+	doc/openscop.pdf				\
+	doc/openscop.cp				\
+	doc/openscop.fn				\
+	doc/openscop.info				\
+	doc/openscop.ky				\
+	doc/openscop.pg				\
+	doc/openscop.toc				\
+	doc/openscop.tp				\
+	doc/openscop.vr				\
+	doc/openscop.aux				\
+	doc/openscop.log				\
+	doc/openscop.doc
+
+clean-local:
+	-rm -rf doc/htmldoc
+
+EXTRA_DIST		+=			\
+	doc/htmldoc.tar.gz				\
+	doc/openscop.pdf				\
+	doc/S4.cloog				\
+	doc/images/basic.eps			\
+	doc/images/basic.fig			\
+	doc/images/basic.jpg			\
+	doc/images/basic.pdf			\
+	doc/images/basic.txt			\
+	doc/images/basic1.eps			\
+	doc/images/basic1.fig			\
+	doc/images/basic1.jpg			\
+	doc/images/basic1.pdf			\
+	doc/images/basic1.txt			\
+	doc/images/basic2.eps			\
+	doc/images/basic2.fig			\
+	doc/images/basic2.jpg			\
+	doc/images/basic2.pdf			\
+	doc/images/basic2.txt			\
+	doc/images/tree.eps				\
+	doc/images/tree.fig				\
+	doc/images/tree.jpg				\
+	doc/images/tree.pdf				\
+	doc/images/tree.txt
+
+if GENERATE_DOC
+# Unfortunately the following is not supported conditionaly
+# info_TEXINFOS		= openscop.texi
+
+doc/openscop.pdf: $(srcdir)/doc/openscop.texi			\
+	doc/images/basic.pdf			\
+	doc/images/basic1.pdf			\
+	doc/images/basic2.pdf			\
+	doc/images/tree.pdf
+	$(TEXI2PDF) $< -o $@
+
+DOCDIR			= doc/htmldoc
+DOXYFILE		= doc/Doxyfile
+DOXYGENTOOL		= @DOXYGEN@
+
+# The following requires a fixed version of the Emacs 19.30 etags.
+ETAGS_ARGS		= --lang=none \
+ --regex='/^@node[ \t]+\([^,]+\)/\1/' $(srcdir)/doc/openscop.texi
+TAGS_DEPENDENCIES	= doc/openscop.texi doc/$(DOXYFILE).in
+
+doc/htmldoc.tar.gz:
+	mkdir -p $(top_builddir)/doc/htmldoc
+	$(DOXYGENTOOL) $(DOXYFILE)
+	tar czf $@ doc/htmldoc
+endif
 
 #############################################################################

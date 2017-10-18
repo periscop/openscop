@@ -173,7 +173,6 @@ AC_SUBST(VERSION_REVISION)
 dnl Configure Makefiles.
 AC_CONFIG_FILES([
 	Makefile
-	doc/Makefile
 	doc/Doxyfile
 	include/osl/scop.h
 	tests/Makefile
