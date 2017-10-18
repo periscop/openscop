@@ -70,7 +70,6 @@
 #############################################################################
 
 AUTOMAKE_OPTIONS = subdir-objects
-SUBDIRS = . tests
 ACLOCAL_AMFLAGS = -I m4
 
 #############################################################################
@@ -237,3 +236,28 @@ doc/htmldoc.tar.gz:
 endif
 
 #############################################################################
+
+noinst_PROGRAMS = \
+	tests/osl_test tests/osl_int tests/osl_pluto_unroll \
+	tests/osl_relation_set_precision
+TESTS = $(noinst_PROGRAMS)
+
+LDADD = libosl.la
+
+tests_osl_test_SOURCES = \
+	tests/osl_test.c \
+	tests/polynom.scop \
+	tests/test_empty_statement.scop \
+	tests/test_just_access.scop \
+	tests/test_just_body.scop \
+	tests/test_just_extbody.scop \
+	tests/test_just_domain.scop \
+	tests/test_just_scattering.scop \
+	tests/test_coordinates.scop \
+	tests/test_matmult.scop \
+	tests/test_clay.scop \
+	tests/test_no_statement.scop \
+	tests/test_scop_list.scop
+tests_osl_int_SOURCES                    = tests/osl_int.c
+tests_osl_pluto_unroll_SOURCES           = tests/osl_pluto_unroll.c
+tests_osl_relation_set_precision_SOURCES = tests/osl_relation_set_precision.c

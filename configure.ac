@@ -175,7 +175,6 @@ AC_CONFIG_FILES([
 	Makefile
 	doc/Doxyfile
 	include/osl/scop.h
-	tests/Makefile
 	],
 	[test -z "$CONFIG_HEADERS" || echo timestamp > source/stamp-h.in])
 
