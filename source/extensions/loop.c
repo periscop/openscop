@@ -238,7 +238,7 @@ char * osl_loop_sprint(osl_loop_p loop) {
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // special case for OSL_LOOP_DIRECTIVE_USER
-    if (loop->directive == OSL_LOOP_DIRECTIVE_USER) {
+    if (loop->directive & OSL_LOOP_DIRECTIVE_USER) {
       sprintf(buffer, " %s", loop->user);
       osl_util_safe_strcat(&string, buffer, &high_water_mark);
     }
@@ -306,7 +306,7 @@ osl_loop_p osl_loop_sread(char **input) {
     loop->directive = osl_util_read_int(NULL, input);
 
     // special case for OSL_LOOP_DIRECTIVE_USER
-    if (loop->directive == OSL_LOOP_DIRECTIVE_USER) {
+    if (loop->directive & OSL_LOOP_DIRECTIVE_USER) {
       loop->user = osl_util_read_line(NULL, input);
       if (!strcmp(loop->user, "(null)")) {
         free(loop->user);
