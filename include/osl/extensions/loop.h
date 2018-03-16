@@ -94,7 +94,7 @@ extern "C"
  */
 struct osl_loop {
   char * iter;              /**< \brief \0 terminated iterator name */
-  size_t    nb_stmts;          /**< \brief Number of statements in the loop */
+  size_t nb_stmts;          /**< \brief Number of statements in the loop */
   int  * stmt_ids;          /**< \brief Array of statement identifiers. */
   char * private_vars;      /**< \brief \0 terminated variable names */
   int    directive;         /**< \brief Loop directive to implement */
