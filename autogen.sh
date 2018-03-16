@@ -1,2 +1,6 @@
 #!/bin/sh
-autoreconf -i
+
+set -e
+
+# (Re)Generate autotools files
+autoreconf -vi
