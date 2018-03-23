@@ -66,7 +66,7 @@ dnl Input file for autoconf to build a configuration shellscript.
 
 m4_define([version_major], [0])
 m4_define([version_minor], [9])
-m4_define([version_revision], [1])
+m4_define([version_revision], [2])
 
 AC_PREREQ(2.53)
 dnl Fill here the @bug email adress.
