@@ -63,6 +63,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include <osl/macros.h>
 #include <osl/util.h>
@@ -148,6 +149,28 @@ void osl_irregular_dump(FILE * file, osl_irregular_p irregular) {
   osl_irregular_idump(file, irregular, 0);
 }
 
+#ifdef __GNUC__
+__attribute__((format(printf, 4, 5)))
+#endif
+static void printf_in_buf(char **buf, size_t *buf_size, size_t *offset,
+                          const char *fmt, ...) {
+  va_list va;
+  va_start(va, fmt);
+  do {
+    int printed = vsnprintf((*buf) + *offset, *buf_size - *offset, fmt, va);
+    if (printed < 0)
+      OSL_error(
+          "snprintf encountered an error while writing inside a local buffer");
+    size_t retval = (size_t)printed;
+    if (retval < *buf_size - *offset) {
+      *offset += retval;
+      break;
+    }
+    OSL_realloc(*buf, char *, *buf_size * 2);
+    *buf_size *= 2;
+  } while (1);
+  va_end(va);
+}
 
 /**
  * osl_irregular_sprint function:
@@ -156,57 +179,65 @@ void osl_irregular_dump(FILE * file, osl_irregular_p irregular) {
  * \param  irregular The irregular structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the irregular structure.
  */
-char * osl_irregular_sprint(osl_irregular_p irregular) {
+char *osl_irregular_sprint(osl_irregular_p irregular) {
   size_t high_water_mark = OSL_MAX_STRING;
-  int i,j;
-  char * string = NULL;
-  char * buffer;
+  int i, j;
+  char *string = NULL;
+  char *buffer = NULL;
 
   if (irregular != NULL) {
     OSL_malloc(string, char *, high_water_mark * sizeof(char));
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
     string[0] = '\0';
-   
+
     // Print the begin tag.
-    sprintf(buffer, OSL_TAG_IRREGULAR_START);
-    osl_util_safe_strcat(&string, buffer, &high_water_mark);
+    osl_util_safe_strcat(&string, OSL_TAG_IRREGULAR_START, &high_water_mark);
+    size_t buf_offset = 0;
+    size_t buf_size = OSL_MAX_STRING;
+    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
 
     // Print the content.
-    sprintf(buffer, "\n%d\n", irregular->nb_statements);
-    for(i=0; i<irregular->nb_statements; i++) {
-      sprintf(buffer, "%s%d ", buffer, irregular->nb_predicates[i]);
-      for(j=0; j<irregular->nb_predicates[i]; j++) {
-        sprintf(buffer, "%s%d ", buffer, irregular->predicates[i][j]);
+    printf_in_buf(&buffer, &buf_size, &buf_offset, "\n%d\n",
+                  irregular->nb_statements);
+    for (i = 0; i < irregular->nb_statements; i++) {
+      printf_in_buf(&buffer, &buf_size, &buf_offset, "%d ",
+                    irregular->nb_predicates[i]);
+      for (j = 0; j < irregular->nb_predicates[i]; j++) {
+        printf_in_buf(&buffer, &buf_size, &buf_offset, "%d ",
+                      irregular->predicates[i][j]);
       }
-      sprintf(buffer, "%s\n", buffer);
+      printf_in_buf(&buffer, &buf_size, &buf_offset, "\n");
     }
     // Print the predicates.
     // controls:
-    sprintf(buffer, "%s%d\n", buffer, irregular->nb_control);
-    sprintf(buffer, "%s%d\n", buffer, irregular->nb_exit);
-    for(i=0; i<irregular->nb_control; i++) {
-      sprintf(buffer, "%s%d ", buffer, irregular->nb_iterators[i]);
-      for(j=0; j<irregular->nb_iterators[i];j++)
-        sprintf(buffer, "%s%s ", buffer, irregular->iterators[i][j]);
-      sprintf(buffer, "%s\n%s\n", buffer, irregular->body[i]);
+    printf_in_buf(&buffer, &buf_size, &buf_offset, "%d\n",
+                  irregular->nb_control);
+    printf_in_buf(&buffer, &buf_size, &buf_offset, "%d\n", irregular->nb_exit);
+    for (i = 0; i < irregular->nb_control; i++) {
+      printf_in_buf(&buffer, &buf_size, &buf_offset, "%d ",
+                    irregular->nb_iterators[i]);
+      for (j = 0; j < irregular->nb_iterators[i]; j++)
+        printf_in_buf(&buffer, &buf_size, &buf_offset, "%s ",
+                      irregular->iterators[i][j]);
+      printf_in_buf(&buffer, &buf_size, &buf_offset, "\n%s\n",
+                    irregular->body[i]);
     }
-    // exits: 
-    for(i=0; i<irregular->nb_exit; i++) {
-      sprintf(buffer, "%s%d ", buffer, irregular->nb_iterators[
-                                        irregular->nb_control + i]);
-      for(j=0; j<irregular->nb_iterators[irregular->nb_control + i];j++)
-        sprintf(buffer, "%s%s ", buffer, irregular->iterators[
-                                          irregular->nb_control+i][j]);
-      sprintf(buffer, "%s\n%s\n", buffer, irregular->body[
-                                          irregular->nb_control + i]);
+    // exits:
+    for (i = 0; i < irregular->nb_exit; i++) {
+      printf_in_buf(&buffer, &buf_size, &buf_offset, "%d ",
+                    irregular->nb_iterators[irregular->nb_control + i]);
+      for (j = 0; j < irregular->nb_iterators[irregular->nb_control + i]; j++)
+        printf_in_buf(&buffer, &buf_size, &buf_offset, "%s ",
+                      irregular->iterators[irregular->nb_control + i][j]);
+      printf_in_buf(&buffer, &buf_size, &buf_offset, "\n%s\n",
+                    irregular->body[irregular->nb_control + i]);
     }
 
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Print the end tag.
-    sprintf(buffer, OSL_TAG_IRREGULAR_STOP"\n");
-    osl_util_safe_strcat(&string, buffer, &high_water_mark);
-  
+    osl_util_safe_strcat(&string, OSL_TAG_IRREGULAR_STOP "\n",
+                         &high_water_mark);
+
     // Keep only the memory space we need.
     OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
     free(buffer);
