@@ -265,7 +265,7 @@ void osl_relation_dump(FILE * file, osl_relation_p relation) {
 static
 char * osl_relation_expression_element(osl_int_t val,
                                        int precision, int * first,
-                                       int cst, char * name) {
+                                       int cst, const char * name) {
   char * temp, * body, * sval;
  
   OSL_malloc(temp, char *, OSL_MAX_STRING * sizeof(char));
