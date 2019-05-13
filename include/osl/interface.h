@@ -128,7 +128,7 @@ int             osl_interface_number(osl_interface_p);
 osl_interface_p osl_interface_nclone(osl_interface_p, int);
 osl_interface_p osl_interface_clone(osl_interface_p);
 int             osl_interface_equal(osl_interface_p, osl_interface_p);
-osl_interface_p osl_interface_lookup(osl_interface_p, char *);
+osl_interface_p osl_interface_lookup(osl_interface_p, const char *);
 osl_interface_p osl_interface_get_default_registry(void);
 
 # if defined(__cplusplus)

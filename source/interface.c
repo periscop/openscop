@@ -359,7 +359,7 @@ int osl_interface_equal(osl_interface_p interface1,
  * \return The first interface of the requested URI in the list.
  */
 osl_interface_p
-osl_interface_lookup(osl_interface_p list, char * URI) {
+osl_interface_lookup(osl_interface_p list, const char * URI) {
 
   if (URI == NULL) {
     OSL_warning("lookup for a NULL URI");
