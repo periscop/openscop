@@ -116,7 +116,7 @@ void      osl_int_free(int, osl_int_const_p);
 void      osl_int_print(FILE *, int, osl_const_int_t);
 void      osl_int_sprint(char *, int, osl_const_int_t);
 void      osl_int_sprint_txt(char *, int, osl_const_int_t);
-int       osl_int_sscanf(char*, int, osl_int_const_p);
+int       osl_int_sscanf(const char*, int, osl_int_const_p);
 void      osl_int_sread(char **, int, osl_int_const_p);
 
 

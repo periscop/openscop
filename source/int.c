@@ -501,7 +501,7 @@ void osl_int_sprint_txt(char * string, int precision, osl_const_int_t value) {
  * \param[in] i         A osl int to save integer
  * \return the number of char readed
  */
-int osl_int_sscanf(char* string, int precision, osl_int_const_p i) {
+int osl_int_sscanf(const char* string, int precision, osl_int_const_p i) {
   int nb_read = 0;
 
   switch (precision) {
