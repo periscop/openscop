@@ -444,7 +444,7 @@ void osl_generic_remove_node(osl_generic_p * list, osl_generic_p generic) {
  * \param[in] list    Address of a generic list
  * \param[in] URI     Pointer to the URI string
  */
-void osl_generic_remove(osl_generic_p *list, char * URI){
+void osl_generic_remove(osl_generic_p *list, const char * URI){
 
  osl_generic_p tmp = *list;
 

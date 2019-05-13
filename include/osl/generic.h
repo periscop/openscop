@@ -117,7 +117,7 @@ osl_generic_p osl_generic_read(FILE *, osl_interface_p);
  *****************************************************************************/
 void          osl_generic_add(osl_generic_p*, osl_generic_p);
 void          osl_generic_remove_node(osl_generic_p*, osl_generic_p);
-void          osl_generic_remove(osl_generic_p*, char *);
+void          osl_generic_remove(osl_generic_p*, const char *);
 osl_generic_p osl_generic_malloc(void);
 void          osl_generic_free(osl_generic_p);
 
