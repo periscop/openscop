@@ -120,7 +120,7 @@ int             osl_strings_equal(osl_strings_p, osl_strings_p);
 size_t          osl_strings_size(osl_const_strings_const_p);
 osl_strings_p   osl_strings_encapsulate(char *);
 osl_interface_p osl_strings_interface(void);
-osl_strings_p   osl_strings_generate(char *, int);
+osl_strings_p   osl_strings_generate(const char *, int);
 void osl_strings_add_strings(osl_strings_p *, osl_strings_p, osl_strings_p);
 
 

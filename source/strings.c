@@ -473,7 +473,7 @@ osl_interface_p osl_strings_interface(void) {
  * \param[in] nb_strings The number of strings to generate.
  * \return A new strings structure containing generated strings.
  */
-osl_strings_p osl_strings_generate(char * prefix, int nb_strings) {
+osl_strings_p osl_strings_generate(const char * prefix, int nb_strings) {
   char ** strings = NULL;
   char buff[strlen(prefix) + 16]; // TODO: better (log10(INT_MAX) ?) :-D.
   int i;
