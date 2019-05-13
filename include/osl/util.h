@@ -83,15 +83,15 @@ char * osl_util_read_string(FILE *, char **);
 char * osl_util_read_line(FILE *, char **);
 char * osl_util_read_tag(FILE *, char **);
 char * osl_util_read_tail(FILE *);
-char * osl_util_read_uptoflag(FILE *, char **, char *);
-char * osl_util_read_uptotag(FILE *, char **, char *);
-char * osl_util_read_uptoendtag(FILE *, char **, char *);
-char * osl_util_tag_content(char *, char *);
-void   osl_util_safe_strcat(char **, char *, size_t *);
+char * osl_util_read_uptoflag(FILE *, char **, const char *);
+char * osl_util_read_uptotag(FILE *, char **, const char *);
+char * osl_util_read_uptoendtag(FILE *, char **, const char *);
+char * osl_util_tag_content(const char *, const char *);
+void   osl_util_safe_strcat(char **, const char *, size_t *);
 char * osl_util_strdup(char const *);
 int    osl_util_get_precision(void);
-void   osl_util_print_provided(FILE *, int, char *);
-char * osl_util_identifier_substitution(char *, char **);
+void   osl_util_print_provided(FILE *, int, const char *);
+char * osl_util_identifier_substitution(const char *, char **);
 
 
 # if defined(__cplusplus)

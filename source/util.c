@@ -331,7 +331,7 @@ char * osl_util_read_tag(FILE * file, char ** str) {
  * \param[in]     flag The flag which, when reached, stops the reading.
  * \return The string that has been read.
  */
-char * osl_util_read_uptoflag(FILE * file, char ** str, char * flag) {
+char * osl_util_read_uptoflag(FILE * file, char ** str, const char * flag) {
   size_t high_water_mark = OSL_MAX_STRING;
   size_t nb_chars = 0;
   size_t lenflag = strlen(flag), lenstr;
@@ -388,7 +388,7 @@ char * osl_util_read_uptoflag(FILE * file, char ** str, char * flag) {
  * \param[in]     name The name of the tag to the file reading.
  * \return The string that has been read from the file.
  */
-char * osl_util_read_uptotag(FILE * file, char ** str, char * name) {
+char * osl_util_read_uptotag(FILE * file, char ** str, const char * name) {
   char tag[strlen(name) + 3];
   
   sprintf(tag, "<%s>", name);
@@ -409,7 +409,7 @@ char * osl_util_read_uptotag(FILE * file, char ** str, char * name) {
  * \param[in]     name The name of the end tag to the file reading.
  * \return The string that has been read from the file.
  */
-char * osl_util_read_uptoendtag(FILE * file, char ** str, char * name) {
+char * osl_util_read_uptoendtag(FILE * file, char ** str, const char * name) {
   char endtag[strlen(name) + 4];
   
   sprintf(endtag, "</%s>", name);
@@ -426,10 +426,10 @@ char * osl_util_read_uptoendtag(FILE * file, char ** str, char * name) {
  * \param[in] name   The name of the tag we are looking for.
  * \return The string between '\<name\>' and '\</name\>' in 'str'.
  */
-char * osl_util_tag_content(char * str, char * name) {
+char * osl_util_tag_content(const char * str, const char * name) {
   int i;
-  char * start;
-  char * stop;
+  const char * start;
+  const char * stop;
   char tag[strlen(name) + 3];
   char endtag[strlen(name) + 4];
   size_t size = 0;
@@ -479,7 +479,7 @@ char * osl_util_tag_content(char * str, char * name) {
  * \param[in]     src string to concatenate to dst.
  * \param[in,out] hwm pointer to the size of the *dst buffer (may be updated).
  */
-void osl_util_safe_strcat(char ** dst, char * src, size_t * hwm) {
+void osl_util_safe_strcat(char ** dst, const char * src, size_t * hwm) {
 
   while ((strlen(*dst) + strlen(src)) >= *hwm) {
     *hwm += OSL_MAX_STRING;
@@ -553,7 +553,7 @@ int osl_util_get_precision(void) {
  * \param[in] provided The provided boolean to print.
  * \param[in] title    A string to use as a title for the provided booblean.
  */
-void osl_util_print_provided(FILE * file, int provided, char * title) {
+void osl_util_print_provided(FILE * file, int provided, const char * title) {
   if (provided) {
     fprintf(file, "# %s provided\n", title);
     fprintf(file, "1\n");
@@ -575,8 +575,8 @@ void osl_util_print_provided(FILE * file, int provided, char * title) {
  * \return 1 if the identifier is found at the position in the expression.
  */
 static
-int osl_util_identifier_is_here(char * expression, char * identifier,
-                                size_t index) {
+int osl_util_identifier_is_here(
+    const char * expression, const char * identifier, size_t index) {
   size_t identifier_len = strlen(identifier);
   size_t expression_len = strlen(expression);
 
@@ -626,8 +626,8 @@ int osl_util_identifier_is_here(char * expression, char * identifier,
  * \return 1 if the identifier is isolated, 0 if unsure.
  */
 static
-int osl_util_lazy_isolated_identifier(char * expression, char * identifier,
-                                      size_t index) {
+int osl_util_lazy_isolated_identifier(
+    const char * expression, const char * identifier, size_t index) {
   size_t look;
   size_t expression_len = strlen(expression);
   size_t identifier_len = strlen(identifier);
@@ -685,7 +685,7 @@ int osl_util_lazy_isolated_identifier(char * expression, char * identifier,
  * \param[in] identifiers NULL-terminated array of identifiers.
  * \return A new string where the ith identifier is replaced by \@i\@.
  */
-char * osl_util_identifier_substitution(char * expression,
+char * osl_util_identifier_substitution(const char * expression,
                                         char ** identifiers) {
   size_t index;
   int j, found;
