@@ -204,11 +204,11 @@ void osl_names_free(osl_names_p names) {
  * \return A new names structure containing generated names.
  */
 osl_names_p osl_names_generate(
-    char * parameter_prefix, int nb_parameters,
-    char * iterator_prefix,  int nb_iterators,
-    char * scatt_dim_prefix, int nb_scatt_dims,
-    char * local_dim_prefix, int nb_local_dims,
-    char * array_prefix,     int nb_arrays) {
+    const char * parameter_prefix, int nb_parameters,
+    const char * iterator_prefix,  int nb_iterators,
+    const char * scatt_dim_prefix, int nb_scatt_dims,
+    const char * local_dim_prefix, int nb_local_dims,
+    const char * array_prefix,     int nb_arrays) {
   osl_names_p names = osl_names_malloc();
 
   names->parameters= osl_strings_generate(parameter_prefix,nb_parameters);

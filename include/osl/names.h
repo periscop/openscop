@@ -112,9 +112,9 @@ void        osl_names_free(osl_names_p);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_names_p osl_names_clone(osl_names_p);
-osl_names_p osl_names_generate(char *, int, char *, int,
-                               char *, int, char *, int,
-                               char *, int);
+osl_names_p osl_names_generate(const char *, int, const char *, int,
+                               const char *, int, const char *, int,
+                               const char *, int);
 
 
 # if defined(__cplusplus)
