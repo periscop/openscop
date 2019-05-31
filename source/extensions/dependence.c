@@ -242,7 +242,7 @@ char* osl_dependence_sprint(osl_dependence_p dependence) {
   size_t buffer_size = 2048;
   char* buffer;
   char buff[2048];
-  char* type;
+  const char* type;
   char* pbuffer;
   
   OSL_malloc(buffer, char*, buffer_size);
