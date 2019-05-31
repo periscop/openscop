@@ -67,27 +67,27 @@ int main(int argc, char** argv)
   osl_relation_print(stdout, r1);
   osl_relation_set_same_precision(r0, r1);
   nb_fail += osl_relation_equal(r0, r1) ? 0 : 1;
-  printf("nb fail = %d\n\n", nb_fail);
+  printf("nb fail = %u\n\n", nb_fail);
   
   osl_relation_set_precision(OSL_PRECISION_DP, r1);
   printf("r1 %d =\n", r1->precision);
   osl_relation_print(stdout, r1);
   osl_relation_set_same_precision(r0, r1);
   nb_fail += osl_relation_equal(r0, r1) ? 0 : 1;
-  printf("nb fail = %d\n\n", nb_fail);
+  printf("nb fail = %u\n\n", nb_fail);
   
   osl_relation_set_precision(OSL_PRECISION_MP, r1);
   printf("r1 %d =\n", r1->precision);
   osl_relation_print(stdout, r1);
   osl_relation_set_same_precision(r0, r1);
   nb_fail += osl_relation_equal(r0, r1) ? 0 : 1;
-  printf("nb fail = %d\n\n", nb_fail);
+  printf("nb fail = %u\n\n", nb_fail);
   
   osl_relation_free(r0);
   osl_relation_free(r1);
   
   printf("%s ", argv[0]);
-  printf("fails = %d\n", nb_fail);
+  printf("fails = %u\n", nb_fail);
   
   #else
   
