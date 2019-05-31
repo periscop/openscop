@@ -1699,6 +1699,9 @@ osl_relation_p osl_relation_malloc(int nb_rows, int nb_columns) {
   return osl_relation_pmalloc(precision, nb_rows, nb_columns);
 }
 
+osl_relation_p osl_relation_interface_malloc(void) {
+  return osl_relation_malloc(0, 0);
+}
 
 /**
  * osl_relation_free_inside function:
@@ -3007,7 +3010,7 @@ osl_interface_p osl_relation_interface(void) {
   interface->idump  = (osl_idump_f)osl_relation_idump;
   interface->sprint = (osl_sprint_f)osl_relation_sprint;
   interface->sread  = (osl_sread_f)osl_relation_sread;
-  interface->malloc = (osl_malloc_f)osl_relation_malloc;
+  interface->malloc = (osl_malloc_f)osl_relation_interface_malloc;
   interface->free   = (osl_free_f)osl_relation_free;
   interface->clone  = (osl_clone_f)osl_relation_clone;
   interface->equal  = (osl_equal_f)osl_relation_equal;

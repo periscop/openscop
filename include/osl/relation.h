@@ -158,6 +158,7 @@ osl_relation_p osl_relation_sread_polylib(char **);
  *****************************************************************************/
 osl_relation_p osl_relation_pmalloc(int, int, int);
 osl_relation_p osl_relation_malloc(int, int);
+osl_relation_p osl_relation_interface_malloc(void);
 void           osl_relation_free_inside(osl_relation_p);
 void           osl_relation_free(osl_relation_p);
 
