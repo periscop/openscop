@@ -25,6 +25,8 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <osl/relation.h>
 #include <osl/macros.h>
@@ -38,7 +40,8 @@ int main(int argc, char** argv)
   
   #ifdef OSL_GMP_IS_HERE
   
-  char * string =
+
+  const char* const test_string =
     "SCATTERING\n"
     "11 14 9 2 0 1\n"
     "# e/i| c1   c2   c3   c4   c5   c6   c7   c8   c9 | i1    j |  n |  1\n"
@@ -53,9 +56,22 @@ int main(int argc, char** argv)
     "   0    0    0    0    0    0    0    0    0   -1    0    0    0    0    ## c9 == 0\n"
     "   1    0    0    0   32    0    0    0   -1    0    0    0    0   31    ## 32*c4-c8+31 >= 0\n"
     "   0    0    0    0    0    0    0    0   -1    0    0    1    0    0    ## c8 == j\n";
-  char * * p_string = &string;
+  const size_t test_string_size = strlen(test_string) + 1;
+
+  char* const string = malloc(sizeof *string * test_string_size);
+  const size_t written_bytes = snprintf(
+      string, test_string_size, "%s", test_string);
+  if (written_bytes >= test_string_size)
+    OSL_error("snprintf() output truncated");
+
+  /*
+   * osl_relation_sread() requires a char** pointer in order to change its
+   * input pointer to another position in the input string!
+   * However, we need to keep the original pointer to free the memory...
+   */
+  char* p_string = string;
   
-  osl_relation_p r0 = osl_relation_sread(p_string);
+  osl_relation_p r0 = osl_relation_sread(&p_string);
   osl_relation_p r1 = osl_relation_clone(r0);
   
   printf("r0 %d =\n", r0->precision);
@@ -85,6 +101,7 @@ int main(int argc, char** argv)
   
   osl_relation_free(r0);
   osl_relation_free(r1);
+  free(string);
   
   printf("%s ", argv[0]);
   printf("fails = %u\n", nb_fail);
