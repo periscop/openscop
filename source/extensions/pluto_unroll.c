@@ -127,7 +127,7 @@ void osl_pluto_unroll_idump(FILE * file,
     // Display the names of iterators.
     for (j = 0; j <= level; j++)
       fprintf(file, "|\t");
-    fprintf(file, "+--factor: %i\n", pluto_unroll->factor);
+    fprintf(file, "+--factor: %u\n", pluto_unroll->factor);
 
     pluto_unroll = pluto_unroll->next;
 
@@ -189,7 +189,7 @@ char * osl_pluto_unroll_sprint(osl_pluto_unroll_p pluto_unroll) {
     sprintf(buffer + strlen(buffer), "%i\n", pluto_unroll->jam);
 
     strcat(buffer, "# Factor\n");
-    sprintf(buffer + strlen(buffer), "%i\n", pluto_unroll->factor);
+    sprintf(buffer + strlen(buffer), "%u\n", pluto_unroll->factor);
 
     pluto_unroll = pluto_unroll->next;
 
