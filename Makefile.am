@@ -87,6 +87,7 @@ pkginclude_HEADERS = \
 	include/osl/relation.h \
 	include/osl/relation_list.h \
 	include/osl/macros.h \
+	include/osl/attributes.h \
 	include/osl/int.h \
 	include/osl/names.h \
 	include/osl/strings.h \
