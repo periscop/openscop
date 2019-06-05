@@ -60,59 +60,59 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_STRINGS_H
-# define OSL_STRINGS_H
+#define OSL_STRINGS_H
 
-# include <stdio.h>
-# include <osl/interface.h>
+#include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_STRINGS "strings"
+#define OSL_URI_STRINGS "strings"
 
 /* The "strings" type is simply a NULL-terminated array of C character
  * strings, i.e. a char **. It is encapsulated into a structure to allow
  * its manipulation through a generic type.
  */
 struct osl_strings {
-  char ** string; /**< NULL-terminated array of character strings */
+  char** string; /**< NULL-terminated array of character strings */
 };
-typedef struct osl_strings               osl_strings_t;
-typedef struct osl_strings       *       osl_strings_p;
-typedef struct osl_strings const         osl_const_strings_t;
-typedef struct osl_strings       * const osl_strings_const_p;
-typedef struct osl_strings const *       osl_const_strings_p;
-typedef struct osl_strings const * const osl_const_strings_const_p;
-
+typedef struct osl_strings osl_strings_t;
+typedef struct osl_strings* osl_strings_p;
+typedef struct osl_strings const osl_const_strings_t;
+typedef struct osl_strings* const osl_strings_const_p;
+typedef struct osl_strings const* osl_const_strings_p;
+typedef struct osl_strings const* const osl_const_strings_const_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_strings_idump(FILE *, const osl_strings_t *, int);
-void osl_strings_dump(FILE *, const osl_strings_t *);
-char *osl_strings_sprint(const osl_strings_t *);
-void osl_strings_print(FILE *, const osl_strings_t *);
 
+void osl_strings_idump(FILE*, const osl_strings_t*, int);
+void osl_strings_dump(FILE*, const osl_strings_t*);
+char* osl_strings_sprint(const osl_strings_t*);
+void osl_strings_print(FILE*, const osl_strings_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
+
 osl_strings_t* osl_strings_sread(char**);
 osl_strings_t* osl_strings_read(FILE*);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
+
 osl_strings_t* osl_strings_malloc(void);
 void osl_strings_free(osl_strings_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
+
 osl_strings_t* osl_strings_clone(const osl_strings_t*);
 void osl_strings_add(osl_strings_t*, char const* const);
 size_t osl_strings_find(const osl_strings_t*, char const* const);
@@ -124,14 +124,13 @@ osl_strings_t* osl_strings_generate(const char*, int);
 void osl_strings_add_strings(osl_strings_t**, const osl_strings_t*,
                              const osl_strings_t*);
 
+#if defined(__cplusplus)
+}
+#endif
 
-# if defined(__cplusplus)
-  }
-# endif
-
-# if defined(__cplusplus)
-#include <vector>
+#if defined(__cplusplus)
 #include <string>
+#include <vector>
 
 namespace osl
 {
@@ -149,6 +148,6 @@ namespace osl
     else { return std::vector<std::string>(); }
   }
 }
-# endif
+#endif
 
 #endif /* define OSL_STRINGS_H */
