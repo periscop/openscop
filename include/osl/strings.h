@@ -92,36 +92,37 @@ typedef struct osl_strings const * const osl_const_strings_const_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_strings_idump(FILE *, osl_strings_p, int);
-void            osl_strings_dump(FILE *, osl_strings_p);
-char *          osl_strings_sprint(osl_strings_p);
-void            osl_strings_print(FILE *, osl_strings_p);
+void osl_strings_idump(FILE *, const osl_strings_t *, int);
+void osl_strings_dump(FILE *, const osl_strings_t *);
+char *osl_strings_sprint(const osl_strings_t *);
+void osl_strings_print(FILE *, const osl_strings_t *);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_strings_p   osl_strings_sread(char **);
-osl_strings_p   osl_strings_read(FILE *);
+osl_strings_t* osl_strings_sread(char**);
+osl_strings_t* osl_strings_read(FILE*);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_strings_p   osl_strings_malloc(void);
-void            osl_strings_free(osl_strings_p);
+osl_strings_t* osl_strings_malloc(void);
+void osl_strings_free(osl_strings_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_strings_p   osl_strings_clone(osl_strings_p);
-void            osl_strings_add(osl_strings_p, char const * const);
-size_t          osl_strings_find(osl_strings_p, char const * const);
-int             osl_strings_equal(osl_strings_p, osl_strings_p);
-size_t          osl_strings_size(osl_const_strings_const_p);
-osl_strings_p   osl_strings_encapsulate(char *);
-osl_interface_p osl_strings_interface(void);
-osl_strings_p   osl_strings_generate(const char *, int);
-void osl_strings_add_strings(osl_strings_p *, osl_strings_p, osl_strings_p);
+osl_strings_t* osl_strings_clone(const osl_strings_t*);
+void osl_strings_add(osl_strings_t*, char const* const);
+size_t osl_strings_find(const osl_strings_t*, char const* const);
+int osl_strings_equal(const osl_strings_t*, const osl_strings_t*);
+size_t osl_strings_size(const osl_strings_t*);
+osl_strings_t* osl_strings_encapsulate(char*);
+osl_interface_t* osl_strings_interface(void);
+osl_strings_t* osl_strings_generate(const char*, int);
+void osl_strings_add_strings(osl_strings_t**, const osl_strings_t*,
+                             const osl_strings_t*);
 
 
 # if defined(__cplusplus)
