@@ -72,6 +72,10 @@
 #include <osl/int.h>
 
 
+static long long int llgcd(long long int, long long int);
+static size_t lllog2(long long int);
+static size_t lllog10(long long int);
+
 /*+***************************************************************************
  *                                Basic Functions                            *
  *****************************************************************************/
@@ -87,7 +91,7 @@
  * \param[in] precision The precision to check for.
  * \return 1 if the precision is supported, 0 otherwise.
  */
-int osl_int_is_precision_supported(int precision) {
+int osl_int_is_precision_supported(const int precision) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return 1;
@@ -110,7 +114,7 @@ int osl_int_is_precision_supported(int precision) {
  * \param[in] file      The file where to print the precision.
  * \param[in] precision The precision to print.
  */
-void osl_int_dump_precision(FILE * file, int precision) {
+void osl_int_dump_precision(FILE* const file, const int precision) {
   switch (precision) {
     case OSL_PRECISION_SP:
       fprintf(file, "32 bits");
@@ -134,7 +138,7 @@ void osl_int_dump_precision(FILE * file, int precision) {
  * \param[in] precision Precision of the osl int
  * \param[in] variable  A osl int to initialize
  */
-void osl_int_init(int precision, osl_int_const_p variable) {
+void osl_int_init(const int precision, osl_int_t* const variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = 0;
@@ -161,7 +165,7 @@ void osl_int_init(int precision, osl_int_const_p variable) {
  * \brief Initialize the osl int
  * \param[in] precision Precision of the osl int
  */
-osl_int_p osl_int_malloc(int precision) {
+osl_int_t* osl_int_malloc(const int precision) {
   osl_int_p variable;
 
   OSL_malloc(variable, osl_int_p, sizeof(osl_int_t));
@@ -176,8 +180,8 @@ osl_int_p osl_int_malloc(int precision) {
  * \param[in] variable  A osl int to assign
  * \param[in] value     Value in a osl int
  */
-void osl_int_assign(int precision,
-                    osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_assign(const int precision, osl_int_t* const variable,
+                    const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp;
@@ -205,7 +209,8 @@ void osl_int_assign(int precision,
  * \param[in] variable  A osl int to assign
  * \param[in] i         Value in a int
  */
-void osl_int_set_si(int precision, osl_int_const_p variable, int i) {
+void osl_int_set_si(const int precision, osl_int_t* const variable,
+                    const int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = (long int)i;
@@ -233,7 +238,7 @@ void osl_int_set_si(int precision, osl_int_const_p variable, int i) {
  * \param[in] value     Value in a osl int
  * \return the value in a int
  */
-int osl_int_get_si(int precision, osl_const_int_t value) {
+int osl_int_get_si(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -274,7 +279,7 @@ int osl_int_get_si(int precision, osl_const_int_t value) {
  * \param[in] i         Value in a osl int
  * \return the value in a double
  */
-double osl_int_get_d(int precision, osl_const_int_t i) {
+double osl_int_get_d(const int precision, const osl_int_t i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (double)i.sp;
@@ -299,7 +304,8 @@ double osl_int_get_d(int precision, osl_const_int_t i) {
  * \param[in] variable  A osl int to initialize
  * \param[in] i         Value in a osl int
  */
-void osl_int_init_set(int precision, osl_int_const_p variable, osl_const_int_t i) {
+void osl_int_init_set(const int precision, osl_int_t* const variable,
+                      const osl_int_t i) {
   osl_int_init(precision, variable);
   osl_int_assign(precision, variable, i);
 }
@@ -311,7 +317,8 @@ void osl_int_init_set(int precision, osl_int_const_p variable, osl_const_int_t i
  * \param[in] variable  A osl int to initialize
  * \param[in] i         Value in a osl int
  */
-void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
+void osl_int_init_set_si(const int precision, osl_int_t* const variable,
+                         const int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = (long int)i;
@@ -340,7 +347,8 @@ void osl_int_init_set_si(int precision, osl_int_const_p variable, int i) {
  * \param[in] var1 First osl int to swap
  * \param[in] var2 Second osl int to swap
  */
-void osl_int_swap(int precision, osl_int_const_p var1, osl_int_const_p var2) {
+void osl_int_swap(const int precision, osl_int_t* const var1,
+                  osl_int_t* const var2) {
   switch (precision) {
     case OSL_PRECISION_SP: {
       long int temp = var1->sp;
@@ -379,7 +387,7 @@ void osl_int_swap(int precision, osl_int_const_p var1, osl_int_const_p var2) {
  * \param[in] precision Precision of the osl int
  * \param[in] variable  A osl int to clear
  */
-void osl_int_clear(int precision, osl_int_const_p variable) {
+void osl_int_clear(const int precision, osl_int_t* const variable) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = 0;
@@ -407,7 +415,7 @@ void osl_int_clear(int precision, osl_int_const_p variable) {
  * \param[in] precision Precision of the osl int
  * \param[in] variable  A osl int to free
  */
-void osl_int_free(int precision, osl_int_const_p variable) {
+void osl_int_free(const int precision, osl_int_t* const variable) {
   osl_int_clear(precision, variable);
   free(variable);
 }
@@ -420,7 +428,8 @@ void osl_int_free(int precision, osl_int_const_p variable) {
  * \param precision The precision of the integer.
  * \param value     The integer element to print.
  */
-void osl_int_print(FILE * file, int precision, osl_const_int_t value) {
+void osl_int_print(FILE* const file, const int precision,
+                   const osl_int_t value) {
   char string[OSL_MAX_STRING];
   
   osl_int_sprint(string, precision, value);
@@ -436,7 +445,8 @@ void osl_int_print(FILE * file, int precision, osl_const_int_t value) {
  * \param precision The precision of the integer.
  * \param value     The integer element to print.
  */
-void osl_int_sprint(char * string, int precision, osl_const_int_t value) {
+void osl_int_sprint(char* const string, const int precision,
+                    const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       sprintf(string, OSL_FMT_SP, value.sp);
@@ -468,7 +478,8 @@ void osl_int_sprint(char * string, int precision, osl_const_int_t value) {
  * using OSL_TMT_TXT_* formats.
  * \see osl_int_sprintf
  */
-void osl_int_sprint_txt(char * string, int precision, osl_const_int_t value) {
+void osl_int_sprint_txt(char* const string, const int precision,
+                        const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       sprintf(string, OSL_FMT_TXT_SP, value.sp);
@@ -501,7 +512,8 @@ void osl_int_sprint_txt(char * string, int precision, osl_const_int_t value) {
  * \param[in] i         A osl int to save integer
  * \return the number of char readed
  */
-int osl_int_sscanf(const char* string, int precision, osl_int_const_p i) {
+int osl_int_sscanf(const char* const string, const int precision,
+                   osl_int_t* const i) {
   int nb_read = 0;
 
   switch (precision) {
@@ -536,7 +548,7 @@ int osl_int_sscanf(const char* string, int precision, osl_int_const_p i) {
  * \param[in] precision Precision of the osl int
  * \param[in] i         A osl int to save integer
  */
-void osl_int_sread(char ** string, int precision, osl_int_const_p i) {
+void osl_int_sread(char** string, const int precision, osl_int_t* const i) {
   // Update the position in the input string.
   *string += osl_int_sscanf(*string, precision, i);
 }
@@ -553,8 +565,8 @@ void osl_int_sread(char ** string, int precision, osl_int_const_p i) {
  * \param[in] variable  A osl int to save the result
  * \param[in] value     Value in a osl int
  */
-void osl_int_increment(int precision,
-                       osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_increment(const int precision, osl_int_t* const variable,
+                       const osl_int_t value) {
   osl_int_add_si(precision, variable, value, 1);
 }
 
@@ -565,8 +577,8 @@ void osl_int_increment(int precision,
  * \param[in] variable  A osl int to save the result
  * \param[in] value     Value in a osl int
  */
-void osl_int_decrement(int precision,
-                       osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_decrement(const int precision, osl_int_t* const variable,
+                       const osl_int_t value) {
   osl_int_add_si(precision, variable, value, -1);
 }
 
@@ -578,8 +590,8 @@ void osl_int_decrement(int precision,
  * \param[in] val1      Value of first osl int
  * \param[in] val2      Value of second osl int
  */
-void osl_int_add(int precision, osl_int_const_p variable,
-                 osl_const_int_t val1, osl_const_int_t val2) {
+void osl_int_add(const int precision, osl_int_t* const variable,
+                 const osl_int_t val1, const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -628,8 +640,8 @@ void osl_int_add(int precision, osl_int_const_p variable,
  * \param[in] value     Value of first int in a osl int
  * \param[in] i         Value of second int in a int
  */
-void osl_int_add_si(int precision,
-                    osl_int_const_p variable, osl_const_int_t value, int i) {
+void osl_int_add_si(const int precision, osl_int_t* const variable,
+                    const osl_int_t value, const int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       #ifndef NDEBUG
@@ -682,8 +694,8 @@ void osl_int_add_si(int precision,
  * \param[in] val1      Value of first osl int
  * \param[in] val2      Value of second osl int
  */
-void osl_int_sub(int precision, osl_int_const_p variable,
-                 osl_const_int_t val1, osl_const_int_t val2) {
+void osl_int_sub(const int precision, osl_int_t* const variable,
+                 const osl_int_t val1, const osl_int_t val2) {
 #ifdef OSL_GMP_IS_HERE
   if (precision == OSL_PRECISION_MP) {
     mpz_sub(*variable->mp, *val1.mp, *val2.mp);
@@ -705,8 +717,8 @@ void osl_int_sub(int precision, osl_int_const_p variable,
  * \param[in] val1      Value of first osl int
  * \param[in] val2      Value of second osl int
  */
-void osl_int_mul(int precision, osl_int_const_p variable,
-                 osl_const_int_t val1, osl_const_int_t val2) {
+void osl_int_mul(const int precision, osl_int_t* const variable,
+                 const osl_int_t val1, const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = val1.sp * val2.sp;
@@ -749,8 +761,8 @@ void osl_int_mul(int precision, osl_int_const_p variable,
  * \param[in] value     Value of first int in a osl int
  * \param[in] i         Value of second int in a int
  */
-void osl_int_mul_si(int precision,
-                    osl_int_const_p variable, osl_const_int_t value, int i) {
+void osl_int_mul_si(const int precision, osl_int_t* const variable,
+                    const osl_int_t value, const int i) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = value.sp * (long int)i;
@@ -794,9 +806,8 @@ void osl_int_mul_si(int precision,
  * \param[in] a         Value of first osl int
  * \param[in] b         Value of second osl int
  */
-void osl_int_div_exact(int const precision,
-                       osl_int_const_p q,
-                       osl_const_int_t a, osl_const_int_t b) {
+void osl_int_div_exact(const int precision, osl_int_t* const q,
+                       const osl_int_t a, const osl_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP: q->sp = a.sp / b.sp; return;
 
@@ -818,9 +829,8 @@ void osl_int_div_exact(int const precision,
  * \param[in] a         Value of first osl int
  * \param[in] b         Value of second osl int
  */
-void osl_int_floor_div_q(int const precision,
-                         osl_int_const_p q,
-                         osl_const_int_t a, osl_const_int_t b) {
+void osl_int_floor_div_q(const int precision, osl_int_t* const q,
+                         const osl_int_t a, const osl_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       q->sp = a.sp / b.sp;
@@ -860,9 +870,8 @@ void osl_int_floor_div_q(int const precision,
  * \param[in] a         Value of first osl int
  * \param[in] b         Value of second osl int
  */
-void osl_int_floor_div_r(int const precision,
-                         osl_int_const_p r,
-                         osl_const_int_t a, osl_const_int_t b) {
+void osl_int_floor_div_r(const int precision, osl_int_t* const r,
+                         const osl_int_t a, const osl_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       osl_int_floor_div_q(precision, r, a, b);
@@ -891,9 +900,9 @@ void osl_int_floor_div_r(int const precision,
  * \param[in] a         Value of first osl int
  * \param[in] b         Value of second osl int
  */
-void osl_int_floor_div_q_r(int const precision,
-                           osl_int_const_p q, osl_int_const_p r,
-                           osl_const_int_t a, osl_const_int_t b) {
+void osl_int_floor_div_q_r(const int precision, osl_int_t* const q,
+                           osl_int_t* const r, const osl_int_t a,
+                           const osl_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       osl_int_floor_div_q(precision, q, a, b);
@@ -922,8 +931,8 @@ void osl_int_floor_div_q_r(int const precision,
  * \param[in] a         Value of first osl int
  * \param[in] b         Value of second osl int
  */
-void osl_int_mod(int const precision, osl_int_const_p mod,
-                                      osl_const_int_t a, osl_const_int_t b) {
+void osl_int_mod(const int precision, osl_int_t* const mod, const osl_int_t a,
+                 const osl_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP:
       mod->sp = a.sp % b.sp;
@@ -945,7 +954,7 @@ void osl_int_mod(int const precision, osl_int_const_p mod,
 
 
 // gcd (greatest common divisor) for long long int
-static long long int llgcd(long long int const a, long long int const b) {
+long long int llgcd(const long long int a, const long long int b) {
   return (b ? llgcd(b, a % b) : a);
 }
 
@@ -956,8 +965,8 @@ static long long int llgcd(long long int const a, long long int const b) {
  * \param[in] a         Value of first osl int
  * \param[in] b         Value of second osl int
  */
-void osl_int_gcd(int const precision, osl_int_const_p gcd,
-                                      osl_const_int_t a, osl_const_int_t b) {
+void osl_int_gcd(const int precision, osl_int_t* gcd, const osl_int_t a,
+                 const osl_int_t b) {
   switch (precision) {
     case OSL_PRECISION_SP: gcd->sp = labs(llgcd(a.sp, b.sp)); return;
 
@@ -979,8 +988,8 @@ void osl_int_gcd(int const precision, osl_int_const_p gcd,
  * \param[in]  a         Value of first osl int
  * \param[in]  b         Value of second osl int
  */
-void osl_int_lcm(int const precision, osl_int_p lcm,
-                 osl_const_int_t a, osl_const_int_t b) {
+void osl_int_lcm(const int precision, osl_int_t* const lcm, const osl_int_t a,
+                 const osl_int_t b) {
   osl_int_t gcd;
   osl_int_t pa, pb;
 
@@ -1011,8 +1020,8 @@ void osl_int_lcm(int const precision, osl_int_p lcm,
  * \param[in] variable  A osl int to get the oppose
  * \param[in] value     Value in a osl int
  */
-void osl_int_oppose(int precision,
-                    osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_oppose(const int precision, osl_int_t* const variable,
+                    const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = -value.sp;
@@ -1040,8 +1049,8 @@ void osl_int_oppose(int precision,
  * \param[in] variable  A osl int to get the absolute value
  * \param[in] value     Value in a osl int
  */
-void osl_int_abs(int precision,
-                 osl_int_const_p variable, osl_const_int_t value) {
+void osl_int_abs(const int precision, osl_int_t* const variable,
+                 const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       variable->sp = (value.sp > 0) ? value.sp : -value.sp;
@@ -1064,7 +1073,7 @@ void osl_int_abs(int precision,
 
 
 // log2 function for long long int
-static size_t lllog2(long long int x) {
+size_t lllog2(long long int x) {
   size_t n = 0;
 
   x = llabs(x);
@@ -1080,8 +1089,7 @@ static size_t lllog2(long long int x) {
  * \param[in] value     Value in a osl int
  * \return the size in base 2
  */
-size_t osl_int_size_in_base_2(int const precision,
-                              osl_const_int_t const value) {
+size_t osl_int_size_in_base_2(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP: return lllog2(value.sp);
 
@@ -1097,7 +1105,7 @@ size_t osl_int_size_in_base_2(int const precision,
 
 
 // log10 function for long long int
-static size_t lllog10(long long int x) {
+size_t lllog10(long long int x) {
   size_t n = 0;
 
   x = llabs(x);
@@ -1114,8 +1122,7 @@ static size_t lllog10(long long int x) {
  * \param[in] value     Value in a osl int
  * \return the size in base 10
  */
-size_t osl_int_size_in_base_10(int const precision,
-                               osl_const_int_t const value) {
+size_t osl_int_size_in_base_10(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP: return lllog10(value.sp);
 
@@ -1142,7 +1149,8 @@ size_t osl_int_size_in_base_10(int const precision,
  * \param[in] val2      Value of second osl int
  * \return 1 if values are equal, false otherwise
  */
-int osl_int_eq(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_eq(const int precision, const osl_int_t val1,
+               const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (val1.sp == val2.sp);
@@ -1168,7 +1176,8 @@ int osl_int_eq(int precision, osl_const_int_t val1, osl_const_int_t val2) {
  * \param[in] val2      Value of second osl int
  * \return 1 if values are not equal, false otherwise
  */
-int osl_int_ne(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_ne(const int precision, const osl_int_t val1,
+               const osl_int_t val2) {
   return !osl_int_eq(precision, val1, val2);
 }
 
@@ -1179,7 +1188,8 @@ int osl_int_ne(int precision, osl_const_int_t val1, osl_const_int_t val2) {
  * \param[in] val2      Value of second osl int
  * \return 1 if val1 is less than val2
  */
-int osl_int_lt(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_lt(const int precision, const osl_int_t val1,
+               const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
     case OSL_PRECISION_DP:
@@ -1202,7 +1212,8 @@ int osl_int_lt(int precision, osl_const_int_t val1, osl_const_int_t val2) {
  * \param[in] val2      Value of second osl int
  * \return 1 if val1 is less than or equal to val2
  */
-int osl_int_le(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_le(const int precision, const osl_int_t val1,
+               const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
     case OSL_PRECISION_DP:
@@ -1225,7 +1236,8 @@ int osl_int_le(int precision, osl_const_int_t val1, osl_const_int_t val2) {
  * \param[in] val2      Value of second osl int
  * \return 1 if val1 is greater than val2
  */
-int osl_int_gt(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_gt(const int precision, const osl_int_t val1,
+               const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
     case OSL_PRECISION_DP:
@@ -1248,7 +1260,8 @@ int osl_int_gt(int precision, osl_const_int_t val1, osl_const_int_t val2) {
  * \param[in] val2      Value of second osl int
  * \return 1 if val1 is greater than or equal to val2
  */
-int osl_int_ge(int precision, osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_ge(const int precision, const osl_int_t val1,
+               const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
     case OSL_PRECISION_DP:
@@ -1270,7 +1283,7 @@ int osl_int_ge(int precision, osl_const_int_t val1, osl_const_int_t val2) {
  * \param[in] value     Value in a osl int
  * \return 1 if value is > 0, false otherwise
  */
-int osl_int_pos(int precision, osl_const_int_t value) {
+int osl_int_pos(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp > 0);
@@ -1295,7 +1308,7 @@ int osl_int_pos(int precision, osl_const_int_t value) {
  * \param[in] value     Value in a osl int
  * \return 1 if value < 0, false otherwise
  */
-int osl_int_neg(int precision, osl_const_int_t value) {
+int osl_int_neg(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp < 0);
@@ -1320,7 +1333,7 @@ int osl_int_neg(int precision, osl_const_int_t value) {
  * \param[in] value     Value in a osl int
  * \return 1 if value equal to 0, false otherwise
  */
-int osl_int_zero(int precision, osl_const_int_t value) {
+int osl_int_zero(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp == 0);
@@ -1345,7 +1358,7 @@ int osl_int_zero(int precision, osl_const_int_t value) {
  * \param[in] value     Value in a osl int
  * \return 1 if value equal to 1, false otherwise
  */
-int osl_int_one(int precision, osl_const_int_t value) {
+int osl_int_one(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp == (long int)1);
@@ -1370,7 +1383,7 @@ int osl_int_one(int precision, osl_const_int_t value) {
  * \param[in] value     Value in a osl int
  * \return 1 if value equal to -1, false otherwise
  */
-int osl_int_mone(int precision, osl_const_int_t value) {
+int osl_int_mone(const int precision, const osl_int_t value) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return (value.sp == (long int)-1);
@@ -1396,8 +1409,8 @@ int osl_int_mone(int precision, osl_const_int_t value) {
  * \param[in] val2      Value of second osl int
  * \return 1 if val2 divises val1 without remainder, false otherwise
  */
-int osl_int_divisible(int precision,
-                      osl_const_int_t val1, osl_const_int_t val2) {
+int osl_int_divisible(const int precision, const osl_int_t val1,
+                      const osl_int_t val2) {
   switch (precision) {
     case OSL_PRECISION_SP:
       return ((val1.sp % val2.sp) == 0);
@@ -1427,8 +1440,8 @@ int osl_int_divisible(int precision,
  * \param[in]     new_precision Precision wanted for the osl int
  * \param[in,out] i             A osl int to change the precision
  */
-void osl_int_set_precision(int const precision, int const new_precision,
-                           osl_int_p i) {
+void osl_int_set_precision(const int precision, const int new_precision,
+                           osl_int_t* const i) {
   if (i != NULL && precision != new_precision) {
     int v = osl_int_get_si(precision, *i); // TODO Fix to avoid overflow
     osl_int_clear(precision, i);
