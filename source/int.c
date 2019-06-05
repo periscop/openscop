@@ -101,9 +101,9 @@ int osl_int_is_precision_supported(const int precision) {
     case OSL_PRECISION_MP:
       return 1;
 #endif
+    default:
+      return 0;
   }
-
-  return 0;
 }
 
 
