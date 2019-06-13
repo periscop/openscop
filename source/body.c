@@ -87,7 +87,7 @@
  * \param[in] body  The body whose information has to be printed.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_body_idump(FILE * file, osl_body_p body, int level) {
+void osl_body_idump(FILE * const file, const osl_body_t* const body, int level) {
   int j;
 
   // Go to the right level.
@@ -126,7 +126,7 @@ void osl_body_idump(FILE * file, osl_body_p body, int level) {
  * \param[in] file File where informations are printed.
  * \param[in] body The body whose information has to be printed.
  */
-void osl_body_dump(FILE * file, osl_body_p body) {
+void osl_body_dump(FILE * const file, const osl_body_t* const body) {
   osl_body_idump(file, body, 0);
 }
 
@@ -138,7 +138,7 @@ void osl_body_dump(FILE * file, osl_body_p body) {
  * \param[in] file  File where informations are printed.
  * \param[in] body  The body whose information has to be printed.
  */
-void osl_body_print(FILE * file, osl_body_p body) {
+void osl_body_print(FILE * const file, const osl_body_t* const body) {
   size_t nb_iterators;
 
   if (body != NULL) {
@@ -167,7 +167,7 @@ void osl_body_print(FILE * file, osl_body_p body) {
  * \param[in] file  File where informations are printed.
  * \param[in] body  The body whose information has to be printed.
  */
-void osl_body_print_scoplib(FILE * file, osl_body_p body) {
+void osl_body_print_scoplib(FILE * const file, const osl_body_t* const body) {
   size_t nb_iterators;
 
   if (body != NULL) {
@@ -196,7 +196,7 @@ void osl_body_print_scoplib(FILE * file, osl_body_p body) {
  * \param[in] body The body structure which has to be printed.
  * \return A string containing the OpenScop dump of the body structure.
  */
-char * osl_body_sprint(osl_body_p body) {
+char * osl_body_sprint(const osl_body_t* const body) {
   size_t nb_iterators;
   size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
@@ -252,7 +252,7 @@ char * osl_body_sprint(osl_body_p body) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the body structure that has been read.
  */
-osl_body_p osl_body_sread(char ** input) {
+osl_body_t* osl_body_sread(char ** input) {
   osl_body_p body = NULL;
   char * expression;
   int nb_iterators;
@@ -294,7 +294,7 @@ osl_body_p osl_body_sread(char ** input) {
  * to the allocated space.
  * \return A pointer to an empty body with fields set to default values.
  */
-osl_body_p osl_body_malloc(void) {
+osl_body_t* osl_body_malloc(void) {
   osl_body_p body;
 
   OSL_malloc(body, osl_body_p, sizeof(osl_body_t));
@@ -311,7 +311,7 @@ osl_body_p osl_body_malloc(void) {
  * structure.
  * \param[in,out] body The pointer to the body we want to free.
  */
-void osl_body_free(osl_body_p body) {
+void osl_body_free(osl_body_t* body) {
 
   if (body != NULL) {
     osl_strings_free(body->iterators);
@@ -334,7 +334,7 @@ void osl_body_free(osl_body_p body) {
  * \param[in] body The pointer to the body we want to copy.
  * \return A pointer to the full copy of the body provided as parameter.
  */
-osl_body_p osl_body_clone(osl_body_p body) {
+osl_body_t* osl_body_clone(const osl_body_t* body) {
   osl_body_p copy = NULL;
 
   if (body != NULL) {
@@ -356,7 +356,7 @@ osl_body_p osl_body_clone(osl_body_p body) {
  * \param[in] b2 The second body.
  * \return 1 if b1 and b2 are the same (content-wise), 0 otherwise.
  */
-int osl_body_equal(osl_body_p b1, osl_body_p b2) {
+int osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
   
   if (b1 == b2)
     return 1;
@@ -387,7 +387,7 @@ int osl_body_equal(osl_body_p b1, osl_body_p b2) {
  * structure and returns it).
  * \return An interface structure for the body structure.
  */
-osl_interface_p osl_body_interface(void) {
+osl_interface_t* osl_body_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_BODY);
