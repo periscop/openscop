@@ -61,21 +61,19 @@
  *****************************************************************************/
 
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
-# include <ctype.h>
-# include <osl/macros.h>
-# include <osl/util.h>
-# include <osl/strings.h>
-# include <osl/interface.h>
-# include <osl/body.h>
-
+#include <ctype.h>
+#include <osl/body.h>
+#include <osl/interface.h>
+#include <osl/macros.h>
+#include <osl/strings.h>
+#include <osl/util.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*+***************************************************************************
  *                         Structure display functions                       *
  *****************************************************************************/
-
 
 /**
  * osl_body_idump function:
@@ -87,19 +85,17 @@
  * \param[in] body  The body whose information has to be printed.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_body_idump(FILE * const file, const osl_body_t* const body, int level) {
+void osl_body_idump(FILE* const file, const osl_body_t* const body, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (body != NULL) {
     fprintf(file, "+-- osl_body_t\n");
 
     // A blank line.
-    for (j = 0; j <= level+1; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print the iterators
@@ -107,17 +103,14 @@ void osl_body_idump(FILE * const file, const osl_body_t* const body, int level) 
 
     // Print the original body expression.
     osl_strings_idump(file, body->expression, level + 1);
-  }
-  else {
+  } else {
     fprintf(file, "+-- NULL body\n");
   }
-  
+
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_body_dump function:
@@ -126,10 +119,9 @@ void osl_body_idump(FILE * const file, const osl_body_t* const body, int level) 
  * \param[in] file File where informations are printed.
  * \param[in] body The body whose information has to be printed.
  */
-void osl_body_dump(FILE * const file, const osl_body_t* const body) {
+void osl_body_dump(FILE* const file, const osl_body_t* const body) {
   osl_body_idump(file, body, 0);
 }
-
 
 /**
  * osl_body_print function:
@@ -138,7 +130,7 @@ void osl_body_dump(FILE * const file, const osl_body_t* const body) {
  * \param[in] file  File where informations are printed.
  * \param[in] body  The body whose information has to be printed.
  */
-void osl_body_print(FILE * const file, const osl_body_t* const body) {
+void osl_body_print(FILE* const file, const osl_body_t* const body) {
   size_t nb_iterators;
 
   if (body != NULL) {
@@ -153,12 +145,10 @@ void osl_body_print(FILE * const file, const osl_body_t* const body) {
 
     fprintf(file, "\n# Statement body expression\n");
     osl_strings_print(file, body->expression);
-  }
-  else {
+  } else {
     fprintf(file, "# NULL statement body\n");
   }
 }
-
 
 /**
  * osl_body_print_scoplib function:
@@ -167,7 +157,7 @@ void osl_body_print(FILE * const file, const osl_body_t* const body) {
  * \param[in] file  File where informations are printed.
  * \param[in] body  The body whose information has to be printed.
  */
-void osl_body_print_scoplib(FILE * const file, const osl_body_t* const body) {
+void osl_body_print_scoplib(FILE* const file, const osl_body_t* const body) {
   size_t nb_iterators;
 
   if (body != NULL) {
@@ -182,12 +172,10 @@ void osl_body_print_scoplib(FILE * const file, const osl_body_t* const body) {
 
     fprintf(file, "# Statement body expression\n");
     osl_strings_print(file, body->expression);
-  }
-  else {
+  } else {
     fprintf(file, "# NULL statement body\n");
   }
 }
-
 
 /**
  * osl_body_sprint function:
@@ -196,16 +184,16 @@ void osl_body_print_scoplib(FILE * const file, const osl_body_t* const body) {
  * \param[in] body The body structure which has to be printed.
  * \return A string containing the OpenScop dump of the body structure.
  */
-char * osl_body_sprint(const osl_body_t* const body) {
+char* osl_body_sprint(const osl_body_t* const body) {
   size_t nb_iterators;
   size_t high_water_mark = OSL_MAX_STRING;
-  char * string = NULL;
+  char* string = NULL;
   char buffer[OSL_MAX_STRING];
-  char * iterators, * expression;
+  char *iterators, *expression;
 
-  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  OSL_malloc(string, char*, high_water_mark * sizeof(char));
   string[0] = '\0';
-  
+
   if (body != NULL) {
     nb_iterators = osl_strings_size(body->iterators);
     sprintf(buffer, "# Number of original iterators\n%zu\n", nb_iterators);
@@ -224,8 +212,7 @@ char * osl_body_sprint(const osl_body_t* const body) {
     expression = osl_strings_sprint(body->expression);
     osl_util_safe_strcat(&string, expression, &high_water_mark);
     free(expression);
-  }
-  else {
+  } else {
     sprintf(buffer, "# NULL body\n");
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
   }
@@ -233,12 +220,9 @@ char * osl_body_sprint(const osl_body_t* const body) {
   return string;
 }
 
-
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_body_read function:
@@ -252,22 +236,21 @@ char * osl_body_sprint(const osl_body_t* const body) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the body structure that has been read.
  */
-osl_body_t* osl_body_sread(char ** input) {
+osl_body_t* osl_body_sread(char** input) {
   osl_body_p body = NULL;
-  char * expression;
+  char* expression;
   int nb_iterators;
 
   if (input) {
     body = osl_body_malloc();
-    
+
     // Read the number of iterators.
     nb_iterators = osl_util_read_int(NULL, input);
-    
+
     // Read the iterator strings if any.
     if (nb_iterators > 0) {
       body->iterators = osl_strings_sread(input);
-    }
-    else {
+    } else {
       body->iterators = osl_strings_malloc();
     }
 
@@ -281,11 +264,9 @@ osl_body_t* osl_body_sread(char ** input) {
   return body;
 }
 
-
 /*+***************************************************************************
  *                   Memory allocation/deallocation functions                *
  *****************************************************************************/
-
 
 /**
  * osl_body_malloc function:
@@ -298,12 +279,11 @@ osl_body_t* osl_body_malloc(void) {
   osl_body_p body;
 
   OSL_malloc(body, osl_body_p, sizeof(osl_body_t));
-  body->iterators    = NULL;
-  body->expression   = NULL;
+  body->iterators = NULL;
+  body->expression = NULL;
 
   return body;
 }
-
 
 /**
  * osl_body_free function:
@@ -312,7 +292,6 @@ osl_body_t* osl_body_malloc(void) {
  * \param[in,out] body The pointer to the body we want to free.
  */
 void osl_body_free(osl_body_t* body) {
-
   if (body != NULL) {
     osl_strings_free(body->iterators);
     osl_strings_free(body->expression);
@@ -320,11 +299,9 @@ void osl_body_free(osl_body_t* body) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_body_clone function:
@@ -339,13 +316,12 @@ osl_body_t* osl_body_clone(const osl_body_t* body) {
 
   if (body != NULL) {
     copy = osl_body_malloc();
-    copy->iterators  = osl_strings_clone(body->iterators);
+    copy->iterators = osl_strings_clone(body->iterators);
     copy->expression = osl_strings_clone(body->expression);
   }
 
   return copy;
 }
-
 
 /**
  * osl_body_equal function:
@@ -357,13 +333,10 @@ osl_body_t* osl_body_clone(const osl_body_t* body) {
  * \return 1 if b1 and b2 are the same (content-wise), 0 otherwise.
  */
 int osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
-  
-  if (b1 == b2)
-    return 1;
- 
-  if (((b1 != NULL) && (b2 == NULL)) ||
-      ((b1 == NULL) && (b2 != NULL))) {
-    OSL_info("bodies are not the same"); 
+  if (b1 == b2) return 1;
+
+  if (((b1 != NULL) && (b2 == NULL)) || ((b1 == NULL) && (b2 != NULL))) {
+    OSL_info("bodies are not the same");
     return 0;
   }
 
@@ -371,7 +344,7 @@ int osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
     OSL_info("body iterators are not the same");
     return 0;
   }
-  
+
   if (!osl_strings_equal(b1->expression, b2->expression)) {
     OSL_info("body expressions are not the same");
     return 0;
@@ -379,7 +352,6 @@ int osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
 
   return 1;
 }
-
 
 /**
  * osl_body_interface function:
@@ -389,16 +361,15 @@ int osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
  */
 osl_interface_t* osl_body_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_BODY);
-  interface->idump  = (osl_idump_f)osl_body_idump;
+  interface->idump = (osl_idump_f)osl_body_idump;
   interface->sprint = (osl_sprint_f)osl_body_sprint;
-  interface->sread  = (osl_sread_f)osl_body_sread;
+  interface->sread = (osl_sread_f)osl_body_sread;
   interface->malloc = (osl_malloc_f)osl_body_malloc;
-  interface->free   = (osl_free_f)osl_body_free;
-  interface->clone  = (osl_clone_f)osl_body_clone;
-  interface->equal  = (osl_equal_f)osl_body_equal;
+  interface->free = (osl_free_f)osl_body_free;
+  interface->clone = (osl_clone_f)osl_body_clone;
+  interface->equal = (osl_equal_f)osl_body_equal;
 
   return interface;
 }
-

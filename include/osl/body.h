@@ -62,18 +62,17 @@
 
 
 #ifndef OSL_BODY_H
-# define OSL_BODY_H
+#define OSL_BODY_H
 
-# include <stdio.h>
-# include <osl/strings.h>
-# include <osl/interface.h>
+#include <osl/interface.h>
+#include <osl/strings.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_BODY "body"
+#define OSL_URI_BODY "body"
 
 /**
  * The osl_body_t structure stores a statement body in a textual form.
@@ -86,46 +85,43 @@ struct osl_body {
   osl_strings_p iterators;  /**< Original iterators */
   osl_strings_p expression; /**< Original statement expression */
 };
-typedef struct osl_body   osl_body_t;
-typedef struct osl_body * osl_body_p;
-typedef struct osl_body const         osl_const_body_t;
-typedef struct osl_body       * const osl_body_const_p;
-typedef struct osl_body const *       osl_const_body_p;
-typedef struct osl_body const * const osl_const_body_const_p;
-
+typedef struct osl_body osl_body_t;
+typedef struct osl_body* osl_body_p;
+typedef struct osl_body const osl_const_body_t;
+typedef struct osl_body* const osl_body_const_p;
+typedef struct osl_body const* osl_const_body_p;
+typedef struct osl_body const* const osl_const_body_const_p;
 
 /*---------------------------------------------------------------------------+
  |                          Structure display function                       |
  +---------------------------------------------------------------------------*/
-void            osl_body_idump(FILE *, const osl_body_t*, int);
-void            osl_body_dump(FILE *, const osl_body_t*);
-char *          osl_body_sprint(const osl_body_t*);
-void            osl_body_print(FILE *, const osl_body_t*);
+void osl_body_idump(FILE*, const osl_body_t*, int);
+void osl_body_dump(FILE*, const osl_body_t*);
+char* osl_body_sprint(const osl_body_t*);
+void osl_body_print(FILE*, const osl_body_t*);
 
 // SCoPLib Compatibility
-void            osl_body_print_scoplib(FILE * file, const osl_body_t* body);
+void osl_body_print_scoplib(FILE* file, const osl_body_t* body);
 
 /*****************************************************************************
  *                              Reading function                             *
  *****************************************************************************/
-osl_body_t*      osl_body_sread(char **);
-
+osl_body_t* osl_body_sread(char**);
 
 /*+***************************************************************************
  *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-osl_body_t*      osl_body_malloc(void);
-void            osl_body_free(osl_body_t*);
-
+osl_body_t* osl_body_malloc(void);
+void osl_body_free(osl_body_t*);
 
 /*+***************************************************************************
  *                           Processing functions                            *
  *****************************************************************************/
-osl_body_t*      osl_body_clone(const osl_body_t*);
-int             osl_body_equal(const osl_body_t*, const osl_body_t*);
+osl_body_t* osl_body_clone(const osl_body_t*);
+int osl_body_equal(const osl_body_t*, const osl_body_t*);
 osl_interface_t* osl_body_interface(void);
 
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 #endif /* define OSL_BODY_H */
