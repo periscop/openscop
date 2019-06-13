@@ -61,20 +61,18 @@
  *****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+#include <osl/int.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/int.h>
 #include <osl/vector.h>
-
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_vector_idump function:
@@ -86,24 +84,21 @@
  * \param[in] vector The vector whose information have to be printed.
  * \param[in] level  Number of spaces before printing, for each line.
  */
-void osl_vector_idump(FILE * const file, const osl_vector_t* vector, int level) {
+void osl_vector_idump(FILE* const file, const osl_vector_t* vector, int level) {
   int j;
 
   if (vector != NULL) {
     // Go to the right level.
-    for (j = 0; j < level; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"+-- osl_vector_t (");
+    for (j = 0; j < level; j++) fprintf(file, "|\t");
+    fprintf(file, "+-- osl_vector_t (");
     osl_int_dump_precision(file, vector->precision);
     fprintf(file, ")\n");
 
-    for (j = 0; j <= level; j++)
-      fprintf(file,"|\t");
-    fprintf(file,"%d\n", vector->size);
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    fprintf(file, "%d\n", vector->size);
 
     // Display the vector.
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
 
     fprintf(file, "[ ");
 
@@ -113,20 +108,16 @@ void osl_vector_idump(FILE * const file, const osl_vector_t* vector, int level) 
     }
 
     fprintf(file, "]\n");
-  }
-  else {
+  } else {
     // Go to the right level.
-    for (j = 0; j < level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j < level; j++) fprintf(file, "|\t");
     fprintf(file, "+-- NULL vector\n");
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_vector_dump function:
@@ -135,15 +126,13 @@ void osl_vector_idump(FILE * const file, const osl_vector_t* vector, int level) 
  * \param[in] file   File where informations are printed.
  * \param[in] vector The vector whose information have to be printed.
  */
-void osl_vector_dump(FILE * const file, const osl_vector_t* const vector) {
+void osl_vector_dump(FILE* const file, const osl_vector_t* const vector) {
   osl_vector_idump(file, vector, 0);
 }
-
 
 /*+***************************************************************************
  *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-
 
 /**
  * osl_vector_pmalloc function:
@@ -163,21 +152,18 @@ osl_vector_t* osl_vector_pmalloc(int precision, int size) {
   vector->precision = precision;
   if (size == 0) {
     vector->v = NULL;
-  }
-  else {
+  } else {
     OSL_malloc(vector->v, osl_int_t*, (size_t)size * sizeof(osl_int_t));
-    for (i = 0; i < size; i++)
-      osl_int_init_set_si(precision, &vector->v[i], 0);
+    for (i = 0; i < size; i++) osl_int_init_set_si(precision, &vector->v[i], 0);
   }
   return vector;
 }
-
 
 /**
  * osl_vector_malloc function:
  * This function allocates the memory space for a osl_vector_t structure
  * and sets its fields with default values. Then it returns a pointer to the
- * allocated space. The precision of the vector elements corresponds to the 
+ * allocated space. The precision of the vector elements corresponds to the
  * precision environment variable or to the highest available precision if it
  * is not defined.
  * \param[in] size      The number of entries of the vector to allocate.
@@ -187,7 +173,6 @@ osl_vector_t* osl_vector_malloc(int size) {
   int precision = osl_util_get_precision();
   return osl_vector_pmalloc(precision, size);
 }
-
 
 /**
  * osl_vector_free function:
@@ -208,11 +193,9 @@ void osl_vector_free(osl_vector_p vector) {
   }
 }
 
-
 /*+***************************************************************************
  *                           Processing functions                            *
  *****************************************************************************/
-
 
 /**
  * osl_vector_add_scalar function:
@@ -223,7 +206,8 @@ void osl_vector_free(osl_vector_p vector) {
  * \param[in] scalar The scalar to add to the vector.
  * \return A pointer to a new vector, copy of the basis one plus the scalar.
  */
-osl_vector_p osl_vector_add_scalar(const osl_vector_t* const vector, int scalar) {
+osl_vector_p osl_vector_add_scalar(const osl_vector_t* const vector,
+                                   int scalar) {
   int i, precision, last;
   osl_vector_p result;
 
@@ -241,7 +225,6 @@ osl_vector_p osl_vector_add_scalar(const osl_vector_t* const vector, int scalar)
   return result;
 }
 
-
 /**
  * osl_vector_add function:
  * This function achieves the addition of two vectors and returns the
@@ -255,8 +238,8 @@ osl_vector_t* osl_vector_add(const osl_vector_t* v1, const osl_vector_t* v2) {
   int i;
   osl_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) ||
-      (v1->size != v2->size) || (v1->precision != v2->precision))
+  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size) ||
+      (v1->precision != v2->precision))
     OSL_error("incompatible vectors for addition");
 
   v3 = osl_vector_pmalloc(v1->precision, v1->size);
@@ -265,7 +248,6 @@ osl_vector_t* osl_vector_add(const osl_vector_t* v1, const osl_vector_t* v2) {
 
   return v3;
 }
-
 
 /**
  * osl_vector_sub function:
@@ -280,8 +262,8 @@ osl_vector_t* osl_vector_sub(const osl_vector_t* v1, const osl_vector_t* v2) {
   int i;
   osl_vector_p v3;
 
-  if ((v1 == NULL) || (v2 == NULL) ||
-      (v1->size != v2->size) || (v1->precision != v2->precision))
+  if ((v1 == NULL) || (v2 == NULL) || (v1->size != v2->size) ||
+      (v1->precision != v2->precision))
     OSL_error("incompatible vectors for subtraction");
 
   v3 = osl_vector_pmalloc(v1->precision, v1->size);
@@ -290,7 +272,6 @@ osl_vector_t* osl_vector_sub(const osl_vector_t* v1, const osl_vector_t* v2) {
 
   return v3;
 }
-
 
 /**
  * osl_vector_tag_inequality function:
@@ -306,7 +287,6 @@ void osl_vector_tag_inequality(osl_vector_t* const vector) {
   osl_int_set_si(vector->precision, &vector->v[0], 1);
 }
 
-
 /**
  * osl_vector_tag_equality function:
  * This function tags a vector representation of a contraint as being an
@@ -321,7 +301,6 @@ void osl_vector_tag_equality(osl_vector_t* const vector) {
   osl_int_set_si(vector->precision, &vector->v[0], 0);
 }
 
-
 /**
  * osl_vector_equal function:
  * this function returns true if the two vectors are the same, false
@@ -330,22 +309,19 @@ void osl_vector_tag_equality(osl_vector_t* const vector) {
  * \param v2 The second vector.
  * \return 1 if v1 and v2 are the same (content-wise), 0 otherwise.
  */
-int osl_vector_equal(const osl_vector_t* const v1, const osl_vector_t* const v2) {
+int osl_vector_equal(const osl_vector_t* const v1,
+                     const osl_vector_t* const v2) {
   int i;
 
-  if (v1 == v2)
-    return 1;
+  if (v1 == v2) return 1;
 
-  if ((v1->size != v2->size) || (v1->precision != v2->precision))
-    return 0;
+  if ((v1->size != v2->size) || (v1->precision != v2->precision)) return 0;
 
   for (i = 0; i < v1->size; i++)
-    if (osl_int_ne(v1->precision, v1->v[i], v2->v[i]))
-      return 0;
+    if (osl_int_ne(v1->precision, v1->v[i], v2->v[i])) return 0;
 
   return 1;
 }
-
 
 /**
  * osl_vector_mul_scalar function:
@@ -358,13 +334,12 @@ int osl_vector_equal(const osl_vector_t* const v1, const osl_vector_t* const v2)
 osl_vector_t* osl_vector_mul_scalar(const osl_vector_t* const v, int scalar) {
   int i;
   osl_vector_p result = osl_vector_pmalloc(v->precision, v->size);
-  
+
   for (i = 0; i < v->size; i++)
     osl_int_mul_si(v->precision, &result->v[i], v->v[i], scalar);
 
   return result;
 }
-
 
 /**
  * osl_vector_is_scalar function:
@@ -376,12 +351,9 @@ osl_vector_t* osl_vector_mul_scalar(const osl_vector_t* const v, int scalar) {
 int osl_vector_is_scalar(const osl_vector_t* vector) {
   int i;
 
-  if (vector == NULL)
-    return 0;
+  if (vector == NULL) return 0;
 
   for (i = 0; i < vector->size - 1; i++)
-    if (!osl_int_zero(vector->precision, vector->v[i]))
-      return 0;
+    if (!osl_int_zero(vector->precision, vector->v[i])) return 0;
   return 1;
 }
-
