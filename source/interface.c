@@ -60,32 +60,31 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <osl/extensions/textual.h>
-#include <osl/extensions/comment.h>
-#include <osl/extensions/null.h>
-#include <osl/extensions/scatnames.h>
-#include <osl/extensions/arrays.h>
-#include <osl/extensions/coordinates.h>
-#include <osl/extensions/clay.h>
-#include <osl/extensions/dependence.h>
-#include <osl/extensions/symbols.h>
-#include <osl/extensions/irregular.h>
-#include <osl/extensions/extbody.h>
-#include <osl/extensions/loop.h>
-#include <osl/extensions/pluto_unroll.h>
-#include <osl/strings.h>
-#include <osl/body.h>
-#include <osl/relation.h>
-#include <osl/interface.h>
 
+#include <osl/body.h>
+#include <osl/extensions/arrays.h>
+#include <osl/extensions/clay.h>
+#include <osl/extensions/comment.h>
+#include <osl/extensions/coordinates.h>
+#include <osl/extensions/dependence.h>
+#include <osl/extensions/extbody.h>
+#include <osl/extensions/irregular.h>
+#include <osl/extensions/loop.h>
+#include <osl/extensions/null.h>
+#include <osl/extensions/pluto_unroll.h>
+#include <osl/extensions/scatnames.h>
+#include <osl/extensions/symbols.h>
+#include <osl/extensions/textual.h>
+#include <osl/interface.h>
+#include <osl/relation.h>
+#include <osl/strings.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_interface_idump function:
@@ -97,52 +96,45 @@
  * \param interface The interface structure which has to be printed.
  * \param level     Number of spaces before printing, for each line.
  */
-void osl_interface_idump(FILE * const file, const osl_interface_t* interface, int level) {
+void osl_interface_idump(FILE* const file, const osl_interface_t* interface,
+                         int level) {
   int j, first = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (interface != NULL)
     fprintf(file, "+-- osl_interface_t: URI = %s\n", interface->URI);
   else
     fprintf(file, "+-- NULL interface\n");
 
-  
   while (interface != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j < level; j++) fprintf(file, "|\t");
 
       if (interface->URI != NULL)
         fprintf(file, "|   osl_interface_t: URI = %s\n", interface->URI);
       else
         fprintf(file, "|   osl_interface_t: URI = (NULL)\n");
-    }
-    else
+    } else
       first = 0;
 
     interface = interface->next;
 
     // Next line.
     if (interface != NULL) {
-      for (j = 0; j <= level + 1; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
       fprintf(file, "\n");
-      for (j = 0; j <= level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j <= level; j++) fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
-  
+
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_interface_dump function:
@@ -151,26 +143,24 @@ void osl_interface_idump(FILE * const file, const osl_interface_t* interface, in
  * \param file      File where informations are printed.
  * \param interface The interface structure to print.
  */
-void osl_interface_dump(FILE * const file, const osl_interface_t* const interface) {
-  osl_interface_idump(file, interface, 0); 
+void osl_interface_dump(FILE* const file,
+                        const osl_interface_t* const interface) {
+  osl_interface_idump(file, interface, 0);
 }
-
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_interface_add function:
  * this function adds an interface node (it may be a list as well) to a
  * list of interfaces provided as parameter (list). The new node
- * is inserted at the end of the list. 
+ * is inserted at the end of the list.
  * \param list      The list of interfaces to add a node (NULL if empty).
  * \param interface The interface to add to the list.
  */
@@ -190,16 +180,13 @@ void osl_interface_add(osl_interface_t** list, osl_interface_t* interface) {
     }
 
     if (*list != NULL) {
-      while (tmp->next != NULL)
-        tmp = tmp->next;
+      while (tmp->next != NULL) tmp = tmp->next;
       tmp->next = interface;
-    }
-    else {
+    } else {
       *list = interface;
     }
   }
 }
-
 
 /**
  * osl_interface_malloc function:
@@ -212,21 +199,19 @@ void osl_interface_add(osl_interface_t** list, osl_interface_t* interface) {
 osl_interface_t* osl_interface_malloc(void) {
   osl_interface_p interface;
 
-  OSL_malloc(interface, osl_interface_p,
-                  sizeof(osl_interface_t));
-  interface->URI    = NULL;
-  interface->idump  = NULL; 
-  interface->sprint = NULL; 
-  interface->sread  = NULL; 
-  interface->malloc = NULL; 
-  interface->free   = NULL; 
-  interface->clone  = NULL; 
-  interface->equal  = NULL;
-  interface->next   = NULL;
+  OSL_malloc(interface, osl_interface_p, sizeof(osl_interface_t));
+  interface->URI = NULL;
+  interface->idump = NULL;
+  interface->sprint = NULL;
+  interface->sread = NULL;
+  interface->malloc = NULL;
+  interface->free = NULL;
+  interface->clone = NULL;
+  interface->equal = NULL;
+  interface->next = NULL;
 
   return interface;
 }
-
 
 /**
  * osl_interface_free function:
@@ -237,22 +222,19 @@ osl_interface_t* osl_interface_malloc(void) {
 void osl_interface_free(osl_interface_t* interface) {
   osl_interface_p tmp;
   int i = 0;
- 
+
   while (interface != NULL) {
     tmp = interface->next;
-    if (interface->URI != NULL)
-      free(interface->URI);
+    if (interface->URI != NULL) free(interface->URI);
     free(interface);
     interface = tmp;
     i++;
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_interface_number function:
@@ -271,7 +253,6 @@ int osl_interface_number(const osl_interface_t* interface) {
   return number;
 }
 
-
 /**
  * osl_interface_nclone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of the
@@ -287,14 +268,14 @@ osl_interface_t* osl_interface_nclone(const osl_interface_t* interface, int n) {
   while ((interface != NULL) && ((n == -1) || (i < n))) {
     new = osl_interface_malloc();
     OSL_strdup(new->URI, interface->URI);
-    new->idump  = interface->idump;
+    new->idump = interface->idump;
     new->sprint = interface->sprint;
-    new->sread  = interface->sread;
+    new->sread = interface->sread;
     new->malloc = interface->malloc;
-    new->free   = interface->free;
-    new->clone  = interface->clone;
-    new->equal  = interface->equal;
-    
+    new->free = interface->free;
+    new->clone = interface->clone;
+    new->equal = interface->equal;
+
     osl_interface_add(&clone, new);
     interface = interface->next;
     i++;
@@ -302,7 +283,6 @@ osl_interface_t* osl_interface_nclone(const osl_interface_t* interface, int n) {
 
   return clone;
 }
-
 
 /**
  * osl_interface_clone function:
@@ -312,42 +292,37 @@ osl_interface_t* osl_interface_nclone(const osl_interface_t* interface, int n) {
  * \return A pointer to the copy of the interface structure.
  */
 osl_interface_t* osl_interface_clone(const osl_interface_t* const interface) {
-
   return osl_interface_nclone(interface, -1);
 }
-
 
 /**
  * osl_interface_equal function:
  * this function returns true if the two interface structures are the same,
- * (content-wise) false otherwise. 
+ * (content-wise) false otherwise.
  * \param interface1 The first interface structure.
  * \param interface2 The second interface structure.
  * \return 1 if interface1 and interface2 are the same, 0 otherwise.
  */
 int osl_interface_equal(const osl_interface_t* const interface1,
                         const osl_interface_t* const interface2) {
+  if (interface1 == interface2) return 1;
 
-  if (interface1 == interface2)
-    return 1;
-  
   if (((interface1 == NULL) && (interface2 != NULL)) ||
       ((interface1 != NULL) && (interface2 == NULL)))
     return 0;
 
-  if (strcmp(interface1->URI, interface2->URI)   ||
-      (interface1->idump  != interface2->idump)  ||
+  if (strcmp(interface1->URI, interface2->URI) ||
+      (interface1->idump != interface2->idump) ||
       (interface1->sprint != interface2->sprint) ||
-      (interface1->sread  != interface2->sread)  ||
+      (interface1->sread != interface2->sread) ||
       (interface1->malloc != interface2->malloc) ||
-      (interface1->free   != interface2->free)   ||
-      (interface1->clone  != interface2->clone)  ||
-      (interface1->equal  != interface2->equal))
+      (interface1->free != interface2->free) ||
+      (interface1->clone != interface2->clone) ||
+      (interface1->equal != interface2->equal))
     return 0;
 
   return 1;
 }
-
 
 /**
  * osl_interface_lookup function:
@@ -358,16 +333,12 @@ int osl_interface_equal(const osl_interface_t* const interface1,
  * \param URI  The URI of the interface we are looking for.
  * \return The first interface of the requested URI in the list.
  */
-osl_interface_t*
-osl_interface_lookup(osl_interface_t* list, const char * URI) {
-
+osl_interface_t* osl_interface_lookup(osl_interface_t* list, const char* URI) {
   if (URI == NULL) {
     OSL_warning("lookup for a NULL URI");
-  }
-  else {
+  } else {
     while (list != NULL) {
-      if ((list->URI != NULL) && (!strcmp(list->URI, URI)))
-        return list;
+      if ((list->URI != NULL) && (!strcmp(list->URI, URI))) return list;
 
       list = list->next;
     }
@@ -375,7 +346,6 @@ osl_interface_lookup(osl_interface_t* list, const char * URI) {
 
   return NULL;
 }
-
 
 /**
  * osl_interface_get_default_registry function:
@@ -404,10 +374,7 @@ osl_interface_t* osl_interface_get_default_registry(void) {
   osl_interface_add(&registry, osl_extbody_interface());
   osl_interface_add(&registry, osl_loop_interface());
   osl_interface_add(&registry, osl_pluto_unroll_interface());
-  //osl_interface_add(&registry, osl_irregular_interface());
+  // osl_interface_add(&registry, osl_irregular_interface());
 
   return registry;
 }
-
-
-
