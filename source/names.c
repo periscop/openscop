@@ -84,7 +84,7 @@
  * \param[in] names The names structure whose information has to be printed.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_names_idump(FILE * file, osl_names_p names, int level) {
+void osl_names_idump(FILE * const file, const osl_names_t* names, int level) {
   int j;
 
   // Go to the right level.
@@ -124,7 +124,7 @@ void osl_names_idump(FILE * file, osl_names_p names, int level) {
  * \param[in] file  The file where the information has to be printed.
  * \param[in] names The names structure whose information has to be printed.
  */
-void osl_names_dump(FILE * file, osl_names_p names) {
+void osl_names_dump(FILE * const file, const osl_names_t* names) {
   osl_names_idump(file, names, 0);
 }
 
@@ -147,7 +147,7 @@ void osl_names_dump(FILE * file, osl_names_p names) {
  * \return A pointer to an empty names structure with fields set to
  *         default values.
  */
-osl_names_p osl_names_malloc(void) {
+osl_names_t* osl_names_malloc(void) {
   osl_names_p names;
 
   OSL_malloc(names, osl_names_p, sizeof(osl_names_t));
@@ -169,7 +169,7 @@ osl_names_p osl_names_malloc(void) {
  * the array itself), this function will only free the osl_names_t shell.
  * \param[in,out] names The pointer to the names structure we want to free.
  */
-void osl_names_free(osl_names_p names) {
+void osl_names_free(osl_names_t* names) {
   if (names != NULL) {
     osl_strings_free(names->parameters);
     osl_strings_free(names->iterators);
@@ -203,7 +203,7 @@ void osl_names_free(osl_names_p names) {
  * \param[in] nb_arrays        Number of array names to generate.
  * \return A new names structure containing generated names.
  */
-osl_names_p osl_names_generate(
+osl_names_t* osl_names_generate(
     const char * parameter_prefix, int nb_parameters,
     const char * iterator_prefix,  int nb_iterators,
     const char * scatt_dim_prefix, int nb_scatt_dims,
@@ -227,7 +227,7 @@ osl_names_p osl_names_generate(
  * \param[in] names The pointer to the names structure we want to clone.
  * \return A pointer to the clone of the names structure provided as parameter.
  */
-osl_names_p osl_names_clone(osl_names_p names) {
+osl_names_t* osl_names_clone(const osl_names_t* names) {
   osl_names_p clone = NULL;
   
   if (names != NULL) {

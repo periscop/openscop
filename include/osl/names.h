@@ -92,8 +92,8 @@ typedef struct osl_names * osl_names_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void         osl_names_idump(FILE *, osl_names_p, int);
-void         osl_names_dump(FILE *, osl_names_p);
+void         osl_names_idump(FILE *, const osl_names_t*, int);
+void         osl_names_dump(FILE *, const osl_names_t*);
 
 
 /*****************************************************************************
@@ -104,15 +104,15 @@ void         osl_names_dump(FILE *, osl_names_p);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_names_p osl_names_malloc(void);
-void        osl_names_free(osl_names_p);
+osl_names_t* osl_names_malloc(void);
+void        osl_names_free(osl_names_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_names_p osl_names_clone(osl_names_p);
-osl_names_p osl_names_generate(const char *, int, const char *, int,
+osl_names_t* osl_names_clone(const osl_names_t*);
+osl_names_t* osl_names_generate(const char *, int, const char *, int,
                                const char *, int, const char *, int,
                                const char *, int);
 
