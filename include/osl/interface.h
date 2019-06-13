@@ -66,6 +66,8 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -100,8 +102,9 @@ typedef struct osl_interface *osl_interface_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_interface_idump(FILE *, const osl_interface_t *, int);
-void osl_interface_dump(FILE *, const osl_interface_t *);
+void osl_interface_idump(FILE *, const osl_interface_t *, int)
+    OSL_NONNULL_ARGS(1);
+void osl_interface_dump(FILE *, const osl_interface_t *) OSL_NONNULL_ARGS(1);
 
 /*****************************************************************************
  *                               Reading function                            *
@@ -110,19 +113,23 @@ void osl_interface_dump(FILE *, const osl_interface_t *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void osl_interface_add(osl_interface_t **, osl_interface_t *);
-osl_interface_t *osl_interface_malloc(void);
+void osl_interface_add(osl_interface_t **, osl_interface_t *)
+    OSL_NONNULL_ARGS(1);
+osl_interface_t *osl_interface_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_interface_free(osl_interface_t *);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
 int osl_interface_number(const osl_interface_t *);
-osl_interface_t *osl_interface_nclone(const osl_interface_t *, int);
-osl_interface_t *osl_interface_clone(const osl_interface_t *);
+osl_interface_t *osl_interface_nclone(const osl_interface_t *,
+                                      int) OSL_WARN_UNUSED_RESULT;
+osl_interface_t *osl_interface_clone(const osl_interface_t *)
+    OSL_WARN_UNUSED_RESULT;
 int osl_interface_equal(const osl_interface_t *, const osl_interface_t *);
 osl_interface_t *osl_interface_lookup(osl_interface_t *, const char *);
-osl_interface_t *osl_interface_get_default_registry(void);
+osl_interface_t *osl_interface_get_default_registry(void)
+    OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
