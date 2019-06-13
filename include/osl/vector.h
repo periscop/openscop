@@ -66,6 +66,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/int.h>
 
 #if defined(__cplusplus)
@@ -90,23 +91,23 @@ typedef struct osl_vector* osl_vector_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_vector_idump(FILE*, const osl_vector_t*, int);
-void osl_vector_dump(FILE*, const osl_vector_t*);
+void osl_vector_idump(FILE*, const osl_vector_t*, int) OSL_NONNULL_ARGS(1);
+void osl_vector_dump(FILE*, const osl_vector_t*) OSL_NONNULL_ARGS(1);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_vector_t* osl_vector_pmalloc(int, int);
-osl_vector_t* osl_vector_malloc(int);
+osl_vector_t* osl_vector_pmalloc(int, int) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_malloc(int) OSL_WARN_UNUSED_RESULT;
 void osl_vector_free(osl_vector_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_vector_t* osl_vector_add_scalar(const osl_vector_t*, int);
-osl_vector_t* osl_vector_mul_scalar(const osl_vector_t*, int);
-osl_vector_t* osl_vector_add(const osl_vector_t*, const osl_vector_t*);
-osl_vector_t* osl_vector_sub(const osl_vector_t*, const osl_vector_t*);
+osl_vector_t* osl_vector_add_scalar(const osl_vector_t*, int) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_mul_scalar(const osl_vector_t*, int) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_add(const osl_vector_t*, const osl_vector_t*) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_sub(const osl_vector_t*, const osl_vector_t*) OSL_WARN_UNUSED_RESULT;
 void osl_vector_tag_inequality(osl_vector_t*);
 void osl_vector_tag_equality(osl_vector_t*);
 int osl_vector_equal(const osl_vector_t*, const osl_vector_t*);
