@@ -64,8 +64,10 @@
 #ifndef OSL_NAMES_H
 #define OSL_NAMES_H
 
-#include <osl/strings.h>
 #include <stdio.h>
+
+#include <osl/attributes.h>
+#include <osl/strings.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -89,8 +91,8 @@ typedef struct osl_names *osl_names_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_names_idump(FILE *, const osl_names_t *, int);
-void osl_names_dump(FILE *, const osl_names_t *);
+void osl_names_idump(FILE *, const osl_names_t *, int) OSL_NONNULL_ARGS(1);
+void osl_names_dump(FILE *, const osl_names_t *) OSL_NONNULL_ARGS(1);
 
 /*****************************************************************************
  *                               Reading function                            *
@@ -99,17 +101,17 @@ void osl_names_dump(FILE *, const osl_names_t *);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_names_t *osl_names_malloc(void);
+osl_names_t *osl_names_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_names_free(osl_names_t *);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_names_t *osl_names_clone(const osl_names_t *);
+osl_names_t *osl_names_clone(const osl_names_t *) OSL_WARN_UNUSED_RESULT;
 osl_names_t *osl_names_generate(const char *, int, const char *, int,
                                 const char *, int, const char *, int,
-                                const char *, int);
-
+                                const char *,
+                                int) OSL_WARN_UNUSED_RESULT OSL_NONNULL;
 #if defined(__cplusplus)
 }
 #endif
