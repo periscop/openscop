@@ -104,8 +104,8 @@ typedef struct osl_interface * osl_interface_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_interface_idump(FILE *, osl_interface_p, int);
-void            osl_interface_dump(FILE *, osl_interface_p);
+void            osl_interface_idump(FILE *, const osl_interface_t*, int);
+void            osl_interface_dump(FILE *, const osl_interface_t*);
 
 
 /*****************************************************************************
@@ -116,20 +116,20 @@ void            osl_interface_dump(FILE *, osl_interface_p);
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-void            osl_interface_add(osl_interface_p *, osl_interface_p);
-osl_interface_p osl_interface_malloc(void);
-void            osl_interface_free(osl_interface_p);
+void            osl_interface_add(osl_interface_t**, osl_interface_t*);
+osl_interface_t* osl_interface_malloc(void);
+void            osl_interface_free(osl_interface_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-int             osl_interface_number(osl_interface_p);
-osl_interface_p osl_interface_nclone(osl_interface_p, int);
-osl_interface_p osl_interface_clone(osl_interface_p);
-int             osl_interface_equal(osl_interface_p, osl_interface_p);
-osl_interface_p osl_interface_lookup(osl_interface_p, const char *);
-osl_interface_p osl_interface_get_default_registry(void);
+int             osl_interface_number(const osl_interface_t*);
+osl_interface_t* osl_interface_nclone(const osl_interface_t*, int);
+osl_interface_t* osl_interface_clone(const osl_interface_t*);
+int             osl_interface_equal(const osl_interface_t*, const osl_interface_t*);
+osl_interface_t* osl_interface_lookup(osl_interface_t*, const char *);
+osl_interface_t* osl_interface_get_default_registry(void);
 
 # if defined(__cplusplus)
   }

@@ -97,7 +97,7 @@
  * \param interface The interface structure which has to be printed.
  * \param level     Number of spaces before printing, for each line.
  */
-void osl_interface_idump(FILE * file, osl_interface_p interface, int level) {
+void osl_interface_idump(FILE * const file, const osl_interface_t* interface, int level) {
   int j, first = 1;
 
   // Go to the right level.
@@ -151,7 +151,7 @@ void osl_interface_idump(FILE * file, osl_interface_p interface, int level) {
  * \param file      File where informations are printed.
  * \param interface The interface structure to print.
  */
-void osl_interface_dump(FILE * file, osl_interface_p interface) {
+void osl_interface_dump(FILE * const file, const osl_interface_t* const interface) {
   osl_interface_idump(file, interface, 0); 
 }
 
@@ -174,7 +174,7 @@ void osl_interface_dump(FILE * file, osl_interface_p interface) {
  * \param list      The list of interfaces to add a node (NULL if empty).
  * \param interface The interface to add to the list.
  */
-void osl_interface_add(osl_interface_p * list, osl_interface_p interface) {
+void osl_interface_add(osl_interface_t** list, osl_interface_t* interface) {
   osl_interface_p tmp = *list, check_interface;
 
   if (interface != NULL) {
@@ -209,7 +209,7 @@ void osl_interface_add(osl_interface_p * list, osl_interface_p interface) {
  * \return A pointer to an empty interface structure with fields set to
  *         default values.
  */
-osl_interface_p osl_interface_malloc(void) {
+osl_interface_t* osl_interface_malloc(void) {
   osl_interface_p interface;
 
   OSL_malloc(interface, osl_interface_p,
@@ -234,7 +234,7 @@ osl_interface_p osl_interface_malloc(void) {
  * structure, and all the interfaces stored in the list.
  * \param[in] interface The pointer to the interface we want to free.
  */
-void osl_interface_free(osl_interface_p interface) {
+void osl_interface_free(osl_interface_t* interface) {
   osl_interface_p tmp;
   int i = 0;
  
@@ -261,7 +261,7 @@ void osl_interface_free(osl_interface_p interface) {
  * \param[in] interface The first element of the interface list.
  * \return The number of statements in the interface list.
  */
-int osl_interface_number(osl_interface_p interface) {
+int osl_interface_number(const osl_interface_t* interface) {
   int number = 0;
 
   while (interface != NULL) {
@@ -280,7 +280,7 @@ int osl_interface_number(osl_interface_p interface) {
  * \param n         The number of nodes we want to copy (-1 for infinity).
  * \return The clone of the n first nodes of the interface list.
  */
-osl_interface_p osl_interface_nclone(osl_interface_p interface, int n) {
+osl_interface_t* osl_interface_nclone(const osl_interface_t* interface, int n) {
   osl_interface_p clone = NULL, new;
   int i = 0;
 
@@ -311,7 +311,7 @@ osl_interface_p osl_interface_nclone(osl_interface_p interface, int n) {
  * \param interface The pointer to the interface structure we want to copy.
  * \return A pointer to the copy of the interface structure.
  */
-osl_interface_p osl_interface_clone(osl_interface_p interface) {
+osl_interface_t* osl_interface_clone(const osl_interface_t* const interface) {
 
   return osl_interface_nclone(interface, -1);
 }
@@ -325,8 +325,8 @@ osl_interface_p osl_interface_clone(osl_interface_p interface) {
  * \param interface2 The second interface structure.
  * \return 1 if interface1 and interface2 are the same, 0 otherwise.
  */
-int osl_interface_equal(osl_interface_p interface1,
-                        osl_interface_p interface2) {
+int osl_interface_equal(const osl_interface_t* const interface1,
+                        const osl_interface_t* const interface2) {
 
   if (interface1 == interface2)
     return 1;
@@ -358,8 +358,8 @@ int osl_interface_equal(osl_interface_p interface1,
  * \param URI  The URI of the interface we are looking for.
  * \return The first interface of the requested URI in the list.
  */
-osl_interface_p
-osl_interface_lookup(osl_interface_p list, const char * URI) {
+osl_interface_t*
+osl_interface_lookup(osl_interface_t* list, const char * URI) {
 
   if (URI == NULL) {
     OSL_warning("lookup for a NULL URI");
@@ -383,7 +383,7 @@ osl_interface_lookup(osl_interface_p list, const char * URI) {
  * including extensions) and returns it.
  * \return The list of known interfaces.
  */
-osl_interface_p osl_interface_get_default_registry(void) {
+osl_interface_t* osl_interface_get_default_registry(void) {
   osl_interface_p registry = NULL;
 
   // Internal generics
