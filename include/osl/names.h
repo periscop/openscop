@@ -62,16 +62,14 @@
 
 
 #ifndef OSL_NAMES_H
-# define OSL_NAMES_H
+#define OSL_NAMES_H
 
-# include <stdio.h>
-# include <osl/strings.h>
+#include <osl/strings.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
-
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /**
  * The osl_names_t structure stores the various names (names of iterators,
@@ -85,40 +83,35 @@ struct osl_names {
   osl_strings_p local_dims; /**< Local dimension names */
   osl_strings_p arrays;     /**< Array names */
 };
-typedef struct osl_names   osl_names_t;
-typedef struct osl_names * osl_names_p;
-
+typedef struct osl_names osl_names_t;
+typedef struct osl_names *osl_names_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void         osl_names_idump(FILE *, const osl_names_t*, int);
-void         osl_names_dump(FILE *, const osl_names_t*);
-
+void osl_names_idump(FILE *, const osl_names_t *, int);
+void osl_names_dump(FILE *, const osl_names_t *);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_names_t* osl_names_malloc(void);
-void        osl_names_free(osl_names_t*);
-
+osl_names_t *osl_names_malloc(void);
+void osl_names_free(osl_names_t *);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_names_t* osl_names_clone(const osl_names_t*);
-osl_names_t* osl_names_generate(const char *, int, const char *, int,
-                               const char *, int, const char *, int,
-                               const char *, int);
+osl_names_t *osl_names_clone(const osl_names_t *);
+osl_names_t *osl_names_generate(const char *, int, const char *, int,
+                                const char *, int, const char *, int,
+                                const char *, int);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_NAMES_H */

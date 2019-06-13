@@ -60,19 +60,17 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <osl/macros.h>
-#include <osl/strings.h>
 #include <osl/names.h>
-
+#include <osl/strings.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_names_idump function:
@@ -84,12 +82,11 @@
  * \param[in] names The names structure whose information has to be printed.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_names_idump(FILE * const file, const osl_names_t* names, int level) {
+void osl_names_idump(FILE* const file, const osl_names_t* names, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (names != NULL)
     fprintf(file, "+-- osl_names_t\n");
@@ -98,24 +95,21 @@ void osl_names_idump(FILE * const file, const osl_names_t* names, int level) {
 
   if (names != NULL) {
     // A blank line.
-    for (j = 0; j <= level+1; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
     fprintf(file, "\n");
-    
+
     // Print the various names.
     osl_strings_idump(file, names->parameters, level + 1);
-    osl_strings_idump(file, names->iterators,  level + 1);
+    osl_strings_idump(file, names->iterators, level + 1);
     osl_strings_idump(file, names->scatt_dims, level + 1);
     osl_strings_idump(file, names->local_dims, level + 1);
-    osl_strings_idump(file, names->arrays,     level + 1);
+    osl_strings_idump(file, names->arrays, level + 1);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_names_dump function:
@@ -124,20 +118,17 @@ void osl_names_idump(FILE * const file, const osl_names_t* names, int level) {
  * \param[in] file  The file where the information has to be printed.
  * \param[in] names The names structure whose information has to be printed.
  */
-void osl_names_dump(FILE * const file, const osl_names_t* names) {
+void osl_names_dump(FILE* const file, const osl_names_t* names) {
   osl_names_idump(file, names, 0);
 }
-
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_names_malloc function:
@@ -152,14 +143,13 @@ osl_names_t* osl_names_malloc(void) {
 
   OSL_malloc(names, osl_names_p, sizeof(osl_names_t));
   names->parameters = NULL;
-  names->iterators  = NULL;
+  names->iterators = NULL;
   names->scatt_dims = NULL;
   names->local_dims = NULL;
-  names->arrays     = NULL;
+  names->arrays = NULL;
 
   return names;
 }
-
 
 /**
  * osl_names_free function:
@@ -181,11 +171,9 @@ void osl_names_free(osl_names_t* names) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_names_generate function:
@@ -203,20 +191,19 @@ void osl_names_free(osl_names_t* names) {
  * \param[in] nb_arrays        Number of array names to generate.
  * \return A new names structure containing generated names.
  */
-osl_names_t* osl_names_generate(
-    const char * parameter_prefix, int nb_parameters,
-    const char * iterator_prefix,  int nb_iterators,
-    const char * scatt_dim_prefix, int nb_scatt_dims,
-    const char * local_dim_prefix, int nb_local_dims,
-    const char * array_prefix,     int nb_arrays) {
+osl_names_t* osl_names_generate(const char* parameter_prefix, int nb_parameters,
+                                const char* iterator_prefix, int nb_iterators,
+                                const char* scatt_dim_prefix, int nb_scatt_dims,
+                                const char* local_dim_prefix, int nb_local_dims,
+                                const char* array_prefix, int nb_arrays) {
   osl_names_p names = osl_names_malloc();
 
-  names->parameters= osl_strings_generate(parameter_prefix,nb_parameters);
+  names->parameters = osl_strings_generate(parameter_prefix, nb_parameters);
   names->iterators = osl_strings_generate(iterator_prefix, nb_iterators);
-  names->scatt_dims= osl_strings_generate(scatt_dim_prefix,nb_scatt_dims);
-  names->local_dims= osl_strings_generate(local_dim_prefix,nb_local_dims);
-  names->arrays    = osl_strings_generate(array_prefix,    nb_arrays);
-  
+  names->scatt_dims = osl_strings_generate(scatt_dim_prefix, nb_scatt_dims);
+  names->local_dims = osl_strings_generate(local_dim_prefix, nb_local_dims);
+  names->arrays = osl_strings_generate(array_prefix, nb_arrays);
+
   return names;
 }
 
@@ -229,14 +216,14 @@ osl_names_t* osl_names_generate(
  */
 osl_names_t* osl_names_clone(const osl_names_t* names) {
   osl_names_p clone = NULL;
-  
+
   if (names != NULL) {
     clone = osl_names_malloc();
     clone->parameters = osl_strings_clone(names->parameters);
-    clone->iterators  = osl_strings_clone(names->iterators);
+    clone->iterators = osl_strings_clone(names->iterators);
     clone->scatt_dims = osl_strings_clone(names->scatt_dims);
     clone->local_dims = osl_strings_clone(names->local_dims);
-    clone->arrays     = osl_strings_clone(names->arrays);
+    clone->arrays = osl_strings_clone(names->arrays);
   }
   return clone;
 }
