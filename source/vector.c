@@ -86,7 +86,7 @@
  * \param[in] vector The vector whose information have to be printed.
  * \param[in] level  Number of spaces before printing, for each line.
  */
-void osl_vector_idump(FILE * file, osl_vector_p vector, int level) {
+void osl_vector_idump(FILE * const file, const osl_vector_t* vector, int level) {
   int j;
 
   if (vector != NULL) {
@@ -135,7 +135,7 @@ void osl_vector_idump(FILE * file, osl_vector_p vector, int level) {
  * \param[in] file   File where informations are printed.
  * \param[in] vector The vector whose information have to be printed.
  */
-void osl_vector_dump(FILE * file, osl_vector_p vector) {
+void osl_vector_dump(FILE * const file, const osl_vector_t* const vector) {
   osl_vector_idump(file, vector, 0);
 }
 
@@ -154,7 +154,7 @@ void osl_vector_dump(FILE * file, osl_vector_p vector) {
  * \param[in] size      The number of entries of the vector to allocate.
  * \return A pointer to the newly allocated osl_vector_t structure.
  */
-osl_vector_p osl_vector_pmalloc(int precision, int size) {
+osl_vector_t* osl_vector_pmalloc(int precision, int size) {
   osl_vector_p vector;
   int i;
 
@@ -183,7 +183,7 @@ osl_vector_p osl_vector_pmalloc(int precision, int size) {
  * \param[in] size      The number of entries of the vector to allocate.
  * \return A pointer to the newly allocated osl_vector_t structure.
  */
-osl_vector_p osl_vector_malloc(int size) {
+osl_vector_t* osl_vector_malloc(int size) {
   int precision = osl_util_get_precision();
   return osl_vector_pmalloc(precision, size);
 }
@@ -223,7 +223,7 @@ void osl_vector_free(osl_vector_p vector) {
  * \param[in] scalar The scalar to add to the vector.
  * \return A pointer to a new vector, copy of the basis one plus the scalar.
  */
-osl_vector_p osl_vector_add_scalar(osl_vector_p vector, int scalar) {
+osl_vector_p osl_vector_add_scalar(const osl_vector_t* const vector, int scalar) {
   int i, precision, last;
   osl_vector_p result;
 
@@ -251,7 +251,7 @@ osl_vector_p osl_vector_add_scalar(osl_vector_p vector, int scalar) {
  * \param v2 The second vector for the addition.
  * \return A pointer to a new vector, corresponding to v1 + v2.
  */
-osl_vector_p osl_vector_add(osl_vector_p v1, osl_vector_p v2) {
+osl_vector_t* osl_vector_add(const osl_vector_t* v1, const osl_vector_t* v2) {
   int i;
   osl_vector_p v3;
 
@@ -276,7 +276,7 @@ osl_vector_p osl_vector_add(osl_vector_p v1, osl_vector_p v2) {
  * \param v2 The second vector for the subtraction (result is v1-v2).
  * \return A pointer to a new vector, corresponding to v1 - v2.
  */
-osl_vector_p osl_vector_sub(osl_vector_p v1, osl_vector_p v2) {
+osl_vector_t* osl_vector_sub(const osl_vector_t* v1, const osl_vector_t* v2) {
   int i;
   osl_vector_p v3;
 
@@ -300,7 +300,7 @@ osl_vector_p osl_vector_sub(osl_vector_p v1, osl_vector_p v2) {
  * an argument.
  * \param vector The vector to be tagged.
  */
-void osl_vector_tag_inequality(osl_vector_p vector) {
+void osl_vector_tag_inequality(osl_vector_t* const vector) {
   if ((vector == NULL) || (vector->size < 1))
     OSL_error("vector cannot be tagged");
   osl_int_set_si(vector->precision, &vector->v[0], 1);
@@ -315,7 +315,7 @@ void osl_vector_tag_inequality(osl_vector_p vector) {
  * an argument.
  * \param vector The vector to be tagged.
  */
-void osl_vector_tag_equality(osl_vector_p vector) {
+void osl_vector_tag_equality(osl_vector_t* const vector) {
   if ((vector == NULL) || (vector->size < 1))
     OSL_error("vector cannot be tagged");
   osl_int_set_si(vector->precision, &vector->v[0], 0);
@@ -330,7 +330,7 @@ void osl_vector_tag_equality(osl_vector_p vector) {
  * \param v2 The second vector.
  * \return 1 if v1 and v2 are the same (content-wise), 0 otherwise.
  */
-int osl_vector_equal(osl_vector_p v1, osl_vector_p v2) {
+int osl_vector_equal(const osl_vector_t* const v1, const osl_vector_t* const v2) {
   int i;
 
   if (v1 == v2)
@@ -355,7 +355,7 @@ int osl_vector_equal(osl_vector_p v1, osl_vector_p v2) {
  * \param scalar The scalar coefficient.
  * \return A new vector corresponding to scalar * v.
  */
-osl_vector_p osl_vector_mul_scalar(osl_vector_p v, int scalar) {
+osl_vector_t* osl_vector_mul_scalar(const osl_vector_t* const v, int scalar) {
   int i;
   osl_vector_p result = osl_vector_pmalloc(v->precision, v->size);
   
@@ -373,7 +373,7 @@ osl_vector_p osl_vector_mul_scalar(osl_vector_p v, int scalar) {
  * \param[in] vector The vector to check whether it is scalar or not.
  * \return 1 if the vector is scalar, 0 otherwise.
  */
-int osl_vector_is_scalar(osl_vector_p vector) {
+int osl_vector_is_scalar(const osl_vector_t* vector) {
   int i;
 
   if (vector == NULL)
