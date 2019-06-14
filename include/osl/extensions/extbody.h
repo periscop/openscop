@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/body.h>
 #include <osl/interface.h>
 #include <osl/strings.h>
@@ -95,27 +96,27 @@ typedef struct osl_extbody const* const osl_const_extbody_const_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_extbody_idump(FILE*, const osl_extbody_t*, int);
-void osl_extbody_dump(FILE*, const osl_extbody_t*);
-char* osl_extbody_sprint(const osl_extbody_t*);
+void osl_extbody_idump(FILE*, const osl_extbody_t*, int) OSL_NONNULL_ARGS(1);
+void osl_extbody_dump(FILE*, const osl_extbody_t*) OSL_NONNULL_ARGS(1);
+char* osl_extbody_sprint(const osl_extbody_t*) OSL_WARN_UNUSED_RESULT;
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_extbody_t* osl_extbody_sread(char**);
+osl_extbody_t* osl_extbody_sread(char**) OSL_WARN_UNUSED_RESULT;
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_extbody_t* osl_extbody_malloc(void);
+osl_extbody_t* osl_extbody_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_extbody_free(osl_extbody_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_extbody_t* osl_extbody_clone(const osl_extbody_t*);
+osl_extbody_t* osl_extbody_clone(const osl_extbody_t*) OSL_WARN_UNUSED_RESULT;
 int osl_extbody_equal(const osl_extbody_t*, const osl_extbody_t*);
-osl_interface_t* osl_extbody_interface(void);
+osl_interface_t* osl_extbody_interface(void) OSL_WARN_UNUSED_RESULT;
 void osl_extbody_add(osl_extbody_t*, int, int);
 
 #if defined(__cplusplus)
