@@ -61,77 +61,71 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_SYMBOLS_H
-# define OSL_SYMBOLS_H
+#define OSL_SYMBOLS_H
 
-# include <stdio.h>
-# include <osl/interface.h>
-# include <osl/relation.h>
-# include <osl/generic.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/generic.h>
+#include <osl/interface.h>
+#include <osl/relation.h>
 
-# define OSL_URI_SYMBOLS        "symbols"
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#define OSL_URI_SYMBOLS "symbols"
 
 /**
  * The osl_symbols_t structure stores information regarding the symbols.
  */
 struct osl_symbols {
-  int           type;        /**< Symbol type (variable, iterator...) */
-  int           generated;   /**< Flag to determine its origin */
-  int           nb_dims;     /**< Number of array dimensions */
-  osl_generic_p identifier;  /**< Symbol identifier */
-  osl_generic_p datatype;    /**< Symbol Datatype (int, float...) */
-  osl_generic_p scope;       /**< Scope of symbol */
-  osl_generic_p extent;      /**< Limits of dimensions in Symbol */
+  int type;                 /**< Symbol type (variable, iterator...) */
+  int generated;            /**< Flag to determine its origin */
+  int nb_dims;              /**< Number of array dimensions */
+  osl_generic_p identifier; /**< Symbol identifier */
+  osl_generic_p datatype;   /**< Symbol Datatype (int, float...) */
+  osl_generic_p scope;      /**< Scope of symbol */
+  osl_generic_p extent;     /**< Limits of dimensions in Symbol */
 
-  void*         usr;         /**< A user defined field */
+  void* usr; /**< A user defined field */
   struct osl_symbols* next;
 };
-typedef struct osl_symbols  osl_symbols_t;
+typedef struct osl_symbols osl_symbols_t;
 typedef struct osl_symbols* osl_symbols_p;
-
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_symbols_idump(FILE *, const osl_symbols_t*, int);
-void            osl_symbols_dump(FILE *, const osl_symbols_t*);
-char *          osl_symbols_sprint(const osl_symbols_t*);
-
+void osl_symbols_idump(FILE*, const osl_symbols_t*, int);
+void osl_symbols_dump(FILE*, const osl_symbols_t*);
+char* osl_symbols_sprint(const osl_symbols_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_symbols_t*   osl_symbols_sread(char **);
-
+osl_symbols_t* osl_symbols_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_symbols_t*   osl_symbols_malloc(void);
-void            osl_symbols_free(osl_symbols_t*);
-
+osl_symbols_t* osl_symbols_malloc(void);
+void osl_symbols_free(osl_symbols_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-void            osl_symbols_add(osl_symbols_t**, osl_symbols_t*);
-osl_symbols_t*   osl_symbols_nclone(const osl_symbols_t*, int);
-osl_symbols_t*   osl_symbols_clone(const osl_symbols_t*);
-int             osl_symbols_equal(const osl_symbols_t*, const osl_symbols_t*);
-osl_symbols_t*   osl_symbols_lookup(osl_symbols_t*, osl_generic_t*);
-osl_symbols_t*   osl_symbols_remove(osl_symbols_t**, osl_symbols_t*);
-int             osl_symbols_get_nb_symbols(const osl_symbols_t*);
+void osl_symbols_add(osl_symbols_t**, osl_symbols_t*);
+osl_symbols_t* osl_symbols_nclone(const osl_symbols_t*, int);
+osl_symbols_t* osl_symbols_clone(const osl_symbols_t*);
+int osl_symbols_equal(const osl_symbols_t*, const osl_symbols_t*);
+osl_symbols_t* osl_symbols_lookup(osl_symbols_t*, osl_generic_t*);
+osl_symbols_t* osl_symbols_remove(osl_symbols_t**, osl_symbols_t*);
+int osl_symbols_get_nb_symbols(const osl_symbols_t*);
 osl_interface_t* osl_symbols_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_SYMBOLS_H */
