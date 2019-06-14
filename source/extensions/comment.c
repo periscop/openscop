@@ -85,7 +85,7 @@
  * \param[in] comment The comment structure to print.
  * \param[in] level   Number of spaces before printing, for each line.
  */
-void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
+void osl_comment_idump(FILE * const file, const osl_comment_t* const comment, int level) {
   int j;
   size_t l;
   char * tmp;
@@ -127,7 +127,7 @@ void osl_comment_idump(FILE * file, osl_comment_p comment, int level) {
  * \param[in] file    The file where the information has to be printed.
  * \param[in] comment The comment structure to print.
  */
-void osl_comment_dump(FILE * file, osl_comment_p comment) {
+void osl_comment_dump(FILE * const file, const osl_comment_t* const comment) {
   osl_comment_idump(file, comment, 0);
 }
 
@@ -139,7 +139,7 @@ void osl_comment_dump(FILE * file, osl_comment_p comment) {
  * \param[in] comment The comment structure to print.
  * \return A string containing the OpenScop dump of the comment structure.
  */
-char * osl_comment_sprint(osl_comment_p comment) {
+char * osl_comment_sprint(const osl_comment_t* const comment) {
   size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
@@ -175,7 +175,7 @@ char * osl_comment_sprint(osl_comment_p comment) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the comment structure that has been read.
  */
-osl_comment_p osl_comment_sread(char ** input) {
+osl_comment_t* osl_comment_sread(char ** input) {
   osl_comment_p comment;
 
   if (*input == NULL) {
@@ -210,7 +210,7 @@ osl_comment_p osl_comment_sread(char ** input) {
  * \return A pointer to an empty comment structure with fields set to
  *         default values.
  */
-osl_comment_p osl_comment_malloc(void) {
+osl_comment_t* osl_comment_malloc(void) {
   osl_comment_p comment;
 
   OSL_malloc(comment, osl_comment_p, sizeof(osl_comment_t));
@@ -226,7 +226,7 @@ osl_comment_p osl_comment_malloc(void) {
  * structure.
  * \param[in,out] comment The pointer to the comment structure to free.
  */
-void osl_comment_free(osl_comment_p comment) {
+void osl_comment_free(osl_comment_t* comment) {
   if (comment != NULL) {
     if(comment->comment != NULL)
       free(comment->comment);
@@ -247,7 +247,7 @@ void osl_comment_free(osl_comment_p comment) {
  * \param[in] comment The pointer to the comment structure to clone.
  * \return A pointer to the clone of the comment structure.
  */
-osl_comment_p osl_comment_clone(osl_comment_p comment) {
+osl_comment_t* osl_comment_clone(const osl_comment_t* const comment) {
   osl_comment_p clone;
 
   if (comment == NULL)
@@ -268,7 +268,7 @@ osl_comment_p osl_comment_clone(osl_comment_p comment) {
  * \param[in] c2  The second comment structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
+int osl_comment_equal(const osl_comment_t* const c1, const osl_comment_t* const c2) {
   if (c1 == c2)
     return 1;
 
@@ -294,7 +294,7 @@ int osl_comment_equal(osl_comment_p c1, osl_comment_p c2) {
  * extension and returns it).
  * \return An interface structure for the comment extension.
  */
-osl_interface_p osl_comment_interface(void) {
+osl_interface_t* osl_comment_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_COMMENT);

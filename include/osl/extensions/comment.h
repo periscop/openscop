@@ -90,30 +90,30 @@ typedef struct osl_comment * osl_comment_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_comment_idump(FILE *, osl_comment_p, int);
-void            osl_comment_dump(FILE *, osl_comment_p);
-char *          osl_comment_sprint(osl_comment_p);
+void            osl_comment_idump(FILE *, const osl_comment_t*, int);
+void            osl_comment_dump(FILE *, const osl_comment_t*);
+char *          osl_comment_sprint(const osl_comment_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_comment_p   osl_comment_sread(char **);
+osl_comment_t*   osl_comment_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_comment_p   osl_comment_malloc(void);
-void            osl_comment_free(osl_comment_p);
+osl_comment_t*   osl_comment_malloc(void);
+void            osl_comment_free(osl_comment_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_comment_p   osl_comment_clone(osl_comment_p);
-int             osl_comment_equal(osl_comment_p, osl_comment_p);
-osl_interface_p osl_comment_interface(void);
+osl_comment_t*   osl_comment_clone(const osl_comment_t*);
+int             osl_comment_equal(const osl_comment_t*, const osl_comment_t*);
+osl_interface_t* osl_comment_interface(void);
 
 
 # if defined(__cplusplus)
