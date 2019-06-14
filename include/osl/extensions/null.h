@@ -60,21 +60,18 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_NULL_H
-# define OSL_NULL_H
+#define OSL_NULL_H
 
-# include <stdio.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_NULL        "null"
-
+#define OSL_URI_NULL "null"
 
 /**
  * The osl_null_t structure stores a null extention to the core
@@ -83,41 +80,36 @@ extern "C"
 struct osl_null {
   int fake_member_to_disable_warning;
 };
-typedef struct osl_null   osl_null_t;
-typedef struct osl_null * osl_null_p;
-
+typedef struct osl_null osl_null_t;
+typedef struct osl_null* osl_null_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_null_idump(FILE *, const osl_null_t*, int);
-void            osl_null_dump(FILE *, const osl_null_t*);
-char *          osl_null_sprint(const osl_null_t*);
-
+void osl_null_idump(FILE*, const osl_null_t*, int);
+void osl_null_dump(FILE*, const osl_null_t*);
+char* osl_null_sprint(const osl_null_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_null_t*      osl_null_sread(char **);
-
+osl_null_t* osl_null_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_null_t*      osl_null_malloc(void);
-void            osl_null_free(osl_null_t*);
-
+osl_null_t* osl_null_malloc(void);
+void osl_null_free(osl_null_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_null_t*      osl_null_clone(const osl_null_t*);
-int             osl_null_equal(const osl_null_t*, const osl_null_t*);
+osl_null_t* osl_null_clone(const osl_null_t*);
+int osl_null_equal(const osl_null_t*, const osl_null_t*);
 osl_interface_t* osl_null_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_NULL_H */

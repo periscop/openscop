@@ -60,20 +60,19 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <osl/interface.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/interface.h>
-#include <osl/extensions/null.h>
 
+#include <osl/extensions/null.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_null_idump function:
@@ -85,12 +84,11 @@
  * \param[in] null  The null structure to print.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_null_idump(FILE * const file, const osl_null_t* const null, int level) {
+void osl_null_idump(FILE* const file, const osl_null_t* const null, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (null != NULL)
     fprintf(file, "+-- osl_null_t\n");
@@ -98,11 +96,9 @@ void osl_null_idump(FILE * const file, const osl_null_t* const null, int level) 
     fprintf(file, "+-- NULL null\n");
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_null_dump function:
@@ -111,10 +107,9 @@ void osl_null_idump(FILE * const file, const osl_null_t* const null, int level) 
  * \param[in] file The file where the information has to be printed.
  * \param[in] null The null structure to print.
  */
-void osl_null_dump(FILE * const file, const osl_null_t* const null) {
+void osl_null_dump(FILE* const file, const osl_null_t* const null) {
   osl_null_idump(file, null, 0);
 }
-
 
 /**
  * osl_null_sprint function:
@@ -123,23 +118,21 @@ void osl_null_dump(FILE * const file, const osl_null_t* const null) {
  * \param[in] null The null structure to print.
  * \return A string containing the OpenScop dump of the null structure.
  */
-char * osl_null_sprint(const osl_null_t* const null) {
-  char * string = NULL;
+char* osl_null_sprint(const osl_null_t* const null) {
+  char* string = NULL;
 
   if (null != NULL) {
     // Print nothing.
-    OSL_malloc(string, char *, sizeof(char));
+    OSL_malloc(string, char*, sizeof(char));
     string[0] = '\0';
   }
 
   return string;
 }
 
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_null_sread function:
@@ -151,7 +144,7 @@ char * osl_null_sprint(const osl_null_t* const null) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the null structure that has been read.
  */
-osl_null_t* osl_null_sread(char ** input) {
+osl_null_t* osl_null_sread(char** input) {
   osl_null_p null;
 
   if (*input == NULL) {
@@ -168,11 +161,9 @@ osl_null_t* osl_null_sread(char ** input) {
   return null;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_null_malloc function:
@@ -189,7 +180,6 @@ osl_null_t* osl_null_malloc(void) {
   return null;
 }
 
-
 /**
  * osl_null_free function:
  * this function frees the allocated memory for an osl_null_t
@@ -202,11 +192,9 @@ void osl_null_free(osl_null_t* null) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_null_clone function:
@@ -218,13 +206,11 @@ void osl_null_free(osl_null_t* null) {
 osl_null_t* osl_null_clone(const osl_null_t* null) {
   osl_null_p clone;
 
-  if (null == NULL)
-    return NULL;
+  if (null == NULL) return NULL;
 
   clone = osl_null_malloc();
   return clone;
 }
-
 
 /**
  * osl_null_equal function:
@@ -235,8 +221,7 @@ osl_null_t* osl_null_clone(const osl_null_t* null) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
-  if (c1 == c2)
-    return 1;
+  if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
     OSL_info("nulls are not the same");
@@ -246,7 +231,6 @@ int osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
   return 1;
 }
 
-
 /**
  * osl_null_interface function:
  * this function creates an interface structure corresponding to the null
@@ -255,15 +239,15 @@ int osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
  */
 osl_interface_t* osl_null_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_NULL);
-  interface->idump  = (osl_idump_f)osl_null_idump;
+  interface->idump = (osl_idump_f)osl_null_idump;
   interface->sprint = (osl_sprint_f)osl_null_sprint;
-  interface->sread  = (osl_sread_f)osl_null_sread;
+  interface->sread = (osl_sread_f)osl_null_sread;
   interface->malloc = (osl_malloc_f)osl_null_malloc;
-  interface->free   = (osl_free_f)osl_null_free;
-  interface->clone  = (osl_clone_f)osl_null_clone;
-  interface->equal  = (osl_equal_f)osl_null_equal;
+  interface->free = (osl_free_f)osl_null_free;
+  interface->clone = (osl_clone_f)osl_null_clone;
+  interface->equal = (osl_equal_f)osl_null_equal;
 
   return interface;
 }
