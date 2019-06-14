@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/interface.h>
 
 #if defined(__cplusplus)
@@ -93,27 +94,29 @@ typedef struct osl_coordinates* osl_coordinates_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_coordinates_idump(FILE*, const osl_coordinates_t*, int);
-void osl_coordinates_dump(FILE*, const osl_coordinates_t*);
-char* osl_coordinates_sprint(const osl_coordinates_t*);
+void osl_coordinates_idump(FILE*, const osl_coordinates_t*, int)
+    OSL_NONNULL_ARGS(1);
+void osl_coordinates_dump(FILE*, const osl_coordinates_t*) OSL_NONNULL_ARGS(1);
+char* osl_coordinates_sprint(const osl_coordinates_t*) OSL_WARN_UNUSED_RESULT;
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_coordinates_t* osl_coordinates_sread(char**);
+osl_coordinates_t* osl_coordinates_sread(char**) OSL_WARN_UNUSED_RESULT;
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_coordinates_t* osl_coordinates_malloc(void);
+osl_coordinates_t* osl_coordinates_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_coordinates_free(osl_coordinates_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t*);
+osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t*)
+    OSL_WARN_UNUSED_RESULT;
 int osl_coordinates_equal(const osl_coordinates_t*, const osl_coordinates_t*);
-osl_interface_t* osl_coordinates_interface(void);
+osl_interface_t* osl_coordinates_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
