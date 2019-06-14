@@ -60,21 +60,18 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_TEXTUAL_H
-# define OSL_TEXTUAL_H
+#define OSL_TEXTUAL_H
 
-# include <stdio.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_TEXTUAL       "textual"
-
+#define OSL_URI_TEXTUAL "textual"
 
 /**
  * The osl_textual_t structure stores the complete textual
@@ -82,42 +79,38 @@ extern "C"
  * extension since it does not require start and end tag.
  */
 struct osl_textual {
-  char * textual; /**< Full extension string as a 0-terminated string. */
+  char* textual; /**< Full extension string as a 0-terminated string. */
 };
-typedef struct osl_textual   osl_textual_t;
-typedef struct osl_textual * osl_textual_p;
-
+typedef struct osl_textual osl_textual_t;
+typedef struct osl_textual* osl_textual_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_textual_idump(FILE *, const osl_textual_t*, int);
-void            osl_textual_dump(FILE *, const osl_textual_t*);
-char *          osl_textual_sprint(const osl_textual_t*);
-
+void osl_textual_idump(FILE*, const osl_textual_t*, int);
+void osl_textual_dump(FILE*, const osl_textual_t*);
+char* osl_textual_sprint(const osl_textual_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_textual_t*   osl_textual_sread(char **);
-
+osl_textual_t* osl_textual_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_textual_t*   osl_textual_malloc(void);
-void            osl_textual_free(osl_textual_t*);
-
+osl_textual_t* osl_textual_malloc(void);
+void osl_textual_free(osl_textual_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_textual_t*   osl_textual_clone(const osl_textual_t*);
-int             osl_textual_equal(const osl_textual_t*, const osl_textual_t*);
+osl_textual_t* osl_textual_clone(const osl_textual_t*);
+int osl_textual_equal(const osl_textual_t*, const osl_textual_t*);
 osl_interface_t* osl_textual_interface(void);
 
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_TEXTUAL_H */

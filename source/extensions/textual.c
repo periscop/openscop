@@ -60,23 +60,21 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <osl/interface.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/interface.h>
+
 #include <osl/extensions/textual.h>
 
-
 /* CAUTION : TEXTUAL IS A VERY SPECIAL CASE: DO NOT USE IT AS AN EXAMPLE !!! */
-
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_textual_idump function:
@@ -88,46 +86,40 @@
  * \param[in] textual The textual structure to be printed.
  * \param[in] level   Number of spaces before printing, for each line.
  */
-void osl_textual_idump(FILE * const file, const osl_textual_t* const textual, int level) {
+void osl_textual_idump(FILE* const file, const osl_textual_t* const textual,
+                       int level) {
   int j;
-  char * tmp;
+  char* tmp;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (textual != NULL) {
     fprintf(file, "+-- osl_textual_t: ");
-    
+
     // Display the textual message (without any carriage return).
     OSL_strdup(tmp, textual->textual);
     for (j = 0; j < (int)strlen(tmp); j++)
-      if (tmp[j] == '\n')
-	tmp[j] = ' ';
+      if (tmp[j] == '\n') tmp[j] = ' ';
 
     if (strlen(tmp) > 40) {
-      for (j = 0; j < 20; j++)
-        fprintf(file, "%c", tmp[j]);
+      for (j = 0; j < 20; j++) fprintf(file, "%c", tmp[j]);
       fprintf(file, "   ...   ");
       for (j = (int)strlen(tmp) - 20; j < (int)strlen(tmp); j++)
         fprintf(file, "%c", tmp[j]);
       fprintf(file, "\n");
-    }
-    else {
-      fprintf(file,"%s\n", tmp);
+    } else {
+      fprintf(file, "%s\n", tmp);
     }
     free(tmp);
-  }
-  else {
+  } else {
     fprintf(file, "+-- NULL textual\n");
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_textual_dump function:
@@ -136,11 +128,9 @@ void osl_textual_idump(FILE * const file, const osl_textual_t* const textual, in
  * \param[in] file    The file where the information has to be printed.
  * \param[in] textual The textual structure to be printed.
  */
-void osl_textual_dump(FILE * const file, const osl_textual_t* const textual) {
+void osl_textual_dump(FILE* const file, const osl_textual_t* const textual) {
   osl_textual_idump(file, textual, 0);
 }
-
-
 
 #if 0
 /**
@@ -173,17 +163,15 @@ char * osl_textual_sprint(const osl_textual_t* const textual) {
  * \param[in]  textual The textual structure to be printed.
  * \return NULL.
  */
-char * osl_textual_sprint(const osl_textual_t* const textual) {
-  (void) textual;
+char* osl_textual_sprint(const osl_textual_t* const textual) {
+  (void)textual;
   return NULL;
 }
 #endif
 
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_textual_sread function:
@@ -194,13 +182,13 @@ char * osl_textual_sprint(const osl_textual_t* const textual) {
  *                           Updated to the position after what has been read.
  * \return A pointer to the textual structure that has been read.
  */
-osl_textual_t* osl_textual_sread(char ** extensions) {
+osl_textual_t* osl_textual_sread(char** extensions) {
   osl_textual_p textual = NULL;
 
   if (*extensions != NULL) {
     textual = osl_textual_malloc();
     OSL_strdup(textual->textual, *extensions);
-    
+
     // Update the input string pointer to the end of the string (since
     // everything has been read).
     *extensions = *extensions + strlen(*extensions);
@@ -209,11 +197,9 @@ osl_textual_t* osl_textual_sread(char ** extensions) {
   return textual;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_textual_malloc function:
@@ -232,7 +218,6 @@ osl_textual_t* osl_textual_malloc(void) {
   return textual;
 }
 
-
 /**
  * osl_textual_free function:
  * this function frees the allocated memory for an osl_textual_t
@@ -241,17 +226,14 @@ osl_textual_t* osl_textual_malloc(void) {
  */
 void osl_textual_free(osl_textual_t* textual) {
   if (textual != NULL) {
-    if(textual->textual != NULL)
-      free(textual->textual);
+    if (textual->textual != NULL) free(textual->textual);
     free(textual);
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_textual_clone function:
@@ -263,15 +245,13 @@ void osl_textual_free(osl_textual_t* textual) {
 osl_textual_t* osl_textual_clone(const osl_textual_t* textual) {
   osl_textual_p clone;
 
-  if (textual == NULL)
-    return NULL;
+  if (textual == NULL) return NULL;
 
   clone = osl_textual_malloc();
   OSL_strdup(clone->textual, textual->textual);
 
   return clone;
 }
-
 
 #if 0
 /**
@@ -302,16 +282,15 @@ int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
  * the textual option (the text string can be easily different while the
  * options are actually identical.
  * \param[in] f1  The first textual structure.
- * \param[in] f2  The second textual structure. 
+ * \param[in] f2  The second textual structure.
  * \return 1.
  */
 int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
-  (void) f1;
-  (void) f2;
+  (void)f1;
+  (void)f2;
   return 1;
 }
 #endif
-
 
 /**
  * osl_textual_interface function:
@@ -321,16 +300,15 @@ int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
  */
 osl_interface_t* osl_textual_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_TEXTUAL);
-  interface->idump  = (osl_idump_f)osl_textual_idump;
+  interface->idump = (osl_idump_f)osl_textual_idump;
   interface->sprint = (osl_sprint_f)osl_textual_sprint;
-  interface->sread  = (osl_sread_f)osl_textual_sread;
+  interface->sread = (osl_sread_f)osl_textual_sread;
   interface->malloc = (osl_malloc_f)osl_textual_malloc;
-  interface->free   = (osl_free_f)osl_textual_free;
-  interface->clone  = (osl_clone_f)osl_textual_clone;
-  interface->equal  = (osl_equal_f)osl_textual_equal;
+  interface->free = (osl_free_f)osl_textual_free;
+  interface->clone = (osl_clone_f)osl_textual_clone;
+  interface->equal = (osl_equal_f)osl_textual_equal;
 
   return interface;
 }
-
