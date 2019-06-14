@@ -64,9 +64,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/osl/extensions/pluto_unroll.h"
-#include "../include/osl/macros.h"
+#include <osl/macros.h>
 
+#include <osl/extensions/pluto_unroll.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *

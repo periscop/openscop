@@ -68,8 +68,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "../strings.h"
-#include "../interface.h"
+#include <osl/strings.h>
+#include <osl/interface.h>
 
 
 #if defined(__cplusplus)
