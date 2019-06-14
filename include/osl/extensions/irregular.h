@@ -60,25 +60,22 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_IRREGULAR_H
-# define OSL_IRREGULAR_H
+#define OSL_IRREGULAR_H
 
-# include <stdio.h>
-# include <osl/macros.h>
-# include <osl/strings.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
+#include <osl/macros.h>
+#include <osl/strings.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_IRREGULAR        "irregular"
-# define OSL_TAG_IRREGULAR_START  "<"  OSL_URI_IRREGULAR ">"
-# define OSL_TAG_IRREGULAR_STOP   "</" OSL_URI_IRREGULAR ">"
-
+#define OSL_URI_IRREGULAR "irregular"
+#define OSL_TAG_IRREGULAR_START "<" OSL_URI_IRREGULAR ">"
+#define OSL_TAG_IRREGULAR_STOP "</" OSL_URI_IRREGULAR ">"
 
 /**
  * The osl_irregular_t structure stores an irregular extension to the core
@@ -90,60 +87,58 @@ extern "C"
  */
 struct osl_irregular {
   // List of predicates (textual representation).
-  int nb_control;      /**< Number of control predicates in the SCoP. */
-  int nb_exit;         /**< Number of exit predicates in the SCoP. */
-  int * nb_iterators;  /**< nb_iterators[i]: #iterators for ith predicate. */
-  char *** iterators;  /**< iterators[i]: array of (nb_control + nb_exit)
-                            arrays of nb_iterators[i] strings. Each element
-                            corresponds to the list of original iterators
-                            for the ith predicate. */
-  char ** body;        /**< body[i]: original source code of ith predicate. */
-  
-  // List of associated predicates for each statement.
-  int nb_statements;   /**< Number of statements in the SCoP. */
-  int * nb_predicates; /**< nb_predicates[i]: #predicates for ith statement. */
-  int ** predicates;   /**< predicates[i]: array of nb_predicates[i] predicates
-                            corresponding to the list of predicates associated
-                            to the ith statement. */
-};
-typedef struct osl_irregular   osl_irregular_t;
-typedef struct osl_irregular * osl_irregular_p;
+  int nb_control;    /**< Number of control predicates in the SCoP. */
+  int nb_exit;       /**< Number of exit predicates in the SCoP. */
+  int* nb_iterators; /**< nb_iterators[i]: #iterators for ith predicate. */
+  char*** iterators; /**< iterators[i]: array of (nb_control + nb_exit)
+                          arrays of nb_iterators[i] strings. Each element
+                          corresponds to the list of original iterators
+                          for the ith predicate. */
+  char** body;       /**< body[i]: original source code of ith predicate. */
 
+  // List of associated predicates for each statement.
+  int nb_statements;  /**< Number of statements in the SCoP. */
+  int* nb_predicates; /**< nb_predicates[i]: #predicates for ith statement. */
+  int** predicates;   /**< predicates[i]: array of nb_predicates[i] predicates
+                           corresponding to the list of predicates associated
+                           to the ith statement. */
+};
+typedef struct osl_irregular osl_irregular_t;
+typedef struct osl_irregular* osl_irregular_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_irregular_idump(FILE *, const osl_irregular_t*, int);
-void            osl_irregular_dump(FILE *, const osl_irregular_t*);
-char *          osl_irregular_sprint(const osl_irregular_t*);
-
+void osl_irregular_idump(FILE*, const osl_irregular_t*, int);
+void osl_irregular_dump(FILE*, const osl_irregular_t*);
+char* osl_irregular_sprint(const osl_irregular_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_irregular_t* osl_irregular_sread(char **);
-
+osl_irregular_t* osl_irregular_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
 osl_irregular_t* osl_irregular_malloc(void);
-void            osl_irregular_free(osl_irregular_t*);
-
+void osl_irregular_free(osl_irregular_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
 osl_irregular_t* osl_irregular_clone(const osl_irregular_t*);
-int             osl_irregular_equal(const osl_irregular_t*, const osl_irregular_t*);
-osl_irregular_t* osl_irregular_add_control(const osl_irregular_t*, char**, int, const char*);
-osl_irregular_t* osl_irregular_add_exit(const osl_irregular_t*, char**, int, const char*);
-osl_irregular_t* osl_irregular_add_predicates(const osl_irregular_t*, const int*, int);
+int osl_irregular_equal(const osl_irregular_t*, const osl_irregular_t*);
+osl_irregular_t* osl_irregular_add_control(const osl_irregular_t*, char**, int,
+                                           const char*);
+osl_irregular_t* osl_irregular_add_exit(const osl_irregular_t*, char**, int,
+                                        const char*);
+osl_irregular_t* osl_irregular_add_predicates(const osl_irregular_t*,
+                                              const int*, int);
 osl_interface_t* osl_irregular_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_IRREGULAR_H */
