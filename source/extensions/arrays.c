@@ -87,7 +87,7 @@
  * \param[in] arrays The arrays structure to print.
  * \param[in] level  Number of spaces before printing, for each line.
  */
-void osl_arrays_idump(FILE * file, osl_arrays_p arrays, int level) {
+void osl_arrays_idump(FILE * const file, const osl_arrays_t* const arrays, int level) {
   int i, j;
 
   // Go to the right level.
@@ -131,7 +131,7 @@ void osl_arrays_idump(FILE * file, osl_arrays_p arrays, int level) {
  * \param[in] file   The file where the information has to be printed.
  * \param[in] arrays The arrays structure to print.
  */
-void osl_arrays_dump(FILE * file, osl_arrays_p arrays) {
+void osl_arrays_dump(FILE * const file, const osl_arrays_t* const arrays) {
   osl_arrays_idump(file, arrays, 0);
 }
 
@@ -143,7 +143,7 @@ void osl_arrays_dump(FILE * file, osl_arrays_p arrays) {
  * \param[in] arrays The arrays structure to print.
  * \return A string containing the OpenScop dump of the arrays structure.
  */
-char * osl_arrays_sprint(osl_arrays_p arrays) {
+char * osl_arrays_sprint(const osl_arrays_t* const arrays) {
   int i;
   size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
@@ -191,7 +191,7 @@ char * osl_arrays_sprint(osl_arrays_p arrays) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the arrays structure that has been read.
  */
-osl_arrays_p osl_arrays_sread(char ** input) {
+osl_arrays_t* osl_arrays_sread(char ** input) {
   int i, k;
   int nb_names;
   osl_arrays_p arrays;
@@ -238,7 +238,7 @@ osl_arrays_p osl_arrays_sread(char ** input) {
  * \return A pointer to an empty arrays structure with fields set to
  *         default values.
  */
-osl_arrays_p osl_arrays_malloc(void) {
+osl_arrays_t* osl_arrays_malloc(void) {
   osl_arrays_p arrays;
 
   OSL_malloc(arrays, osl_arrays_p, sizeof(osl_arrays_t));
@@ -255,7 +255,7 @@ osl_arrays_p osl_arrays_malloc(void) {
  * this function frees the allocated memory for an arrays structure.
  * \param[in,out] arrays The pointer to the arrays structure we want to free.
  */
-void osl_arrays_free(osl_arrays_p arrays) {
+void osl_arrays_free(osl_arrays_t* const arrays) {
   int i;
 
   if (arrays != NULL) {
@@ -280,7 +280,7 @@ void osl_arrays_free(osl_arrays_p arrays) {
  * \param[in] arrays The pointer to the arrays structure to clone.
  * \return A pointer to the clone of the arrays structure.
  */
-osl_arrays_p osl_arrays_clone(osl_arrays_p arrays) {
+osl_arrays_t* osl_arrays_clone(const osl_arrays_t* const arrays) {
   int i;
   osl_arrays_p clone;
 
@@ -311,7 +311,7 @@ osl_arrays_p osl_arrays_clone(osl_arrays_p arrays) {
  * \param[in] a2 The second arrays structure.
  * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
+int osl_arrays_equal(const osl_arrays_t* const a1, const osl_arrays_t* const a2) {
   int i, j, found;
 
   if (a1 == a2)
@@ -357,7 +357,7 @@ int osl_arrays_equal(osl_arrays_p a1, osl_arrays_p a2) {
  * \param[in] arrays The arrays structure to convert to a strings.
  * \return A strings structure containing all the array names.
  */
-osl_strings_p osl_arrays_to_strings(osl_arrays_p arrays) {
+osl_strings_t* osl_arrays_to_strings(const osl_arrays_t* const arrays) {
   int i, max_id = 0;
   osl_strings_p strings = NULL;
 
@@ -391,7 +391,7 @@ osl_strings_p osl_arrays_to_strings(osl_arrays_p arrays) {
  * \param[in] name   The new variable's name.
  * \return Updated number of elements, -1 means error
  */
-int osl_arrays_add(osl_arrays_p arrays, int id, char* name) {
+int osl_arrays_add(osl_arrays_t* const arrays, int id, const char* const name) {
 
   if (arrays == NULL || name == NULL)
     return -1;
@@ -414,7 +414,7 @@ int osl_arrays_add(osl_arrays_p arrays, int id, char* name) {
  * \param[in] id     The variable's id.
  * \return index of the variable, array->nb_names means error
  */
-size_t osl_arrays_get_index_from_id(osl_arrays_p arrays, int id) {
+size_t osl_arrays_get_index_from_id(const osl_arrays_t* const arrays, int id) {
   size_t i = 0;
 
   if (arrays == NULL)
@@ -436,7 +436,7 @@ size_t osl_arrays_get_index_from_id(osl_arrays_p arrays, int id) {
  * \param[in] name     The variable's name.
  * \return index of the variable, array->nb_names means error
  */
-size_t osl_arrays_get_index_from_name(osl_arrays_p arrays, char* name) {
+size_t osl_arrays_get_index_from_name(const osl_arrays_t* const arrays, const char* const name) {
   size_t i = 0;
 
   if (arrays == NULL || name == NULL)
@@ -456,7 +456,7 @@ size_t osl_arrays_get_index_from_name(osl_arrays_p arrays, char* name) {
  * extension and returns it).
  * \return An interface structure for the arrays extension.
  */
-osl_interface_p osl_arrays_interface(void) {
+osl_interface_t* osl_arrays_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_ARRAYS);

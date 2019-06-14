@@ -95,34 +95,34 @@ typedef struct osl_arrays * osl_arrays_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_arrays_idump(FILE *, osl_arrays_p, int);
-void            osl_arrays_dump(FILE *, osl_arrays_p);
-char *          osl_arrays_sprint(osl_arrays_p);
+void            osl_arrays_idump(FILE *, const osl_arrays_t*, int);
+void            osl_arrays_dump(FILE *, const osl_arrays_t*);
+char *          osl_arrays_sprint(const osl_arrays_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_arrays_p    osl_arrays_sread(char **);
+osl_arrays_t*    osl_arrays_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_arrays_p    osl_arrays_malloc(void);
-void            osl_arrays_free(osl_arrays_p);
+osl_arrays_t*    osl_arrays_malloc(void);
+void            osl_arrays_free(osl_arrays_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_arrays_p    osl_arrays_clone(osl_arrays_p);
-int             osl_arrays_equal(osl_arrays_p, osl_arrays_p);
-osl_strings_p   osl_arrays_to_strings(osl_arrays_p);
-int             osl_arrays_add(osl_arrays_p, int, char*);
-size_t          osl_arrays_get_index_from_id(osl_arrays_p, int);
-size_t          osl_arrays_get_index_from_name(osl_arrays_p, char*);
-osl_interface_p osl_arrays_interface(void);
+osl_arrays_t*    osl_arrays_clone(const osl_arrays_t*);
+int             osl_arrays_equal(const osl_arrays_t*, const osl_arrays_t*);
+osl_strings_t*   osl_arrays_to_strings(const osl_arrays_t*);
+int             osl_arrays_add(osl_arrays_t*, int, const char*);
+size_t          osl_arrays_get_index_from_id(const osl_arrays_t*, int);
+size_t          osl_arrays_get_index_from_name(const osl_arrays_t*, const char*);
+osl_interface_t* osl_arrays_interface(void);
 
 # if defined(__cplusplus)
   }
