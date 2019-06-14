@@ -85,7 +85,7 @@
  * \param[in] clay  The clay structure to print.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_clay_idump(FILE * file, osl_clay_p clay, int level) {
+void osl_clay_idump(FILE * const file, const osl_clay_t* const clay, int level) {
   int j;
   size_t l;
   char * tmp;
@@ -127,7 +127,7 @@ void osl_clay_idump(FILE * file, osl_clay_p clay, int level) {
  * \param[in] file The file where the information has to be printed.
  * \param[in] clay The clay structure to print.
  */
-void osl_clay_dump(FILE * file, osl_clay_p clay) {
+void osl_clay_dump(FILE * const file, const osl_clay_t* const clay) {
   osl_clay_idump(file, clay, 0);
 }
 
@@ -139,7 +139,7 @@ void osl_clay_dump(FILE * file, osl_clay_p clay) {
  * \param[in] clay The clay structure to print.
  * \return A string containing the OpenScop dump of the clay structure.
  */
-char * osl_clay_sprint(osl_clay_p clay) {
+char * osl_clay_sprint(const osl_clay_t* const clay) {
   size_t high_water_mark = OSL_MAX_STRING;
   char * string = NULL;
   char buffer[OSL_MAX_STRING];
@@ -175,7 +175,7 @@ char * osl_clay_sprint(osl_clay_p clay) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the clay structure that has been read.
  */
-osl_clay_p osl_clay_sread(char ** input) {
+osl_clay_t* osl_clay_sread(char ** input) {
   osl_clay_p clay;
   char * script;
 
@@ -217,7 +217,7 @@ osl_clay_p osl_clay_sread(char ** input) {
  * \return A pointer to an empty clay structure with fields set to
  *         default values.
  */
-osl_clay_p osl_clay_malloc(void) {
+osl_clay_t* osl_clay_malloc(void) {
   osl_clay_p clay;
 
   OSL_malloc(clay, osl_clay_p, sizeof(osl_clay_t));
@@ -233,7 +233,7 @@ osl_clay_p osl_clay_malloc(void) {
  * structure.
  * \param[in,out] clay The pointer to the clay structure to free.
  */
-void osl_clay_free(osl_clay_p clay) {
+void osl_clay_free(osl_clay_t* clay) {
   if (clay != NULL) {
     if(clay->script != NULL)
       free(clay->script);
@@ -254,7 +254,7 @@ void osl_clay_free(osl_clay_p clay) {
  * \param[in] clay The pointer to the clay structure to clone.
  * \return A pointer to the clone of the clay structure.
  */
-osl_clay_p osl_clay_clone(osl_clay_p clay) {
+osl_clay_t* osl_clay_clone(const osl_clay_t* const clay) {
   osl_clay_p clone;
 
   if (clay == NULL)
@@ -275,7 +275,7 @@ osl_clay_p osl_clay_clone(osl_clay_p clay) {
  * \param[in] c2  The second clay structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_clay_equal(osl_clay_p c1, osl_clay_p c2) {
+int osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
   if (c1 == c2)
     return 1;
 
@@ -299,7 +299,7 @@ int osl_clay_equal(osl_clay_p c1, osl_clay_p c2) {
  * extension and returns it).
  * \return An interface structure for the clay extension.
  */
-osl_interface_p osl_clay_interface(void) {
+osl_interface_t* osl_clay_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_CLAY);

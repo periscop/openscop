@@ -90,30 +90,30 @@ typedef struct osl_clay * osl_clay_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_clay_idump(FILE *, osl_clay_p, int);
-void            osl_clay_dump(FILE *, osl_clay_p);
-char *          osl_clay_sprint(osl_clay_p);
+void            osl_clay_idump(FILE *, const osl_clay_t*, int);
+void            osl_clay_dump(FILE *, const osl_clay_t*);
+char *          osl_clay_sprint(const osl_clay_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_clay_p      osl_clay_sread(char **);
+osl_clay_t*      osl_clay_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_clay_p      osl_clay_malloc(void);
-void            osl_clay_free(osl_clay_p);
+osl_clay_t*      osl_clay_malloc(void);
+void            osl_clay_free(osl_clay_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_clay_p      osl_clay_clone(osl_clay_p);
-int             osl_clay_equal(osl_clay_p, osl_clay_p);
-osl_interface_p osl_clay_interface(void);
+osl_clay_t*      osl_clay_clone(const osl_clay_t*);
+int             osl_clay_equal(const osl_clay_t*, const osl_clay_t*);
+osl_interface_t* osl_clay_interface(void);
 
 
 # if defined(__cplusplus)
