@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/interface.h>
 
 #if defined(__cplusplus)
@@ -87,27 +88,27 @@ typedef struct osl_textual* osl_textual_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_textual_idump(FILE*, const osl_textual_t*, int);
-void osl_textual_dump(FILE*, const osl_textual_t*);
-char* osl_textual_sprint(const osl_textual_t*);
+void osl_textual_idump(FILE*, const osl_textual_t*, int) OSL_NONNULL_ARGS(1);
+void osl_textual_dump(FILE*, const osl_textual_t*) OSL_NONNULL_ARGS(1);
+char* osl_textual_sprint(const osl_textual_t*) OSL_WARN_UNUSED_RESULT;
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_textual_t* osl_textual_sread(char**);
+osl_textual_t* osl_textual_sread(char**) OSL_WARN_UNUSED_RESULT;
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_textual_t* osl_textual_malloc(void);
+osl_textual_t* osl_textual_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_textual_free(osl_textual_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_textual_t* osl_textual_clone(const osl_textual_t*);
+osl_textual_t* osl_textual_clone(const osl_textual_t*) OSL_WARN_UNUSED_RESULT;
 int osl_textual_equal(const osl_textual_t*, const osl_textual_t*);
-osl_interface_t* osl_textual_interface(void);
+osl_interface_t* osl_textual_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
