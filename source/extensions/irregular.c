@@ -468,7 +468,7 @@ osl_irregular_t *osl_irregular_clone(const osl_irregular_t *irregular) {
  */
 int osl_irregular_equal(const osl_irregular_t *const c1,
                         const osl_irregular_t *const c2) {
-  int i, j, bool = 0;
+  int i, j, comp = 0;
   if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
@@ -478,24 +478,24 @@ int osl_irregular_equal(const osl_irregular_t *const c1,
       c1->nb_control != c2->nb_control || c1->nb_exit != c2->nb_exit)
     return 0;
   i = 0;
-  while (bool == 0 && i < c1->nb_statements) {
-    bool = c1->nb_predicates[i] != c2->nb_predicates[i] ? 1 : 0;
+  while (comp == 0 && i < c1->nb_statements) {
+    comp = c1->nb_predicates[i] != c2->nb_predicates[i] ? 1 : 0;
     i++;
   }
-  if (bool != 0) return 0;
+  if (comp != 0) return 0;
 
   i = 0;
-  while (bool == 0 && i < c1->nb_control + c1->nb_exit) {
-    bool += c1->nb_iterators[i] != c2->nb_iterators[i] ? 1 : 0;
-    bool += strcmp(c1->body[i], c2->body[i]);
+  while (comp == 0 && i < c1->nb_control + c1->nb_exit) {
+    comp += c1->nb_iterators[i] != c2->nb_iterators[i] ? 1 : 0;
+    comp += strcmp(c1->body[i], c2->body[i]);
     j = 0;
-    while (bool == 0 && j < c1->nb_iterators[i]) {
-      bool += strcmp(c1->iterators[i][j], c2->iterators[i][j]);
+    while (comp == 0 && j < c1->nb_iterators[i]) {
+      comp += strcmp(c1->iterators[i][j], c2->iterators[i][j]);
       j++;
     }
     i++;
   }
-  if (bool != 0) return 0;
+  if (comp != 0) return 0;
   return 1;
 }
 
