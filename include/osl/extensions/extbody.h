@@ -60,23 +60,20 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_EXTBODY_H
-# define OSL_EXTBODY_H
+#define OSL_EXTBODY_H
 
-# include <stdio.h>
-# include <osl/strings.h>
-# include <osl/interface.h>
-# include <osl/body.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/body.h>
+#include <osl/interface.h>
+#include <osl/strings.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_EXTBODY        "extbody"
-
+#define OSL_URI_EXTBODY "extbody"
 
 /**
  * The osl_extbody_t structure stores the coordinates of each access in the
@@ -84,49 +81,45 @@ extern "C"
  */
 struct osl_extbody {
   osl_body_p body;
-  size_t nb_access;   /**< Nb of access. */
-  int * start;     /**< Array of nb_access start. */
-  int * length;    /**< Array of nb_access length. */
+  size_t nb_access; /**< Nb of access. */
+  int* start;       /**< Array of nb_access start. */
+  int* length;      /**< Array of nb_access length. */
 };
-typedef struct osl_extbody               osl_extbody_t;
-typedef struct osl_extbody       *       osl_extbody_p;
-typedef struct osl_extbody const         osl_const_extbody_t;
-typedef struct osl_extbody       * const osl_extbody_const_p;
-typedef struct osl_extbody const *       osl_const_extbody_p;
-typedef struct osl_extbody const * const osl_const_extbody_const_p;
-
+typedef struct osl_extbody osl_extbody_t;
+typedef struct osl_extbody* osl_extbody_p;
+typedef struct osl_extbody const osl_const_extbody_t;
+typedef struct osl_extbody* const osl_extbody_const_p;
+typedef struct osl_extbody const* osl_const_extbody_p;
+typedef struct osl_extbody const* const osl_const_extbody_const_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void                 osl_extbody_idump(FILE *, const osl_extbody_t*, int);
-void                 osl_extbody_dump(FILE *, const osl_extbody_t*);
-char *               osl_extbody_sprint(const osl_extbody_t*);
-
+void osl_extbody_idump(FILE*, const osl_extbody_t*, int);
+void osl_extbody_dump(FILE*, const osl_extbody_t*);
+char* osl_extbody_sprint(const osl_extbody_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_extbody_t*         osl_extbody_sread(char **);
-
+osl_extbody_t* osl_extbody_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_extbody_t*         osl_extbody_malloc(void);
-void                  osl_extbody_free(osl_extbody_t*);
-
+osl_extbody_t* osl_extbody_malloc(void);
+void osl_extbody_free(osl_extbody_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_extbody_t*         osl_extbody_clone(const osl_extbody_t*);
-int                   osl_extbody_equal(const osl_extbody_t*, const osl_extbody_t*);
-osl_interface_t*       osl_extbody_interface(void);
-void                  osl_extbody_add(osl_extbody_t*, int, int);
+osl_extbody_t* osl_extbody_clone(const osl_extbody_t*);
+int osl_extbody_equal(const osl_extbody_t*, const osl_extbody_t*);
+osl_interface_t* osl_extbody_interface(void);
+void osl_extbody_add(osl_extbody_t*, int, int);
 
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_EXTBODY_H */
