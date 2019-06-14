@@ -99,35 +99,35 @@ typedef struct osl_symbols* osl_symbols_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_symbols_idump(FILE *, osl_symbols_p, int);
-void            osl_symbols_dump(FILE *, osl_symbols_p);
-char *          osl_symbols_sprint(osl_symbols_p);
+void            osl_symbols_idump(FILE *, const osl_symbols_t*, int);
+void            osl_symbols_dump(FILE *, const osl_symbols_t*);
+char *          osl_symbols_sprint(const osl_symbols_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_symbols_p   osl_symbols_sread(char **);
+osl_symbols_t*   osl_symbols_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_symbols_p   osl_symbols_malloc(void);
-void            osl_symbols_free(osl_symbols_p);
+osl_symbols_t*   osl_symbols_malloc(void);
+void            osl_symbols_free(osl_symbols_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-void            osl_symbols_add(osl_symbols_p*, osl_symbols_p);
-osl_symbols_p   osl_symbols_nclone(osl_symbols_p, int);
-osl_symbols_p   osl_symbols_clone(osl_symbols_p);
-int             osl_symbols_equal(osl_symbols_p, osl_symbols_p);
-osl_symbols_p   osl_symbols_lookup(osl_symbols_p, osl_generic_p);
-osl_symbols_p   osl_symbols_remove(osl_symbols_p*, osl_symbols_p);
-int             osl_symbols_get_nb_symbols(osl_symbols_p);
-osl_interface_p osl_symbols_interface(void);
+void            osl_symbols_add(osl_symbols_t**, osl_symbols_t*);
+osl_symbols_t*   osl_symbols_nclone(const osl_symbols_t*, int);
+osl_symbols_t*   osl_symbols_clone(const osl_symbols_t*);
+int             osl_symbols_equal(const osl_symbols_t*, const osl_symbols_t*);
+osl_symbols_t*   osl_symbols_lookup(osl_symbols_t*, osl_generic_t*);
+osl_symbols_t*   osl_symbols_remove(osl_symbols_t**, osl_symbols_t*);
+int             osl_symbols_get_nb_symbols(const osl_symbols_t*);
+osl_interface_t* osl_symbols_interface(void);
 
 
 # if defined(__cplusplus)
