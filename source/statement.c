@@ -77,6 +77,9 @@
 #include <osl/generic.h>
 #include <osl/statement.h>
 
+static osl_names_t* osl_statement_names(const osl_statement_t*);
+static void osl_statement_dispatch(osl_statement_t*, osl_relation_list_t*);
+static osl_relation_p osl_relation_clone_one_safe(const osl_relation_t*);
 
 /*+***************************************************************************
  *                         Structure display functions                       *
@@ -93,7 +96,7 @@
  * \param[in] statement The statement whose information has to be printed.
  * \param[in] level     Number of spaces before printing, for each line.
  */
-void osl_statement_idump(FILE * file, osl_statement_p statement, int level) {
+void osl_statement_idump(FILE * const file, const osl_statement_t* statement, int level) {
   int j, first = 1, number = 1;
 
   // Go to the right level.
@@ -157,7 +160,7 @@ void osl_statement_idump(FILE * file, osl_statement_p statement, int level) {
  * \param[in] file      The file where the information has to be printed.
  * \param[in] statement The statement whose information has to be printed.
  */
-void osl_statement_dump(FILE * file, osl_statement_p statement) {
+void osl_statement_dump(FILE * const file, const osl_statement_t* statement) {
   osl_statement_idump(file, statement, 0);
 }
 
@@ -169,8 +172,7 @@ void osl_statement_dump(FILE * file, osl_statement_p statement) {
  * \param[in] statement The statement (list) we have to generate names for.
  * \return A set of generated names for the input statement dimensions.
  */
-static
-osl_names_p osl_statement_names(osl_statement_p statement) {
+osl_names_t* osl_statement_names(const osl_statement_t* statement) {
   int nb_parameters = OSL_UNDEFINED;
   int nb_iterators  = OSL_UNDEFINED;
   int nb_scattdims  = OSL_UNDEFINED;
@@ -196,8 +198,8 @@ osl_names_p osl_statement_names(osl_statement_p statement) {
  * \param[in] statement The statement whose information has to be printed.
  * \param[in] names     The names of the constraint columns for comments. 
  */
-void osl_statement_pprint(FILE * file, osl_statement_p statement,
-                          osl_names_p names) {
+void osl_statement_pprint(FILE * const file, const osl_statement_t* statement,
+                          const osl_names_t* input_names) {
   size_t nb_relations;
   int number = 1;
   int generated_names = 0;
@@ -205,12 +207,15 @@ void osl_statement_pprint(FILE * file, osl_statement_p statement,
   int nb_ext = 0;
   osl_body_p body = NULL;
   osl_strings_p iterators_backup = NULL;
+  osl_names_t* names = NULL;
 
   // Generate the dimension names if necessary and replace iterators with
   // statement iterators if possible.
-  if (names == NULL) {
+  if (input_names == NULL) {
     generated_names = 1;
     names = osl_statement_names(statement);
+  } else {
+    names = osl_names_clone(input_names);
   }
 
   while (statement != NULL) {
@@ -372,7 +377,7 @@ void osl_statement_pprint_scoplib(FILE * file, osl_statement_p statement,
  * \param[in] file      The file where the information has to be printed.
  * \param[in] statement The statement whose information has to be printed.
  */
-void osl_statement_print(FILE * file, osl_statement_p statement) {
+void osl_statement_print(FILE * const file, const osl_statement_t* statement) {
 
   osl_statement_pprint(file, statement, NULL);
 }
@@ -392,8 +397,7 @@ void osl_statement_print(FILE * file, osl_statement_p statement) {
  * \param[in,out] stmt The statement where to dispatch the relations.
  * \param[in,out] list The "brute" relation list to sort and dispatch (freed).
  */
-static
-void osl_statement_dispatch(osl_statement_p stmt, osl_relation_list_p list) {
+void osl_statement_dispatch(osl_statement_t* stmt, osl_relation_list_t* list) {
   osl_relation_list_p domain_list; 
   osl_relation_list_p scattering_list; 
   size_t nb_domains, nb_scattering, nb_accesses;
@@ -449,7 +453,7 @@ void osl_statement_dispatch(osl_statement_p stmt, osl_relation_list_p list) {
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the statement structure that has been read.
  */
-osl_statement_p osl_statement_pread(FILE * file, osl_interface_p registry,
+osl_statement_t* osl_statement_pread(FILE * const file, osl_interface_t* registry,
                                     int precision) {
   osl_statement_p stmt = osl_statement_malloc();
   osl_relation_list_p list;
@@ -483,7 +487,7 @@ osl_statement_p osl_statement_pread(FILE * file, osl_interface_p registry,
  * (2) the list of known interface is set to the default one.
  * \see{osl_statement_pread}
  */
-osl_statement_p osl_statement_read(FILE * foo) {
+osl_statement_t* osl_statement_read(FILE * const foo) {
   int precision = osl_util_get_precision();
   osl_interface_p registry = osl_interface_get_default_registry();
   osl_statement_p statement = osl_statement_pread(foo, registry, precision);
@@ -505,7 +509,7 @@ osl_statement_p osl_statement_read(FILE * foo) {
  * to the allocated space.
  * \return A pointer to an empty statement with fields set to default values.
  */
-osl_statement_p osl_statement_malloc(void) {
+osl_statement_t* osl_statement_malloc(void) {
   osl_statement_p statement;
 
   OSL_malloc(statement, osl_statement_p, sizeof(osl_statement_t));
@@ -525,7 +529,7 @@ osl_statement_p osl_statement_malloc(void) {
  * structure.
  * \param[in,out] statement The pointer to the statement we want to free.
  */
-void osl_statement_free(osl_statement_p statement) {
+void osl_statement_free(osl_statement_t* statement) {
   osl_statement_p next;
 
   while (statement != NULL) {
@@ -553,8 +557,8 @@ void osl_statement_free(osl_statement_p statement) {
  * \param[in,out] location  Address of the first element of the statement list.
  * \param[in]     statement The statement to add to the list.
  */
-void osl_statement_add(osl_statement_p * location,
-                       osl_statement_p   statement) {
+void osl_statement_add(osl_statement_t* * location,
+                       osl_statement_t*   statement) {
   while (*location != NULL)
     location = &((*location)->next);
 
@@ -569,7 +573,7 @@ void osl_statement_add(osl_statement_p * location,
  * \param[in] statement The first element of the statement list.
  * \return The number of statements in the statement list.
  */
-int osl_statement_number(osl_statement_p statement) {
+int osl_statement_number(const osl_statement_t* statement) {
   int number = 0;
 
   while (statement != NULL) {
@@ -588,7 +592,7 @@ int osl_statement_number(osl_statement_p statement) {
  * \param n         The number of nodes we want to copy (-1 for infinity).
  * \return The clone of the n first nodes of the statement list.
  */
-osl_statement_p osl_statement_nclone(osl_statement_p statement, int n) {
+osl_statement_t* osl_statement_nclone(const osl_statement_t* statement, int n) {
   int first = 1, i = 0;
   osl_statement_p clone = NULL, node, previous = NULL;
 
@@ -625,12 +629,12 @@ osl_statement_p osl_statement_nclone(osl_statement_p statement, int n) {
  * \param[in] statement The pointer to the statement we want to clone.
  * \return A pointer to the clone of the statement provided as parameter.
  */
-osl_statement_p osl_statement_clone(osl_statement_p statement) {
+osl_statement_t* osl_statement_clone(const osl_statement_t* const statement) {
   return osl_statement_nclone(statement, -1);
 }
 
 /// Clone first part of the union, return NULL if input is NULL.
-static osl_relation_p osl_relation_clone_one_safe(osl_relation_p relation) {
+osl_relation_t* osl_relation_clone_one_safe(const osl_relation_t* const relation) {
   if (relation == NULL)
     return NULL;
   return osl_relation_nclone(relation, 1);
@@ -647,7 +651,7 @@ static osl_relation_p osl_relation_clone_one_safe(osl_relation_p relation) {
  * \param[in] statement A pointer to the statement
  * \return    A pointer to the head of the newly created statement list.
  */
-osl_statement_p osl_statement_remove_unions(osl_statement_p statement) {
+osl_statement_t* osl_statement_remove_unions(const osl_statement_t* const statement) {
   osl_relation_p domain, scattering;
   osl_statement_p statement_ptr = NULL, result;
   if (!statement)
@@ -693,7 +697,7 @@ osl_statement_p osl_statement_remove_unions(osl_statement_p statement) {
  * \param[in] s2 The second statement.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int osl_statement_equal(osl_statement_p s1, osl_statement_p s2) {
+int osl_statement_equal(const osl_statement_t* const s1, const osl_statement_t* const s2) {
   
   if (s1 == s2)
     return 1;
@@ -745,7 +749,7 @@ int osl_statement_equal(osl_statement_p s1, osl_statement_p s2) {
  * \param[in] expected_nb_parameters Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int osl_statement_integrity_check(osl_statement_p statement,
+int osl_statement_integrity_check(const osl_statement_t* statement,
                                   int expected_nb_parameters) {
   int expected_nb_iterators;
   osl_body_p body = NULL;
@@ -807,7 +811,7 @@ int osl_statement_integrity_check(osl_statement_p statement,
  * \param statement The statement we want to know the number of iterators.
  * \return The number of surrounding iterators for the statement.
  */
-int osl_statement_get_nb_iterators(osl_statement_p statement) {
+int osl_statement_get_nb_iterators(const osl_statement_t* const statement) {
 
   if (statement->domain == NULL) {
     OSL_warning("no statement domain, assuming 0 iterators");
@@ -837,7 +841,7 @@ int osl_statement_get_nb_iterators(osl_statement_p statement) {
  * \param[in,out] nb_localdims  Number of local dimensions attribute.
  * \param[in,out] array_id      Maximum array identifier attribute.
  */
-void osl_statement_get_attributes(osl_statement_p statement,
+void osl_statement_get_attributes(const osl_statement_t* statement,
                                   int * nb_parameters,
                                   int * nb_iterators,
                                   int * nb_scattdims,
@@ -887,7 +891,7 @@ void osl_statement_get_attributes(osl_statement_p statement,
  * \param[in] statement The statement to search the body.
  * \return the body if found, NULL otherwise.
  */
-osl_body_p osl_statement_get_body(osl_statement_p statement) {
+osl_body_t* osl_statement_get_body(const osl_statement_t* const statement) {
   osl_body_p body;
   osl_extbody_p ebody;
 

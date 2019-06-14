@@ -101,10 +101,10 @@ typedef struct osl_statement * osl_statement_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_statement_idump(FILE *, osl_statement_p, int);
-void            osl_statement_dump(FILE *, osl_statement_p);
-void            osl_statement_pprint(FILE *, osl_statement_p, osl_names_p);
-void            osl_statement_print(FILE *, osl_statement_p);
+void            osl_statement_idump(FILE *, const osl_statement_t*, int);
+void            osl_statement_dump(FILE *, const osl_statement_t*);
+void            osl_statement_pprint(FILE *, const osl_statement_t*, const osl_names_t*);
+void            osl_statement_print(FILE *, const osl_statement_t*);
 
 // SCoPLib Compatibility
 void            osl_statement_pprint_scoplib(FILE *, osl_statement_p,
@@ -113,32 +113,32 @@ void            osl_statement_pprint_scoplib(FILE *, osl_statement_p,
 /*****************************************************************************
  *                              Reading function                             *
  *****************************************************************************/
-osl_statement_p osl_statement_pread(FILE *, osl_interface_p, int);
-osl_statement_p osl_statement_read(FILE *);
+osl_statement_t* osl_statement_pread(FILE *, osl_interface_t*, int);
+osl_statement_t* osl_statement_read(FILE *);
 
 
 /*+***************************************************************************
  *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-osl_statement_p osl_statement_malloc(void);
-void            osl_statement_free(osl_statement_p);
+osl_statement_t* osl_statement_malloc(void);
+void            osl_statement_free(osl_statement_t*);
 
 
 /*+***************************************************************************
  *                           Processing functions                            *
  *****************************************************************************/
-void            osl_statement_add(osl_statement_p *, osl_statement_p);
+void            osl_statement_add(osl_statement_t**, osl_statement_t*);
 void            osl_statement_compact(osl_statement_p, int);
-int             osl_statement_number(osl_statement_p);
-osl_statement_p osl_statement_nclone(osl_statement_p, int);
-osl_statement_p osl_statement_clone(osl_statement_p);
-osl_statement_p osl_statement_remove_unions(osl_statement_p);
-int             osl_statement_equal(osl_statement_p, osl_statement_p);
-int             osl_statement_integrity_check(osl_statement_p, int);
-int             osl_statement_get_nb_iterators(osl_statement_p);
-void            osl_statement_get_attributes(osl_statement_p, int *, int *,
+int             osl_statement_number(const osl_statement_t*);
+osl_statement_t* osl_statement_nclone(const osl_statement_t*, int);
+osl_statement_t* osl_statement_clone(const osl_statement_t*);
+osl_statement_t* osl_statement_remove_unions(const osl_statement_t*);
+int             osl_statement_equal(const osl_statement_t*, const osl_statement_t*);
+int             osl_statement_integrity_check(const osl_statement_t*, int);
+int             osl_statement_get_nb_iterators(const osl_statement_t*);
+void            osl_statement_get_attributes(const osl_statement_t*, int *, int *,
                                              int *, int *, int *);
-osl_body_p      osl_statement_get_body(osl_statement_p);
+osl_body_t*      osl_statement_get_body(const osl_statement_t*);
 
 # if defined(__cplusplus)
   }
