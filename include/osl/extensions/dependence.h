@@ -188,8 +188,8 @@ osl_dependence_t* osl_dependence_psread(char**, int) OSL_WARN_UNUSED_RESULT;
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_dependence_p osl_dependence_malloc(void) OSL_WARN_UNUSED_RESULT;
-void osl_dependence_free(osl_dependence_p);
+osl_dependence_t* osl_dependence_malloc(void) OSL_WARN_UNUSED_RESULT;
+void osl_dependence_free(osl_dependence_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
