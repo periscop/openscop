@@ -94,30 +94,30 @@ typedef struct osl_scatnames * osl_scatnames_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_scatnames_idump(FILE *, osl_scatnames_p, int);
-void            osl_scatnames_dump(FILE *, osl_scatnames_p);
-char *          osl_scatnames_sprint(osl_scatnames_p);
+void            osl_scatnames_idump(FILE *, const osl_scatnames_t*, int);
+void            osl_scatnames_dump(FILE *, const osl_scatnames_t*);
+char *          osl_scatnames_sprint(const osl_scatnames_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_scatnames_p osl_scatnames_sread(char **);
+osl_scatnames_t* osl_scatnames_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_scatnames_p osl_scatnames_malloc(void);
-void            osl_scatnames_free(osl_scatnames_p);
+osl_scatnames_t* osl_scatnames_malloc(void);
+void            osl_scatnames_free(osl_scatnames_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_scatnames_p osl_scatnames_clone(osl_scatnames_p);
-int             osl_scatnames_equal(osl_scatnames_p, osl_scatnames_p);
-osl_interface_p osl_scatnames_interface(void);
+osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t*);
+int             osl_scatnames_equal(const osl_scatnames_t*, const osl_scatnames_t*);
+osl_interface_t* osl_scatnames_interface(void);
 
 
 # if defined(__cplusplus)
