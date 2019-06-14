@@ -91,30 +91,30 @@ typedef struct osl_textual * osl_textual_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_textual_idump(FILE *, osl_textual_p, int);
-void            osl_textual_dump(FILE *, osl_textual_p);
-char *          osl_textual_sprint(osl_textual_p);
+void            osl_textual_idump(FILE *, const osl_textual_t*, int);
+void            osl_textual_dump(FILE *, const osl_textual_t*);
+char *          osl_textual_sprint(const osl_textual_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_textual_p   osl_textual_sread(char **);
+osl_textual_t*   osl_textual_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_textual_p   osl_textual_malloc(void);
-void            osl_textual_free(osl_textual_p);
+osl_textual_t*   osl_textual_malloc(void);
+void            osl_textual_free(osl_textual_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_textual_p   osl_textual_clone(osl_textual_p);
-int             osl_textual_equal(osl_textual_p, osl_textual_p);
-osl_interface_p osl_textual_interface(void);
+osl_textual_t*   osl_textual_clone(const osl_textual_t*);
+int             osl_textual_equal(const osl_textual_t*, const osl_textual_t*);
+osl_interface_t* osl_textual_interface(void);
 
 # if defined(__cplusplus)
   }

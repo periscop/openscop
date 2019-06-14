@@ -88,7 +88,7 @@
  * \param[in] textual The textual structure to be printed.
  * \param[in] level   Number of spaces before printing, for each line.
  */
-void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
+void osl_textual_idump(FILE * const file, const osl_textual_t* const textual, int level) {
   int j;
   char * tmp;
 
@@ -136,7 +136,7 @@ void osl_textual_idump(FILE * file, osl_textual_p textual, int level) {
  * \param[in] file    The file where the information has to be printed.
  * \param[in] textual The textual structure to be printed.
  */
-void osl_textual_dump(FILE * file, osl_textual_p textual) {
+void osl_textual_dump(FILE * const file, const osl_textual_t* const textual) {
   osl_textual_idump(file, textual, 0);
 }
 
@@ -150,7 +150,7 @@ void osl_textual_dump(FILE * file, osl_textual_p textual) {
  * \param[in]  textual The textual structure to be printed.
  * \return A string containing the OpenScop dump of the textual structure.
  */
-char * osl_textual_sprint(osl_textual_p textual) {
+char * osl_textual_sprint(const osl_textual_t* const textual) {
   char * string = NULL;
 
   if ((textual != NULL) && (textual->textual != NULL)) {
@@ -173,7 +173,7 @@ char * osl_textual_sprint(osl_textual_p textual) {
  * \param[in]  textual The textual structure to be printed.
  * \return NULL.
  */
-char * osl_textual_sprint(osl_textual_p textual) {
+char * osl_textual_sprint(const osl_textual_t* const textual) {
   (void) textual;
   return NULL;
 }
@@ -194,7 +194,7 @@ char * osl_textual_sprint(osl_textual_p textual) {
  *                           Updated to the position after what has been read.
  * \return A pointer to the textual structure that has been read.
  */
-osl_textual_p osl_textual_sread(char ** extensions) {
+osl_textual_t* osl_textual_sread(char ** extensions) {
   osl_textual_p textual = NULL;
 
   if (*extensions != NULL) {
@@ -223,7 +223,7 @@ osl_textual_p osl_textual_sread(char ** extensions) {
  * \return A pointer to an empty textual structure with fields set to
  *         default values.
  */
-osl_textual_p osl_textual_malloc(void) {
+osl_textual_t* osl_textual_malloc(void) {
   osl_textual_p textual;
 
   OSL_malloc(textual, osl_textual_p, sizeof(osl_textual_t));
@@ -239,7 +239,7 @@ osl_textual_p osl_textual_malloc(void) {
  * structure.
  * \param[in,out] textual The pointer to the textual structure to be freed.
  */
-void osl_textual_free(osl_textual_p textual) {
+void osl_textual_free(osl_textual_t* textual) {
   if (textual != NULL) {
     if(textual->textual != NULL)
       free(textual->textual);
@@ -260,7 +260,7 @@ void osl_textual_free(osl_textual_p textual) {
  * \param[in] textual The pointer to the textual structure we want to clone.
  * \return A pointer to the clone of the textual structure.
  */
-osl_textual_p osl_textual_clone(osl_textual_p textual) {
+osl_textual_t* osl_textual_clone(const osl_textual_t* textual) {
   osl_textual_p clone;
 
   if (textual == NULL)
@@ -282,7 +282,7 @@ osl_textual_p osl_textual_clone(osl_textual_p textual) {
  * \param ff  The second textual structure.
  * \return 1 if f1 and f2 are the same (content-wise), 0 otherwise.
  */
-int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
+int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
  
   if (f1 == f2)
     return 1;
@@ -305,7 +305,7 @@ int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
  * \param[in] f2  The second textual structure. 
  * \return 1.
  */
-int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
+int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
   (void) f1;
   (void) f2;
   return 1;
@@ -319,7 +319,7 @@ int osl_textual_equal(osl_textual_p f1, osl_textual_p f2) {
  * extension and returns it).
  * \return An interface structure for the textual extension.
  */
-osl_interface_p osl_textual_interface(void) {
+osl_interface_t* osl_textual_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_TEXTUAL);
