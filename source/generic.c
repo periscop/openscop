@@ -60,21 +60,19 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <osl/extensions/arrays.h>
+#include <osl/generic.h>
+#include <osl/interface.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/interface.h>
-#include <osl/generic.h>
-#include <osl/extensions/arrays.h>
-
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_generic_idump function:
@@ -86,55 +84,49 @@
  * \param[in] generic The generic whose information has to be printed.
  * \param[in] level   Number of spaces before printing, for each line.
  */
-void osl_generic_idump(FILE * const file, const osl_generic_t* generic, int level) {
+void osl_generic_idump(FILE* const file, const osl_generic_t* generic,
+                       int level) {
   int j, first = 1;
-  
+
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file,"|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (generic != NULL)
     fprintf(file, "+-- osl_generic_t\n");
   else
     fprintf(file, "+-- NULL generic\n");
- 
+
   while (generic != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j < level; j++) fprintf(file, "|\t");
       fprintf(file, "|   osl_generic_t\n");
-    }
-    else {
+    } else {
       first = 0;
     }
 
     // A blank line
-    for(j = 0; j <= level + 1; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
     fprintf(file, "\n");
 
     osl_interface_idump(file, generic->interface, level + 1);
-   
+
     if (generic->interface != NULL)
       generic->interface->idump(file, generic->data, level + 1);
-    
+
     generic = generic->next;
 
     // Next line.
     if (generic != NULL) {
-      for (j = 0; j <= level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j <= level; j++) fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
-  
+
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_generic_dump function:
@@ -143,10 +135,9 @@ void osl_generic_idump(FILE * const file, const osl_generic_t* generic, int leve
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  */
-void osl_generic_dump(FILE * const file, const osl_generic_t* const generic) {
-  osl_generic_idump(file, generic, 0); 
+void osl_generic_dump(FILE* const file, const osl_generic_t* const generic) {
+  osl_generic_idump(file, generic, 0);
 }
-
 
 /**
  * osl_generic_sprint function:
@@ -155,12 +146,12 @@ void osl_generic_dump(FILE * const file, const osl_generic_t* const generic) {
  * \param[in] generic  The generic structure which has to be printed.
  * \return A string containing the OpenScop dump of the generic structure.
  */
-char * osl_generic_sprint(const osl_generic_t* generic) {
+char* osl_generic_sprint(const osl_generic_t* generic) {
   size_t high_water_mark = OSL_MAX_STRING;
-  char * string = NULL, * content;
+  char *string = NULL, *content;
   char buffer[OSL_MAX_STRING];
 
-  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  OSL_malloc(string, char*, high_water_mark * sizeof(char));
   string[0] = '\0';
 
   while (generic != NULL) {
@@ -185,7 +176,6 @@ char * osl_generic_sprint(const osl_generic_t* generic) {
   return string;
 }
 
-
 /**
  * osl_generic_print function:
  * this function prints the content of an osl_generic_t structure
@@ -193,16 +183,15 @@ char * osl_generic_sprint(const osl_generic_t* generic) {
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  */
-void osl_generic_print(FILE * const file, const osl_generic_t* const generic) {
-  char * string;
-  
+void osl_generic_print(FILE* const file, const osl_generic_t* const generic) {
+  char* string;
+
   string = osl_generic_sprint(generic);
   if (string != NULL) {
     fprintf(file, "%s", string);
     free(string);
   }
 }
-
 
 /**
  * osl_generic_print_options_scoplib function:
@@ -211,23 +200,22 @@ void osl_generic_print(FILE * const file, const osl_generic_t* const generic) {
  * \param[in] file    File where the information has to be printed.
  * \param[in] generic The generic structure to print.
  */
-void osl_generic_print_options_scoplib(FILE * const file, const osl_generic_t* const generic) {
-  char * string;
+void osl_generic_print_options_scoplib(FILE* const file,
+                                       const osl_generic_t* const generic) {
+  char* string;
 
   osl_generic_p arrays = osl_generic_lookup(generic, OSL_URI_ARRAYS);
-  
-  string = osl_arrays_sprint((osl_arrays_p) arrays);
+
+  string = osl_arrays_sprint((osl_arrays_p)arrays);
   if (string != NULL) {
     fprintf(file, "<arrays>\n%s</arrays>\n", string);
     free(string);
   }
 }
 
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_generic_sread function:
@@ -240,17 +228,17 @@ void osl_generic_print_options_scoplib(FILE * const file, const osl_generic_t* c
  * \param[in]     registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic information list that has been read.
  */
-osl_generic_t* osl_generic_sread(char ** const input, osl_interface_t* const registry) {
+osl_generic_t* osl_generic_sread(char** const input,
+                                 osl_interface_t* const registry) {
   osl_generic_p generic = NULL, new;
 
   while (**input != '\0') {
     new = osl_generic_sread_one(input, registry);
     osl_generic_add(&generic, new);
   }
-  
+
   return generic;
 }
-
 
 /**
  * osl_generic_sread_one function:
@@ -263,9 +251,10 @@ osl_generic_t* osl_generic_sread(char ** const input, osl_interface_t* const reg
  * \param[in]     registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic structure that has been read.
  */
-osl_generic_t* osl_generic_sread_one(char ** const input, osl_interface_t* const registry) {
-  char * tag;
-  char * content, * temp;
+osl_generic_t* osl_generic_sread_one(char** const input,
+                                     osl_interface_t* const registry) {
+  char* tag;
+  char *content, *temp;
   osl_generic_p generic = NULL;
   osl_interface_p interface;
 
@@ -282,8 +271,7 @@ osl_generic_t* osl_generic_sread_one(char ** const input, osl_interface_t* const
   if (interface == NULL) {
     OSL_warning("unsupported generic");
     fprintf(stderr, "[osl] Warning: unknown URI \"%s\".\n", tag);
-  }
-  else {
+  } else {
     generic = osl_generic_malloc();
     generic->interface = osl_interface_nclone(interface, 1);
     generic->data = interface->sread(&temp);
@@ -293,7 +281,6 @@ osl_generic_t* osl_generic_sread_one(char ** const input, osl_interface_t* const
   free(tag);
   return generic;
 }
-
 
 /**
  * osl_generic_read_one function:
@@ -306,9 +293,10 @@ osl_generic_t* osl_generic_sread_one(char ** const input, osl_interface_t* const
  * \param[in] registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic that has been read.
  */
-osl_generic_t* osl_generic_read_one(FILE * const file, osl_interface_t* const registry) {
-  char * tag;
-  char * content, * temp;
+osl_generic_t* osl_generic_read_one(FILE* const file,
+                                    osl_interface_t* const registry) {
+  char* tag;
+  char *content, *temp;
   osl_generic_p generic = NULL;
   osl_interface_p interface;
 
@@ -325,8 +313,7 @@ osl_generic_t* osl_generic_read_one(FILE * const file, osl_interface_t* const re
   if (interface == NULL) {
     OSL_warning("unsupported generic");
     fprintf(stderr, "[osl] Warning: unknown URI \"%s\".\n", tag);
-  }
-  else {
+  } else {
     generic = osl_generic_malloc();
     generic->interface = osl_interface_nclone(interface, 1);
     generic->data = interface->sread(&temp);
@@ -337,7 +324,6 @@ osl_generic_t* osl_generic_read_one(FILE * const file, osl_interface_t* const re
   return generic;
 }
 
-
 /**
  * osl_generic_read function:
  * this function reads a list of generics from a file (possibly stdin)
@@ -347,8 +333,9 @@ osl_generic_t* osl_generic_read_one(FILE * const file, osl_interface_t* const re
  * \param[in] registry The list of known interfaces (others are ignored).
  * \return A pointer to the generic information list that has been read.
  */
-osl_generic_t* osl_generic_read(FILE * const file, osl_interface_t* const registry) {
-  char * generic_string, * temp;
+osl_generic_t* osl_generic_read(FILE* const file,
+                                osl_interface_t* const registry) {
+  char *generic_string, *temp;
   osl_generic_p generic_list;
 
   generic_string = osl_util_read_uptoendtag(file, NULL, OSL_URI_SCOP);
@@ -358,23 +345,21 @@ osl_generic_t* osl_generic_read(FILE * const file, osl_interface_t* const regist
   return generic_list;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_generic_add function:
  * this function adds a generic node (it may be a list as well) to a list
  * of generics provided as parameter (list). The new node is inserted at
- * the end of the list. 
+ * the end of the list.
  * \param[in] list    The list of generics to add a node (NULL if empty).
  * \param[in] generic The generic list to add to the initial list.
  */
-void osl_generic_add(osl_generic_t* * list, osl_generic_t* generic) {
+void osl_generic_add(osl_generic_t** list, osl_generic_t* generic) {
   osl_generic_p tmp = *list, check;
-  
+
   if (generic != NULL) {
     // First, check that the generic list is OK.
     check = generic;
@@ -389,11 +374,9 @@ void osl_generic_add(osl_generic_t* * list, osl_generic_t* generic) {
     }
 
     if (*list != NULL) {
-      while (tmp->next != NULL)
-        tmp = tmp->next;
+      while (tmp->next != NULL) tmp = tmp->next;
       tmp->next = generic;
-    }
-    else {
+    } else {
       *list = generic;
     }
   }
@@ -406,35 +389,30 @@ void osl_generic_add(osl_generic_t* * list, osl_generic_t* generic) {
  * \param[in] generic Pointer to the generic to be removed
  *                    Assumes a single node is to be removed.
  */
-void osl_generic_remove_node(osl_generic_t* * list, osl_generic_t* generic) {
-
+void osl_generic_remove_node(osl_generic_t** list, osl_generic_t* generic) {
   osl_generic_p tmp = NULL;
-  
-  if (generic != NULL) {
 
+  if (generic != NULL) {
     if (*list != NULL) {
-      //target is the first element of list
-      if(*list==generic){
+      // target is the first element of list
+      if (*list == generic) {
         *list = generic->next;
-        generic->next=NULL; //free below removes the whole list!
-        osl_generic_free(generic); 
+        generic->next = NULL;  // free below removes the whole list!
+        osl_generic_free(generic);
         return;
       }
 
-      //find target
+      // find target
       tmp = *list;
-      while (tmp->next!=generic && tmp->next != NULL)
-        tmp = tmp->next;
+      while (tmp->next != generic && tmp->next != NULL) tmp = tmp->next;
 
-      if(tmp->next==generic){
+      if (tmp->next == generic) {
         tmp->next = generic->next;
-        generic->next=NULL; //free below removes the whole list!
-        osl_generic_free(generic); 
-      }
-      else  //target not found
+        generic->next = NULL;  // free below removes the whole list!
+        osl_generic_free(generic);
+      } else  // target not found
         OSL_warning("generic not found in the list\n");
     }
-
   }
 }
 
@@ -444,22 +422,18 @@ void osl_generic_remove_node(osl_generic_t* * list, osl_generic_t* generic) {
  * \param[in] list    Address of a generic list
  * \param[in] URI     Pointer to the URI string
  */
-void osl_generic_remove(osl_generic_t* *list, const char * URI){
+void osl_generic_remove(osl_generic_t** list, const char* URI) {
+  osl_generic_p tmp = *list;
 
- osl_generic_p tmp = *list;
+  while (tmp != NULL) {
+    if (osl_generic_has_URI(tmp, URI)) break;
+    tmp = tmp->next;
+  }
 
- while(tmp != NULL){
-   if(osl_generic_has_URI(tmp, URI))
-     break;
-   tmp = tmp->next;
- }
-
- if(tmp!=NULL){
-   osl_generic_remove_node(list, tmp);
- }
-
+  if (tmp != NULL) {
+    osl_generic_remove_node(list, tmp);
+  }
 }
-
 
 /**
  * osl_generic_malloc function:
@@ -474,12 +448,11 @@ osl_generic_t* osl_generic_malloc(void) {
 
   OSL_malloc(generic, osl_generic_p, sizeof(osl_generic_t));
   generic->interface = NULL;
-  generic->data      = NULL;
-  generic->next      = NULL;
+  generic->data = NULL;
+  generic->next = NULL;
 
   return generic;
 }
-
 
 /**
  * osl_generic_free function:
@@ -494,8 +467,7 @@ void osl_generic_free(osl_generic_t* generic) {
     if (generic->interface != NULL) {
       generic->interface->free(generic->data);
       osl_interface_free(generic->interface);
-    }
-    else {
+    } else {
       if (generic->data != NULL) {
         OSL_warning("unregistered interface, memory leaks are possible");
         free(generic->data);
@@ -506,11 +478,9 @@ void osl_generic_free(osl_generic_t* generic) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_generic_number function:
@@ -529,7 +499,6 @@ int osl_generic_number(const osl_generic_t* generic) {
   return number;
 }
 
-
 /**
  * osl_generic_clone function:
  * This function builds and returns a "hard copy" (not a pointer copy) of an
@@ -541,7 +510,6 @@ osl_generic_t* osl_generic_clone(const osl_generic_t* const generic) {
   return osl_generic_nclone(generic, -1);
 }
 
-
 /**
  * \brief This function builds and returns a "hard copy" (not a pointer copy)
  * of the n first elements of an osl_generic_t list.
@@ -550,34 +518,32 @@ osl_generic_t* osl_generic_clone(const osl_generic_t* const generic) {
  * \param n       The number of nodes we want to copy (n<0 for infinity).
  * \return The clone of the n first nodes of the generic list.
  */
-osl_generic_t* osl_generic_nclone(const osl_generic_t* generic, int n)
-{
-    osl_generic_p clone = NULL, new;
-    osl_interface_p interface;
-    void * x;
+osl_generic_t* osl_generic_nclone(const osl_generic_t* generic, int n) {
+  osl_generic_p clone = NULL, new;
+  osl_interface_p interface;
+  void* x;
 
-    if (n < 0) {
-        n = osl_generic_count(generic);
+  if (n < 0) {
+    n = osl_generic_count(generic);
+  }
+
+  while ((generic != NULL) && (n > 0)) {
+    if (generic->interface != NULL) {
+      x = generic->interface->clone(generic->data);
+      interface = osl_interface_clone(generic->interface);
+      new = osl_generic_malloc();
+      new->interface = interface;
+      new->data = x;
+      osl_generic_add(&clone, new);
+    } else {
+      OSL_warning("unregistered interface, cloning ignored");
     }
+    generic = generic->next;
+    n--;
+  }
 
-    while ((generic != NULL) && (n > 0)) {
-        if (generic->interface != NULL) {
-            x = generic->interface->clone(generic->data);
-            interface = osl_interface_clone(generic->interface);
-            new = osl_generic_malloc();
-            new->interface = interface;
-            new->data = x;
-            osl_generic_add(&clone, new);
-        } else {
-            OSL_warning("unregistered interface, cloning ignored");
-        }
-        generic = generic->next;
-        n--;
-    }
-
-    return clone;
+  return clone;
 }
-
 
 /**
  * osl_generic_count function:
@@ -597,7 +563,6 @@ int osl_generic_count(const osl_generic_t* x) {
   return generic_number;
 }
 
-
 /**
  * osl_generic_equal function:
  * this function returns true if the two generic structures are the same,
@@ -612,14 +577,12 @@ int osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
   int found, equal;
   const osl_generic_t* backup_x2 = x2;
 
-  if (x1 == x2)
-    return 1;
+  if (x1 == x2) return 1;
 
   // Check whether the number of generics is the same or not.
   x1_generic_number = osl_generic_count(x1);
   x2_generic_number = osl_generic_count(x2);
-  if (x1_generic_number != x2_generic_number)
-    return 0;
+  if (x1_generic_number != x2_generic_number) return 0;
 
   // Check that for each generic in x1 a similar generic is in x2.
   while (x1 != NULL) {
@@ -629,10 +592,10 @@ int osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
       if (osl_interface_equal(x1->interface, x2->interface)) {
         if (x1->interface != NULL) {
           equal = x1->interface->equal(x1->data, x2->data);
-        }
-        else {
-          OSL_warning("unregistered generic, "
-                      "cannot state generic equality");
+        } else {
+          OSL_warning(
+              "unregistered generic, "
+              "cannot state generic equality");
           equal = 0;
         }
 
@@ -645,15 +608,13 @@ int osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
       x2 = x2->next;
     }
 
-    if (found != 1)
-      return 0;
+    if (found != 1) return 0;
 
     x1 = x1->next;
   }
 
   return 1;
 }
-
 
 /**
  * osl_generic_has_URI function:
@@ -663,17 +624,13 @@ int osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
  * \param[in] URI The URI value to test.
  * \return 1 if x has the provided URI, 0 otherwise.
  */
-int osl_generic_has_URI(const osl_generic_t* const x, char const * const URI) {
-
-  if ((x == NULL) ||
-      (x->interface == NULL) ||
-      (x->interface->URI == NULL) ||
+int osl_generic_has_URI(const osl_generic_t* const x, char const* const URI) {
+  if ((x == NULL) || (x->interface == NULL) || (x->interface->URI == NULL) ||
       (strcmp(x->interface->URI, URI)))
     return 0;
 
   return 1;
 }
-
 
 /**
  * osl_generic_lookup function:
@@ -684,17 +641,15 @@ int osl_generic_has_URI(const osl_generic_t* const x, char const * const URI) {
  * \param[in] URI The URI of the generic we are looking for.
  * \return The first generic of the requested URI in the list.
  */
-void * osl_generic_lookup(const osl_generic_t* x, char const * const URI) {
+void* osl_generic_lookup(const osl_generic_t* x, char const* const URI) {
   while (x != NULL) {
-    if (osl_generic_has_URI(x, URI))
-      return x->data;
+    if (osl_generic_has_URI(x, URI)) return x->data;
 
     x = x->next;
   }
 
   return NULL;
 }
-
 
 /**
  * osl_generic_shell function:
@@ -704,7 +659,8 @@ void * osl_generic_lookup(const osl_generic_t* x, char const * const URI) {
  * \param[in] interface Interface to put in the generic shell.
  * \return A new generic structure containing the data and interface.
  */
-osl_generic_t* osl_generic_shell(void * const data, osl_interface_t* const interface) {
+osl_generic_t* osl_generic_shell(void* const data,
+                                 osl_interface_t* const interface) {
   osl_generic_p generic = NULL;
 
   if ((data == NULL) || (interface == NULL))
