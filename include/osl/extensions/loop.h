@@ -109,36 +109,36 @@ typedef struct osl_loop * osl_loop_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_loop_idump(FILE * file, osl_loop_p loop, int level);
-void            osl_loop_dump(FILE * file, osl_loop_p loop);
-char *          osl_loop_sprint(osl_loop_p loop);
+void            osl_loop_idump(FILE *, const osl_loop_t*, int);
+void            osl_loop_dump(FILE *, const osl_loop_t*);
+char *          osl_loop_sprint(const osl_loop_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_loop_p      osl_loop_sread(char ** input);
+osl_loop_t*      osl_loop_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_loop_p      osl_loop_malloc(void);
-void            osl_loop_free(osl_loop_p loop);
+osl_loop_t*      osl_loop_malloc(void);
+void            osl_loop_free(osl_loop_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_loop_p      osl_loop_clone_one(osl_loop_p loop);
-osl_loop_p      osl_loop_clone(osl_loop_p loop);
-int             osl_loop_equal_one(osl_loop_p a1, osl_loop_p a2);
-int             osl_loop_equal(osl_loop_p a1, osl_loop_p a2);
-osl_strings_p   osl_loop_to_strings(osl_loop_p);
-osl_interface_p osl_loop_interface(void);
+osl_loop_t*      osl_loop_clone_one(const osl_loop_t*);
+osl_loop_t*      osl_loop_clone(const osl_loop_t*);
+int             osl_loop_equal_one(const osl_loop_t*, const osl_loop_t*);
+int             osl_loop_equal(const osl_loop_t*, const osl_loop_t*);
+osl_strings_t*   osl_loop_to_strings(const osl_loop_t*);
+osl_interface_t* osl_loop_interface(void);
 
-void            osl_loop_add(osl_loop_p loop, osl_loop_p *ll);
-int             osl_loop_count(osl_loop_p ll);
+void            osl_loop_add(osl_loop_t*, osl_loop_t* *);
+int             osl_loop_count(const osl_loop_t*);
 
 # if defined(__cplusplus)
   }

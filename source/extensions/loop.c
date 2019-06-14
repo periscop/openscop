@@ -88,7 +88,7 @@
  * \param[in] loop   The loop structure to print.
  * \param[in] level  Number of spaces before printing, for each line.
  */
-void osl_loop_idump(FILE * file, osl_loop_p loop, int level) {
+void osl_loop_idump(FILE * const file, const osl_loop_t* loop, int level) {
   int j, first = 1, number=1;
   size_t i;
 
@@ -176,7 +176,7 @@ void osl_loop_idump(FILE * file, osl_loop_p loop, int level) {
  * \param[in] file   The file where the information has to be printed.
  * \param[in] loop The loop structure to print.
  */
-void osl_loop_dump(FILE * file, osl_loop_p loop) {
+void osl_loop_dump(FILE * const file, const osl_loop_t* const loop) {
   osl_loop_idump(file, loop, 0);
 }
 
@@ -188,7 +188,7 @@ void osl_loop_dump(FILE * file, osl_loop_p loop) {
  * \param[in] loop The loop structure to print.
  * \return         A string containing the OpenScop dump of the loop structure.
  */
-char * osl_loop_sprint(osl_loop_p loop) {
+char * osl_loop_sprint(const osl_loop_t* loop) {
   size_t i;
   int nloop = 0;
   size_t high_water_mark = OSL_MAX_STRING;
@@ -269,7 +269,7 @@ char * osl_loop_sprint(osl_loop_p loop) {
  *                        Updated to the position after what has been read.
  * \return                A pointer to the loop structure that has been read.
  */
-osl_loop_p osl_loop_sread(char **input) {
+osl_loop_t* osl_loop_sread(char **input) {
   size_t i;
   int nb_loops;
   osl_loop_p head;
@@ -339,7 +339,7 @@ osl_loop_p osl_loop_sread(char **input) {
  * \return  A pointer to an empty loop structure with fields set to
  *          default values.
  */
-osl_loop_p osl_loop_malloc(void) {
+osl_loop_t* osl_loop_malloc(void) {
   osl_loop_p loop;
 
   OSL_malloc(loop, osl_loop_p, sizeof(osl_loop_t));
@@ -361,7 +361,7 @@ osl_loop_p osl_loop_malloc(void) {
  *
  * \param[in,out] loop The pointer to the loop structure we want to free.
  */
-void osl_loop_free(osl_loop_p loop) {
+void osl_loop_free(osl_loop_t* loop) {
 
   while (loop != NULL) {
     osl_loop_p tmp = loop;
@@ -391,7 +391,7 @@ void osl_loop_free(osl_loop_p loop) {
  * \param[in] loop  The pointer to the loop structure to clone.
  * \return          A pointer to the clone of the loop structure.
  */
-osl_loop_p osl_loop_clone_one(osl_loop_p loop) {
+osl_loop_t* osl_loop_clone_one(const osl_loop_t* loop) {
   size_t i;
   osl_loop_p clone;
 
@@ -426,7 +426,7 @@ osl_loop_p osl_loop_clone_one(osl_loop_p loop) {
  * \param[in] loop  The pointer to the list of loop structure to clone.
  * \return          A pointer to the clone of list of the loop structure.
  */
-osl_loop_p osl_loop_clone(osl_loop_p loop) {
+osl_loop_t* osl_loop_clone(const osl_loop_t* loop) {
   osl_loop_p clone = NULL;
   osl_loop_p head  = NULL;
 
@@ -460,7 +460,7 @@ osl_loop_p osl_loop_clone(osl_loop_p loop) {
  * \param[in] a2 The second loop structure.
  * \return       1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int osl_loop_equal_one(osl_loop_p a1, osl_loop_p a2) {
+int osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
   size_t i, j, found;
 
   if (a1 == a2)
@@ -531,7 +531,7 @@ int osl_loop_equal_one(osl_loop_p a1, osl_loop_p a2) {
  * \param[in] a2  The second loop list.
  * \return        1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int osl_loop_equal(osl_loop_p a1, osl_loop_p a2) {
+int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
   int found = 0;
 
   if (a1 == a2)
@@ -549,7 +549,7 @@ int osl_loop_equal(osl_loop_p a1, osl_loop_p a2) {
 
   while (a1) {
     found = 0;
-    osl_loop_p temp = a2;
+    const osl_loop_t* temp = a2;
 
     while (temp) {
       if(osl_loop_equal_one(a1, temp)==1){
@@ -600,7 +600,7 @@ osl_interface_p osl_loop_interface(void) {
  * \param[in,out] ll  Pointer to a list of loops.
  * \param[in] loop    Pointer to the loop structure to be added.
  */
-void osl_loop_add(osl_loop_p loop, osl_loop_p *ll) {
+void osl_loop_add(osl_loop_t* loop, osl_loop_t* *ll) {
 
     while (*ll != NULL)
          ll = &(*ll)->next;
@@ -616,7 +616,7 @@ void osl_loop_add(osl_loop_p loop, osl_loop_p *ll) {
  * \param[in] ll  Pointer to a list of loops.
  * \return        Number of elements in the list
  */
-int osl_loop_count(osl_loop_p ll) {
+int osl_loop_count(const osl_loop_t* ll) {
   int count = 0;
   while (ll) {
     count++;
