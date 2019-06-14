@@ -60,20 +60,19 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <osl/interface.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/interface.h>
-#include <osl/extensions/coordinates.h>
 
+#include <osl/extensions/coordinates.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_coordinates_idump function:
@@ -85,13 +84,13 @@
  * \param coordinates The coordinates structure to print.
  * \param level       Number of spaces before printing, for each line.
  */
-void osl_coordinates_idump(FILE* const file, const osl_coordinates_t* const coordinates,
+void osl_coordinates_idump(FILE* const file,
+                           const osl_coordinates_t* const coordinates,
                            int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (coordinates != NULL)
     fprintf(file, "+-- osl_coordinates_t\n");
@@ -100,8 +99,7 @@ void osl_coordinates_idump(FILE* const file, const osl_coordinates_t* const coor
 
   if (coordinates != NULL) {
     // Go to the right level.
-    for(j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
 
     // Display the file name.
     if (coordinates->name != NULL)
@@ -110,28 +108,24 @@ void osl_coordinates_idump(FILE* const file, const osl_coordinates_t* const coor
       fprintf(file, "NULL file name\n");
 
     // Go to the right level.
-    for(j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
 
     // Display the lines.
-    fprintf(file, "Coordinates: [%d,%d -> %d,%d]\n",
-            coordinates->line_start, coordinates->column_start,
-            coordinates->line_end,   coordinates->column_end);
+    fprintf(file, "Coordinates: [%d,%d -> %d,%d]\n", coordinates->line_start,
+            coordinates->column_start, coordinates->line_end,
+            coordinates->column_end);
 
     // Go to the right level.
-    for(j = 0; j <= level; j++)
-      fprintf(file, "|\t");
-  
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+
     // Display the indentation.
     fprintf(file, "Indentation: %d\n", coordinates->indent);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_coordinates_dump function:
@@ -140,10 +134,10 @@ void osl_coordinates_idump(FILE* const file, const osl_coordinates_t* const coor
  * \param file        The file where the information has to be printed.
  * \param coordinates The coordinates structure to print.
  */
-void osl_coordinates_dump(FILE* const file, const osl_coordinates_t* const coordinates) {
+void osl_coordinates_dump(FILE* const file,
+                          const osl_coordinates_t* const coordinates) {
   osl_coordinates_idump(file, coordinates, 0);
 }
-
 
 /**
  * osl_coordinates_sprint function:
@@ -160,7 +154,7 @@ char* osl_coordinates_sprint(const osl_coordinates_t* const coordinates) {
   if (coordinates != NULL) {
     OSL_malloc(string, char*, high_water_mark * sizeof(char));
     string[0] = '\0';
-   
+
     // Print the coordinates content.
     sprintf(buffer, "# File name\n%s\n", coordinates->name);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
@@ -169,13 +163,13 @@ char* osl_coordinates_sprint(const osl_coordinates_t* const coordinates) {
             coordinates->line_start, coordinates->column_start);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
-    sprintf(buffer, "# Ending line and column\n%d %d\n",
-            coordinates->line_end, coordinates->column_end);
+    sprintf(buffer, "# Ending line and column\n%d %d\n", coordinates->line_end,
+            coordinates->column_end);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     sprintf(buffer, "# Indentation\n%d\n", coordinates->indent);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
-  
+
     // Keep only the memory space we need.
     OSL_realloc(string, char*, (strlen(string) + 1) * sizeof(char));
   }
@@ -183,11 +177,9 @@ char* osl_coordinates_sprint(const osl_coordinates_t* const coordinates) {
   return string;
 }
 
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_coordinates_sread function:
@@ -209,27 +201,25 @@ osl_coordinates_t* osl_coordinates_sread(char** input) {
 
   // Build the coordinates structure.
   coordinates = osl_coordinates_malloc();
-  
+
   // Read the file name (and path).
   coordinates->name = osl_util_read_line(NULL, input);
 
   // Read the coordinates.
-  coordinates->line_start   = osl_util_read_int(NULL, input);
+  coordinates->line_start = osl_util_read_int(NULL, input);
   coordinates->column_start = osl_util_read_int(NULL, input);
-  coordinates->line_end     = osl_util_read_int(NULL, input);
-  coordinates->column_end   = osl_util_read_int(NULL, input);
+  coordinates->line_end = osl_util_read_int(NULL, input);
+  coordinates->column_end = osl_util_read_int(NULL, input);
 
   // Read the indentation level.
   coordinates->indent = osl_util_read_int(NULL, input);
-  
+
   return coordinates;
 }
-
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_coordinates_malloc function:
@@ -241,18 +231,17 @@ osl_coordinates_t* osl_coordinates_sread(char** input) {
  */
 osl_coordinates_t* osl_coordinates_malloc(void) {
   osl_coordinates_p coordinates;
-  
+
   OSL_malloc(coordinates, osl_coordinates_p, sizeof(osl_coordinates_t));
-  coordinates->name         = NULL;
-  coordinates->line_start   = OSL_UNDEFINED;
+  coordinates->name = NULL;
+  coordinates->line_start = OSL_UNDEFINED;
   coordinates->column_start = OSL_UNDEFINED;
-  coordinates->line_end     = OSL_UNDEFINED;
-  coordinates->column_end   = OSL_UNDEFINED;
-  coordinates->indent       = OSL_UNDEFINED;
+  coordinates->line_end = OSL_UNDEFINED;
+  coordinates->column_end = OSL_UNDEFINED;
+  coordinates->indent = OSL_UNDEFINED;
 
   return coordinates;
 }
-
 
 /**
  * osl_coordinates_free function:
@@ -267,11 +256,9 @@ void osl_coordinates_free(osl_coordinates_t* const coordinates) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_coordinates_clone function:
@@ -280,23 +267,22 @@ void osl_coordinates_free(osl_coordinates_t* const coordinates) {
  * \param coordinates The pointer to the coordinates structure to clone.
  * \return A pointer to the clone of the coordinates structure.
  */
-osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t* const coordinates) {
+osl_coordinates_t* osl_coordinates_clone(
+    const osl_coordinates_t* const coordinates) {
   osl_coordinates_p clone;
 
-  if (coordinates == NULL)
-    return NULL;
+  if (coordinates == NULL) return NULL;
 
   clone = osl_coordinates_malloc();
   OSL_strdup(clone->name, coordinates->name);
-  clone->line_start   = coordinates->line_start;
+  clone->line_start = coordinates->line_start;
   clone->column_start = coordinates->column_start;
-  clone->line_end     = coordinates->line_end;
-  clone->column_end   = coordinates->column_end;
-  clone->indent       = coordinates->indent;
+  clone->line_end = coordinates->line_end;
+  clone->column_end = coordinates->column_end;
+  clone->indent = coordinates->indent;
 
   return clone;
 }
-
 
 /**
  * osl_coordinates_equal function:
@@ -306,9 +292,9 @@ osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t* const coordina
  * \param c2  The second coordinates structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_coordinates_equal(const osl_coordinates_t* const c1, const osl_coordinates_t* const c2) {
-  if (c1 == c2)
-    return 1;
+int osl_coordinates_equal(const osl_coordinates_t* const c1,
+                          const osl_coordinates_t* const c2) {
+  if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
     return 0;
@@ -346,7 +332,6 @@ int osl_coordinates_equal(const osl_coordinates_t* const c1, const osl_coordinat
   return 1;
 }
 
-
 /**
  * osl_coordinates_interface function:
  * this function creates an interface structure corresponding to the coordinates
@@ -355,15 +340,15 @@ int osl_coordinates_equal(const osl_coordinates_t* const c1, const osl_coordinat
  */
 osl_interface_t* osl_coordinates_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_COORDINATES);
-  interface->idump  = (osl_idump_f)osl_coordinates_idump;
+  interface->idump = (osl_idump_f)osl_coordinates_idump;
   interface->sprint = (osl_sprint_f)osl_coordinates_sprint;
-  interface->sread  = (osl_sread_f)osl_coordinates_sread;
+  interface->sread = (osl_sread_f)osl_coordinates_sread;
   interface->malloc = (osl_malloc_f)osl_coordinates_malloc;
-  interface->free   = (osl_free_f)osl_coordinates_free;
-  interface->clone  = (osl_clone_f)osl_coordinates_clone;
-  interface->equal  = (osl_equal_f)osl_coordinates_equal;
+  interface->free = (osl_free_f)osl_coordinates_free;
+  interface->clone = (osl_clone_f)osl_coordinates_clone;
+  interface->equal = (osl_equal_f)osl_coordinates_equal;
 
   return interface;
 }

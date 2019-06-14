@@ -60,21 +60,18 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_COORDINATES_H
-# define OSL_COORDINATES_H
+#define OSL_COORDINATES_H
 
-# include <stdio.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_COORDINATES "coordinates"
-
+#define OSL_URI_COORDINATES "coordinates"
 
 /**
  * The osl_coordinates_t structure stores a coordinates extension to the core
@@ -83,48 +80,43 @@ extern "C"
  * indentation level).
  */
 struct osl_coordinates {
-  char* name;         /**< File name (may include the file path as well). */
-  int   line_start;   /**< Starting line of the SCoP. */
-  int   line_end;     /**< Ending line of the SCoP. */
-  int   column_start; /**< Starting column of the SCoP in the starting line. */
-  int   column_end;   /**< Ending column of the SCoP in the ending line. */
-  int   indent;       /**< Indentation (number of spaces starting each line).*/
+  char* name;       /**< File name (may include the file path as well). */
+  int line_start;   /**< Starting line of the SCoP. */
+  int line_end;     /**< Ending line of the SCoP. */
+  int column_start; /**< Starting column of the SCoP in the starting line. */
+  int column_end;   /**< Ending column of the SCoP in the ending line. */
+  int indent;       /**< Indentation (number of spaces starting each line).*/
 };
-typedef struct osl_coordinates  osl_coordinates_t;
+typedef struct osl_coordinates osl_coordinates_t;
 typedef struct osl_coordinates* osl_coordinates_p;
-
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void              osl_coordinates_idump(FILE*, const osl_coordinates_t*, int);
-void              osl_coordinates_dump(FILE*, const osl_coordinates_t*);
-char*             osl_coordinates_sprint(const osl_coordinates_t*);
-
+void osl_coordinates_idump(FILE*, const osl_coordinates_t*, int);
+void osl_coordinates_dump(FILE*, const osl_coordinates_t*);
+char* osl_coordinates_sprint(const osl_coordinates_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
 osl_coordinates_t* osl_coordinates_sread(char**);
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
 osl_coordinates_t* osl_coordinates_malloc(void);
-void              osl_coordinates_free(osl_coordinates_t*);
-
+void osl_coordinates_free(osl_coordinates_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
 osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t*);
-int               osl_coordinates_equal(const osl_coordinates_t*, const osl_coordinates_t*);
-osl_interface_t*   osl_coordinates_interface(void);
+int osl_coordinates_equal(const osl_coordinates_t*, const osl_coordinates_t*);
+osl_interface_t* osl_coordinates_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_COORDINATES_H */
