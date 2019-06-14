@@ -99,25 +99,27 @@ typedef struct osl_statement *osl_statement_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_statement_idump(FILE *, const osl_statement_t *, int);
-void osl_statement_dump(FILE *, const osl_statement_t *);
-void osl_statement_pprint(FILE *, const osl_statement_t *, const osl_names_t *);
-void osl_statement_print(FILE *, const osl_statement_t *);
+void osl_statement_idump(FILE *, const osl_statement_t *, int)
+    OSL_NONNULL_ARGS(1);
+void osl_statement_dump(FILE *, const osl_statement_t *) OSL_NONNULL_ARGS(1);
+void osl_statement_pprint(FILE *, const osl_statement_t *, const osl_names_t *)
+    OSL_NONNULL_ARGS(1);
+void osl_statement_print(FILE *, const osl_statement_t *) OSL_NONNULL_ARGS(1);
 
 // SCoPLib Compatibility
 void osl_statement_pprint_scoplib(FILE *, const osl_statement_t *,
-                                  const osl_names_t *);
+                                  const osl_names_t *) OSL_NONNULL_ARGS(1);
 
 /*****************************************************************************
  *                              Reading function                             *
  *****************************************************************************/
 osl_statement_t *osl_statement_pread(FILE *, osl_interface_t *, int);
-osl_statement_t *osl_statement_read(FILE *);
+osl_statement_t *osl_statement_read(FILE *) OSL_NONNULL_ARGS(1);
 
 /*+***************************************************************************
  *                   Memory allocation/deallocation function                 *
  *****************************************************************************/
-osl_statement_t *osl_statement_malloc(void);
+osl_statement_t *osl_statement_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_statement_free(osl_statement_t *);
 
 /*+***************************************************************************
@@ -126,16 +128,18 @@ void osl_statement_free(osl_statement_t *);
 void osl_statement_add(osl_statement_t **, osl_statement_t *);
 void osl_statement_compact(osl_statement_p, int);
 int osl_statement_number(const osl_statement_t *);
-osl_statement_t *osl_statement_nclone(const osl_statement_t *, int);
-osl_statement_t *osl_statement_clone(const osl_statement_t *);
-osl_statement_t *osl_statement_remove_unions(const osl_statement_t *);
+osl_statement_t *osl_statement_nclone(const osl_statement_t *,
+                                      int) OSL_WARN_UNUSED_RESULT;
+osl_statement_t *osl_statement_clone(const osl_statement_t *)
+    OSL_WARN_UNUSED_RESULT;
+osl_statement_t *osl_statement_remove_unions(const osl_statement_t *)
+    OSL_WARN_UNUSED_RESULT;
 int osl_statement_equal(const osl_statement_t *, const osl_statement_t *);
 int osl_statement_integrity_check(const osl_statement_t *, int);
 int osl_statement_get_nb_iterators(const osl_statement_t *);
 void osl_statement_get_attributes(const osl_statement_t *, int *, int *, int *,
                                   int *, int *);
 osl_body_t *osl_statement_get_body(const osl_statement_t *);
-
 #if defined(__cplusplus)
 }
 #endif
