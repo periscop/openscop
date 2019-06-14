@@ -60,64 +60,56 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_COMMENT_H
-# define OSL_COMMENT_H
+#define OSL_COMMENT_H
 
-# include <stdio.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_COMMENT        "comment"
-
+#define OSL_URI_COMMENT "comment"
 
 /**
  * The osl_comment_t structure stores a comment extention to the core
  * OpenScop representation. It is simply a 0-terminated string.
  */
 struct osl_comment {
-  char * comment;  /**< A comment message as a 0-terminated string. */
+  char* comment; /**< A comment message as a 0-terminated string. */
 };
-typedef struct osl_comment   osl_comment_t;
-typedef struct osl_comment * osl_comment_p;
-
+typedef struct osl_comment osl_comment_t;
+typedef struct osl_comment* osl_comment_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_comment_idump(FILE *, const osl_comment_t*, int);
-void            osl_comment_dump(FILE *, const osl_comment_t*);
-char *          osl_comment_sprint(const osl_comment_t*);
-
+void osl_comment_idump(FILE*, const osl_comment_t*, int);
+void osl_comment_dump(FILE*, const osl_comment_t*);
+char* osl_comment_sprint(const osl_comment_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_comment_t*   osl_comment_sread(char **);
-
+osl_comment_t* osl_comment_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_comment_t*   osl_comment_malloc(void);
-void            osl_comment_free(osl_comment_t*);
-
+osl_comment_t* osl_comment_malloc(void);
+void osl_comment_free(osl_comment_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_comment_t*   osl_comment_clone(const osl_comment_t*);
-int             osl_comment_equal(const osl_comment_t*, const osl_comment_t*);
+osl_comment_t* osl_comment_clone(const osl_comment_t*);
+int osl_comment_equal(const osl_comment_t*, const osl_comment_t*);
 osl_interface_t* osl_comment_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_COMMENT_H */

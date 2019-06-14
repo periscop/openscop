@@ -60,20 +60,19 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <osl/interface.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/interface.h>
-#include <osl/extensions/comment.h>
 
+#include <osl/extensions/comment.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_comment_idump function:
@@ -85,14 +84,14 @@
  * \param[in] comment The comment structure to print.
  * \param[in] level   Number of spaces before printing, for each line.
  */
-void osl_comment_idump(FILE * const file, const osl_comment_t* const comment, int level) {
+void osl_comment_idump(FILE* const file, const osl_comment_t* const comment,
+                       int level) {
   int j;
   size_t l;
-  char * tmp;
+  char* tmp;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (comment != NULL)
     fprintf(file, "+-- osl_comment_t\n");
@@ -101,24 +100,20 @@ void osl_comment_idump(FILE * const file, const osl_comment_t* const comment, in
 
   if (comment != NULL) {
     // Go to the right level.
-    for(j = 0; j <= level; j++)
-      fprintf(file, "|\t");
-  
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+
     // Display the comment message (without any carriage return).
     OSL_strdup(tmp, comment->comment);
     for (l = 0; l < strlen(tmp); l++)
-      if (tmp[l] == '\n')
-	tmp[l] = ' ';
+      if (tmp[l] == '\n') tmp[l] = ' ';
     fprintf(file, "comment: %s\n", tmp);
     free(tmp);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_comment_dump function:
@@ -127,10 +122,9 @@ void osl_comment_idump(FILE * const file, const osl_comment_t* const comment, in
  * \param[in] file    The file where the information has to be printed.
  * \param[in] comment The comment structure to print.
  */
-void osl_comment_dump(FILE * const file, const osl_comment_t* const comment) {
+void osl_comment_dump(FILE* const file, const osl_comment_t* const comment) {
   osl_comment_idump(file, comment, 0);
 }
-
 
 /**
  * osl_comment_sprint function:
@@ -139,31 +133,29 @@ void osl_comment_dump(FILE * const file, const osl_comment_t* const comment) {
  * \param[in] comment The comment structure to print.
  * \return A string containing the OpenScop dump of the comment structure.
  */
-char * osl_comment_sprint(const osl_comment_t* const comment) {
+char* osl_comment_sprint(const osl_comment_t* const comment) {
   size_t high_water_mark = OSL_MAX_STRING;
-  char * string = NULL;
+  char* string = NULL;
   char buffer[OSL_MAX_STRING];
 
   if (comment != NULL) {
-    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(string, char*, high_water_mark * sizeof(char));
     string[0] = '\0';
-   
+
     // Print the comment.
     sprintf(buffer, "%s", comment->comment);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Keep only the memory space we need.
-    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char*, (strlen(string) + 1) * sizeof(char));
   }
 
   return string;
 }
 
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_comment_sread function:
@@ -175,7 +167,7 @@ char * osl_comment_sprint(const osl_comment_t* const comment) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the comment structure that has been read.
  */
-osl_comment_t* osl_comment_sread(char ** input) {
+osl_comment_t* osl_comment_sread(char** input) {
   osl_comment_p comment;
 
   if (*input == NULL) {
@@ -183,8 +175,7 @@ osl_comment_t* osl_comment_sread(char ** input) {
     return NULL;
   }
 
-  if (strlen(*input) > OSL_MAX_STRING) 
-    OSL_error("comment too long");
+  if (strlen(*input) > OSL_MAX_STRING) OSL_error("comment too long");
 
   // Build the comment structure
   comment = osl_comment_malloc();
@@ -196,11 +187,9 @@ osl_comment_t* osl_comment_sread(char ** input) {
   return comment;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_comment_malloc function:
@@ -219,7 +208,6 @@ osl_comment_t* osl_comment_malloc(void) {
   return comment;
 }
 
-
 /**
  * osl_comment_free function:
  * this function frees the allocated memory for an osl_comment_t
@@ -228,17 +216,14 @@ osl_comment_t* osl_comment_malloc(void) {
  */
 void osl_comment_free(osl_comment_t* comment) {
   if (comment != NULL) {
-    if(comment->comment != NULL)
-      free(comment->comment);
+    if (comment->comment != NULL) free(comment->comment);
     free(comment);
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_comment_clone function:
@@ -250,15 +235,13 @@ void osl_comment_free(osl_comment_t* comment) {
 osl_comment_t* osl_comment_clone(const osl_comment_t* const comment) {
   osl_comment_p clone;
 
-  if (comment == NULL)
-    return NULL;
+  if (comment == NULL) return NULL;
 
   clone = osl_comment_malloc();
   OSL_strdup(clone->comment, comment->comment);
 
   return clone;
 }
-
 
 /**
  * osl_comment_equal function:
@@ -268,9 +251,9 @@ osl_comment_t* osl_comment_clone(const osl_comment_t* const comment) {
  * \param[in] c2  The second comment structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_comment_equal(const osl_comment_t* const c1, const osl_comment_t* const c2) {
-  if (c1 == c2)
-    return 1;
+int osl_comment_equal(const osl_comment_t* const c1,
+                      const osl_comment_t* const c2) {
+  if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
     OSL_info("comments are not the same");
@@ -280,13 +263,12 @@ int osl_comment_equal(const osl_comment_t* const c1, const osl_comment_t* const 
   if (strcmp(c1->comment, c2->comment)) {
     // Well, the test does not apply well on textual content but the idea
     // is here (see osl_generic_sprint if you want to understand the problem).
-    //OSL_info("comments are not the same");
-    //return 0;
+    // OSL_info("comments are not the same");
+    // return 0;
   }
 
   return 1;
 }
-
 
 /**
  * osl_comment_interface function:
@@ -296,16 +278,15 @@ int osl_comment_equal(const osl_comment_t* const c1, const osl_comment_t* const 
  */
 osl_interface_t* osl_comment_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_COMMENT);
-  interface->idump  = (osl_idump_f)osl_comment_idump;
+  interface->idump = (osl_idump_f)osl_comment_idump;
   interface->sprint = (osl_sprint_f)osl_comment_sprint;
-  interface->sread  = (osl_sread_f)osl_comment_sread;
+  interface->sread = (osl_sread_f)osl_comment_sread;
   interface->malloc = (osl_malloc_f)osl_comment_malloc;
-  interface->free   = (osl_free_f)osl_comment_free;
-  interface->clone  = (osl_clone_f)osl_comment_clone;
-  interface->equal  = (osl_equal_f)osl_comment_equal;
+  interface->free = (osl_free_f)osl_comment_free;
+  interface->clone = (osl_clone_f)osl_comment_clone;
+  interface->equal = (osl_equal_f)osl_comment_equal;
 
   return interface;
 }
-
