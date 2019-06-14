@@ -84,8 +84,8 @@
  * \param[in] pluto_unroll The pluto_unroll structure to print.
  * \param[in] level        Number of spaces before printing, for each line.
  */
-void osl_pluto_unroll_idump(FILE * file,
-                            osl_pluto_unroll_p pluto_unroll, int level) {
+void osl_pluto_unroll_idump(FILE * const file,
+                            const osl_pluto_unroll_t* pluto_unroll, int level) {
   int j, first = 1, number=1;
 
   // Go to the right level.
@@ -154,7 +154,7 @@ void osl_pluto_unroll_idump(FILE * file,
  * \param[in] file         The file where the information has to be printed.
  * \param[in] pluto_unroll The pluto_unroll structure to print.
  */
-void osl_pluto_unroll_dump(FILE * file, osl_pluto_unroll_p pluto_unroll) {
+void osl_pluto_unroll_dump(FILE * const file, const osl_pluto_unroll_t* pluto_unroll) {
   osl_pluto_unroll_idump(file, pluto_unroll, 0);
 }
 
@@ -168,7 +168,7 @@ void osl_pluto_unroll_dump(FILE * file, osl_pluto_unroll_p pluto_unroll) {
  * 
  * \return a string containing the OpenScop dump of the loop structure.
  */
-char * osl_pluto_unroll_sprint(osl_pluto_unroll_p pluto_unroll) {
+char * osl_pluto_unroll_sprint(const osl_pluto_unroll_t* pluto_unroll) {
   
   char* string = NULL;
   char buffer[OSL_MAX_STRING] = { 0 };
@@ -226,7 +226,7 @@ char * osl_pluto_unroll_sprint(osl_pluto_unroll_p pluto_unroll) {
  * 
  * \return a pointer to the pluto_unroll structure that has been read.
  */
-osl_pluto_unroll_p osl_pluto_unroll_sread(char** input) {
+osl_pluto_unroll_t* osl_pluto_unroll_sread(char** input) {
   osl_pluto_unroll_p p = NULL;
   if (osl_util_read_int(NULL, input) == 1) { p = osl_pluto_unroll_malloc(); }
   osl_pluto_unroll_p r = p;
@@ -264,7 +264,7 @@ osl_pluto_unroll_p osl_pluto_unroll_sread(char** input) {
  * \return a pointer to an empty pluto_unroll structure with fields set to
  *         default values.
  */
-osl_pluto_unroll_p osl_pluto_unroll_malloc(void) {
+osl_pluto_unroll_t* osl_pluto_unroll_malloc(void) {
   osl_pluto_unroll_p pluto_unroll = NULL;
 
   OSL_malloc(pluto_unroll, osl_pluto_unroll_p, sizeof(osl_pluto_unroll_t));
@@ -284,7 +284,7 @@ osl_pluto_unroll_p osl_pluto_unroll_malloc(void) {
  * \param[in,out] pluto_unroll The pointer to the pluto_unroll structure
  *                             we want to free.
  */
-void osl_pluto_unroll_free(osl_pluto_unroll_p pluto_unroll) {
+void osl_pluto_unroll_free(osl_pluto_unroll_t* pluto_unroll) {
   if (pluto_unroll != NULL) {
     osl_pluto_unroll_free(pluto_unroll->next);
 
@@ -307,7 +307,7 @@ void osl_pluto_unroll_free(osl_pluto_unroll_p pluto_unroll) {
  * \param[in] jam          true if jam, falsee otherwise
  * \param[in] factor       Unroll factor
  */
-void osl_pluto_unroll_fill(osl_pluto_unroll_p pluto_unroll,
+void osl_pluto_unroll_fill(osl_pluto_unroll_t* pluto_unroll,
                            char const * const iterator_name,
                            bool jam, unsigned int factor) {
   if (pluto_unroll != NULL) {
@@ -336,7 +336,7 @@ void osl_pluto_unroll_fill(osl_pluto_unroll_p pluto_unroll,
  * 
  * \return a pointer to the clone of list of the pluto_unroll structure.
  */
-osl_pluto_unroll_p osl_pluto_unroll_clone(osl_pluto_unroll_p pluto_unroll) {
+osl_pluto_unroll_t* osl_pluto_unroll_clone(const osl_pluto_unroll_t* pluto_unroll) {
   osl_pluto_unroll_p p = NULL;
   if (pluto_unroll != NULL) { p = osl_pluto_unroll_malloc(); }
   osl_pluto_unroll_p r = p;
@@ -368,7 +368,7 @@ osl_pluto_unroll_p osl_pluto_unroll_clone(osl_pluto_unroll_p pluto_unroll) {
  * 
  * \return 1 if a and b are the same (content-wise), 0 otherwise.
  */
-int osl_pluto_unroll_equal(osl_pluto_unroll_p a, osl_pluto_unroll_p b) {
+int osl_pluto_unroll_equal(const osl_pluto_unroll_t* a, const osl_pluto_unroll_t* b) {
   
   if (a == b) { return 1; }
   
@@ -406,7 +406,7 @@ int osl_pluto_unroll_equal(osl_pluto_unroll_p a, osl_pluto_unroll_p b) {
  *
  * \return an interface structure for the pluto_unroll extension.
  */
-osl_interface_p osl_pluto_unroll_interface(void) {
+osl_interface_t* osl_pluto_unroll_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_PLUTO_UNROLL);
