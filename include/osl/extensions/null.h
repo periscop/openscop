@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/interface.h>
 
 #if defined(__cplusplus)
@@ -86,27 +87,27 @@ typedef struct osl_null* osl_null_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_null_idump(FILE*, const osl_null_t*, int);
-void osl_null_dump(FILE*, const osl_null_t*);
-char* osl_null_sprint(const osl_null_t*);
+void osl_null_idump(FILE*, const osl_null_t*, int) OSL_NONNULL_ARGS(1);
+void osl_null_dump(FILE*, const osl_null_t*) OSL_NONNULL_ARGS(1);
+char* osl_null_sprint(const osl_null_t*) OSL_WARN_UNUSED_RESULT;
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_null_t* osl_null_sread(char**);
+osl_null_t* osl_null_sread(char**) OSL_WARN_UNUSED_RESULT;
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_null_t* osl_null_malloc(void);
+osl_null_t* osl_null_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_null_free(osl_null_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_null_t* osl_null_clone(const osl_null_t*);
+osl_null_t* osl_null_clone(const osl_null_t*) OSL_WARN_UNUSED_RESULT;
 int osl_null_equal(const osl_null_t*, const osl_null_t*);
-osl_interface_t* osl_null_interface(void);
+osl_interface_t* osl_null_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
