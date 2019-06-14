@@ -61,21 +61,19 @@
  *****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <osl/macros.h>
-#include <osl/util.h>
 #include <osl/relation.h>
 #include <osl/relation_list.h>
-
+#include <osl/util.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_relation_list_idump function:
@@ -86,12 +84,12 @@
  * \param l	 The list of relations whose information has to be printed.
  * \param level  Number of spaces before printing, for each line.
  */
-void osl_relation_list_idump(FILE * const file, const osl_relation_list_t* l, int level) {
+void osl_relation_list_idump(FILE* const file, const osl_relation_list_t* l,
+                             int level) {
   int j, first = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file,"|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (l != NULL)
     fprintf(file, "+-- osl_relation_list_t\n");
@@ -101,37 +99,31 @@ void osl_relation_list_idump(FILE * const file, const osl_relation_list_t* l, in
   while (l != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j < level; j++) fprintf(file, "|\t");
       fprintf(file, "|   osl_relation_list_t\n");
-    }
-    else
+    } else
       first = 0;
 
     // A blank line.
-    for (j = 0; j <= level+1; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print a relation.
-    osl_relation_idump(file, l->elt, level+1);
+    osl_relation_idump(file, l->elt, level + 1);
 
     l = l->next;
 
     // Next line.
     if (l != NULL) {
-      for (j = 0; j <= level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j <= level; j++) fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_relation_dump function:
@@ -140,10 +132,10 @@ void osl_relation_list_idump(FILE * const file, const osl_relation_list_t* l, in
  * \param file File where informations are printed.
  * \param list The relation whose information has to be printed.
  */
-void osl_relation_list_dump(FILE * const file, const osl_relation_list_t* const list) {
+void osl_relation_list_dump(FILE* const file,
+                            const osl_relation_list_t* const list) {
   osl_relation_list_idump(file, list, 0);
 }
-
 
 /**
  * osl_relation_list_pprint_elts function:
@@ -153,34 +145,32 @@ void osl_relation_list_dump(FILE * const file, const osl_relation_list_t* const 
  * list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
- * \param[in] names Array of constraint columns names. 
+ * \param[in] names Array of constraint columns names.
  */
-void osl_relation_list_pprint_elts(FILE * const file, const osl_relation_list_t* list,
+void osl_relation_list_pprint_elts(FILE* const file,
+                                   const osl_relation_list_t* list,
                                    const osl_names_t* names) {
   size_t i;
   const osl_relation_list_t* head = list;
 
   // Count the number of elements in the list with non-NULL content.
   i = osl_relation_list_count(list);
-  
+
   // Print each element of the relation list.
   if (i > 0) {
     i = 0;
     while (head) {
       if (head->elt != NULL) {
         osl_relation_pprint(file, head->elt, names);
-        if (head->next != NULL)
-          fprintf(file, "\n");
+        if (head->next != NULL) fprintf(file, "\n");
         i++;
       }
       head = head->next;
     }
-  }
-  else {
+  } else {
     fprintf(file, "# NULL relation list\n");
   }
 }
-
 
 /**
  * osl_relation_list_pprint_access_array_scoplib function:
@@ -190,23 +180,23 @@ void osl_relation_list_pprint_elts(FILE * const file, const osl_relation_list_t*
  * list only if it is not NULL.
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
- * \param[in] names Array of constraint columns names. 
+ * \param[in] names Array of constraint columns names.
  * \param[in] add_fakeiter True of False
  */
-void osl_relation_list_pprint_access_array_scoplib(FILE * const file,
-              const osl_relation_list_t* list, const osl_names_t* names, int add_fakeiter) {
+void osl_relation_list_pprint_access_array_scoplib(
+    FILE* const file, const osl_relation_list_t* list, const osl_names_t* names,
+    int add_fakeiter) {
   size_t i;
   int nb_rows_read = 0, nb_columns_read = 0;
   int nb_rows_write = 0, nb_columns_write = 0;
   int nb_rows_may_write = 0, nb_columns_may_write = 0;
-  const osl_relation_list_t* head ;
+  const osl_relation_list_t* head;
 
   // Count the number of elements in the list with non-NULL content.
   i = osl_relation_list_count(list);
-  
+
   // Print each element of the relation list.
   if (i > 0) {
-  
     // Read/Write arrays size
     head = list;
     while (head) {
@@ -215,39 +205,39 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * const file,
           if (head->elt->nb_rows == 1)
             nb_rows_read++;
           else
-            nb_rows_read += head->elt->nb_rows - 1; // remove the 'Arr'
-            
+            nb_rows_read += head->elt->nb_rows - 1;  // remove the 'Arr'
+
           nb_columns_read = head->elt->nb_columns - head->elt->nb_output_dims;
-          
+
         } else if (head->elt->type == OSL_TYPE_WRITE) {
           if (head->elt->nb_rows == 1)
             nb_rows_write++;
           else
-            nb_rows_write += head->elt->nb_rows - 1; // remove the 'Arr'
-            
+            nb_rows_write += head->elt->nb_rows - 1;  // remove the 'Arr'
+
           nb_columns_write = head->elt->nb_columns - head->elt->nb_output_dims;
-          
+
         } else if (head->elt->type == OSL_TYPE_MAY_WRITE) {
           if (head->elt->nb_rows == 1)
             nb_rows_may_write++;
           else
-            nb_rows_may_write += head->elt->nb_rows - 1; // remove the 'Arr'
-            
-          nb_columns_may_write = head->elt->nb_columns -
-                                 head->elt->nb_output_dims;
+            nb_rows_may_write += head->elt->nb_rows - 1;  // remove the 'Arr'
+
+          nb_columns_may_write =
+              head->elt->nb_columns - head->elt->nb_output_dims;
         }
       }
       head = head->next;
     }
-    
+
     if (add_fakeiter) {
       nb_columns_read++;
       nb_columns_write++;
       nb_columns_may_write++;
     }
-    
-    fprintf(file, "# Read access informations\n%d %d\n",
-            nb_rows_read, nb_columns_read);
+
+    fprintf(file, "# Read access informations\n%d %d\n", nb_rows_read,
+            nb_columns_read);
     head = list;
     while (head) {
       if (head->elt != NULL && head->elt->type == OSL_TYPE_READ) {
@@ -255,9 +245,9 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * const file,
       }
       head = head->next;
     }
-    
-    fprintf(file, "# Write access informations\n%d %d\n",
-            nb_rows_write, nb_columns_write);
+
+    fprintf(file, "# Write access informations\n%d %d\n", nb_rows_write,
+            nb_columns_write);
     head = list;
     while (head) {
       if (head->elt != NULL && head->elt->type == OSL_TYPE_WRITE) {
@@ -265,7 +255,7 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * const file,
       }
       head = head->next;
     }
-    
+
     if (nb_rows_may_write > 0) {
       fprintf(file, "# May Write access informations\n%d %d\n",
               nb_rows_may_write, nb_columns_may_write);
@@ -277,12 +267,10 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * const file,
         head = head->next;
       }
     }
-  }
-  else {
+  } else {
     fprintf(file, "# NULL relation list\n");
   }
 }
-
 
 /**
  * osl_relation_list_pprint function:
@@ -291,25 +279,25 @@ void osl_relation_list_pprint_access_array_scoplib(FILE * const file,
  * an element of the list only if it is not NULL.
  * \param[in] file  File where informations are printed.
  * \param[in] list  The relation list whose information has to be printed.
- * \param[in] names Array of constraint columns names. 
+ * \param[in] names Array of constraint columns names.
  */
-void osl_relation_list_pprint(FILE * const file, const osl_relation_list_t* const list,
+void osl_relation_list_pprint(FILE* const file,
+                              const osl_relation_list_t* const list,
                               const osl_names_t* const names) {
   size_t i;
 
   // Count the number of elements in the list with non-NULL content.
   i = osl_relation_list_count(list);
-  
+
   // Print it.
   if (i > 1)
-    fprintf(file,"# List of %lu elements\n%lu\n", i, i);
+    fprintf(file, "# List of %lu elements\n%lu\n", i, i);
   else
-    fprintf(file,"# List of %lu element \n%lu\n", i, i);
+    fprintf(file, "# List of %lu element \n%lu\n", i, i);
 
   // Print each element of the relation list.
   osl_relation_list_pprint_elts(file, list, names);
 }
-
 
 /**
  * osl_relation_list_print function:
@@ -319,15 +307,14 @@ void osl_relation_list_pprint(FILE * const file, const osl_relation_list_t* cons
  * \param file  File where informations are printed.
  * \param list  The relation list whose information has to be printed.
  */
-void osl_relation_list_print(FILE * const file, const osl_relation_list_t* list) {
-
+void osl_relation_list_print(FILE* const file,
+                             const osl_relation_list_t* list) {
   osl_relation_list_pprint(file, list, NULL);
 }
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_relation_list_pread function ("precision read"):
@@ -337,30 +324,27 @@ void osl_relation_list_print(FILE * const file, const osl_relation_list_t* list)
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the relation list structure that has been read.
  */
-osl_relation_list_t* osl_relation_list_pread(FILE * const file, int precision) {
+osl_relation_list_t* osl_relation_list_pread(FILE* const file, int precision) {
   int i;
   osl_relation_list_p list;
   osl_relation_list_p res;
   int nb_mat;
 
   // Read the number of relations to read.
-  nb_mat = osl_util_read_int(file, NULL); 
+  nb_mat = osl_util_read_int(file, NULL);
 
-  if (nb_mat < 0)
-    OSL_error("negative number of relations");
+  if (nb_mat < 0) OSL_error("negative number of relations");
 
   // Allocate the header of the list and start reading each element.
   res = list = osl_relation_list_malloc();
   for (i = 0; i < nb_mat; ++i) {
     list->elt = osl_relation_pread(file, precision);
-    if (i < nb_mat - 1)
-      list->next = osl_relation_list_malloc();
+    if (i < nb_mat - 1) list->next = osl_relation_list_malloc();
     list = list->next;
   }
 
   return res;
 }
-
 
 /**
  * osl_relation_list_read function:
@@ -369,16 +353,14 @@ osl_relation_list_t* osl_relation_list_pread(FILE * const file, int precision) {
  * to the highest available precision if it is not defined.
  * \see{osl_relation_list_pread}
  */
-osl_relation_list_t* osl_relation_list_read(FILE * const foo) {
+osl_relation_list_t* osl_relation_list_read(FILE* const foo) {
   int precision = osl_util_get_precision();
   return osl_relation_list_pread(foo, precision);
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_relation_list_malloc function:
@@ -390,15 +372,13 @@ osl_relation_list_t* osl_relation_list_read(FILE * const foo) {
  */
 osl_relation_list_t* osl_relation_list_malloc(void) {
   osl_relation_list_p res;
-  
+
   OSL_malloc(res, osl_relation_list_p, sizeof(osl_relation_list_t));
-  res->elt  = NULL;
+  res->elt = NULL;
   res->next = NULL;
 
   return res;
 }
-
-
 
 /**
  * osl_relation_list_free function:
@@ -409,23 +389,19 @@ osl_relation_list_t* osl_relation_list_malloc(void) {
 void osl_relation_list_free(osl_relation_list_t* list) {
   osl_relation_list_p tmp;
 
-  if (list == NULL)
-    return;
+  if (list == NULL) return;
 
   while (list != NULL) {
-    if (list->elt != NULL)
-      osl_relation_free(list->elt);
+    if (list->elt != NULL) osl_relation_free(list->elt);
     tmp = list->next;
     free(list);
     list = tmp;
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_relation_list_node function:
@@ -437,14 +413,13 @@ void osl_relation_list_free(osl_relation_list_t* list) {
  */
 osl_relation_list_t* osl_relation_list_node(const osl_relation_t* const r) {
   osl_relation_list_p new = NULL;
-  
+
   if (r != NULL) {
     new = osl_relation_list_malloc();
     new->elt = osl_relation_clone(r);
   }
   return new;
 }
-
 
 /**
  * osl_relation_list_clone function:
@@ -454,20 +429,18 @@ osl_relation_list_t* osl_relation_list_node(const osl_relation_t* const r) {
  * \return A pointer to the full copy of the relation list in parameter.
  */
 osl_relation_list_t* osl_relation_list_clone(const osl_relation_list_t* list) {
-  
-  osl_relation_list_p clone = NULL, node, previous = NULL; 
+  osl_relation_list_p clone = NULL, node, previous = NULL;
   int first = 1;
 
   while (list != NULL) {
-    node      = osl_relation_list_malloc();
+    node = osl_relation_list_malloc();
     node->elt = osl_relation_clone(list->elt);
 
     if (first) {
       first = 0;
       clone = node;
       previous = node;
-    }
-    else {
+    } else {
       previous->next = node;
       previous = previous->next;
     }
@@ -478,7 +451,6 @@ osl_relation_list_t* osl_relation_list_clone(const osl_relation_list_t* list) {
   return clone;
 }
 
-
 /**
  * osl_relation_list_concat function:
  * this function builds a new relation list as the concatenation of the
@@ -488,25 +460,21 @@ osl_relation_list_t* osl_relation_list_clone(const osl_relation_list_t* list) {
  * \return A pointer to the relation list resulting from the concatenation of
  *         l1 and l2.
  */
-osl_relation_list_t* osl_relation_list_concat(const osl_relation_list_t* const l1,
-                                             const osl_relation_list_t* const l2) {
+osl_relation_list_t* osl_relation_list_concat(
+    const osl_relation_list_t* const l1, const osl_relation_list_t* const l2) {
   osl_relation_list_p new, end;
 
-  if (l1 == NULL)
-    return osl_relation_list_clone(l2);
+  if (l1 == NULL) return osl_relation_list_clone(l2);
 
-  if (l2 == NULL)
-    return osl_relation_list_clone(l1);
+  if (l2 == NULL) return osl_relation_list_clone(l1);
 
   new = osl_relation_list_clone(l1);
   end = new;
-  while (end->next != NULL)
-    end = end->next;
+  while (end->next != NULL) end = end->next;
   end->next = osl_relation_list_clone(l2);
 
   return new;
 }
-
 
 /**
  * osl_relation_list_add function:
@@ -517,13 +485,12 @@ osl_relation_list_t* osl_relation_list_concat(const osl_relation_list_t* const l
  * \param[in,out] l1  Pointer to the first relation list.
  * \param[in]     l2  The second relation list.
  */
-void osl_relation_list_add(osl_relation_list_t* *l1, osl_relation_list_t* const l2) {
-  while (*l1 != NULL)
-    l1 = &((*l1)->next);
+void osl_relation_list_add(osl_relation_list_t** l1,
+                           osl_relation_list_t* const l2) {
+  while (*l1 != NULL) l1 = &((*l1)->next);
 
   *l1 = l2;
 }
-
 
 /**
  * osl_relation_list_push function:
@@ -533,14 +500,13 @@ void osl_relation_list_add(osl_relation_list_t* *l1, osl_relation_list_t* const 
  * \param[in,out] node Relation node to add to the stack. Its next field is
  *                     updated to the previous head of the stack.
  */
-void osl_relation_list_push(osl_relation_list_t* *head,
+void osl_relation_list_push(osl_relation_list_t** head,
                             osl_relation_list_t* node) {
   if (node != NULL) {
     node->next = *head;
     *head = node;
   }
 }
-
 
 /**
  * osl_relation_list_pop function:
@@ -551,9 +517,9 @@ void osl_relation_list_push(osl_relation_list_t* *head,
  *                     if there is none).
  * \return The top element of the stack (detached from the list).
  */
-osl_relation_list_t* osl_relation_list_pop(osl_relation_list_t* *head) {
+osl_relation_list_t* osl_relation_list_pop(osl_relation_list_t** head) {
   osl_relation_list_p top = NULL;
-  
+
   if (*head != NULL) {
     top = *head;
     *head = (*head)->next;
@@ -563,7 +529,6 @@ osl_relation_list_t* osl_relation_list_pop(osl_relation_list_t* *head) {
   return top;
 }
 
-
 /**
  * osl_relation_list_dup function:
  * this function sees a list of relations as a stack of relations and
@@ -572,12 +537,11 @@ osl_relation_list_t* osl_relation_list_pop(osl_relation_list_t* *head) {
  * \param[in,out] head Pointer to the head of the relation stack. It is
  *                     updated to the new element after duplication.
  */
-void osl_relation_list_dup(osl_relation_list_t* *head) {
+void osl_relation_list_dup(osl_relation_list_t** head) {
   osl_relation_list_p top = osl_relation_list_pop(head);
   osl_relation_list_push(head, osl_relation_list_clone(top));
   osl_relation_list_push(head, top);
 }
-
 
 /**
  * osl_relation_list_drop function:
@@ -588,11 +552,10 @@ void osl_relation_list_dup(osl_relation_list_t* *head) {
  *                     updated to the previous element in the stack (NULL
  *                     if there is none).
  */
-void osl_relation_list_drop(osl_relation_list_t* *head) {
+void osl_relation_list_drop(osl_relation_list_t** head) {
   osl_relation_list_p top = osl_relation_list_pop(head);
   osl_relation_list_free(top);
 }
-
 
 /**
  * osl_relation_list_destroy function:
@@ -602,12 +565,9 @@ void osl_relation_list_drop(osl_relation_list_t* *head) {
  * \param[in,out] head Pointer to the head of the relation stack.
  *                     Updated to NULL.
  */
-void osl_relation_list_destroy(osl_relation_list_t* *head) {
-  
-  while (*head != NULL)
-    osl_relation_list_drop(head);
+void osl_relation_list_destroy(osl_relation_list_t** head) {
+  while (*head != NULL) osl_relation_list_drop(head);
 }
-
 
 /**
  * osl_relation_list_equal function:
@@ -617,13 +577,12 @@ void osl_relation_list_destroy(osl_relation_list_t* *head) {
  * \param l2 The second relation list.
  * \return 1 if l1 and l2 are the same (content-wise), 0 otherwise.
  */
-int osl_relation_list_equal(const osl_relation_list_t* l1, const osl_relation_list_t* l2) {
+int osl_relation_list_equal(const osl_relation_list_t* l1,
+                            const osl_relation_list_t* l2) {
   while ((l1 != NULL) && (l2 != NULL)) {
-    if (l1 == l2)
-      return 1;
-    
-    if (!osl_relation_equal(l1->elt, l2->elt))
-      return 0;
+    if (l1 == l2) return 1;
+
+    if (!osl_relation_equal(l1->elt, l2->elt)) return 0;
 
     l1 = l1->next;
     l2 = l2->next;
@@ -631,10 +590,9 @@ int osl_relation_list_equal(const osl_relation_list_t* l1, const osl_relation_li
 
   if (((l1 == NULL) && (l2 != NULL)) || ((l1 != NULL) && (l2 == NULL)))
     return 0;
-  
+
   return 1;
 }
-
 
 /**
  * osl_relation_integrity_check function:
@@ -651,16 +609,13 @@ int osl_relation_list_equal(const osl_relation_list_t* l1, const osl_relation_li
  * \param expected_nb_parameters  Expected number of parameters.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int osl_relation_list_integrity_check(const osl_relation_list_t* list,
-                                      int type,
+int osl_relation_list_integrity_check(const osl_relation_list_t* list, int type,
                                       int expected_nb_output_dims,
                                       int expected_nb_input_dims,
                                       int expected_nb_parameters) {
   while (list != NULL) {
     // Check the access function.
-    if (!osl_relation_integrity_check(list->elt,
-                                      type,
-                                      expected_nb_output_dims,
+    if (!osl_relation_integrity_check(list->elt, type, expected_nb_output_dims,
                                       expected_nb_input_dims,
                                       expected_nb_parameters)) {
       return 0;
@@ -672,8 +627,7 @@ int osl_relation_list_integrity_check(const osl_relation_list_t* list,
   return 1;
 }
 
-
-/** 
+/**
  * osl_relation_list_set_type function:
  * this function sets the type of each relation in the relation list to the
  * one provided as parameter.
@@ -681,7 +635,6 @@ int osl_relation_list_integrity_check(const osl_relation_list_t* list,
  * \param type The type.
  */
 void osl_relation_list_set_type(osl_relation_list_t* list, int type) {
-
   while (list != NULL) {
     if (list->elt != NULL) {
       list->elt->type = type;
@@ -690,8 +643,7 @@ void osl_relation_list_set_type(osl_relation_list_t* list, int type) {
   }
 }
 
-
-/** 
+/**
  * osl_relation_list_filter function:
  * this function returns a copy of the input relation list, restricted to
  * the relations of a given type. The special type OSL_TYPE_ACCESS
@@ -701,8 +653,7 @@ void osl_relation_list_set_type(osl_relation_list_t* list, int type) {
  * \return A copy of the input list with only relation of the given type.
  */
 osl_relation_list_t* osl_relation_list_filter(const osl_relation_list_t* list,
-                                             int type) {
-
+                                              int type) {
   osl_relation_list_p copy = osl_relation_list_clone(list);
   osl_relation_list_p filtered = NULL;
   osl_relation_list_p previous = NULL;
@@ -711,22 +662,18 @@ osl_relation_list_t* osl_relation_list_filter(const osl_relation_list_t* list,
 
   while (copy != NULL) {
     if ((copy->elt != NULL) &&
-        (((type == OSL_TYPE_ACCESS) &&
-          (osl_relation_is_access(copy->elt))) ||
-         ((type != OSL_TYPE_ACCESS) &&
-          (type == copy->elt->type)))) {
+        (((type == OSL_TYPE_ACCESS) && (osl_relation_is_access(copy->elt))) ||
+         ((type != OSL_TYPE_ACCESS) && (type == copy->elt->type)))) {
       if (first) {
         filtered = copy;
         first = 0;
       }
-      
+
       previous = copy;
       copy = copy->next;
-    }
-    else {
+    } else {
       trash = copy;
-      if (!first)
-        previous->next = copy->next;
+      if (!first) previous->next = copy->next;
       copy = copy->next;
       trash->next = NULL;
       osl_relation_list_free(trash);
@@ -735,7 +682,6 @@ osl_relation_list_t* osl_relation_list_filter(const osl_relation_list_t* list,
 
   return filtered;
 }
-
 
 /**
  * osl_relation_list_count function:
@@ -746,16 +692,14 @@ osl_relation_list_t* osl_relation_list_filter(const osl_relation_list_t* list,
  */
 size_t osl_relation_list_count(const osl_relation_list_t* list) {
   size_t i = 0;
-  
+
   while (list != NULL) {
-    if (list->elt != NULL)
-      i++;
+    if (list->elt != NULL) i++;
     list = list->next;
   }
 
   return i;
 }
-  
 
 /**
  * osl_relation_list_get_attributes function:
@@ -776,31 +720,25 @@ size_t osl_relation_list_count(const osl_relation_list_t* list) {
  * \param[in,out] array_id      Maximum array identifier attribute.
  */
 void osl_relation_list_get_attributes(const osl_relation_list_t* list,
-                                      int * nb_parameters,
-                                      int * nb_iterators,
-                                      int * nb_scattdims,
-                                      int * nb_localdims,
-                                      int * array_id) {
+                                      int* nb_parameters, int* nb_iterators,
+                                      int* nb_scattdims, int* nb_localdims,
+                                      int* array_id) {
   int local_nb_parameters = OSL_UNDEFINED;
-  int local_nb_iterators  = OSL_UNDEFINED;
-  int local_nb_scattdims  = OSL_UNDEFINED;
-  int local_nb_localdims  = OSL_UNDEFINED;
-  int local_array_id      = OSL_UNDEFINED;
+  int local_nb_iterators = OSL_UNDEFINED;
+  int local_nb_scattdims = OSL_UNDEFINED;
+  int local_nb_localdims = OSL_UNDEFINED;
+  int local_array_id = OSL_UNDEFINED;
 
   while (list != NULL) {
-    osl_relation_get_attributes(list->elt,
-                                &local_nb_parameters,
-                                &local_nb_iterators,
-                                &local_nb_scattdims,
-                                &local_nb_localdims,
-                                &local_array_id);
+    osl_relation_get_attributes(list->elt, &local_nb_parameters,
+                                &local_nb_iterators, &local_nb_scattdims,
+                                &local_nb_localdims, &local_array_id);
     // Update.
     *nb_parameters = OSL_max(*nb_parameters, local_nb_parameters);
-    *nb_iterators  = OSL_max(*nb_iterators,  local_nb_iterators);
-    *nb_scattdims  = OSL_max(*nb_scattdims,  local_nb_scattdims);
-    *nb_localdims  = OSL_max(*nb_localdims,  local_nb_localdims);
-    *array_id      = OSL_max(*array_id,      local_array_id);
+    *nb_iterators = OSL_max(*nb_iterators, local_nb_iterators);
+    *nb_scattdims = OSL_max(*nb_scattdims, local_nb_scattdims);
+    *nb_localdims = OSL_max(*nb_localdims, local_nb_localdims);
+    *array_id = OSL_max(*array_id, local_array_id);
     list = list->next;
   }
 }
-

@@ -60,87 +60,81 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_RELATION_LIST_H
-# define OSL_RELATION_LIST_H
+#define OSL_RELATION_LIST_H
 
-# include <stdio.h>
-# include <osl/relation.h>
+#include <stdio.h>
 
+#include <osl/relation.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
-
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 /**
  * The osl_relation_list_t structure describes a (NULL-terminated
  * linked) list of relations.
  */
 struct osl_relation_list {
-  osl_relation_p elt;              /**< An element of the list. */
-  struct osl_relation_list * next; /**< Pointer to the next element
-				        of the list.*/
+  osl_relation_p elt;             /**< An element of the list. */
+  struct osl_relation_list *next; /**< Pointer to the next element
+                                       of the list.*/
 };
-typedef struct osl_relation_list   osl_relation_list_t;
-typedef struct osl_relation_list * osl_relation_list_p;
-
+typedef struct osl_relation_list osl_relation_list_t;
+typedef struct osl_relation_list *osl_relation_list_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_relation_list_idump(FILE *, const osl_relation_list_t*, int);
-void osl_relation_list_dump(FILE *, const osl_relation_list_t*);
-void osl_relation_list_pprint_elts(FILE *, const osl_relation_list_t*, const osl_names_t*);
-void osl_relation_list_pprint(FILE *, const osl_relation_list_t*, const osl_names_t*);
-void osl_relation_list_print(FILE *, const osl_relation_list_t*);
+void osl_relation_list_idump(FILE *, const osl_relation_list_t *, int);
+void osl_relation_list_dump(FILE *, const osl_relation_list_t *);
+void osl_relation_list_pprint_elts(FILE *, const osl_relation_list_t *,
+                                   const osl_names_t *);
+void osl_relation_list_pprint(FILE *, const osl_relation_list_t *,
+                              const osl_names_t *);
+void osl_relation_list_print(FILE *, const osl_relation_list_t *);
 
 // SCoPLib Compatibility
-void osl_relation_list_pprint_access_array_scoplib(FILE *, const osl_relation_list_t*,
-                                                    const osl_names_t*, int);
-
+void osl_relation_list_pprint_access_array_scoplib(FILE *,
+                                                   const osl_relation_list_t *,
+                                                   const osl_names_t *, int);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_relation_list_t* osl_relation_list_pread(FILE *, int);
-osl_relation_list_t* osl_relation_list_read(FILE *);
-
+osl_relation_list_t *osl_relation_list_pread(FILE *, int);
+osl_relation_list_t *osl_relation_list_read(FILE *);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_relation_list_t* osl_relation_list_malloc(void);
-void                osl_relation_list_free(osl_relation_list_t*);
-
+osl_relation_list_t *osl_relation_list_malloc(void);
+void osl_relation_list_free(osl_relation_list_t *);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_relation_list_t* osl_relation_list_node(const osl_relation_t*);
-osl_relation_list_t* osl_relation_list_clone(const osl_relation_list_t*);
-osl_relation_list_t* osl_relation_list_concat(const osl_relation_list_t*,
-                                             const osl_relation_list_t*);
-void                osl_relation_list_add(osl_relation_list_t* *,
-                                          osl_relation_list_t*);
-void                osl_relation_list_push(osl_relation_list_t* *,
-                                           osl_relation_list_t*);
-osl_relation_list_t* osl_relation_list_pop(osl_relation_list_p *);
-void                osl_relation_list_dup(osl_relation_list_t* *);
-void                osl_relation_list_drop(osl_relation_list_t* *);
-void                osl_relation_list_destroy(osl_relation_list_t* *);
-int                 osl_relation_list_equal(const osl_relation_list_t*,
-                                            const osl_relation_list_t*);
-int                 osl_relation_list_integrity_check(const osl_relation_list_t*,
-                                                      int, int, int, int);
-void                osl_relation_list_set_type(osl_relation_list_t*, int);
-osl_relation_list_t* osl_relation_list_filter(const osl_relation_list_t*, int);
-size_t              osl_relation_list_count(const osl_relation_list_t*);
-void                osl_relation_list_get_attributes(const osl_relation_list_t*,
-                                                     int *, int *, int *,
-                                                     int *, int *);
-# if defined(__cplusplus)
-  }
-# endif
+osl_relation_list_t *osl_relation_list_node(const osl_relation_t *);
+osl_relation_list_t *osl_relation_list_clone(const osl_relation_list_t *);
+osl_relation_list_t *osl_relation_list_concat(const osl_relation_list_t *,
+                                              const osl_relation_list_t *);
+void osl_relation_list_add(osl_relation_list_t **, osl_relation_list_t *);
+void osl_relation_list_push(osl_relation_list_t **, osl_relation_list_t *);
+osl_relation_list_t *osl_relation_list_pop(osl_relation_list_p *);
+void osl_relation_list_dup(osl_relation_list_t **);
+void osl_relation_list_drop(osl_relation_list_t **);
+void osl_relation_list_destroy(osl_relation_list_t **);
+int osl_relation_list_equal(const osl_relation_list_t *,
+                            const osl_relation_list_t *);
+int osl_relation_list_integrity_check(const osl_relation_list_t *, int, int,
+                                      int, int);
+void osl_relation_list_set_type(osl_relation_list_t *, int);
+osl_relation_list_t *osl_relation_list_filter(const osl_relation_list_t *, int);
+size_t osl_relation_list_count(const osl_relation_list_t *);
+void osl_relation_list_get_attributes(const osl_relation_list_t *, int *, int *,
+                                      int *, int *, int *);
+#if defined(__cplusplus)
+}
+#endif
+
 #endif /* define OSL_RELATION_LIST_H */
