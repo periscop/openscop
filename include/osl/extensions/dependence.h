@@ -61,38 +61,35 @@
  *****************************************************************************/
 
 #ifndef OSL_DEPENDENCE_H
-# define OSL_DEPENDENCE_H
+#define OSL_DEPENDENCE_H
 
-# include <stdio.h>
-# include <osl/interface.h>
-# include <osl/statement.h>
-# include <osl/relation.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
+#include <osl/relation.h>
+#include <osl/statement.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_DEPENDENCE "dependence"
+#define OSL_URI_DEPENDENCE "dependence"
 
-# define OSL_DEPENDENCE_RAW          1
-# define OSL_DEPENDENCE_WAR          2
-# define OSL_DEPENDENCE_WAW          3
-# define OSL_DEPENDENCE_RAR          4
-# define OSL_DEPENDENCE_RAW_SCALPRIV 5
+#define OSL_DEPENDENCE_RAW 1
+#define OSL_DEPENDENCE_WAR 2
+#define OSL_DEPENDENCE_WAW 3
+#define OSL_DEPENDENCE_RAR 4
+#define OSL_DEPENDENCE_RAW_SCALPRIV 5
 
+#define OSL_DEPENDENCE_EQUAL 1
+#define OSL_DEPENDENCE_POSIT 2
+#define OSL_DEPENDENCE_LATER 3
+#define OSL_DEPENDENCE_NEVER 4
 
-# define OSL_DEPENDENCE_EQUAL 1
-# define OSL_DEPENDENCE_POSIT 2
-# define OSL_DEPENDENCE_LATER 3
-# define OSL_DEPENDENCE_NEVER 4
-
-# define OSL_DEPENDENCE_ASSIGNMENT  1
-# define OSL_DEPENDENCE_P_REDUCTION 2
-# define OSL_DEPENDENCE_M_REDUCTION 3
-# define OSL_DEPENDENCE_T_REDUCTION 4
-
+#define OSL_DEPENDENCE_ASSIGNMENT 1
+#define OSL_DEPENDENCE_P_REDUCTION 2
+#define OSL_DEPENDENCE_M_REDUCTION 3
+#define OSL_DEPENDENCE_T_REDUCTION 4
 /**
  * osl_dependence structure:
  * this structure contains all the informations about a data dependence, it is
@@ -124,89 +121,87 @@ extern "C"
 struct osl_dependence {
   int label_source;
   int label_target;
-  int ref_source;              /**< Position of source reference in the array access list. */
-  int ref_target;              /**< Position of target reference in the array access list. */
-  int depth;                   /**< Dependence level. */
-  int type;                    /**< Dependence type: a dependence from source
-                                 *   to target can be:
-				                         *   - OSL_DEPENDENCE_UNSET if the dependence type
-                                 *     is still not set,
-				                         *   - OSL_DEPENDENCE_RAW if source writes M and
-				                         *     target read M (flow-dependence),
-				                         *   - OSL_DEPENDENCE_WAR if source reads M and
-				                         *     target writes M (anti-dependence),
-				                         *   - OSL_DEPENDENCE_WAW if source writes M and
-				                         *     target writes M too (output-dependence)
-				                         *   - OSL_DEPENDENCE_RAR if source reads M and
-				                         *     target reads M too (input-dependence).
-				                         */
-  osl_relation_p domain;         /**< Dependence polyhedron. */
-  
-  /* Other useful information */
-  
-  int source_nb_output_dims_domain; // (1)
-  int source_nb_output_dims_access; // (2)
-  
-  int target_nb_output_dims_domain; // (3)
-  int target_nb_output_dims_access; // (4)
-  
-  int source_nb_local_dims_domain; // (5)
-  int source_nb_local_dims_access; // (6)
-  int target_nb_local_dims_domain; // (7)
-  int target_nb_local_dims_access; // (8)
+  int ref_source; /**< Position of source reference in the array access list. */
+  int ref_target; /**< Position of target reference in the array access list. */
+  int depth;      /**< Dependence level. */
+  int type;       /**< Dependence type: a dependence from source
+                   *   to target can be:
+                   *   - OSL_DEPENDENCE_UNSET if the dependence type
+                   *     is still not set,
+                   *   - OSL_DEPENDENCE_RAW if source writes M and
+                   *     target read M (flow-dependence),
+                   *   - OSL_DEPENDENCE_WAR if source reads M and
+                   *     target writes M (anti-dependence),
+                   *   - OSL_DEPENDENCE_WAW if source writes M and
+                   *     target writes M too (output-dependence)
+                   *   - OSL_DEPENDENCE_RAR if source reads M and
+                   *     target reads M too (input-dependence).
+                   */
+  osl_relation_p domain; /**< Dependence polyhedron. */
 
-  void* usr;			 /**< User field, for library users
-				    convenience. */
-  struct osl_dependence * next; /**< Pointer to next dependence */
+  /* Other useful information */
+
+  int source_nb_output_dims_domain;  // (1)
+  int source_nb_output_dims_access;  // (2)
+
+  int target_nb_output_dims_domain;  // (3)
+  int target_nb_output_dims_access;  // (4)
+
+  int source_nb_local_dims_domain;  // (5)
+  int source_nb_local_dims_access;  // (6)
+  int target_nb_local_dims_domain;  // (7)
+  int target_nb_local_dims_access;  // (8)
+
+  void* usr;                   /**< User field, for library users
+                                  convenience. */
+  struct osl_dependence* next; /**< Pointer to next dependence */
 
   /* These attributes are not filled by osl
    * You can use the function candl_dependence_init_fields of CandL
    */
-  
-  osl_relation_p ref_source_access_ptr;     /**< Pointer to the source access. */
-  osl_relation_p ref_target_access_ptr;     /**< Pointer to the target access. */
-  
-  osl_statement_p stmt_source_ptr;      /**< Pointer to source statement. */
-  osl_statement_p stmt_target_ptr;      /**< Pointer to target statement. */
+
+  osl_relation_p ref_source_access_ptr; /**< Pointer to the source access. */
+  osl_relation_p ref_target_access_ptr; /**< Pointer to the target access. */
+
+  osl_statement_p stmt_source_ptr; /**< Pointer to source statement. */
+  osl_statement_p stmt_target_ptr; /**< Pointer to target statement. */
 };
 
-typedef struct osl_dependence   osl_dependence_t;
-typedef struct osl_dependence * osl_dependence_p;
-
+typedef struct osl_dependence osl_dependence_t;
+typedef struct osl_dependence* osl_dependence_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_dependence_idump(FILE *, const osl_dependence_t*, int);
-void            osl_dependence_dump(FILE *, const osl_dependence_t*);
-char *          osl_dependence_sprint(const osl_dependence_t*);
-void            osl_dependence_print(FILE *, const osl_dependence_t*);
-
+void osl_dependence_idump(FILE*, const osl_dependence_t*, int);
+void osl_dependence_dump(FILE*, const osl_dependence_t*);
+char* osl_dependence_sprint(const osl_dependence_t*);
+void osl_dependence_print(FILE*, const osl_dependence_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_dependence_t*     osl_dependence_sread(char **);
-osl_dependence_t*     osl_dependence_psread(char **, int);
+osl_dependence_t* osl_dependence_sread(char**);
+osl_dependence_t* osl_dependence_psread(char**, int);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_dependence_p     osl_dependence_malloc(void);
-void                 osl_dependence_free(osl_dependence_p);
+osl_dependence_p osl_dependence_malloc(void);
+void osl_dependence_free(osl_dependence_p);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_dependence_t*      osl_dependence_clone(const osl_dependence_t*);
-int                   osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
-void                  osl_dependence_add(osl_dependence_t**, osl_dependence_t**,
-                                         osl_dependence_t*);
-int                   osl_nb_dependences(const osl_dependence_t*);
-osl_interface_t*       osl_dependence_interface(void);
+osl_dependence_t* osl_dependence_clone(const osl_dependence_t*);
+int osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
+void osl_dependence_add(osl_dependence_t**, osl_dependence_t**,
+                        osl_dependence_t*);
+int osl_nb_dependences(const osl_dependence_t*);
+osl_interface_t* osl_dependence_interface(void);
 
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_DEPENDENCE_H */
