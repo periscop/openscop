@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/interface.h>
 #include <osl/relation.h>
 #include <osl/statement.h>
@@ -173,32 +174,32 @@ typedef struct osl_dependence* osl_dependence_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_dependence_idump(FILE*, const osl_dependence_t*, int);
-void osl_dependence_dump(FILE*, const osl_dependence_t*);
-char* osl_dependence_sprint(const osl_dependence_t*);
-void osl_dependence_print(FILE*, const osl_dependence_t*);
+void osl_dependence_idump(FILE*, const osl_dependence_t*, int) OSL_NONNULL_ARGS(1);
+void osl_dependence_dump(FILE*, const osl_dependence_t*) OSL_NONNULL_ARGS(1);
+char* osl_dependence_sprint(const osl_dependence_t*) OSL_WARN_UNUSED_RESULT;
+void osl_dependence_print(FILE*, const osl_dependence_t*) OSL_NONNULL_ARGS(1);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_dependence_t* osl_dependence_sread(char**);
-osl_dependence_t* osl_dependence_psread(char**, int);
+osl_dependence_t* osl_dependence_sread(char**) OSL_WARN_UNUSED_RESULT;
+osl_dependence_t* osl_dependence_psread(char**, int) OSL_WARN_UNUSED_RESULT;
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_dependence_p osl_dependence_malloc(void);
+osl_dependence_p osl_dependence_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_dependence_free(osl_dependence_p);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_dependence_t* osl_dependence_clone(const osl_dependence_t*);
+osl_dependence_t* osl_dependence_clone(const osl_dependence_t*) OSL_WARN_UNUSED_RESULT;
 int osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
 void osl_dependence_add(osl_dependence_t**, osl_dependence_t**,
                         osl_dependence_t*);
 int osl_nb_dependences(const osl_dependence_t*);
-osl_interface_t* osl_dependence_interface(void);
+osl_interface_t* osl_dependence_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
