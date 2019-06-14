@@ -60,88 +60,79 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_LOOP_H
-# define OSL_LOOP_H
+#define OSL_LOOP_H
 
-# include <stdio.h>
-# include <osl/strings.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
+#include <osl/strings.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_LOOP        "loop"
+#define OSL_URI_LOOP "loop"
 
-//loop direcrives
-# define OSL_LOOP_DIRECTIVE_NONE     0
-# define OSL_LOOP_DIRECTIVE_PARALLEL 1
-# define OSL_LOOP_DIRECTIVE_MPI      2
-# define OSL_LOOP_DIRECTIVE_VECTOR   4 
-# define OSL_LOOP_DIRECTIVE_USER     8 
-
-
+// loop direcrives
+#define OSL_LOOP_DIRECTIVE_NONE 0
+#define OSL_LOOP_DIRECTIVE_PARALLEL 1
+#define OSL_LOOP_DIRECTIVE_MPI 2
+#define OSL_LOOP_DIRECTIVE_VECTOR 4
+#define OSL_LOOP_DIRECTIVE_USER 8
 
 /**
  * The osl_loop_t structure stores information about loops in the program
  * in the extension part of the OpenScop representation. Containing the
  * information about the statements in the loop, its iterator and openmp
- * directives, it serves to communicate such information among different 
+ * directives, it serves to communicate such information among different
  * tools in the polyhedral chain.
  */
 struct osl_loop {
-  char * iter;              /**< \brief \0 terminated iterator name */
-  size_t nb_stmts;          /**< \brief Number of statements in the loop */
-  int  * stmt_ids;          /**< \brief Array of statement identifiers. */
-  char * private_vars;      /**< \brief \0 terminated variable names */
-  int    directive;         /**< \brief Loop directive to implement */
-  char * user;              /**< \brief \0 terminated user string */
-  struct osl_loop * next;
+  char* iter;         /**< \brief \0 terminated iterator name */
+  size_t nb_stmts;    /**< \brief Number of statements in the loop */
+  int* stmt_ids;      /**< \brief Array of statement identifiers. */
+  char* private_vars; /**< \brief \0 terminated variable names */
+  int directive;      /**< \brief Loop directive to implement */
+  char* user;         /**< \brief \0 terminated user string */
+  struct osl_loop* next;
 };
-typedef struct osl_loop   osl_loop_t;
-typedef struct osl_loop * osl_loop_p;
-
-
+typedef struct osl_loop osl_loop_t;
+typedef struct osl_loop* osl_loop_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_loop_idump(FILE *, const osl_loop_t*, int);
-void            osl_loop_dump(FILE *, const osl_loop_t*);
-char *          osl_loop_sprint(const osl_loop_t*);
-
+void osl_loop_idump(FILE*, const osl_loop_t*, int);
+void osl_loop_dump(FILE*, const osl_loop_t*);
+char* osl_loop_sprint(const osl_loop_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_loop_t*      osl_loop_sread(char **);
-
+osl_loop_t* osl_loop_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_loop_t*      osl_loop_malloc(void);
-void            osl_loop_free(osl_loop_t*);
-
+osl_loop_t* osl_loop_malloc(void);
+void osl_loop_free(osl_loop_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_loop_t*      osl_loop_clone_one(const osl_loop_t*);
-osl_loop_t*      osl_loop_clone(const osl_loop_t*);
-int             osl_loop_equal_one(const osl_loop_t*, const osl_loop_t*);
-int             osl_loop_equal(const osl_loop_t*, const osl_loop_t*);
-osl_strings_t*   osl_loop_to_strings(const osl_loop_t*);
+osl_loop_t* osl_loop_clone_one(const osl_loop_t*);
+osl_loop_t* osl_loop_clone(const osl_loop_t*);
+int osl_loop_equal_one(const osl_loop_t*, const osl_loop_t*);
+int osl_loop_equal(const osl_loop_t*, const osl_loop_t*);
+osl_strings_t* osl_loop_to_strings(const osl_loop_t*);
 osl_interface_t* osl_loop_interface(void);
 
-void            osl_loop_add(osl_loop_t*, osl_loop_t* *);
-int             osl_loop_count(const osl_loop_t*);
+void osl_loop_add(osl_loop_t*, osl_loop_t**);
+int osl_loop_count(const osl_loop_t*);
 
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_LOOP_H */

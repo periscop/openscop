@@ -60,22 +60,21 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <osl/macros.h>
-#include <osl/util.h>
-#include <osl/strings.h>
 #include <osl/interface.h>
-#include <osl/extensions/loop.h>
+#include <osl/macros.h>
+#include <osl/strings.h>
+#include <osl/util.h>
 
+#include <osl/extensions/loop.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_loop_idump function:
@@ -88,13 +87,12 @@
  * \param[in] loop   The loop structure to print.
  * \param[in] level  Number of spaces before printing, for each line.
  */
-void osl_loop_idump(FILE * const file, const osl_loop_t* loop, int level) {
-  int j, first = 1, number=1;
+void osl_loop_idump(FILE* const file, const osl_loop_t* loop, int level) {
+  int j, first = 1, number = 1;
   size_t i;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (loop != NULL)
     fprintf(file, "+-- osl_loop_t\n");
@@ -105,8 +103,7 @@ void osl_loop_idump(FILE * const file, const osl_loop_t* loop, int level) {
     // Go to the right level.
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j < level; j++) fprintf(file, "|\t");
 
       fprintf(file, "|   osl_loop_t (node %d)\n", number);
     } else {
@@ -114,40 +111,32 @@ void osl_loop_idump(FILE * const file, const osl_loop_t* loop, int level) {
     }
 
     // A blank line.
-    for (j = 0; j <= level+1; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
     fprintf(file, "\n");
-  
+
     // Display the number of names.
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
     fprintf(file, "+--iterator: %s\n", loop->iter);
 
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
     fprintf(file, "+--nb_stmts: %zu\n", loop->nb_stmts);
 
     // Display the id/name.
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
     fprintf(file, "+--stmt_ids:");
-    for(i = 0; i < loop->nb_stmts; i++) {
+    for (i = 0; i < loop->nb_stmts; i++) {
       // Go to the right level.
       fprintf(file, "%2d, ", loop->stmt_ids[i]);
     }
     fprintf(file, "\n");
 
-
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
     fprintf(file, "+--private_vars: %s\n", loop->private_vars);
 
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
     fprintf(file, "+--directive: %d\n", loop->directive);
 
-    for (j = 0; j <= level; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
     fprintf(file, "+--user: %s\n", loop->user);
 
     loop = loop->next;
@@ -155,18 +144,15 @@ void osl_loop_idump(FILE * const file, const osl_loop_t* loop, int level) {
 
     // Next line.
     if (loop != NULL) {
-      for (j = 0; j <= level; j++)
-        fprintf(file, "|\t");
+      for (j = 0; j <= level; j++) fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_loop_dump function:
@@ -176,10 +162,9 @@ void osl_loop_idump(FILE * const file, const osl_loop_t* loop, int level) {
  * \param[in] file   The file where the information has to be printed.
  * \param[in] loop The loop structure to print.
  */
-void osl_loop_dump(FILE * const file, const osl_loop_t* const loop) {
+void osl_loop_dump(FILE* const file, const osl_loop_t* const loop) {
   osl_loop_idump(file, loop, 0);
 }
-
 
 /**
  * osl_loop_sprint function:
@@ -188,17 +173,17 @@ void osl_loop_dump(FILE * const file, const osl_loop_t* const loop) {
  * \param[in] loop The loop structure to print.
  * \return         A string containing the OpenScop dump of the loop structure.
  */
-char * osl_loop_sprint(const osl_loop_t* loop) {
+char* osl_loop_sprint(const osl_loop_t* loop) {
   size_t i;
   int nloop = 0;
   size_t high_water_mark = OSL_MAX_STRING;
-  char *string = NULL;
+  char* string = NULL;
   char buffer[OSL_MAX_STRING];
 
-  OSL_malloc(string, char *, high_water_mark * sizeof(char));
+  OSL_malloc(string, char*, high_water_mark * sizeof(char));
   string[0] = '\0';
 
-  sprintf(buffer, "# Number of loops\n%d\n",osl_loop_count(loop));
+  sprintf(buffer, "# Number of loops\n%d\n", osl_loop_count(loop));
   osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
   while (loop != NULL) {
@@ -248,15 +233,13 @@ char * osl_loop_sprint(const osl_loop_t* loop) {
     loop = loop->next;
   }
 
-  OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+  OSL_realloc(string, char*, (strlen(string) + 1) * sizeof(char));
   return string;
 }
-
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_loop_sread function:
@@ -269,7 +252,7 @@ char * osl_loop_sprint(const osl_loop_t* loop) {
  *                        Updated to the position after what has been read.
  * \return                A pointer to the loop structure that has been read.
  */
-osl_loop_t* osl_loop_sread(char **input) {
+osl_loop_t* osl_loop_sread(char** input) {
   size_t i;
   int nb_loops;
   osl_loop_p head;
@@ -282,25 +265,23 @@ osl_loop_t* osl_loop_sread(char **input) {
 
   // Find the number of names provided.
   nb_loops = osl_util_read_int(NULL, input);
-  if(nb_loops == 0)
-    return NULL;
+  if (nb_loops == 0) return NULL;
 
   // Allocate the array of id and names.
   head = loop = osl_loop_malloc();
 
   while (nb_loops != 0) {
-
     loop->iter = osl_util_read_string(NULL, input);
     loop->nb_stmts = (size_t)osl_util_read_int(NULL, input);
-    
-    OSL_malloc(loop->stmt_ids, int *, loop->nb_stmts * sizeof(int));
+
+    OSL_malloc(loop->stmt_ids, int*, loop->nb_stmts * sizeof(int));
     for (i = 0; i < loop->nb_stmts; i++)
       loop->stmt_ids[i] = osl_util_read_int(NULL, input);
-  
+
     loop->private_vars = osl_util_read_line(NULL, input);
     if (!strcmp(loop->private_vars, "(null)")) {
       free(loop->private_vars);
-      loop->private_vars=NULL;
+      loop->private_vars = NULL;
     }
 
     loop->directive = osl_util_read_int(NULL, input);
@@ -310,13 +291,13 @@ osl_loop_t* osl_loop_sread(char **input) {
       loop->user = osl_util_read_line(NULL, input);
       if (!strcmp(loop->user, "(null)")) {
         free(loop->user);
-        loop->user=NULL;
+        loop->user = NULL;
       }
     }
 
     nb_loops--;
     if (nb_loops != 0) {
-      loop->next = osl_loop_malloc ();
+      loop->next = osl_loop_malloc();
       loop = loop->next;
     }
   }
@@ -324,11 +305,9 @@ osl_loop_t* osl_loop_sread(char **input) {
   return head;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_loop_malloc function:
@@ -343,17 +322,16 @@ osl_loop_t* osl_loop_malloc(void) {
   osl_loop_p loop;
 
   OSL_malloc(loop, osl_loop_p, sizeof(osl_loop_t));
-  loop->iter          = NULL;
-  loop->nb_stmts      = 0;
-  loop->stmt_ids      = NULL;
-  loop->private_vars  = NULL;
-  loop->directive     = 0;
-  loop->user          = NULL;
-  loop->next          = NULL;
+  loop->iter = NULL;
+  loop->nb_stmts = 0;
+  loop->stmt_ids = NULL;
+  loop->private_vars = NULL;
+  loop->directive = 0;
+  loop->user = NULL;
+  loop->next = NULL;
 
   return loop;
 }
-
 
 /**
  * osl_loop_free function:
@@ -362,7 +340,6 @@ osl_loop_t* osl_loop_malloc(void) {
  * \param[in,out] loop The pointer to the loop structure we want to free.
  */
 void osl_loop_free(osl_loop_t* loop) {
-
   while (loop != NULL) {
     osl_loop_p tmp = loop;
 
@@ -377,11 +354,9 @@ void osl_loop_free(osl_loop_t* loop) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_loop_clone_one function:
@@ -395,13 +370,12 @@ osl_loop_t* osl_loop_clone_one(const osl_loop_t* loop) {
   size_t i;
   osl_loop_p clone;
 
-  if (loop == NULL)
-    return NULL;
+  if (loop == NULL) return NULL;
 
   clone = osl_loop_malloc();
   OSL_strdup(clone->iter, loop->iter);
   clone->nb_stmts = loop->nb_stmts;
-  OSL_malloc(clone->stmt_ids, int *, loop->nb_stmts * sizeof(int));
+  OSL_malloc(clone->stmt_ids, int*, loop->nb_stmts * sizeof(int));
 
   for (i = 0; i < loop->nb_stmts; i++) {
     clone->stmt_ids[i] = loop->stmt_ids[i];
@@ -409,11 +383,10 @@ osl_loop_t* osl_loop_clone_one(const osl_loop_t* loop) {
 
   clone->directive = loop->directive;
 
-  if(loop->private_vars != NULL)
+  if (loop->private_vars != NULL)
     OSL_strdup(clone->private_vars, loop->private_vars);
 
-  if(loop->user != NULL)
-    OSL_strdup(clone->user, loop->user);
+  if (loop->user != NULL) OSL_strdup(clone->user, loop->user);
 
   return clone;
 }
@@ -428,18 +401,15 @@ osl_loop_t* osl_loop_clone_one(const osl_loop_t* loop) {
  */
 osl_loop_t* osl_loop_clone(const osl_loop_t* loop) {
   osl_loop_p clone = NULL;
-  osl_loop_p head  = NULL;
+  osl_loop_p head = NULL;
 
-  if (loop == NULL)
-    return NULL;
+  if (loop == NULL) return NULL;
 
   while (loop) {
-
-    if (clone==NULL) {
+    if (clone == NULL) {
       head = clone = osl_loop_clone_one(loop);
-    }
-    else {
-      clone->next  = osl_loop_clone_one(loop);
+    } else {
+      clone->next = osl_loop_clone_one(loop);
       clone = clone->next;
     }
 
@@ -463,22 +433,21 @@ osl_loop_t* osl_loop_clone(const osl_loop_t* loop) {
 int osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
   size_t i, j, found;
 
-  if (a1 == a2)
-    return 1;
+  if (a1 == a2) return 1;
 
   if (((a1 == NULL) && (a2 != NULL)) || ((a1 != NULL) && (a2 == NULL))) {
-    //OSL_info("loops are not the same (compare with NULL)");
+    // OSL_info("loops are not the same (compare with NULL)");
     return 0;
   }
 
   // Check whether the number of names is the same.
   if (a1->nb_stmts != a2->nb_stmts) {
-    //OSL_info("loops are not the same (nb_stmts)");
+    // OSL_info("loops are not the same (nb_stmts)");
     return 0;
   }
 
   if (strcmp(a1->iter, a2->iter)) {
-    //OSL_info("loops are not the same (iter name)");
+    // OSL_info("loops are not the same (iter name)");
     return 0;
   }
   // We accept a different order of the names, as long as the identifiers
@@ -492,26 +461,26 @@ int osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
       }
     }
     if (found != 1) {
-      //OSL_info("loop are not the same (stmt ids)");
+      // OSL_info("loop are not the same (stmt ids)");
       return 0;
     }
   }
 
-  //TODO: necessarily same ???
-  if (a1->private_vars != a2->private_vars) { // NULL check
+  // TODO: necessarily same ???
+  if (a1->private_vars != a2->private_vars) {  // NULL check
     if (strcmp(a1->private_vars, a2->private_vars)) {
-      //OSL_info("loops are not the same (private vars)");
+      // OSL_info("loops are not the same (private vars)");
       return 0;
     }
   }
 
-  //TODO: necessarily same ???
+  // TODO: necessarily same ???
   if (a1->directive != a2->directive) {
-    //OSL_info("loops are not the same (directive)");
+    // OSL_info("loops are not the same (directive)");
     return 0;
   }
 
-  if (a1->user != a2->user) { // NULL check
+  if (a1->user != a2->user) {  // NULL check
     if (strcmp(a1->user, a2->user)) {
       return 0;
     }
@@ -534,8 +503,7 @@ int osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
 int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
   int found = 0;
 
-  if (a1 == a2)
-    return 1;
+  if (a1 == a2) return 1;
 
   if (((a1 == NULL) && (a2 != NULL)) || ((a1 != NULL) && (a2 == NULL))) {
     OSL_info("lists of loops are not the same (compare with NULL)");
@@ -543,8 +511,8 @@ int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
   }
 
   if (osl_loop_count(a1) != osl_loop_count(a2)) {
-      OSL_info("list of loops are not the same");
-      return 0;
+    OSL_info("list of loops are not the same");
+    return 0;
   }
 
   while (a1) {
@@ -552,14 +520,14 @@ int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
     const osl_loop_t* temp = a2;
 
     while (temp) {
-      if(osl_loop_equal_one(a1, temp)==1){
-        found= 1;
+      if (osl_loop_equal_one(a1, temp) == 1) {
+        found = 1;
         break;
       }
       temp = temp->next;
     }
 
-    if(found!=1){
+    if (found != 1) {
       OSL_info("list of loops are not the same");
       return 0;
     }
@@ -568,7 +536,6 @@ int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
 
   return 1;
 }
-
 
 /**
  * osl_loop_interface function:
@@ -579,19 +546,18 @@ int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
  */
 osl_interface_p osl_loop_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_LOOP);
-  interface->idump  = (osl_idump_f)osl_loop_idump;
+  interface->idump = (osl_idump_f)osl_loop_idump;
   interface->sprint = (osl_sprint_f)osl_loop_sprint;
-  interface->sread  = (osl_sread_f)osl_loop_sread;
+  interface->sread = (osl_sread_f)osl_loop_sread;
   interface->malloc = (osl_malloc_f)osl_loop_malloc;
-  interface->free   = (osl_free_f)osl_loop_free;
-  interface->clone  = (osl_clone_f)osl_loop_clone;
-  interface->equal  = (osl_equal_f)osl_loop_equal;
+  interface->free = (osl_free_f)osl_loop_free;
+  interface->clone = (osl_clone_f)osl_loop_clone;
+  interface->equal = (osl_equal_f)osl_loop_equal;
 
   return interface;
 }
-
 
 /**
  * osl_loop_add function:
@@ -600,14 +566,11 @@ osl_interface_p osl_loop_interface(void) {
  * \param[in,out] ll  Pointer to a list of loops.
  * \param[in] loop    Pointer to the loop structure to be added.
  */
-void osl_loop_add(osl_loop_t* loop, osl_loop_t* *ll) {
+void osl_loop_add(osl_loop_t* loop, osl_loop_t** ll) {
+  while (*ll != NULL) ll = &(*ll)->next;
 
-    while (*ll != NULL)
-         ll = &(*ll)->next;
-
-    *ll = loop;
+  *ll = loop;
 }
-
 
 /**
  * osl_loop_count:
