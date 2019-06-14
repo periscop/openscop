@@ -90,30 +90,30 @@ typedef struct osl_null * osl_null_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_null_idump(FILE *, osl_null_p, int);
-void            osl_null_dump(FILE *, osl_null_p);
-char *          osl_null_sprint(osl_null_p);
+void            osl_null_idump(FILE *, const osl_null_t*, int);
+void            osl_null_dump(FILE *, const osl_null_t*);
+char *          osl_null_sprint(const osl_null_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_null_p      osl_null_sread(char **);
+osl_null_t*      osl_null_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_null_p      osl_null_malloc(void);
-void            osl_null_free(osl_null_p);
+osl_null_t*      osl_null_malloc(void);
+void            osl_null_free(osl_null_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_null_p      osl_null_clone(osl_null_p);
-int             osl_null_equal(osl_null_p, osl_null_p);
-osl_interface_p osl_null_interface(void);
+osl_null_t*      osl_null_clone(const osl_null_t*);
+int             osl_null_equal(const osl_null_t*, const osl_null_t*);
+osl_interface_t* osl_null_interface(void);
 
 
 # if defined(__cplusplus)

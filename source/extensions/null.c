@@ -85,7 +85,7 @@
  * \param[in] null  The null structure to print.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_null_idump(FILE * file, osl_null_p null, int level) {
+void osl_null_idump(FILE * const file, const osl_null_t* const null, int level) {
   int j;
 
   // Go to the right level.
@@ -111,7 +111,7 @@ void osl_null_idump(FILE * file, osl_null_p null, int level) {
  * \param[in] file The file where the information has to be printed.
  * \param[in] null The null structure to print.
  */
-void osl_null_dump(FILE * file, osl_null_p null) {
+void osl_null_dump(FILE * const file, const osl_null_t* const null) {
   osl_null_idump(file, null, 0);
 }
 
@@ -123,7 +123,7 @@ void osl_null_dump(FILE * file, osl_null_p null) {
  * \param[in] null The null structure to print.
  * \return A string containing the OpenScop dump of the null structure.
  */
-char * osl_null_sprint(osl_null_p null) {
+char * osl_null_sprint(const osl_null_t* const null) {
   char * string = NULL;
 
   if (null != NULL) {
@@ -151,7 +151,7 @@ char * osl_null_sprint(osl_null_p null) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the null structure that has been read.
  */
-osl_null_p osl_null_sread(char ** input) {
+osl_null_t* osl_null_sread(char ** input) {
   osl_null_p null;
 
   if (*input == NULL) {
@@ -182,7 +182,7 @@ osl_null_p osl_null_sread(char ** input) {
  * \return A pointer to an empty null structure with fields set to
  *         default values.
  */
-osl_null_p osl_null_malloc(void) {
+osl_null_t* osl_null_malloc(void) {
   osl_null_p null;
 
   OSL_malloc(null, osl_null_p, sizeof(osl_null_t));
@@ -196,7 +196,7 @@ osl_null_p osl_null_malloc(void) {
  * structure.
  * \param[in,out] null The pointer to the null structure to free.
  */
-void osl_null_free(osl_null_p null) {
+void osl_null_free(osl_null_t* null) {
   if (null != NULL) {
     free(null);
   }
@@ -215,7 +215,7 @@ void osl_null_free(osl_null_p null) {
  * \param[in] null The pointer to the null structure to clone.
  * \return A pointer to the clone of the null structure.
  */
-osl_null_p osl_null_clone(osl_null_p null) {
+osl_null_t* osl_null_clone(const osl_null_t* null) {
   osl_null_p clone;
 
   if (null == NULL)
@@ -234,7 +234,7 @@ osl_null_p osl_null_clone(osl_null_p null) {
  * \param[in] c2  The second null structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_null_equal(osl_null_p c1, osl_null_p c2) {
+int osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
   if (c1 == c2)
     return 1;
 
@@ -253,7 +253,7 @@ int osl_null_equal(osl_null_p c1, osl_null_p c2) {
  * extension and returns it).
  * \return An interface structure for the null extension.
  */
-osl_interface_p osl_null_interface(void) {
+osl_interface_t* osl_null_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_NULL);
