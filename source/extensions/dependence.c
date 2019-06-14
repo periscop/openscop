@@ -89,8 +89,8 @@
  * idump functions.
  * - 18/09/2003: first version.
  */
-void osl_dependence_idump(FILE* file,
-                            osl_dependence_p dependence,
+void osl_dependence_idump(FILE* const file,
+                            const osl_dependence_t* dependence,
                             int level) {
   int j, first = 1;
   osl_statement_p tmp;
@@ -214,7 +214,7 @@ void osl_dependence_idump(FILE* file,
  * This function prints the content of a osl_dependence_p structure (dependence)
  * into a file (file, possibly stdout).
  */
-void osl_dependence_dump(FILE * file, osl_dependence_p dependence) {
+void osl_dependence_dump(FILE * const file, const osl_dependence_t* const dependence) {
   osl_dependence_idump(file, dependence, 0);
 }
 
@@ -223,7 +223,7 @@ void osl_dependence_dump(FILE * file, osl_dependence_p dependence) {
  * osl_dependence_print function:
  * Print the dependence, formatted to fit the .scop representation.
  */
-void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
+void osl_dependence_print(FILE * const file, const osl_dependence_t*  const dependence) {
   char *string = osl_dependence_sprint(dependence);
   fprintf(file, "%s\n", string);
   free(string);
@@ -235,9 +235,9 @@ void osl_dependence_print(FILE *file, osl_dependence_p dependence) {
  * Returns a string containing the dependence, formatted to fit the
  * .scop representation.
  */
-char* osl_dependence_sprint(osl_dependence_p dependence) {
+char* osl_dependence_sprint(const osl_dependence_t* const dependence) {
   
-  osl_dependence_p tmp = dependence;
+  const osl_dependence_t* tmp = dependence;
   int nb_deps;
   size_t buffer_size = 2048;
   char* buffer;
@@ -358,7 +358,7 @@ osl_dependence_p osl_dependence_read_one_dep(char **input, int precision) {
  * osl_dependence_sread function:
  * Retrieve a osl_dependence_p list from the option tag in the scop.
  */
-osl_dependence_p osl_dependence_sread(char **input) {
+osl_dependence_t* osl_dependence_sread(char **input) {
   int precision = osl_util_get_precision();
   return osl_dependence_psread(input, precision);
 }
@@ -368,7 +368,7 @@ osl_dependence_p osl_dependence_sread(char **input) {
  * osl_dependence_psread function
  * Retrieve a osl_dependence_p list from the option tag in the scop.
  */
-osl_dependence_p osl_dependence_psread(char **input, int precision) {
+osl_dependence_t* osl_dependence_psread(char **input, int precision) {
   osl_dependence_p first = NULL;
   osl_dependence_p currdep = NULL;
 
@@ -408,7 +408,7 @@ osl_dependence_p osl_dependence_psread(char **input, int precision) {
  * allocated space.
  * - 07/12/2005: first version.
  */
-osl_dependence_p osl_dependence_malloc(void) {
+osl_dependence_t* osl_dependence_malloc(void) {
   osl_dependence_p dependence;
 
   /* Memory allocation for the osl_dependence_p structure. */
@@ -446,7 +446,7 @@ osl_dependence_p osl_dependence_malloc(void) {
  * This function frees the allocated memory for a osl_dependence_p structure.
  * - 18/09/2003: first version.
  */
-void osl_dependence_free(osl_dependence_p dependence) {
+void osl_dependence_free(osl_dependence_t* dependence) {
   osl_dependence_p next;
   while (dependence != NULL) {
     next = dependence->next;
@@ -470,7 +470,7 @@ void osl_dependence_free(osl_dependence_p dependence) {
  * \param n         The number of nodes we want to copy (-1 for infinity).
  * \return The clone of the n first nodes of the dependence list.
  */
-static osl_dependence_p osl_dependence_nclone(osl_dependence_p dep, int n) {
+static osl_dependence_t* osl_dependence_nclone(const osl_dependence_t* dep, int n) {
   int first = 1, i = 0;
   osl_dependence_p clone = NULL, node, previous = NULL;
 
@@ -521,7 +521,7 @@ static osl_dependence_p osl_dependence_nclone(osl_dependence_p dep, int n) {
  * \param[in] statement The pointer to the dependence we want to clone.
  * \return A pointer to the clone of the dependence provided as parameter.
  */
-osl_dependence_p osl_dependence_clone(osl_dependence_p dep) {
+osl_dependence_t* osl_dependence_clone(const osl_dependence_t* const dep) {
   return osl_dependence_nclone(dep, -1);
 }
 
@@ -535,7 +535,7 @@ osl_dependence_p osl_dependence_clone(osl_dependence_p dep) {
  * \param[in] d2 The second dependence.
  * \return 1 if d1 and d2 are the same (content-wise), 0 otherwise.
  */
-int osl_dependence_equal(osl_dependence_p d1, osl_dependence_p d2) {
+int osl_dependence_equal(const osl_dependence_t* d1, const osl_dependence_t* d2) {
 
   if (d1 == d2)
     return 1;
@@ -596,9 +596,9 @@ int osl_dependence_equal(osl_dependence_p d1, osl_dependence_p d2) {
  * is when (start) is NULL-.
  * - 18/09/2003: first version.
  */
-void osl_dependence_add(osl_dependence_p* start,
-                        osl_dependence_p* now,
-                        osl_dependence_p dependence) {
+void osl_dependence_add(osl_dependence_t** start,
+                        osl_dependence_t** now,
+                        osl_dependence_t* dependence) {
   if (dependence != NULL) {
     if (*start == NULL) {
       *start = dependence;
@@ -621,8 +621,8 @@ void osl_dependence_add(osl_dependence_p* start,
  * \param dependence The first dependence of the dependence list.
  **
  */
-int osl_nb_dependences(osl_dependence_p deps) {
-  osl_dependence_p dep = deps;
+int osl_nb_dependences(const osl_dependence_t* deps) {
+  const osl_dependence_t* dep = deps;
   int num = 0;
   while (dep != NULL) {
     num++;
@@ -638,7 +638,7 @@ int osl_nb_dependences(osl_dependence_p deps) {
  * extension and returns it).
  * \return An interface structure for the dependence extension.
  */
-osl_interface_p osl_dependence_interface(void) {
+osl_interface_t* osl_dependence_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_DEPENDENCE);

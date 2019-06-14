@@ -177,17 +177,17 @@ typedef struct osl_dependence * osl_dependence_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_dependence_idump(FILE *, osl_dependence_p, int);
-void            osl_dependence_dump(FILE *, osl_dependence_p);
-char *          osl_dependence_sprint(osl_dependence_p);
-void            osl_dependence_print(FILE *, osl_dependence_p);
+void            osl_dependence_idump(FILE *, const osl_dependence_t*, int);
+void            osl_dependence_dump(FILE *, const osl_dependence_t*);
+char *          osl_dependence_sprint(const osl_dependence_t*);
+void            osl_dependence_print(FILE *, const osl_dependence_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_dependence_p     osl_dependence_sread(char **);
-osl_dependence_p     osl_dependence_psread(char **, int);
+osl_dependence_t*     osl_dependence_sread(char **);
+osl_dependence_t*     osl_dependence_psread(char **, int);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
@@ -198,12 +198,12 @@ void                 osl_dependence_free(osl_dependence_p);
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_dependence_p      osl_dependence_clone(osl_dependence_p);
-int                   osl_dependence_equal(osl_dependence_p, osl_dependence_p);
-void                  osl_dependence_add(osl_dependence_p*, osl_dependence_p*,
-                                         osl_dependence_p);
-int                   osl_nb_dependences(osl_dependence_p);
-osl_interface_p       osl_dependence_interface(void);
+osl_dependence_t*      osl_dependence_clone(const osl_dependence_t*);
+int                   osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
+void                  osl_dependence_add(osl_dependence_t**, osl_dependence_t**,
+                                         osl_dependence_t*);
+int                   osl_nb_dependences(const osl_dependence_t*);
+osl_interface_t*       osl_dependence_interface(void);
 
 # if defined(__cplusplus)
   }
