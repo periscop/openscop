@@ -88,6 +88,13 @@ extern "C"
 /** \brief The text must be preceded with "#pragma". */
 #define OSL_REGION_TEXT_PRAGMA 2
 
+struct osl_region_text {
+  int* types;
+  char** lines;
+  size_t count;
+};
+typedef struct osl_region_text osl_region_text_t;
+
 /**
  * \brief Regions
  *
@@ -106,23 +113,11 @@ struct osl_region {
   /** Location of the region. */
   int location;
 
-  /** Prefix type. */
-  int prefix_type;
-  /** Suffix type. */
-  int suffix_type;
-  /** Prelude type. */
-  int prelude_type;
-  /** Postlude type. */
-  int postlude_type;
+  osl_region_text_t prefix;
+  osl_region_text_t suffix;
+  osl_region_text_t prelude;
+  osl_region_text_t postlude;
 
-  /** Prefix text. */
-  char* prefix;
-  /** Suffix text. */
-  char* suffix;
-  /** Prelude text. */
-  char* prelude;
-  /** Postlude text. */
-  char* postlude;
   struct osl_region* next;
 };
 typedef struct osl_region osl_region_t;
@@ -164,6 +159,15 @@ bool osl_region_equal(const osl_region_t* a1, const osl_region_t* a2);
 size_t osl_region_count(const osl_region_t* ll);
 
 osl_interface_t* osl_region_interface(void) OSL_WARN_UNUSED_RESULT;
+
+void osl_region_append_prefix(osl_region_t* region, int prefix_type,
+                              char* prefix);
+void osl_region_append_suffix(osl_region_t* region, int suffix_type,
+                              char* suffix);
+void osl_region_append_prelude(osl_region_t* region, int prelude_type,
+                               char* prelude);
+void osl_region_append_postlude(osl_region_t* region, int postlude_type,
+                                char* postlude);
 
 #if defined(__cplusplus)
 }
