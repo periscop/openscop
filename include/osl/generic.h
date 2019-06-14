@@ -127,7 +127,7 @@ int osl_generic_number(const osl_generic_t *);
 osl_generic_t *osl_generic_clone(const osl_generic_t *) OSL_WARN_UNUSED_RESULT;
 osl_generic_t *osl_generic_nclone(const osl_generic_t *,
                                   int) OSL_WARN_UNUSED_RESULT;
-int osl_generic_equal(const osl_generic_t *, const osl_generic_t *);
+bool osl_generic_equal(const osl_generic_t *, const osl_generic_t *);
 int osl_generic_has_URI(const osl_generic_t *, char const *const);
 void *osl_generic_lookup(const osl_generic_t *, char const *const);
 osl_generic_t *osl_generic_shell(void *,

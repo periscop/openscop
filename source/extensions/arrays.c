@@ -294,7 +294,7 @@ osl_arrays_t* osl_arrays_clone(const osl_arrays_t* const arrays) {
  * \param[in] a2 The second arrays structure.
  * \return 1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int osl_arrays_equal(const osl_arrays_t* const a1,
+bool osl_arrays_equal(const osl_arrays_t* const a1,
                      const osl_arrays_t* const a2) {
   int i, j, found;
 

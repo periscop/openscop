@@ -195,7 +195,7 @@ void osl_dependence_free(osl_dependence_t*);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_dependence_t* osl_dependence_clone(const osl_dependence_t*) OSL_WARN_UNUSED_RESULT;
-int osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
+bool osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
 void osl_dependence_add(osl_dependence_t**, osl_dependence_t**,
                         osl_dependence_t*);
 int osl_nb_dependences(const osl_dependence_t*);

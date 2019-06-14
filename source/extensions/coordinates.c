@@ -292,7 +292,7 @@ osl_coordinates_t* osl_coordinates_clone(
  * \param c2  The second coordinates structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_coordinates_equal(const osl_coordinates_t* const c1,
+bool osl_coordinates_equal(const osl_coordinates_t* const c1,
                           const osl_coordinates_t* const c2) {
   if (c1 == c2) return 1;
 

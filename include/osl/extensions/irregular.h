@@ -130,7 +130,7 @@ void osl_irregular_free(osl_irregular_t*);
  *****************************************************************************/
 osl_irregular_t* osl_irregular_clone(const osl_irregular_t*)
     OSL_WARN_UNUSED_RESULT;
-int osl_irregular_equal(const osl_irregular_t*, const osl_irregular_t*);
+bool osl_irregular_equal(const osl_irregular_t*, const osl_irregular_t*);
 osl_irregular_t* osl_irregular_add_control(const osl_irregular_t*, char**, int,
                                            const char*) OSL_WARN_UNUSED_RESULT;
 osl_irregular_t* osl_irregular_add_exit(const osl_irregular_t*, char**, int,

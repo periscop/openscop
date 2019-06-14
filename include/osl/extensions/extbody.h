@@ -115,7 +115,7 @@ void osl_extbody_free(osl_extbody_t*);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_extbody_t* osl_extbody_clone(const osl_extbody_t*) OSL_WARN_UNUSED_RESULT;
-int osl_extbody_equal(const osl_extbody_t*, const osl_extbody_t*);
+bool osl_extbody_equal(const osl_extbody_t*, const osl_extbody_t*);
 osl_interface_t* osl_extbody_interface(void) OSL_WARN_UNUSED_RESULT;
 void osl_extbody_add(osl_extbody_t*, int, int);
 

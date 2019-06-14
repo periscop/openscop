@@ -721,7 +721,7 @@ osl_scop_p osl_scop_remove_unions(osl_scop_p scop) {
  * \param s2 The second scop.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int osl_scop_equal(osl_scop_p s1, osl_scop_p s2) {
+bool osl_scop_equal(osl_scop_p s1, osl_scop_p s2) {
 
   while ((s1 != NULL) && (s2 != NULL)) {
     if (s1 == s2)

@@ -2265,7 +2265,7 @@ osl_relation_p osl_relation_concat_constraints(const osl_relation_t* const r1,
  * \param[in] r2 The second relation.
  * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
  */
-int osl_relation_part_equal(const osl_relation_t* const r1,
+bool osl_relation_part_equal(const osl_relation_t* const r1,
                             const osl_relation_t* const r2) {
   int i, j;
 
@@ -2297,7 +2297,7 @@ int osl_relation_part_equal(const osl_relation_t* const r1,
  * \param[in] r2 The second relation.
  * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
  */
-int osl_relation_equal(const osl_relation_t* r1, const osl_relation_t* r2) {
+bool osl_relation_equal(const osl_relation_t* r1, const osl_relation_t* r2) {
   while ((r1 != NULL) && (r2 != NULL)) {
     if (!osl_relation_part_equal(r1, r2)) return 0;
 

@@ -572,7 +572,7 @@ int osl_generic_count(const osl_generic_t* x) {
  * \param[in] x2 The second generic structure.
  * \return 1 if x1 and x2 are the same (content-wise), 0 otherwise.
  */
-int osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
+bool osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
   int x1_generic_number, x2_generic_number;
   int found, equal;
   const osl_generic_t* backup_x2 = x2;

@@ -430,7 +430,7 @@ osl_loop_t* osl_loop_clone(const osl_loop_t* loop) {
  * \param[in] a2 The second loop structure.
  * \return       1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
+bool osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
   size_t i, j, found;
 
   if (a1 == a2) return 1;
@@ -500,7 +500,7 @@ int osl_loop_equal_one(const osl_loop_t* const a1, const osl_loop_t* const a2) {
  * \param[in] a2  The second loop list.
  * \return        1 if a1 and a2 are the same (content-wise), 0 otherwise.
  */
-int osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
+bool osl_loop_equal(const osl_loop_t* a1, const osl_loop_t* a2) {
   int found = 0;
 
   if (a1 == a2) return 1;

@@ -364,7 +364,7 @@ void osl_strings_add(osl_strings_t* const strings, char const* const string) {
  * \param[in] s2 The second strings structure.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int osl_strings_equal(const osl_strings_t* const s1,
+bool osl_strings_equal(const osl_strings_t* const s1,
                       const osl_strings_t* const s2) {
   size_t i, nb_s1;
 

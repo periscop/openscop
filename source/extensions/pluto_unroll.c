@@ -354,7 +354,7 @@ osl_pluto_unroll_t* osl_pluto_unroll_clone(
  *
  * \return 1 if a and b are the same (content-wise), 0 otherwise.
  */
-int osl_pluto_unroll_equal(const osl_pluto_unroll_t* a,
+bool osl_pluto_unroll_equal(const osl_pluto_unroll_t* a,
                            const osl_pluto_unroll_t* b) {
   if (a == b) {
     return 1;

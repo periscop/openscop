@@ -112,7 +112,7 @@ void osl_scatnames_free(osl_scatnames_t*);
  *****************************************************************************/
 osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t*)
     OSL_WARN_UNUSED_RESULT;
-int osl_scatnames_equal(const osl_scatnames_t*, const osl_scatnames_t*);
+bool osl_scatnames_equal(const osl_scatnames_t*, const osl_scatnames_t*);
 osl_interface_t* osl_scatnames_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)

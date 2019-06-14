@@ -332,7 +332,7 @@ osl_body_t* osl_body_clone(const osl_body_t* body) {
  * \param[in] b2 The second body.
  * \return 1 if b1 and b2 are the same (content-wise), 0 otherwise.
  */
-int osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
+bool osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
   if (b1 == b2) return 1;
 
   if (((b1 != NULL) && (b2 == NULL)) || ((b1 == NULL) && (b2 != NULL))) {

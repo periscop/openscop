@@ -256,7 +256,7 @@ osl_clay_t* osl_clay_clone(const osl_clay_t* const clay) {
  * \param[in] c2  The second clay structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
+bool osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
   if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {

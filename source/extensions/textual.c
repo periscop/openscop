@@ -262,7 +262,7 @@ osl_textual_t* osl_textual_clone(const osl_textual_t* textual) {
  * \param ff  The second textual structure.
  * \return 1 if f1 and f2 are the same (content-wise), 0 otherwise.
  */
-int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
+bool osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
  
   if (f1 == f2)
     return 1;
@@ -285,7 +285,7 @@ int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
  * \param[in] f2  The second textual structure.
  * \return 1.
  */
-int osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
+bool osl_textual_equal(const osl_textual_t* f1, const osl_textual_t* f2) {
   (void)f1;
   (void)f2;
   return 1;

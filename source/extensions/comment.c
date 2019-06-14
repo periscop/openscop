@@ -251,7 +251,7 @@ osl_comment_t* osl_comment_clone(const osl_comment_t* const comment) {
  * \param[in] c2  The second comment structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_comment_equal(const osl_comment_t* const c1,
+bool osl_comment_equal(const osl_comment_t* const c1,
                       const osl_comment_t* const c2) {
   if (c1 == c2) return 1;
 

@@ -220,7 +220,7 @@ osl_null_t* osl_null_clone(const osl_null_t* null) {
  * \param[in] c2  The second null structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
+bool osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
   if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {

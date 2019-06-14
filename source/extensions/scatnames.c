@@ -232,7 +232,7 @@ osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t* const scatnames) {
  * \param[in] s2 The second scatnames structure.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int osl_scatnames_equal(const osl_scatnames_t* const s1,
+bool osl_scatnames_equal(const osl_scatnames_t* const s1,
                         const osl_scatnames_t* const s2) {
   if (s1 == s2) return 1;
 

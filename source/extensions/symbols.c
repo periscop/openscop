@@ -488,7 +488,7 @@ osl_symbols_t* osl_symbols_clone(const osl_symbols_t* const symbols) {
  * \param[in] c2  The second symbols structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_symbols_equal(const osl_symbols_t* c1, const osl_symbols_t* c2) {
+bool osl_symbols_equal(const osl_symbols_t* c1, const osl_symbols_t* c2) {
   if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))

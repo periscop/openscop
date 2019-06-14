@@ -105,7 +105,7 @@ void osl_comment_free(osl_comment_t*);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_comment_t* osl_comment_clone(const osl_comment_t*) OSL_WARN_UNUSED_RESULT;
-int osl_comment_equal(const osl_comment_t*, const osl_comment_t*);
+bool osl_comment_equal(const osl_comment_t*, const osl_comment_t*);
 osl_interface_t* osl_comment_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)

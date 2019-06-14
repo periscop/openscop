@@ -64,6 +64,7 @@
 #ifndef OSL_INTERFACE_H
 #define OSL_INTERFACE_H
 
+#include <stdbool.h>
 #include <stdio.h>
 
 #include <osl/attributes.h>
@@ -78,7 +79,7 @@ typedef void *(*osl_sread_f)(char **);
 typedef void *(*osl_malloc_f)(void);
 typedef void (*osl_free_f)(void *);
 typedef void *(*osl_clone_f)(void *);
-typedef int (*osl_equal_f)(void *, void *);
+typedef bool (*osl_equal_f)(void *, void *);
 
 /**
  * The osl_interface structure stores the URI and base
@@ -126,7 +127,7 @@ osl_interface_t *osl_interface_nclone(const osl_interface_t *,
                                       int) OSL_WARN_UNUSED_RESULT;
 osl_interface_t *osl_interface_clone(const osl_interface_t *)
     OSL_WARN_UNUSED_RESULT;
-int osl_interface_equal(const osl_interface_t *, const osl_interface_t *);
+bool osl_interface_equal(const osl_interface_t *, const osl_interface_t *);
 osl_interface_t *osl_interface_lookup(osl_interface_t *, const char *);
 osl_interface_t *osl_interface_get_default_registry(void)
     OSL_WARN_UNUSED_RESULT;

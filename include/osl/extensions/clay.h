@@ -106,7 +106,7 @@ void osl_clay_free(osl_clay_t*);
  *                            Processing functions                           *
  *****************************************************************************/
 osl_clay_t* osl_clay_clone(const osl_clay_t*) OSL_WARN_UNUSED_RESULT;
-int osl_clay_equal(const osl_clay_t*, const osl_clay_t*);
+bool osl_clay_equal(const osl_clay_t*, const osl_clay_t*);
 osl_interface_t* osl_clay_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)

@@ -303,7 +303,7 @@ osl_interface_t* osl_interface_clone(const osl_interface_t* const interface) {
  * \param interface2 The second interface structure.
  * \return 1 if interface1 and interface2 are the same, 0 otherwise.
  */
-int osl_interface_equal(const osl_interface_t* const interface1,
+bool osl_interface_equal(const osl_interface_t* const interface1,
                         const osl_interface_t* const interface2) {
   if (interface1 == interface2) return 1;
 

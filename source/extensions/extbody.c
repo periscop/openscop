@@ -306,7 +306,7 @@ osl_extbody_t* osl_extbody_clone(const osl_extbody_t* const ebody) {
  * \param[in] e2 The second extbody structure.
  * \return 1 if e1 and e2 are the same (content-wise), 0 otherwise.
  */
-int osl_extbody_equal(const osl_extbody_t* const e1,
+bool osl_extbody_equal(const osl_extbody_t* const e1,
                       const osl_extbody_t* const e2) {
   size_t i, j, found;
 

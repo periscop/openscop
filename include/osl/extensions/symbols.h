@@ -120,7 +120,7 @@ void osl_symbols_add(osl_symbols_t**, osl_symbols_t*);
 osl_symbols_t* osl_symbols_nclone(const osl_symbols_t*,
                                   int) OSL_WARN_UNUSED_RESULT;
 osl_symbols_t* osl_symbols_clone(const osl_symbols_t*) OSL_WARN_UNUSED_RESULT;
-int osl_symbols_equal(const osl_symbols_t*, const osl_symbols_t*);
+bool osl_symbols_equal(const osl_symbols_t*, const osl_symbols_t*);
 osl_symbols_t* osl_symbols_lookup(osl_symbols_t*,
                                   osl_generic_t*) OSL_WARN_UNUSED_RESULT;
 osl_symbols_t* osl_symbols_remove(osl_symbols_t**,

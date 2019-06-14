@@ -201,8 +201,8 @@ void osl_relation_remove_column(osl_relation_t*, int);
 void osl_relation_insert_columns(osl_relation_t*, const osl_relation_t*, int);
 osl_relation_t* osl_relation_concat_constraints(
     const osl_relation_t*, const osl_relation_t*) OSL_WARN_UNUSED_RESULT;
-int osl_relation_part_equal(const osl_relation_t*, const osl_relation_t*);
-int osl_relation_equal(const osl_relation_t*, const osl_relation_t*);
+bool osl_relation_part_equal(const osl_relation_t*, const osl_relation_t*);
+bool osl_relation_equal(const osl_relation_t*, const osl_relation_t*);
 int osl_relation_integrity_check(const osl_relation_t*, int, int, int, int);
 void osl_relation_set_attributes_one(osl_relation_t*, int, int, int, int);
 void osl_relation_set_attributes(osl_relation_t*, int, int, int, int);

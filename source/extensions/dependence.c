@@ -517,7 +517,7 @@ osl_dependence_t* osl_dependence_clone(const osl_dependence_t* const dep) {
  * \param[in] d2 The second dependence.
  * \return 1 if d1 and d2 are the same (content-wise), 0 otherwise.
  */
-int osl_dependence_equal(const osl_dependence_t* d1,
+bool osl_dependence_equal(const osl_dependence_t* d1,
                          const osl_dependence_t* d2) {
   if (d1 == d2) return 1;
 

@@ -466,7 +466,7 @@ osl_irregular_t *osl_irregular_clone(const osl_irregular_t *irregular) {
  * \param c2  The second irregular structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_irregular_equal(const osl_irregular_t *const c1,
+bool osl_irregular_equal(const osl_irregular_t *const c1,
                         const osl_irregular_t *const c2) {
   int i, j, comp = 0;
   if (c1 == c2) return 1;
