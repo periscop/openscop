@@ -60,20 +60,19 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include <osl/interface.h>
 #include <osl/macros.h>
 #include <osl/util.h>
-#include <osl/interface.h>
-#include <osl/extensions/clay.h>
 
+#include <osl/extensions/clay.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_clay_idump function:
@@ -85,14 +84,13 @@
  * \param[in] clay  The clay structure to print.
  * \param[in] level Number of spaces before printing, for each line.
  */
-void osl_clay_idump(FILE * const file, const osl_clay_t* const clay, int level) {
+void osl_clay_idump(FILE* const file, const osl_clay_t* const clay, int level) {
   int j;
   size_t l;
-  char * tmp;
+  char* tmp;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (clay != NULL)
     fprintf(file, "+-- osl_clay_t\n");
@@ -101,24 +99,20 @@ void osl_clay_idump(FILE * const file, const osl_clay_t* const clay, int level) 
 
   if (clay != NULL) {
     // Go to the right level.
-    for(j = 0; j <= level; j++)
-      fprintf(file, "|\t");
-  
+    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+
     // Display the clay script (without any carriage return).
     OSL_strdup(tmp, clay->script);
     for (l = 0; l < strlen(tmp); l++)
-      if (tmp[l] == '\n')
-	tmp[l] = ' ';
+      if (tmp[l] == '\n') tmp[l] = ' ';
     fprintf(file, "script: %s\n", tmp);
     free(tmp);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_clay_dump function:
@@ -127,10 +121,9 @@ void osl_clay_idump(FILE * const file, const osl_clay_t* const clay, int level) 
  * \param[in] file The file where the information has to be printed.
  * \param[in] clay The clay structure to print.
  */
-void osl_clay_dump(FILE * const file, const osl_clay_t* const clay) {
+void osl_clay_dump(FILE* const file, const osl_clay_t* const clay) {
   osl_clay_idump(file, clay, 0);
 }
-
 
 /**
  * osl_clay_sprint function:
@@ -139,31 +132,29 @@ void osl_clay_dump(FILE * const file, const osl_clay_t* const clay) {
  * \param[in] clay The clay structure to print.
  * \return A string containing the OpenScop dump of the clay structure.
  */
-char * osl_clay_sprint(const osl_clay_t* const clay) {
+char* osl_clay_sprint(const osl_clay_t* const clay) {
   size_t high_water_mark = OSL_MAX_STRING;
-  char * string = NULL;
+  char* string = NULL;
   char buffer[OSL_MAX_STRING];
 
   if (clay != NULL) {
-    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(string, char*, high_water_mark * sizeof(char));
     string[0] = '\0';
-   
+
     // Print the clay.
     sprintf(buffer, "%s", clay->script);
     osl_util_safe_strcat(&string, buffer, &high_water_mark);
 
     // Keep only the memory space we need.
-    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char*, (strlen(string) + 1) * sizeof(char));
   }
 
   return string;
 }
 
-
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_clay_sread function:
@@ -175,26 +166,24 @@ char * osl_clay_sprint(const osl_clay_t* const clay) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the clay structure that has been read.
  */
-osl_clay_t* osl_clay_sread(char ** input) {
+osl_clay_t* osl_clay_sread(char** input) {
   osl_clay_p clay;
-  char * script;
+  char* script;
 
   if (*input == NULL) {
     OSL_debug("no clay optional tag");
     return NULL;
   }
 
-  if (strlen(*input) > OSL_MAX_STRING) 
-    OSL_error("clay script too long");
+  if (strlen(*input) > OSL_MAX_STRING) OSL_error("clay script too long");
 
   // Build the clay structure
   clay = osl_clay_malloc();
   script = *input;
-  
+
   // Pass the carriage returns (this allows to remove those inserted by
   // osl_generic_print), and copy the textual script.
-  while (*script && (*script == '\n'))
-    script++;
+  while (*script && (*script == '\n')) script++;
   OSL_strdup(clay->script, script);
 
   // Update the input pointer (everything has been read).
@@ -203,11 +192,9 @@ osl_clay_t* osl_clay_sread(char ** input) {
   return clay;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_clay_malloc function:
@@ -226,7 +213,6 @@ osl_clay_t* osl_clay_malloc(void) {
   return clay;
 }
 
-
 /**
  * osl_clay_free function:
  * this function frees the allocated memory for an osl_clay_t
@@ -235,17 +221,14 @@ osl_clay_t* osl_clay_malloc(void) {
  */
 void osl_clay_free(osl_clay_t* clay) {
   if (clay != NULL) {
-    if(clay->script != NULL)
-      free(clay->script);
+    if (clay->script != NULL) free(clay->script);
     free(clay);
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_clay_clone function:
@@ -257,15 +240,13 @@ void osl_clay_free(osl_clay_t* clay) {
 osl_clay_t* osl_clay_clone(const osl_clay_t* const clay) {
   osl_clay_p clone;
 
-  if (clay == NULL)
-    return NULL;
+  if (clay == NULL) return NULL;
 
   clone = osl_clay_malloc();
   OSL_strdup(clone->script, clay->script);
 
   return clone;
 }
-
 
 /**
  * osl_clay_equal function:
@@ -276,8 +257,7 @@ osl_clay_t* osl_clay_clone(const osl_clay_t* const clay) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
-  if (c1 == c2)
-    return 1;
+  if (c1 == c2) return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
     OSL_info("clay extensions are not the same");
@@ -292,7 +272,6 @@ int osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
   return 1;
 }
 
-
 /**
  * osl_clay_interface function:
  * this function creates an interface structure corresponding to the clay
@@ -301,15 +280,15 @@ int osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
  */
 osl_interface_t* osl_clay_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_CLAY);
-  interface->idump  = (osl_idump_f)osl_clay_idump;
+  interface->idump = (osl_idump_f)osl_clay_idump;
   interface->sprint = (osl_sprint_f)osl_clay_sprint;
-  interface->sread  = (osl_sread_f)osl_clay_sread;
+  interface->sread = (osl_sread_f)osl_clay_sread;
   interface->malloc = (osl_malloc_f)osl_clay_malloc;
-  interface->free   = (osl_free_f)osl_clay_free;
-  interface->clone  = (osl_clone_f)osl_clay_clone;
-  interface->equal  = (osl_equal_f)osl_clay_equal;
+  interface->free = (osl_free_f)osl_clay_free;
+  interface->clone = (osl_clone_f)osl_clay_clone;
+  interface->equal = (osl_equal_f)osl_clay_equal;
 
   return interface;
 }

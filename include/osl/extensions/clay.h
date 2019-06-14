@@ -60,64 +60,56 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_CLAY_H
-# define OSL_CLAY_H
+#define OSL_CLAY_H
 
-# include <stdio.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_CLAY "clay"
-
+#define OSL_URI_CLAY "clay"
 
 /**
  * The osl_clay_t structure stores a clay extention to the core
  * OpenScop representation. It is simply a 0-terminated string.
  */
 struct osl_clay {
-  char * script; /**< Clay script as a 0-terminated string. */
+  char* script; /**< Clay script as a 0-terminated string. */
 };
-typedef struct osl_clay   osl_clay_t;
-typedef struct osl_clay * osl_clay_p;
-
+typedef struct osl_clay osl_clay_t;
+typedef struct osl_clay* osl_clay_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_clay_idump(FILE *, const osl_clay_t*, int);
-void            osl_clay_dump(FILE *, const osl_clay_t*);
-char *          osl_clay_sprint(const osl_clay_t*);
-
+void osl_clay_idump(FILE*, const osl_clay_t*, int);
+void osl_clay_dump(FILE*, const osl_clay_t*);
+char* osl_clay_sprint(const osl_clay_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_clay_t*      osl_clay_sread(char **);
-
+osl_clay_t* osl_clay_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_clay_t*      osl_clay_malloc(void);
-void            osl_clay_free(osl_clay_t*);
-
+osl_clay_t* osl_clay_malloc(void);
+void osl_clay_free(osl_clay_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_clay_t*      osl_clay_clone(const osl_clay_t*);
-int             osl_clay_equal(const osl_clay_t*, const osl_clay_t*);
+osl_clay_t* osl_clay_clone(const osl_clay_t*);
+int osl_clay_equal(const osl_clay_t*, const osl_clay_t*);
 osl_interface_t* osl_clay_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_CLAY_H */
