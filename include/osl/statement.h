@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/body.h>
 #include <osl/extensions/extbody.h>
 #include <osl/generic.h>
@@ -104,7 +105,8 @@ void osl_statement_pprint(FILE *, const osl_statement_t *, const osl_names_t *);
 void osl_statement_print(FILE *, const osl_statement_t *);
 
 // SCoPLib Compatibility
-void osl_statement_pprint_scoplib(FILE *, osl_statement_p, osl_names_p);
+void osl_statement_pprint_scoplib(FILE *, const osl_statement_t *,
+                                  const osl_names_t *);
 
 /*****************************************************************************
  *                              Reading function                             *

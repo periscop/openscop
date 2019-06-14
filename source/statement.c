@@ -272,20 +272,24 @@ void osl_statement_pprint(FILE* const file, const osl_statement_t* statement,
  * \param[in] statement The statement whose information has to be printed.
  * \param[in] names     The names of the constraint columns for comments.
  */
-void osl_statement_pprint_scoplib(FILE* file, osl_statement_p statement,
-                                  osl_names_p names) {
+void osl_statement_pprint_scoplib(FILE* const file,
+                                  const osl_statement_t* statement,
+                                  const osl_names_t* input_names) {
   int number = 1;
   int generated_names = 0;
   int iterators_backedup = 0;
   osl_body_p body = NULL;
   osl_strings_p iterators_backup = NULL;
   int add_fakeiter;
+  osl_names_t* names = NULL;
 
   // Generate the dimension names if necessary and replace iterators with
   // statement iterators if possible.
-  if (names == NULL) {
+  if (input_names == NULL) {
     generated_names = 1;
     names = osl_statement_names(statement);
+  } else {
+    names = osl_names_clone(input_names);
   }
 
   while (statement != NULL) {
