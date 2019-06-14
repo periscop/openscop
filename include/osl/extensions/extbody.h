@@ -99,32 +99,31 @@ typedef struct osl_extbody const * const osl_const_extbody_const_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void                 osl_extbody_idump(FILE *, osl_extbody_p, int);
-void                 osl_extbody_dump(FILE *, osl_extbody_p);
-char *               osl_extbody_sprint(osl_extbody_p);
+void                 osl_extbody_idump(FILE *, const osl_extbody_t*, int);
+void                 osl_extbody_dump(FILE *, const osl_extbody_t*);
+char *               osl_extbody_sprint(const osl_extbody_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_extbody_p         osl_extbody_sread(char **);
+osl_extbody_t*         osl_extbody_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_extbody_p         osl_extbody_malloc(void);
-void                  osl_extbody_free(osl_extbody_p);
+osl_extbody_t*         osl_extbody_malloc(void);
+void                  osl_extbody_free(osl_extbody_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_extbody_p         osl_extbody_clone(osl_extbody_p);
-int                   osl_extbody_equal(osl_extbody_p,
-                                              osl_extbody_p);
-osl_interface_p       osl_extbody_interface(void);
-void                  osl_extbody_add(osl_extbody_p, int, int);
+osl_extbody_t*         osl_extbody_clone(const osl_extbody_t*);
+int                   osl_extbody_equal(const osl_extbody_t*, const osl_extbody_t*);
+osl_interface_t*       osl_extbody_interface(void);
+void                  osl_extbody_add(osl_extbody_t*, int, int);
 
 # if defined(__cplusplus)
   }
