@@ -109,7 +109,8 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/symbols.h \
 	include/osl/extensions/loop.h  \
 	include/osl/extensions/extbody.h \
-	include/osl/extensions/pluto_unroll.h
+	include/osl/extensions/pluto_unroll.h \
+	include/osl/extensions/region.h
 
 EXTRA_DIST = osl-config.cmake
 
@@ -142,6 +143,7 @@ libosl_la_SOURCES = \
 	source/extensions/extbody.c \
 	source/extensions/loop.c \
 	source/extensions/pluto_unroll.c \
+	source/extensions/region.c \
 	source/interface.c \
 	source/generic.c \
 	source/relation.c \
