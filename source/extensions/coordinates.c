@@ -85,7 +85,7 @@
  * \param coordinates The coordinates structure to print.
  * \param level       Number of spaces before printing, for each line.
  */
-void osl_coordinates_idump(FILE* file, osl_coordinates_p coordinates,
+void osl_coordinates_idump(FILE* const file, const osl_coordinates_t* const coordinates,
                            int level) {
   int j;
 
@@ -140,7 +140,7 @@ void osl_coordinates_idump(FILE* file, osl_coordinates_p coordinates,
  * \param file        The file where the information has to be printed.
  * \param coordinates The coordinates structure to print.
  */
-void osl_coordinates_dump(FILE* file, osl_coordinates_p coordinates) {
+void osl_coordinates_dump(FILE* const file, const osl_coordinates_t* const coordinates) {
   osl_coordinates_idump(file, coordinates, 0);
 }
 
@@ -152,7 +152,7 @@ void osl_coordinates_dump(FILE* file, osl_coordinates_p coordinates) {
  * \param  coordinates The coordinates structure to be print.
  * \return A string containing the OpenScop dump of the coordinates structure.
  */
-char* osl_coordinates_sprint(osl_coordinates_p coordinates) {
+char* osl_coordinates_sprint(const osl_coordinates_t* const coordinates) {
   size_t high_water_mark = OSL_MAX_STRING;
   char* string = NULL;
   char buffer[OSL_MAX_STRING];
@@ -199,7 +199,7 @@ char* osl_coordinates_sprint(osl_coordinates_p coordinates) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the coordinates structure that has been read.
  */
-osl_coordinates_p osl_coordinates_sread(char** input) {
+osl_coordinates_t* osl_coordinates_sread(char** input) {
   osl_coordinates_p coordinates;
 
   if (*input == NULL) {
@@ -239,7 +239,7 @@ osl_coordinates_p osl_coordinates_sread(char** input) {
  * \return A pointer to an empty coordinates structure with fields set to
  *         default values.
  */
-osl_coordinates_p osl_coordinates_malloc(void) {
+osl_coordinates_t* osl_coordinates_malloc(void) {
   osl_coordinates_p coordinates;
   
   OSL_malloc(coordinates, osl_coordinates_p, sizeof(osl_coordinates_t));
@@ -260,7 +260,7 @@ osl_coordinates_p osl_coordinates_malloc(void) {
  * structure.
  * \param coordinates The pointer to the coordinates structure to free.
  */
-void osl_coordinates_free(osl_coordinates_p coordinates) {
+void osl_coordinates_free(osl_coordinates_t* const coordinates) {
   if (coordinates != NULL) {
     free(coordinates->name);
     free(coordinates);
@@ -280,7 +280,7 @@ void osl_coordinates_free(osl_coordinates_p coordinates) {
  * \param coordinates The pointer to the coordinates structure to clone.
  * \return A pointer to the clone of the coordinates structure.
  */
-osl_coordinates_p osl_coordinates_clone(osl_coordinates_p coordinates) {
+osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t* const coordinates) {
   osl_coordinates_p clone;
 
   if (coordinates == NULL)
@@ -306,7 +306,7 @@ osl_coordinates_p osl_coordinates_clone(osl_coordinates_p coordinates) {
  * \param c2  The second coordinates structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-int osl_coordinates_equal(osl_coordinates_p c1, osl_coordinates_p c2) {
+int osl_coordinates_equal(const osl_coordinates_t* const c1, const osl_coordinates_t* const c2) {
   if (c1 == c2)
     return 1;
 
@@ -353,7 +353,7 @@ int osl_coordinates_equal(osl_coordinates_p c1, osl_coordinates_p c2) {
  * extension and returns it).
  * \return An interface structure for the coordinates extension.
  */
-osl_interface_p osl_coordinates_interface(void) {
+osl_interface_t* osl_coordinates_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_COORDINATES);

@@ -97,30 +97,30 @@ typedef struct osl_coordinates* osl_coordinates_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void              osl_coordinates_idump(FILE*, osl_coordinates_p, int);
-void              osl_coordinates_dump(FILE*, osl_coordinates_p);
-char*             osl_coordinates_sprint(osl_coordinates_p);
+void              osl_coordinates_idump(FILE*, const osl_coordinates_t*, int);
+void              osl_coordinates_dump(FILE*, const osl_coordinates_t*);
+char*             osl_coordinates_sprint(const osl_coordinates_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_coordinates_p osl_coordinates_sread(char**);
+osl_coordinates_t* osl_coordinates_sread(char**);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_coordinates_p osl_coordinates_malloc(void);
-void              osl_coordinates_free(osl_coordinates_p);
+osl_coordinates_t* osl_coordinates_malloc(void);
+void              osl_coordinates_free(osl_coordinates_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_coordinates_p osl_coordinates_clone(osl_coordinates_p);
-int               osl_coordinates_equal(osl_coordinates_p, osl_coordinates_p);
-osl_interface_p   osl_coordinates_interface(void);
+osl_coordinates_t* osl_coordinates_clone(const osl_coordinates_t*);
+int               osl_coordinates_equal(const osl_coordinates_t*, const osl_coordinates_t*);
+osl_interface_t*   osl_coordinates_interface(void);
 
 
 # if defined(__cplusplus)
