@@ -62,20 +62,18 @@
 
 
 #ifndef OSL_ARRAYS_H
-# define OSL_ARRAYS_H
+#define OSL_ARRAYS_H
 
-# include <stdio.h>
-# include <osl/strings.h>
-# include <osl/interface.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
+#include <osl/strings.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_ARRAYS        "arrays"
-
+#define OSL_URI_ARRAYS "arrays"
 
 /**
  * The osl_arrays_t structure stores a set of array textual names in
@@ -84,48 +82,44 @@ extern "C"
  * and identifier id[i].
  */
 struct osl_arrays {
-  int nb_names;      /**< Number of names. */
-  int  *  id;        /**< Array of nb_names identifiers. */
-  char ** names;     /**< Array of nb_names names. */
+  int nb_names; /**< Number of names. */
+  int* id;      /**< Array of nb_names identifiers. */
+  char** names; /**< Array of nb_names names. */
 };
-typedef struct osl_arrays   osl_arrays_t;
-typedef struct osl_arrays * osl_arrays_p;
-
+typedef struct osl_arrays osl_arrays_t;
+typedef struct osl_arrays* osl_arrays_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_arrays_idump(FILE *, const osl_arrays_t*, int);
-void            osl_arrays_dump(FILE *, const osl_arrays_t*);
-char *          osl_arrays_sprint(const osl_arrays_t*);
-
+void osl_arrays_idump(FILE*, const osl_arrays_t*, int);
+void osl_arrays_dump(FILE*, const osl_arrays_t*);
+char* osl_arrays_sprint(const osl_arrays_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_arrays_t*    osl_arrays_sread(char **);
-
+osl_arrays_t* osl_arrays_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_arrays_t*    osl_arrays_malloc(void);
-void            osl_arrays_free(osl_arrays_t*);
-
+osl_arrays_t* osl_arrays_malloc(void);
+void osl_arrays_free(osl_arrays_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_arrays_t*    osl_arrays_clone(const osl_arrays_t*);
-int             osl_arrays_equal(const osl_arrays_t*, const osl_arrays_t*);
-osl_strings_t*   osl_arrays_to_strings(const osl_arrays_t*);
-int             osl_arrays_add(osl_arrays_t*, int, const char*);
-size_t          osl_arrays_get_index_from_id(const osl_arrays_t*, int);
-size_t          osl_arrays_get_index_from_name(const osl_arrays_t*, const char*);
+osl_arrays_t* osl_arrays_clone(const osl_arrays_t*);
+int osl_arrays_equal(const osl_arrays_t*, const osl_arrays_t*);
+osl_strings_t* osl_arrays_to_strings(const osl_arrays_t*);
+int osl_arrays_add(osl_arrays_t*, int, const char*);
+size_t osl_arrays_get_index_from_id(const osl_arrays_t*, int);
+size_t osl_arrays_get_index_from_name(const osl_arrays_t*, const char*);
 osl_interface_t* osl_arrays_interface(void);
 
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_ARRAYS_H */
