@@ -65,13 +65,14 @@
 # define OSL_STATEMENT_H
 
 # include <stdio.h>
+
 # include <osl/relation.h>
 # include <osl/relation_list.h>
 # include <osl/names.h>
 # include <osl/interface.h>
 # include <osl/generic.h>
-# include "body.h"
-# include "extensions/extbody.h"
+# include <osl/body.h>
+# include <osl/extensions/extbody.h>
 
 # if defined(__cplusplus)
 extern "C"
