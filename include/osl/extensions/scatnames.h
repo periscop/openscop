@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 
+#include <osl/attributes.h>
 #include <osl/interface.h>
 #include <osl/strings.h>
 
@@ -90,27 +91,29 @@ typedef struct osl_scatnames* osl_scatnames_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void osl_scatnames_idump(FILE*, const osl_scatnames_t*, int);
-void osl_scatnames_dump(FILE*, const osl_scatnames_t*);
-char* osl_scatnames_sprint(const osl_scatnames_t*);
+void osl_scatnames_idump(FILE*, const osl_scatnames_t*, int)
+    OSL_NONNULL_ARGS(1);
+void osl_scatnames_dump(FILE*, const osl_scatnames_t*) OSL_NONNULL_ARGS(1);
+char* osl_scatnames_sprint(const osl_scatnames_t*) OSL_WARN_UNUSED_RESULT;
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_scatnames_t* osl_scatnames_sread(char**);
+osl_scatnames_t* osl_scatnames_sread(char**) OSL_WARN_UNUSED_RESULT;
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_scatnames_t* osl_scatnames_malloc(void);
+osl_scatnames_t* osl_scatnames_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_scatnames_free(osl_scatnames_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t*);
+osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t*)
+    OSL_WARN_UNUSED_RESULT;
 int osl_scatnames_equal(const osl_scatnames_t*, const osl_scatnames_t*);
-osl_interface_t* osl_scatnames_interface(void);
+osl_interface_t* osl_scatnames_interface(void) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
