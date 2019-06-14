@@ -315,8 +315,8 @@ osl_region_t* osl_region_sread(char** input) {
 
     osl_region_sread_text(prefix);
     osl_region_sread_text(suffix);
-    osl_region_sread_text(postlude);
     osl_region_sread_text(prelude);
+    osl_region_sread_text(postlude);
 
     if (i + 1 < count) {
       current->next = osl_region_malloc();
