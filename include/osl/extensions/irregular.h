@@ -113,33 +113,33 @@ typedef struct osl_irregular * osl_irregular_p;
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_irregular_idump(FILE *, osl_irregular_p, int);
-void            osl_irregular_dump(FILE *, osl_irregular_p);
-char *          osl_irregular_sprint(osl_irregular_p);
+void            osl_irregular_idump(FILE *, const osl_irregular_t*, int);
+void            osl_irregular_dump(FILE *, const osl_irregular_t*);
+char *          osl_irregular_sprint(const osl_irregular_t*);
 
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_irregular_p osl_irregular_sread(char **);
+osl_irregular_t* osl_irregular_sread(char **);
 
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-osl_irregular_p osl_irregular_malloc(void);
-void            osl_irregular_free(osl_irregular_p);
+osl_irregular_t* osl_irregular_malloc(void);
+void            osl_irregular_free(osl_irregular_t*);
 
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-osl_irregular_p osl_irregular_clone(osl_irregular_p);
-int             osl_irregular_equal(osl_irregular_p, osl_irregular_p);
-osl_irregular_p osl_irregular_add_control(osl_irregular_p, char**, int, char*);
-osl_irregular_p osl_irregular_add_exit(osl_irregular_p, char**, int, char*);
-osl_irregular_p osl_irregular_add_predicates(osl_irregular_p, int*, int);
-osl_interface_p osl_irregular_interface(void);
+osl_irregular_t* osl_irregular_clone(const osl_irregular_t*);
+int             osl_irregular_equal(const osl_irregular_t*, const osl_irregular_t*);
+osl_irregular_t* osl_irregular_add_control(const osl_irregular_t*, char**, int, const char*);
+osl_irregular_t* osl_irregular_add_exit(const osl_irregular_t*, char**, int, const char*);
+osl_irregular_t* osl_irregular_add_predicates(const osl_irregular_t*, const int*, int);
+osl_interface_t* osl_irregular_interface(void);
 
 
 # if defined(__cplusplus)

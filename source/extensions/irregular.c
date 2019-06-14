@@ -87,7 +87,7 @@
  * \param irregular The irregular structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void osl_irregular_idump(FILE * file, osl_irregular_p irregular, int level) {
+void osl_irregular_idump(FILE * const file, const osl_irregular_t* const irregular, int level) {
   int i,j;
 
   // Go to the right level.
@@ -145,7 +145,7 @@ void osl_irregular_idump(FILE * file, osl_irregular_p irregular, int level) {
  * \param file    The file where the information has to be printed.
  * \param irregular The irregular structure whose information has to be printed.
  */
-void osl_irregular_dump(FILE * file, osl_irregular_p irregular) {
+void osl_irregular_dump(FILE * const file, const osl_irregular_t* const irregular) {
   osl_irregular_idump(file, irregular, 0);
 }
 
@@ -179,7 +179,7 @@ static void printf_in_buf(char **buf, size_t *buf_size, size_t *offset,
  * \param  irregular The irregular structure whose information has to be printed.
  * \return A string containing the OpenScop dump of the irregular structure.
  */
-char *osl_irregular_sprint(osl_irregular_p irregular) {
+char *osl_irregular_sprint(const osl_irregular_t* const irregular) {
   size_t high_water_mark = OSL_MAX_STRING;
   int i, j;
   char *string = NULL;
@@ -259,7 +259,7 @@ char *osl_irregular_sprint(osl_irregular_p irregular) {
  * \param  extensions The input string where to find a irregular structure.
  * \return A pointer to the irregular structure that has been read.
  */
-osl_irregular_p osl_irregular_sread(char ** extensions_fixme) {
+osl_irregular_t* osl_irregular_sread(char ** extensions_fixme) {
   char * content,*tok;
   int i,j;
   osl_irregular_p irregular;
@@ -344,7 +344,7 @@ osl_irregular_p osl_irregular_sread(char ** extensions_fixme) {
  * \return A pointer to an empty irregular structure with fields set to
  *         default values.
  */
-osl_irregular_p osl_irregular_malloc(void) {
+osl_irregular_t* osl_irregular_malloc(void) {
   osl_irregular_p irregular;
 
   OSL_malloc(irregular, osl_irregular_p,
@@ -368,7 +368,7 @@ osl_irregular_p osl_irregular_malloc(void) {
  * structure.
  * \param irregular The pointer to the irregular structure we want to free.
  */
-void osl_irregular_free(osl_irregular_p irregular) {
+void osl_irregular_free(osl_irregular_t* const irregular) {
   int i, j, nb_predicates;
 
   if (irregular != NULL) {
@@ -410,7 +410,7 @@ void osl_irregular_free(osl_irregular_p irregular) {
  * \param irregular The pointer to the irregular structure we want to copy.
  * \return A pointer to the copy of the irregular structure.
  */
-osl_irregular_p osl_irregular_clone(osl_irregular_p irregular) {
+osl_irregular_t* osl_irregular_clone(const osl_irregular_t* irregular) {
   int i,j;
   osl_irregular_p copy;
 
@@ -492,7 +492,7 @@ osl_irregular_p osl_irregular_clone(osl_irregular_p irregular) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 int
-osl_irregular_equal(osl_irregular_p c1, osl_irregular_p c2)
+osl_irregular_equal(const osl_irregular_t* const c1, const osl_irregular_t* const c2)
 {
   int i,j,bool = 0;
   if (c1 == c2)
@@ -532,11 +532,11 @@ osl_irregular_equal(osl_irregular_p c1, osl_irregular_p c2)
   return 1;
 }
 
-osl_irregular_p osl_irregular_add_control(
-                                               osl_irregular_p irregular,
+osl_irregular_t* osl_irregular_add_control(
+                                               const osl_irregular_t* const irregular,
                                                char** iterators,
 					       int nb_iterators,
-					       char* body)
+					       const char* body)
 {
   int i,j;
   osl_irregular_p result=osl_irregular_malloc();
@@ -622,10 +622,10 @@ osl_irregular_p osl_irregular_add_control(
 
 
 osl_irregular_p osl_irregular_add_exit(
-                                               osl_irregular_p irregular,
+                                               const osl_irregular_t* const irregular,
                                                char** iterators,
 					       int nb_iterators,
-					       char* body)
+					       const char* body)
 {
   int i,j;
   osl_irregular_p result=osl_irregular_malloc();
@@ -697,8 +697,8 @@ osl_irregular_p osl_irregular_add_exit(
 
 
 osl_irregular_p osl_irregular_add_predicates(
-                                               osl_irregular_p irregular,
-					       int* predicates, 
+                                               const osl_irregular_t* const irregular,
+					       const int* predicates, 
 					       int nb_add_predicates)
 {
   int i,j;
@@ -778,7 +778,7 @@ osl_irregular_p osl_irregular_add_predicates(
  * extension and returns it).
  * \return An interface structure for the irregular extension.
  */
-osl_interface_p osl_irregular_interface(void) {
+osl_interface_t* osl_irregular_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
   
   OSL_strdup(interface->URI, OSL_URI_IRREGULAR);
