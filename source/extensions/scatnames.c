@@ -60,21 +60,20 @@
  *                                                                           *
  *****************************************************************************/
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include <osl/macros.h>
-#include <osl/util.h>
 #include <osl/interface.h>
+#include <osl/macros.h>
 #include <osl/strings.h>
-#include <osl/extensions/scatnames.h>
+#include <osl/util.h>
 
+#include <osl/extensions/scatnames.h>
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-
 
 /**
  * osl_scatnames_idump function:
@@ -86,12 +85,12 @@
  * \param[in] scatnames Scatnames structure to print.
  * \param[in] level     Number of spaces before printing, for each line.
  */
-void osl_scatnames_idump(FILE * const file, const osl_scatnames_t* const scatnames, int level) {
+void osl_scatnames_idump(FILE* const file,
+                         const osl_scatnames_t* const scatnames, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j < level; j++) fprintf(file, "|\t");
 
   if (scatnames != NULL)
     fprintf(file, "+-- osl_scatnames_t\n");
@@ -100,20 +99,17 @@ void osl_scatnames_idump(FILE * const file, const osl_scatnames_t* const scatnam
 
   if (scatnames != NULL) {
     // Go to the right level.
-    for(j = 0; j <= level + 1; j++)
-      fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
     fprintf(file, "\n");
-  
+
     // Display the list of scattering names.
     osl_strings_idump(file, scatnames->names, level + 1);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++)
-    fprintf(file, "|\t");
+  for (j = 0; j <= level; j++) fprintf(file, "|\t");
   fprintf(file, "\n");
 }
-
 
 /**
  * osl_scatnames_dump function:
@@ -122,10 +118,10 @@ void osl_scatnames_idump(FILE * const file, const osl_scatnames_t* const scatnam
  * \param[in] file      The file where the information has to be printed.
  * \param[in] scatnames The scatnames structure to print.
  */
-void osl_scatnames_dump(FILE * const file, const osl_scatnames_t* const scatnames) {
+void osl_scatnames_dump(FILE* const file,
+                        const osl_scatnames_t* const scatnames) {
   osl_scatnames_idump(file, scatnames, 0);
 }
-
 
 /**
  * osl_scatnames_sprint function:
@@ -134,15 +130,13 @@ void osl_scatnames_dump(FILE * const file, const osl_scatnames_t* const scatname
  * \param[in] scatnames The scatnames structure to print.
  * \return A string containing the OpenScop dump of the scatnames structure.
  */
-char * osl_scatnames_sprint(const osl_scatnames_t* const scatnames) {
+char* osl_scatnames_sprint(const osl_scatnames_t* const scatnames) {
   return osl_strings_sprint(scatnames->names);
 }
-
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-
 
 /**
  * osl_scatnames_sread function:
@@ -155,7 +149,7 @@ char * osl_scatnames_sprint(const osl_scatnames_t* const scatnames) {
  *                      Updated to the position after what has been read.
  * \return A pointer to the scatnames structure that has been read.
  */
-osl_scatnames_t* osl_scatnames_sread(char ** input) {
+osl_scatnames_t* osl_scatnames_sread(char** input) {
   osl_scatnames_p scatnames = NULL;
   osl_strings_p names = NULL;
 
@@ -174,11 +168,9 @@ osl_scatnames_t* osl_scatnames_sread(char ** input) {
   return scatnames;
 }
 
-
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
-
 
 /**
  * osl_scatnames_malloc function:
@@ -197,7 +189,6 @@ osl_scatnames_t* osl_scatnames_malloc(void) {
   return scatnames;
 }
 
-
 /**
  * osl_scatnames_free function:
  * this function frees the allocated memory for an osl_scatnames_t
@@ -211,11 +202,9 @@ void osl_scatnames_free(osl_scatnames_t* scatnames) {
   }
 }
 
-
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
-
 
 /**
  * osl_scatnames_clone function:
@@ -227,15 +216,13 @@ void osl_scatnames_free(osl_scatnames_t* scatnames) {
 osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t* const scatnames) {
   osl_scatnames_p clone;
 
-  if (scatnames == NULL)
-    return NULL;
+  if (scatnames == NULL) return NULL;
 
   clone = osl_scatnames_malloc();
   clone->names = osl_strings_clone(scatnames->names);
 
   return clone;
 }
-
 
 /**
  * osl_scatnames_equal function:
@@ -245,20 +232,17 @@ osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t* const scatnames) {
  * \param[in] s2 The second scatnames structure.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-int osl_scatnames_equal(const osl_scatnames_t* const s1, const osl_scatnames_t* const s2) {
-  
-  if (s1 == s2)
-    return 1;
+int osl_scatnames_equal(const osl_scatnames_t* const s1,
+                        const osl_scatnames_t* const s2) {
+  if (s1 == s2) return 1;
 
   if (((s1 == NULL) && (s2 != NULL)) || ((s1 != NULL) && (s2 == NULL)))
     return 0;
 
-  if (!osl_strings_equal(s1->names, s2->names))
-    return 0;
+  if (!osl_strings_equal(s1->names, s2->names)) return 0;
 
   return 1;
 }
-
 
 /**
  * osl_scatnames_interface function:
@@ -268,15 +252,15 @@ int osl_scatnames_equal(const osl_scatnames_t* const s1, const osl_scatnames_t* 
  */
 osl_interface_t* osl_scatnames_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
-  
+
   OSL_strdup(interface->URI, OSL_URI_SCATNAMES);
-  interface->idump  = (osl_idump_f)osl_scatnames_idump;
+  interface->idump = (osl_idump_f)osl_scatnames_idump;
   interface->sprint = (osl_sprint_f)osl_scatnames_sprint;
-  interface->sread  = (osl_sread_f)osl_scatnames_sread;
+  interface->sread = (osl_sread_f)osl_scatnames_sread;
   interface->malloc = (osl_malloc_f)osl_scatnames_malloc;
-  interface->free   = (osl_free_f)osl_scatnames_free;
-  interface->clone  = (osl_clone_f)osl_scatnames_clone;
-  interface->equal  = (osl_equal_f)osl_scatnames_equal;
+  interface->free = (osl_free_f)osl_scatnames_free;
+  interface->clone = (osl_clone_f)osl_scatnames_clone;
+  interface->equal = (osl_equal_f)osl_scatnames_equal;
 
   return interface;
 }

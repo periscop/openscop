@@ -60,22 +60,19 @@
  *                                                                           *
  *****************************************************************************/
 
-
 #ifndef OSL_SCATNAMES_H
-# define OSL_SCATNAMES_H
+#define OSL_SCATNAMES_H
 
-# include <stdio.h>
-# include <osl/interface.h>
-# include <osl/strings.h>
+#include <stdio.h>
 
-# if defined(__cplusplus)
-extern "C"
-  {
-# endif
+#include <osl/interface.h>
+#include <osl/strings.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
-# define OSL_URI_SCATNAMES        "scatnames"
-
+#define OSL_URI_SCATNAMES "scatnames"
 
 /**
  * The osl_scatnames_t structure stores a scatnames extention to the core
@@ -85,43 +82,38 @@ extern "C"
  * order.
  */
 struct osl_scatnames {
-  osl_strings_p names;  /**< List of textual scattering dimension names. */
+  osl_strings_p names; /**< List of textual scattering dimension names. */
 };
-typedef struct osl_scatnames   osl_scatnames_t;
-typedef struct osl_scatnames * osl_scatnames_p;
-
+typedef struct osl_scatnames osl_scatnames_t;
+typedef struct osl_scatnames* osl_scatnames_p;
 
 /*+***************************************************************************
  *                          Structure display function                       *
  *****************************************************************************/
-void            osl_scatnames_idump(FILE *, const osl_scatnames_t*, int);
-void            osl_scatnames_dump(FILE *, const osl_scatnames_t*);
-char *          osl_scatnames_sprint(const osl_scatnames_t*);
-
+void osl_scatnames_idump(FILE*, const osl_scatnames_t*, int);
+void osl_scatnames_dump(FILE*, const osl_scatnames_t*);
+char* osl_scatnames_sprint(const osl_scatnames_t*);
 
 /*****************************************************************************
  *                               Reading function                            *
  *****************************************************************************/
-osl_scatnames_t* osl_scatnames_sread(char **);
-
+osl_scatnames_t* osl_scatnames_sread(char**);
 
 /*+***************************************************************************
  *                    Memory allocation/deallocation function                *
  *****************************************************************************/
 osl_scatnames_t* osl_scatnames_malloc(void);
-void            osl_scatnames_free(osl_scatnames_t*);
-
+void osl_scatnames_free(osl_scatnames_t*);
 
 /*+***************************************************************************
  *                            Processing functions                           *
  *****************************************************************************/
 osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t*);
-int             osl_scatnames_equal(const osl_scatnames_t*, const osl_scatnames_t*);
+int osl_scatnames_equal(const osl_scatnames_t*, const osl_scatnames_t*);
 osl_interface_t* osl_scatnames_interface(void);
 
-
-# if defined(__cplusplus)
-  }
-# endif
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* define OSL_SCATNAMES_H */
