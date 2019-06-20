@@ -87,18 +87,21 @@ void osl_strings_idump(FILE* const file, const osl_strings_t* const strings,
   size_t i, nb_strings;
   int j;
 
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (strings != NULL) {
     nb_strings = osl_strings_size(strings);
     fprintf(file, "+-- osl_strings_t:");
-    for (i = 0; i < nb_strings; i++) fprintf(file, " %s", strings->string[i]);
+    for (i = 0; i < nb_strings; i++)
+      fprintf(file, " %s", strings->string[i]);
     fprintf(file, "\n");
   } else
     fprintf(file, "+-- NULL strings\n");
 
   // A blank line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -194,9 +197,11 @@ osl_strings_t* osl_strings_sread(char** const input) {
   nb_strings = 0;
   s = *input;
   while (1) {
-    for (count = 0; *s && !isspace(*s) && *s != '#'; count++) s++;
+    for (count = 0; *s && !isspace(*s) && *s != '#'; count++)
+      s++;
 
-    if (count != 0) nb_strings++;
+    if (count != 0)
+      nb_strings++;
 
     if ((!*s) || (*s == '#') || (*s == '\n'))
       break;
@@ -216,7 +221,8 @@ osl_strings_t* osl_strings_sread(char** const input) {
         tmp[count] = *(s++);
       tmp[count] = '\0';
       OSL_strdup(string[i], tmp);
-      if (*s != '#') s++;
+      if (*s != '#')
+        s++;
     }
 
     // Update the input pointer to the end of the strings structure.
@@ -308,10 +314,12 @@ osl_strings_t* osl_strings_clone(const osl_strings_t* const strings) {
   size_t i, nb_strings;
   osl_strings_p clone = NULL;
 
-  if (strings == NULL) return NULL;
+  if (strings == NULL)
+    return NULL;
 
   clone = osl_strings_malloc();
-  if ((nb_strings = osl_strings_size(strings)) == 0) return clone;
+  if ((nb_strings = osl_strings_size(strings)) == 0)
+    return clone;
 
   free(clone->string);
   OSL_malloc(clone->string, char**, (nb_strings + 1) * sizeof(char*));
@@ -363,17 +371,19 @@ void osl_strings_add(osl_strings_t* const strings, char const* const string) {
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
 bool osl_strings_equal(const osl_strings_t* const s1,
-                      const osl_strings_t* const s2) {
+                       const osl_strings_t* const s2) {
   size_t i, nb_s1;
 
-  if (s1 == s2) return 1;
+  if (s1 == s2)
+    return 1;
 
   if (((s1 == NULL) && (s2 != NULL)) || ((s1 != NULL) && (s2 == NULL)) ||
       ((nb_s1 = osl_strings_size(s1)) != osl_strings_size(s2)))
     return 0;
 
   for (i = 0; i < nb_s1; i++)
-    if (strcmp(s1->string[i], s2->string[i]) != 0) return 0;
+    if (strcmp(s1->string[i], s2->string[i]) != 0)
+      return 0;
 
   return 1;
 }
@@ -456,7 +466,8 @@ osl_strings_t* osl_strings_generate(const char* prefix, int nb_strings) {
     for (i = 0; i < nb_strings; i++) {
       sprintf(buff, "%s%d", prefix, i + 1);
       OSL_strdup(strings[i], buff);
-      if (strings[i] == NULL) OSL_error("memory overflow");
+      if (strings[i] == NULL)
+        OSL_error("memory overflow");
     }
   }
 

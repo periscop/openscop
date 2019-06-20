@@ -115,9 +115,9 @@ void osl_pluto_unroll_fill(osl_pluto_unroll_t*, char const* const, bool,
                            unsigned int);
 osl_pluto_unroll_t* osl_pluto_unroll_clone(const osl_pluto_unroll_t*);
 bool osl_pluto_unroll_equal_one(const osl_pluto_unroll_t*,
-                               const osl_pluto_unroll_t*);
+                                const osl_pluto_unroll_t*);
 bool osl_pluto_unroll_equal(const osl_pluto_unroll_t*,
-                           const osl_pluto_unroll_t*);
+                            const osl_pluto_unroll_t*);
 osl_strings_t* osl_pluto_unroll_to_strings(const osl_pluto_unroll_t*);
 osl_interface_t* osl_pluto_unroll_interface(void);
 

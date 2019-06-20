@@ -89,7 +89,8 @@ void osl_extbody_idump(FILE* const file, const osl_extbody_t* const ebody,
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (ebody != NULL)
     fprintf(file, "+-- osl_extbody_t\n");
@@ -98,7 +99,8 @@ void osl_extbody_idump(FILE* const file, const osl_extbody_t* const ebody,
 
   if (ebody != NULL) {
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the number of ebody.
     fprintf(file, "nb_access: %zu\n", ebody->nb_access);
@@ -106,7 +108,8 @@ void osl_extbody_idump(FILE* const file, const osl_extbody_t* const ebody,
     // Display the coordinates.
     for (i = 0; i < ebody->nb_access; i++) {
       // Go to the right level.
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
 
       fprintf(file, "start: %d, length: %d\n", ebody->start[i],
               ebody->length[i]);
@@ -117,7 +120,8 @@ void osl_extbody_idump(FILE* const file, const osl_extbody_t* const ebody,
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -277,7 +281,8 @@ osl_extbody_t* osl_extbody_clone(const osl_extbody_t* const ebody) {
   size_t i;
   osl_extbody_p clone;
 
-  if (ebody == NULL) return NULL;
+  if (ebody == NULL)
+    return NULL;
 
   clone = osl_extbody_malloc();
   clone->nb_access = ebody->nb_access;
@@ -305,10 +310,11 @@ osl_extbody_t* osl_extbody_clone(const osl_extbody_t* const ebody) {
  * \return 1 if e1 and e2 are the same (content-wise), 0 otherwise.
  */
 bool osl_extbody_equal(const osl_extbody_t* const e1,
-                      const osl_extbody_t* const e2) {
+                       const osl_extbody_t* const e2) {
   size_t i, j, found;
 
-  if (e1 == e2) return 1;
+  if (e1 == e2)
+    return 1;
 
   if (((e1 == NULL) && (e2 != NULL)) || ((e1 != NULL) && (e2 == NULL))) {
     OSL_info("extbody are not the same");

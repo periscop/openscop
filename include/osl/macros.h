@@ -59,125 +59,121 @@
  ******************************************************************************/
 
 #ifndef OSL_MACROS_H
-# define OSL_MACROS_H
+#define OSL_MACROS_H
 
-# include "util.h"
+#include "util.h"
 
+#define OSL_DEBUG 0  // 1 for debug mode, 0 otherwise.
 
-# define OSL_DEBUG                 0       // 1 for debug mode, 0 otherwise.
+#define OSL_URI_SCOP "OpenScop"
 
-# define OSL_URI_SCOP              "OpenScop"
+#define OSL_PRECISION_ENV "OSL_PRECISION"
+#define OSL_PRECISION_ENV_SP "32"
+#define OSL_PRECISION_ENV_DP "64"
+#define OSL_PRECISION_ENV_MP "0"
+#define OSL_PRECISION_SP 32
+#define OSL_PRECISION_DP 64
+#define OSL_PRECISION_MP 0
 
-# define OSL_PRECISION_ENV         "OSL_PRECISION"
-# define OSL_PRECISION_ENV_SP      "32"
-# define OSL_PRECISION_ENV_DP      "64"
-# define OSL_PRECISION_ENV_MP      "0"
-# define OSL_PRECISION_SP          32
-# define OSL_PRECISION_DP          64
-# define OSL_PRECISION_MP          0
+#define OSL_FMT_SP "%4ld"
+#define OSL_FMT_DP "%4lld"
+#define OSL_FMT_MP "%4s"
+#define OSL_FMT_LENGTH 4  // Should be the same as FMT_*P.
+#define OSL_FMT_TXT_SP "%ld"
+#define OSL_FMT_TXT_DP "%lld"
+#define OSL_FMT_TXT_MP "%s"
 
-# define OSL_FMT_SP                "%4ld"
-# define OSL_FMT_DP                "%4lld"
-# define OSL_FMT_MP                "%4s"
-# define OSL_FMT_LENGTH            4       // Should be the same as FMT_*P.
-# define OSL_FMT_TXT_SP            "%ld"
-# define OSL_FMT_TXT_DP            "%lld"
-# define OSL_FMT_TXT_MP            "%s"
+#define OSL_BACKEND_C 0
+#define OSL_BACKEND_FORTRAN 1
+#define OSL_UNDEFINED -1
+#define OSL_MAX_STRING 2048
+#define OSL_MIN_STRING 100
+#define OSL_MAX_ARRAYS 128
 
+#define OSL_TYPE_GENERIC 0
+#define OSL_TYPE_STRING 1
+#define OSL_TYPE_CONTEXT 2
+#define OSL_TYPE_DOMAIN 3
+#define OSL_TYPE_SCATTERING 4
+#define OSL_TYPE_ACCESS 5
+#define OSL_TYPE_READ 6
+#define OSL_TYPE_WRITE 7
+#define OSL_TYPE_MAY_WRITE 8
 
-# define OSL_BACKEND_C             0
-# define OSL_BACKEND_FORTRAN       1
-# define OSL_UNDEFINED             -1
-# define OSL_MAX_STRING            2048
-# define OSL_MIN_STRING		   100
-# define OSL_MAX_ARRAYS            128
+#define OSL_FAKE_ARRAY "fakearray"
 
-# define OSL_TYPE_GENERIC          0
-# define OSL_TYPE_STRING           1
-# define OSL_TYPE_CONTEXT          2
-# define OSL_TYPE_DOMAIN           3
-# define OSL_TYPE_SCATTERING       4
-# define OSL_TYPE_ACCESS           5
-# define OSL_TYPE_READ             6
-# define OSL_TYPE_WRITE            7
-# define OSL_TYPE_MAY_WRITE        8
+#define OSL_SYMBOL_TYPE_ITERATOR 1
+#define OSL_SYMBOL_TYPE_PARAMETER 2
+#define OSL_SYMBOL_TYPE_ARRAY 3
+#define OSL_SYMBOL_TYPE_FUNCTION 4
 
-# define OSL_FAKE_ARRAY            "fakearray"
-
-# define OSL_SYMBOL_TYPE_ITERATOR	1
-# define OSL_SYMBOL_TYPE_PARAMETER	2
-# define OSL_SYMBOL_TYPE_ARRAY		3
-# define OSL_SYMBOL_TYPE_FUNCTION	4
-
-# define OSL_STRING_UNDEFINED      "UNDEFINED"
-# define OSL_STRING_CONTEXT        "CONTEXT"
-# define OSL_STRING_DOMAIN         "DOMAIN"
-# define OSL_STRING_SCATTERING     "SCATTERING"
-# define OSL_STRING_READ           "READ"
-# define OSL_STRING_WRITE          "WRITE"
-# define OSL_STRING_MAY_WRITE      "MAY_WRITE"
+#define OSL_STRING_UNDEFINED "UNDEFINED"
+#define OSL_STRING_CONTEXT "CONTEXT"
+#define OSL_STRING_DOMAIN "DOMAIN"
+#define OSL_STRING_SCATTERING "SCATTERING"
+#define OSL_STRING_READ "READ"
+#define OSL_STRING_WRITE "WRITE"
+#define OSL_STRING_MAY_WRITE "MAY_WRITE"
 
 /*****************************************************************************
  *                               UTILITY MACROS                              *
  *****************************************************************************/
 
-# define OSL_coucou(n)                                                     \
-         do {                                                              \
-           int i = n +0;                                                   \
-           fprintf(stderr,"[osl] Coucou %d (%s).\n", i, __func__);         \
-         } while (0)
+#define OSL_coucou(n)                                        \
+  do {                                                       \
+    int i = n + 0;                                           \
+    fprintf(stderr, "[osl] Coucou %d (%s).\n", i, __func__); \
+  } while (0)
 
-# define OSL_debug(msg)                                                    \
-         do {                                                              \
-           if (OSL_DEBUG)                                                  \
-             fprintf(stderr,"[osl] Debug: " msg " (%s).\n", __func__);     \
-         } while (0)
+#define OSL_debug(msg)                                           \
+  do {                                                           \
+    if (OSL_DEBUG)                                               \
+      fprintf(stderr, "[osl] Debug: " msg " (%s).\n", __func__); \
+  } while (0)
 
-# define OSL_info(msg)                                                     \
-         do {                                                              \
-           fprintf(stderr,"[osl] Info: " msg " (%s).\n", __func__);        \
-         } while (0)
+#define OSL_info(msg)                                         \
+  do {                                                        \
+    fprintf(stderr, "[osl] Info: " msg " (%s).\n", __func__); \
+  } while (0)
 
-# define OSL_warning(msg)                                                  \
-         do {                                                              \
-           fprintf(stderr,"[osl] Warning: " msg " (%s).\n", __func__);     \
-         } while (0)
+#define OSL_warning(msg)                                         \
+  do {                                                           \
+    fprintf(stderr, "[osl] Warning: " msg " (%s).\n", __func__); \
+  } while (0)
 
-# define OSL_error(msg)                                                    \
-         do {                                                              \
-           fprintf(stderr,"[osl] Error: " msg " (%s).\n", __func__);       \
-           exit(1);                                                        \
-         } while (0)
+#define OSL_error(msg)                                         \
+  do {                                                         \
+    fprintf(stderr, "[osl] Error: " msg " (%s).\n", __func__); \
+    exit(1);                                                   \
+  } while (0)
 
-# define OSL_overflow(msg) OSL_error(msg)
+#define OSL_overflow(msg) OSL_error(msg)
 
-# define OSL_malloc(ptr, type, size)                                       \
-         do {                                                              \
-           if (((ptr) = (type)malloc(size)) == NULL)                       \
-             OSL_error("memory overflow");                                 \
-         } while (0)
+#define OSL_malloc(ptr, type, size)           \
+  do {                                        \
+    if (((ptr) = (type)malloc(size)) == NULL) \
+      OSL_error("memory overflow");           \
+  } while (0)
 
-# define OSL_realloc(ptr, type, size)                                      \
-         do {                                                              \
-           if (((ptr) = (type)realloc(ptr, size)) == NULL)                 \
-             OSL_error("memory overflow");                                 \
-         } while (0)
+#define OSL_realloc(ptr, type, size)                \
+  do {                                              \
+    if (((ptr) = (type)realloc(ptr, size)) == NULL) \
+      OSL_error("memory overflow");                 \
+  } while (0)
 
-# define OSL_strdup(destination, source)                                   \
-         do {                                                              \
-           if (source != NULL) {                                           \
-             if (((destination) = osl_util_strdup(source)) == NULL)                 \
-               OSL_error("memory overflow");                               \
-           }                                                               \
-           else {                                                          \
-             destination = NULL;                                           \
-             OSL_warning("strdup of a NULL string");                       \
-           }                                                               \
-         } while (0)
+#define OSL_strdup(destination, source)                      \
+  do {                                                       \
+    if (source != NULL) {                                    \
+      if (((destination) = osl_util_strdup(source)) == NULL) \
+        OSL_error("memory overflow");                        \
+    } else {                                                 \
+      destination = NULL;                                    \
+      OSL_warning("strdup of a NULL string");                \
+    }                                                        \
+  } while (0)
 
-# define OSL_max(x,y) ((x) > (y)? (x) : (y))
+#define OSL_max(x, y) ((x) > (y) ? (x) : (y))
 
-# define OSL_min(x,y) ((x) < (y)? (x) : (y))
-
+#define OSL_min(x, y) ((x) < (y) ? (x) : (y))
 
 #endif /* define OSL_MACROS_H */

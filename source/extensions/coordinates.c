@@ -88,7 +88,8 @@ void osl_coordinates_idump(FILE* const file,
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (coordinates != NULL)
     fprintf(file, "+-- osl_coordinates_t\n");
@@ -97,7 +98,8 @@ void osl_coordinates_idump(FILE* const file,
 
   if (coordinates != NULL) {
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the file name.
     if (coordinates->name != NULL)
@@ -106,7 +108,8 @@ void osl_coordinates_idump(FILE* const file,
       fprintf(file, "NULL file name\n");
 
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the lines.
     fprintf(file, "Coordinates: [%d,%d -> %d,%d]\n", coordinates->line_start,
@@ -114,14 +117,16 @@ void osl_coordinates_idump(FILE* const file,
             coordinates->column_end);
 
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the indentation.
     fprintf(file, "Indentation: %d\n", coordinates->indent);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -269,7 +274,8 @@ osl_coordinates_t* osl_coordinates_clone(
     const osl_coordinates_t* const coordinates) {
   osl_coordinates_p clone;
 
-  if (coordinates == NULL) return NULL;
+  if (coordinates == NULL)
+    return NULL;
 
   clone = osl_coordinates_malloc();
   OSL_strdup(clone->name, coordinates->name);
@@ -291,8 +297,9 @@ osl_coordinates_t* osl_coordinates_clone(
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 bool osl_coordinates_equal(const osl_coordinates_t* const c1,
-                          const osl_coordinates_t* const c2) {
-  if (c1 == c2) return 1;
+                           const osl_coordinates_t* const c2) {
+  if (c1 == c2)
+    return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
     return 0;

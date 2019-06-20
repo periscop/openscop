@@ -87,7 +87,8 @@ void osl_generic_idump(FILE* const file, const osl_generic_t* generic,
   int j, first = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (generic != NULL)
     fprintf(file, "+-- osl_generic_t\n");
@@ -97,14 +98,16 @@ void osl_generic_idump(FILE* const file, const osl_generic_t* generic,
   while (generic != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|   osl_generic_t\n");
     } else {
       first = 0;
     }
 
     // A blank line
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     osl_interface_idump(file, generic->interface, level + 1);
@@ -116,13 +119,15 @@ void osl_generic_idump(FILE* const file, const osl_generic_t* generic,
 
     // Next line.
     if (generic != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -372,7 +377,8 @@ void osl_generic_add(osl_generic_t** list, osl_generic_t* generic) {
     }
 
     if (*list != NULL) {
-      while (tmp->next != NULL) tmp = tmp->next;
+      while (tmp->next != NULL)
+        tmp = tmp->next;
       tmp->next = generic;
     } else {
       *list = generic;
@@ -402,7 +408,8 @@ void osl_generic_remove_node(osl_generic_t** list, osl_generic_t* generic) {
 
       // find target
       tmp = *list;
-      while (tmp->next != generic && tmp->next != NULL) tmp = tmp->next;
+      while (tmp->next != generic && tmp->next != NULL)
+        tmp = tmp->next;
 
       if (tmp->next == generic) {
         tmp->next = generic->next;
@@ -424,7 +431,8 @@ void osl_generic_remove(osl_generic_t** list, const char* URI) {
   osl_generic_p tmp = *list;
 
   while (tmp != NULL) {
-    if (osl_generic_has_URI(tmp, URI)) break;
+    if (osl_generic_has_URI(tmp, URI))
+      break;
     tmp = tmp->next;
   }
 
@@ -575,12 +583,14 @@ bool osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
   int found, equal;
   const osl_generic_t* backup_x2 = x2;
 
-  if (x1 == x2) return 1;
+  if (x1 == x2)
+    return 1;
 
   // Check whether the number of generics is the same or not.
   x1_generic_number = osl_generic_count(x1);
   x2_generic_number = osl_generic_count(x2);
-  if (x1_generic_number != x2_generic_number) return 0;
+  if (x1_generic_number != x2_generic_number)
+    return 0;
 
   // Check that for each generic in x1 a similar generic is in x2.
   while (x1 != NULL) {
@@ -606,7 +616,8 @@ bool osl_generic_equal(const osl_generic_t* x1, const osl_generic_t* x2) {
       x2 = x2->next;
     }
 
-    if (found != 1) return 0;
+    if (found != 1)
+      return 0;
 
     x1 = x1->next;
   }
@@ -641,7 +652,8 @@ int osl_generic_has_URI(const osl_generic_t* const x, char const* const URI) {
  */
 void* osl_generic_lookup(const osl_generic_t* x, char const* const URI) {
   while (x != NULL) {
-    if (osl_generic_has_URI(x, URI)) return x->data;
+    if (osl_generic_has_URI(x, URI))
+      return x->data;
 
     x = x->next;
   }

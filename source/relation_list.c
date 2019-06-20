@@ -86,7 +86,8 @@ void osl_relation_list_idump(FILE* const file, const osl_relation_list_t* l,
   int j, first = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (l != NULL)
     fprintf(file, "+-- osl_relation_list_t\n");
@@ -96,13 +97,15 @@ void osl_relation_list_idump(FILE* const file, const osl_relation_list_t* l,
   while (l != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|   osl_relation_list_t\n");
     } else
       first = 0;
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print a relation.
@@ -112,13 +115,15 @@ void osl_relation_list_idump(FILE* const file, const osl_relation_list_t* l,
 
     // Next line.
     if (l != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -159,7 +164,8 @@ void osl_relation_list_pprint_elts(FILE* const file,
     while (head) {
       if (head->elt != NULL) {
         osl_relation_pprint(file, head->elt, names);
-        if (head->next != NULL) fprintf(file, "\n");
+        if (head->next != NULL)
+          fprintf(file, "\n");
         i++;
       }
       head = head->next;
@@ -330,13 +336,15 @@ osl_relation_list_t* osl_relation_list_pread(FILE* const file, int precision) {
   // Read the number of relations to read.
   nb_mat = osl_util_read_int(file, NULL);
 
-  if (nb_mat < 0) OSL_error("negative number of relations");
+  if (nb_mat < 0)
+    OSL_error("negative number of relations");
 
   // Allocate the header of the list and start reading each element.
   res = list = osl_relation_list_malloc();
   for (i = 0; i < nb_mat; ++i) {
     list->elt = osl_relation_pread(file, precision);
-    if (i < nb_mat - 1) list->next = osl_relation_list_malloc();
+    if (i < nb_mat - 1)
+      list->next = osl_relation_list_malloc();
     list = list->next;
   }
 
@@ -386,10 +394,12 @@ osl_relation_list_t* osl_relation_list_malloc(void) {
 void osl_relation_list_free(osl_relation_list_t* list) {
   osl_relation_list_p tmp;
 
-  if (list == NULL) return;
+  if (list == NULL)
+    return;
 
   while (list != NULL) {
-    if (list->elt != NULL) osl_relation_free(list->elt);
+    if (list->elt != NULL)
+      osl_relation_free(list->elt);
     tmp = list->next;
     free(list);
     list = tmp;
@@ -461,13 +471,16 @@ osl_relation_list_t* osl_relation_list_concat(
     const osl_relation_list_t* const l1, const osl_relation_list_t* const l2) {
   osl_relation_list_p new, end;
 
-  if (l1 == NULL) return osl_relation_list_clone(l2);
+  if (l1 == NULL)
+    return osl_relation_list_clone(l2);
 
-  if (l2 == NULL) return osl_relation_list_clone(l1);
+  if (l2 == NULL)
+    return osl_relation_list_clone(l1);
 
   new = osl_relation_list_clone(l1);
   end = new;
-  while (end->next != NULL) end = end->next;
+  while (end->next != NULL)
+    end = end->next;
   end->next = osl_relation_list_clone(l2);
 
   return new;
@@ -484,7 +497,8 @@ osl_relation_list_t* osl_relation_list_concat(
  */
 void osl_relation_list_add(osl_relation_list_t** l1,
                            osl_relation_list_t* const l2) {
-  while (*l1 != NULL) l1 = &((*l1)->next);
+  while (*l1 != NULL)
+    l1 = &((*l1)->next);
 
   *l1 = l2;
 }
@@ -563,7 +577,8 @@ void osl_relation_list_drop(osl_relation_list_t** head) {
  *                     Updated to NULL.
  */
 void osl_relation_list_destroy(osl_relation_list_t** head) {
-  while (*head != NULL) osl_relation_list_drop(head);
+  while (*head != NULL)
+    osl_relation_list_drop(head);
 }
 
 /**
@@ -577,9 +592,11 @@ void osl_relation_list_destroy(osl_relation_list_t** head) {
 int osl_relation_list_equal(const osl_relation_list_t* l1,
                             const osl_relation_list_t* l2) {
   while ((l1 != NULL) && (l2 != NULL)) {
-    if (l1 == l2) return 1;
+    if (l1 == l2)
+      return 1;
 
-    if (!osl_relation_equal(l1->elt, l2->elt)) return 0;
+    if (!osl_relation_equal(l1->elt, l2->elt))
+      return 0;
 
     l1 = l1->next;
     l2 = l2->next;
@@ -670,7 +687,8 @@ osl_relation_list_t* osl_relation_list_filter(const osl_relation_list_t* list,
       copy = copy->next;
     } else {
       trash = copy;
-      if (!first) previous->next = copy->next;
+      if (!first)
+        previous->next = copy->next;
       copy = copy->next;
       trash->next = NULL;
       osl_relation_list_free(trash);
@@ -691,7 +709,8 @@ size_t osl_relation_list_count(const osl_relation_list_t* list) {
   size_t i = 0;
 
   while (list != NULL) {
-    if (list->elt != NULL) i++;
+    if (list->elt != NULL)
+      i++;
     list = list->next;
   }
 

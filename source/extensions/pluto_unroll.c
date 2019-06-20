@@ -85,7 +85,8 @@ void osl_pluto_unroll_idump(FILE* const file,
   int j, first = 1, number = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (pluto_unroll != NULL)
     fprintf(file, "+-- osl_pluto_unroll_t\n");
@@ -96,7 +97,8 @@ void osl_pluto_unroll_idump(FILE* const file,
     // Go to the right level.
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
 
       fprintf(file, "|   osl_pluto_unroll_t (node %d)\n", number);
     } else {
@@ -104,32 +106,38 @@ void osl_pluto_unroll_idump(FILE* const file,
     }
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Display the names of iterators.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+--iterator: %s\n", pluto_unroll->iter);
 
     // Display the names of iterators.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+--jam: %i\n", pluto_unroll->jam);
 
     // Display the names of iterators.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+--factor: %u\n", pluto_unroll->factor);
 
     pluto_unroll = pluto_unroll->next;
 
     // Next line.
     if (pluto_unroll != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -353,7 +361,7 @@ osl_pluto_unroll_t* osl_pluto_unroll_clone(
  * \return 1 if a and b are the same (content-wise), 0 otherwise.
  */
 bool osl_pluto_unroll_equal(const osl_pluto_unroll_t* a,
-                           const osl_pluto_unroll_t* b) {
+                            const osl_pluto_unroll_t* b) {
   if (a == b) {
     return 1;
   }

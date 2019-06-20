@@ -88,7 +88,8 @@ void osl_symbols_idump(FILE* const file, const osl_symbols_t* symbols,
   int i, j, first = 1, number = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (symbols != NULL)
     fprintf(file, "+-- osl_symbols_t\n");
@@ -98,18 +99,21 @@ void osl_symbols_idump(FILE* const file, const osl_symbols_t* symbols,
   while (symbols != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|   osl_symbol_t (node %d)\n", number);
     } else {
       first = 0;
     }
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // 1. Print the symbol kind.
-    for (i = 0; i <= level; i++) fprintf(file, "|\t");
+    for (i = 0; i <= level; i++)
+      fprintf(file, "|\t");
     if (symbols->type != OSL_UNDEFINED) {
       fprintf(file, "+-- Type: ");
       switch (symbols->type) {
@@ -133,29 +137,34 @@ void osl_symbols_idump(FILE* const file, const osl_symbols_t* symbols,
     }
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // 2. Print the origin of the symbol.
-    for (i = 0; i <= level; i++) fprintf(file, "|\t");
+    for (i = 0; i <= level; i++)
+      fprintf(file, "|\t");
     if (symbols->generated != OSL_UNDEFINED)
       fprintf(file, "+-- Origin: %d\n", symbols->generated);
     else
       fprintf(file, "+-- Undefined origin\n");
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // 3. Print the number of array dimensions for the symbol.
-    for (i = 0; i <= level; i++) fprintf(file, "|\t");
+    for (i = 0; i <= level; i++)
+      fprintf(file, "|\t");
     if (symbols->nb_dims != OSL_UNDEFINED)
       fprintf(file, "+-- Number of Dimensions: %d\n", symbols->nb_dims);
     else
       fprintf(file, "+-- Undefined number of dimensions\n");
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // 4. Print the symbol identifier.
@@ -174,13 +183,15 @@ void osl_symbols_idump(FILE* const file, const osl_symbols_t* symbols,
     number++;
     // Next line.
     if (symbols != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -315,12 +326,14 @@ osl_symbols_t* osl_symbols_sread(char** input) {
     return NULL;
   }
 
-  if (strlen(*input) > OSL_MAX_STRING) OSL_error("symbols too long");
+  if (strlen(*input) > OSL_MAX_STRING)
+    OSL_error("symbols too long");
 
   // Find the number of names provided.
   nb_symbols = osl_util_read_int(NULL, input);
 
-  if (nb_symbols == 0) return NULL;
+  if (nb_symbols == 0)
+    return NULL;
 
   head = symbols = osl_symbols_malloc();
   registry = osl_interface_get_default_registry();
@@ -431,7 +444,8 @@ void osl_symbols_free(osl_symbols_t* symbols) {
  * \param[in]     symbols   The symbols to add to the list.
  */
 void osl_symbols_add(osl_symbols_t** location, osl_symbols_t* symbols) {
-  while (*location != NULL) location = &((*location)->next);
+  while (*location != NULL)
+    location = &((*location)->next);
 
   *location = symbols;
 }
@@ -486,7 +500,8 @@ osl_symbols_t* osl_symbols_clone(const osl_symbols_t* const symbols) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 bool osl_symbols_equal(const osl_symbols_t* c1, const osl_symbols_t* c2) {
-  if (c1 == c2) return 1;
+  if (c1 == c2)
+    return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
     return 0;

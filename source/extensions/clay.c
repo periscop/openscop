@@ -88,7 +88,8 @@ void osl_clay_idump(FILE* const file, const osl_clay_t* const clay, int level) {
   char* tmp;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (clay != NULL)
     fprintf(file, "+-- osl_clay_t\n");
@@ -97,18 +98,21 @@ void osl_clay_idump(FILE* const file, const osl_clay_t* const clay, int level) {
 
   if (clay != NULL) {
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the clay script (without any carriage return).
     OSL_strdup(tmp, clay->script);
     for (l = 0; l < strlen(tmp); l++)
-      if (tmp[l] == '\n') tmp[l] = ' ';
+      if (tmp[l] == '\n')
+        tmp[l] = ' ';
     fprintf(file, "script: %s\n", tmp);
     free(tmp);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -173,7 +177,8 @@ osl_clay_t* osl_clay_sread(char** input) {
     return NULL;
   }
 
-  if (strlen(*input) > OSL_MAX_STRING) OSL_error("clay script too long");
+  if (strlen(*input) > OSL_MAX_STRING)
+    OSL_error("clay script too long");
 
   // Build the clay structure
   clay = osl_clay_malloc();
@@ -181,7 +186,8 @@ osl_clay_t* osl_clay_sread(char** input) {
 
   // Pass the carriage returns (this allows to remove those inserted by
   // osl_generic_print), and copy the textual script.
-  while (*script && (*script == '\n')) script++;
+  while (*script && (*script == '\n'))
+    script++;
   OSL_strdup(clay->script, script);
 
   // Update the input pointer (everything has been read).
@@ -219,7 +225,8 @@ osl_clay_t* osl_clay_malloc(void) {
  */
 void osl_clay_free(osl_clay_t* clay) {
   if (clay != NULL) {
-    if (clay->script != NULL) free(clay->script);
+    if (clay->script != NULL)
+      free(clay->script);
     free(clay);
   }
 }
@@ -238,7 +245,8 @@ void osl_clay_free(osl_clay_t* clay) {
 osl_clay_t* osl_clay_clone(const osl_clay_t* const clay) {
   osl_clay_p clone;
 
-  if (clay == NULL) return NULL;
+  if (clay == NULL)
+    return NULL;
 
   clone = osl_clay_malloc();
   OSL_strdup(clone->script, clay->script);
@@ -255,7 +263,8 @@ osl_clay_t* osl_clay_clone(const osl_clay_t* const clay) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 bool osl_clay_equal(const osl_clay_t* const c1, const osl_clay_t* const c2) {
-  if (c1 == c2) return 1;
+  if (c1 == c2)
+    return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
     OSL_info("clay extensions are not the same");

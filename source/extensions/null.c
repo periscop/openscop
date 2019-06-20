@@ -86,7 +86,8 @@ void osl_null_idump(FILE* const file, const osl_null_t* const null, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (null != NULL)
     fprintf(file, "+-- osl_null_t\n");
@@ -94,7 +95,8 @@ void osl_null_idump(FILE* const file, const osl_null_t* const null, int level) {
     fprintf(file, "+-- NULL null\n");
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -204,7 +206,8 @@ void osl_null_free(osl_null_t* null) {
 osl_null_t* osl_null_clone(const osl_null_t* null) {
   osl_null_p clone;
 
-  if (null == NULL) return NULL;
+  if (null == NULL)
+    return NULL;
 
   clone = osl_null_malloc();
   return clone;
@@ -219,7 +222,8 @@ osl_null_t* osl_null_clone(const osl_null_t* null) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 bool osl_null_equal(const osl_null_t* const c1, const osl_null_t* const c2) {
-  if (c1 == c2) return 1;
+  if (c1 == c2)
+    return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
     OSL_info("nulls are not the same");

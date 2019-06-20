@@ -59,15 +59,14 @@
 #ifndef OSL_REGION_H
 #define OSL_REGION_H
 
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include <osl/attributes.h>
 #include <osl/strings.h>
 
 #if defined(__cplusplus)
-extern "C"
-{
+extern "C" {
 #endif
 
 /* URI */

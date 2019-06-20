@@ -176,7 +176,8 @@ void osl_relation_idump(FILE* const file, const osl_relation_t* relation,
   int i, j, first = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (relation != NULL) {
     fprintf(file, "+-- osl_relation_t (");
@@ -191,7 +192,8 @@ void osl_relation_idump(FILE* const file, const osl_relation_t* relation,
   while (relation != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|   osl_relation_t (");
       osl_relation_print_type(file, relation);
       fprintf(file, ", ");
@@ -201,7 +203,8 @@ void osl_relation_idump(FILE* const file, const osl_relation_t* relation,
       first = 0;
 
     // A blank line
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "%d %d %d %d %d %d\n", relation->nb_rows,
             relation->nb_columns, relation->nb_output_dims,
             relation->nb_input_dims, relation->nb_local_dims,
@@ -209,7 +212,8 @@ void osl_relation_idump(FILE* const file, const osl_relation_t* relation,
 
     // Display the relation.
     for (i = 0; i < relation->nb_rows; i++) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
 
       fprintf(file, "[ ");
 
@@ -225,15 +229,18 @@ void osl_relation_idump(FILE* const file, const osl_relation_t* relation,
 
     // Next line.
     if (relation != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|\n");
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -480,7 +487,8 @@ int osl_relation_is_simple_output(const osl_relation_t* relation, int row) {
     OSL_error("the specified row does not exist in the relation");
 
   // The constraint must be an equality.
-  if (!osl_int_zero(relation->precision, relation->m[row][0])) return 0;
+  if (!osl_int_zero(relation->precision, relation->m[row][0]))
+    return 0;
 
   // Check the output part has one and only one non-zero +1 or -1 coefficient.
   first = 1;
@@ -604,7 +612,8 @@ char* osl_relation_column_string(const osl_relation_t* relation,
 
   // 1. The comment part.
   sprintf(scolumn, "#");
-  for (j = 0; j < (OSL_FMT_LENGTH - 1) / 2 - 1; j++) strcat(scolumn, " ");
+  for (j = 0; j < (OSL_FMT_LENGTH - 1) / 2 - 1; j++)
+    strcat(scolumn, " ");
 
   i = 0;
   while (strings[i] != NULL) {
@@ -615,7 +624,8 @@ char* osl_relation_column_string(const osl_relation_t* relation,
     left = space - length - right;
 
     // 2. Spaces before the name
-    for (j = 0; j < left; j++) strcat(scolumn, " ");
+    for (j = 0; j < left; j++)
+      strcat(scolumn, " ");
 
     // 3. The (abbreviated) name
     for (j = 0; j < length - 1; j++) {
@@ -629,7 +639,8 @@ char* osl_relation_column_string(const osl_relation_t* relation,
     strcat(scolumn, temp);
 
     // 4. Spaces after the name
-    for (j = 0; j < right; j++) strcat(scolumn, " ");
+    for (j = 0; j < right; j++)
+      strcat(scolumn, " ");
 
     i++;
     if ((i == index_output_dims) || (i == index_input_dims) ||
@@ -675,7 +686,8 @@ char* osl_relation_column_string_scoplib(const osl_relation_t* relation,
 
   // 1. The comment part.
   sprintf(scolumn, "#");
-  for (j = 0; j < (OSL_FMT_LENGTH - 1) / 2 - 1; j++) strcat(scolumn, " ");
+  for (j = 0; j < (OSL_FMT_LENGTH - 1) / 2 - 1; j++)
+    strcat(scolumn, " ");
 
   i = 0;
   while (strings[i] != NULL) {
@@ -690,7 +702,8 @@ char* osl_relation_column_string_scoplib(const osl_relation_t* relation,
       left = space - length - right;
 
       // 2. Spaces before the name
-      for (j = 0; j < left; j++) strcat(scolumn, " ");
+      for (j = 0; j < left; j++)
+        strcat(scolumn, " ");
 
       // 3. The (abbreviated) name
       for (j = 0; j < length - 1; j++) {
@@ -704,7 +717,8 @@ char* osl_relation_column_string_scoplib(const osl_relation_t* relation,
       strcat(scolumn, temp);
 
       // 4. Spaces after the name
-      for (j = 0; j < right; j++) strcat(scolumn, " ");
+      for (j = 0; j < right; j++)
+        strcat(scolumn, " ");
 
       if ((i == index_output_dims - 1) || (i == index_input_dims - 1) ||
           (i == index_local_dims - 1) || (i == index_parameters - 1) ||
@@ -782,7 +796,8 @@ char* osl_relation_spprint_polylib(const osl_relation_t* relation,
   char* comment;
   osl_names_t* local_names = NULL;
 
-  if (relation == NULL) return osl_util_strdup("# NULL relation\n");
+  if (relation == NULL)
+    return osl_util_strdup("# NULL relation\n");
 
   OSL_malloc(string, char*, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -845,14 +860,16 @@ char* osl_relation_spprint_polylib(const osl_relation_t* relation,
 
     // Free the array of strings.
     if (name_array != NULL) {
-      for (i = 0; i < relation->nb_columns; i++) free(name_array[i]);
+      for (i = 0; i < relation->nb_columns; i++)
+        free(name_array[i]);
       free(name_array);
     }
 
     relation = relation->next;
   }
 
-  if (generated_names) osl_names_free(local_names);
+  if (generated_names)
+    osl_names_free(local_names);
 
   return string;
 }
@@ -888,7 +905,8 @@ char* osl_relation_spprint_polylib_scoplib(const osl_relation_t* relation,
   char* comment;
   osl_names_t* local_names = NULL;
 
-  if (relation == NULL) return osl_util_strdup("# NULL relation\n");
+  if (relation == NULL)
+    return osl_util_strdup("# NULL relation\n");
 
   OSL_malloc(string, char*, high_water_mark * sizeof(char));
   string[0] = '\0';
@@ -1095,14 +1113,16 @@ char* osl_relation_spprint_polylib_scoplib(const osl_relation_t* relation,
 
     // Free the array of strings.
     if (name_array != NULL) {
-      for (i = 0; i < relation->nb_columns; i++) free(name_array[i]);
+      for (i = 0; i < relation->nb_columns; i++)
+        free(name_array[i]);
       free(name_array);
     }
 
     relation = relation->next;
   }
 
-  if (generated_names) osl_names_free(local_names);
+  if (generated_names)
+    osl_names_free(local_names);
 
   return string;
 }
@@ -1256,7 +1276,8 @@ int osl_relation_read_type(FILE* file, char** str) {
   if (osl_strings_size(strings) > 1) {
     OSL_warning("uninterpreted information (after the relation type)");
   }
-  if (osl_strings_size(strings) == 0) OSL_error("no relation type");
+  if (osl_strings_size(strings) == 0)
+    OSL_error("no relation type");
 
   if (!strcmp(strings->string[0], OSL_STRING_UNDEFINED)) {
     type = OSL_UNDEFINED;
@@ -1341,7 +1362,8 @@ osl_relation_t* osl_relation_pread(FILE* foo, int precision) {
       if (read == 1) {
         // Only one number means a union and is the number of parts.
         nb_union_parts = nb_rows;
-        if (nb_union_parts < 1) OSL_error("negative nb of union parts");
+        if (nb_union_parts < 1)
+          OSL_error("negative nb of union parts");
 
         // Allow to read the properties of the first part of the union.
         read_attributes = 1;
@@ -1361,12 +1383,14 @@ osl_relation_t* osl_relation_pread(FILE* foo, int precision) {
     // Read the matrix of constraints.
     for (i = 0; i < relation->nb_rows; i++) {
       c = osl_util_skip_blank_and_comments(foo, s);
-      if (c == NULL) OSL_error("not enough rows");
+      if (c == NULL)
+        OSL_error("not enough rows");
 
       for (j = 0; j < relation->nb_columns; j++) {
         if (c == NULL || *c == '#' || *c == '\n')
           OSL_error("not enough columns");
-        if (sscanf(c, "%s%n", str, &n) == 0) OSL_error("not enough rows");
+        if (sscanf(c, "%s%n", str, &n) == 0)
+          OSL_error("not enough rows");
 
         // TODO: remove this tmp (sread updates the pointer).
         tmp = str;
@@ -1459,7 +1483,8 @@ osl_relation_t* osl_relation_psread_polylib(char** input, int precision) {
       if (read == 1) {
         // Only one number means a union and is the number of parts.
         nb_union_parts = nb_rows;
-        if (nb_union_parts < 1) OSL_error("negative nb of union parts");
+        if (nb_union_parts < 1)
+          OSL_error("negative nb of union parts");
 
         // Allow to read the properties of the first part of the union.
         read_attributes = 1;
@@ -1478,12 +1503,14 @@ osl_relation_t* osl_relation_psread_polylib(char** input, int precision) {
     // Read the matrix of constraints.
     for (i = 0; i < relation->nb_rows; i++) {
       osl_util_sskip_blank_and_comments(input);
-      if (!(*input)) OSL_error("not enough rows");
+      if (!(*input))
+        OSL_error("not enough rows");
 
       for (j = 0; j < relation->nb_columns; j++) {
         if (*input == NULL || **input == '#' || **input == '\n')
           OSL_error("not enough columns");
-        if (sscanf(*input, "%s%n", str, &n) == 0) OSL_error("not enough rows");
+        if (sscanf(*input, "%s%n", str, &n) == 0)
+          OSL_error("not enough rows");
 
         // TODO: remove this tmp (sread updates the pointer).
         tmp = str;
@@ -1568,7 +1595,8 @@ osl_relation_t* osl_relation_pmalloc(int precision, int nb_rows,
       (precision != OSL_PRECISION_MP))
     OSL_error("unknown precision");
 
-  if ((nb_rows < 0) || (nb_columns < 0)) OSL_error("negative sizes");
+  if ((nb_rows < 0) || (nb_columns < 0))
+    OSL_error("negative sizes");
 
   OSL_malloc(relation, osl_relation_p, sizeof(osl_relation_t));
   relation->type = OSL_UNDEFINED;
@@ -1625,7 +1653,8 @@ osl_relation_t* osl_relation_interface_malloc(void) {
 void osl_relation_free_inside(osl_relation_t* relation) {
   int i, nb_elements;
 
-  if (relation == NULL) return;
+  if (relation == NULL)
+    return;
 
   nb_elements = relation->nb_rows * relation->nb_columns;
 
@@ -1633,7 +1662,8 @@ void osl_relation_free_inside(osl_relation_t* relation) {
     osl_int_clear(relation->precision, &relation->m[0][i]);
 
   if (relation->m != NULL) {
-    if (nb_elements > 0) free(relation->m[0]);
+    if (nb_elements > 0)
+      free(relation->m[0]);
     free(relation->m);
   }
 }
@@ -1676,7 +1706,8 @@ osl_relation_t* osl_relation_nclone(const osl_relation_t* relation, int n) {
 
   nb_components = osl_relation_nb_components(relation);
   nb_parts = (n == -1) ? nb_components : n;
-  if (nb_components < nb_parts) OSL_error("not enough union parts to clone");
+  if (nb_components < nb_parts)
+    OSL_error("not enough union parts to clone");
 
   for (k = 0; k < nb_parts; k++) {
     node = osl_relation_pmalloc(relation->precision, relation->nb_rows,
@@ -1724,10 +1755,12 @@ osl_relation_t* osl_relation_clone_nconstraints(const osl_relation_t* relation,
   int first = 1, all_rows = 0;
   osl_relation_p clone = NULL, node, previous = NULL;
 
-  if (n == -1) all_rows = 1;
+  if (n == -1)
+    all_rows = 1;
 
   while (relation != NULL) {
-    if (all_rows) n = relation->nb_rows;
+    if (all_rows)
+      n = relation->nb_rows;
 
     if (n > relation->nb_rows)
       OSL_error("not enough rows to clone in the relation");
@@ -1766,7 +1799,8 @@ osl_relation_t* osl_relation_clone_nconstraints(const osl_relation_t* relation,
  * \return A pointer to the clone of the union of relations.
  */
 osl_relation_t* osl_relation_clone(const osl_relation_t* relation) {
-  if (relation == NULL) return NULL;
+  if (relation == NULL)
+    return NULL;
 
   return osl_relation_nclone(relation, -1);
 }
@@ -1781,7 +1815,8 @@ osl_relation_t* osl_relation_clone(const osl_relation_t* relation) {
  * \param[in]     r2  The second relation (union).
  */
 void osl_relation_add(osl_relation_t** r1, osl_relation_t* r2) {
-  while (*r1 != NULL) r1 = &((*r1)->next);
+  while (*r1 != NULL)
+    r1 = &((*r1)->next);
 
   *r1 = r2;
 }
@@ -1798,7 +1833,8 @@ void osl_relation_add(osl_relation_t** r1, osl_relation_t* r2) {
 osl_relation_t* osl_relation_union(osl_relation_t* r1, osl_relation_t* r2) {
   osl_relation_p copy1, copy2;
 
-  if ((r1 == NULL) && (r2 == NULL)) return NULL;
+  if ((r1 == NULL) && (r2 == NULL))
+    return NULL;
 
   copy1 = osl_relation_clone(r1);
   copy2 = osl_relation_clone(r2);
@@ -1957,7 +1993,8 @@ void osl_relation_insert_blank_column(osl_relation_t* const relation,
   int i, j;
   osl_relation_p temp;
 
-  if (relation == NULL) return;
+  if (relation == NULL)
+    return;
 
   if ((column < 0) || (column > relation->nb_columns))
     OSL_error("bad column number");
@@ -1995,7 +2032,8 @@ void osl_relation_insert_blank_column(osl_relation_t* const relation,
 osl_relation_t* osl_relation_from_vector(const osl_vector_t* vector) {
   osl_relation_p relation;
 
-  if (vector == NULL) return NULL;
+  if (vector == NULL)
+    return NULL;
 
   relation = osl_relation_pmalloc(vector->precision, 1, vector->size);
   osl_relation_replace_vector(relation, vector, 0);
@@ -2042,9 +2080,11 @@ void osl_relation_insert_constraints(osl_relation_t* r1,
   int i, j;
   osl_relation_p temp;
 
-  if ((r1 == NULL) || (r2 == NULL)) return;
+  if ((r1 == NULL) || (r2 == NULL))
+    return;
 
-  if (row == -1) row = r1->nb_rows;
+  if (row == -1)
+    row = r1->nb_rows;
 
   if ((r1->nb_columns != r2->nb_columns) || (r1->precision != r2->precision) ||
       (row > r1->nb_rows) || (row < 0))
@@ -2085,7 +2125,8 @@ void osl_relation_insert_constraints(osl_relation_t* r1,
 void osl_relation_swap_constraints(osl_relation_t* relation, int c1, int c2) {
   int i;
 
-  if ((relation == NULL) || (c1 == c2)) return;
+  if ((relation == NULL) || (c1 == c2))
+    return;
 
   if ((c1 >= relation->nb_rows) || (c1 < 0) || (c2 >= relation->nb_rows) ||
       (c2 < 0))
@@ -2106,9 +2147,11 @@ void osl_relation_remove_row(osl_relation_t* r, int row) {
   int i, j;
   osl_relation_p temp;
 
-  if (r == NULL) return;
+  if (r == NULL)
+    return;
 
-  if ((row < 0) || (row >= r->nb_rows)) OSL_error("bad row number");
+  if ((row < 0) || (row >= r->nb_rows))
+    OSL_error("bad row number");
 
   // We use a temporary relation just to reuse existing functions. Cleaner.
   temp = osl_relation_pmalloc(r->precision, r->nb_rows - 1, r->nb_columns);
@@ -2142,9 +2185,11 @@ void osl_relation_remove_column(osl_relation_t* r, int column) {
   int i, j;
   osl_relation_p temp;
 
-  if (r == NULL) return;
+  if (r == NULL)
+    return;
 
-  if ((column < 0) || (column >= r->nb_columns)) OSL_error("bad column number");
+  if ((column < 0) || (column >= r->nb_columns))
+    OSL_error("bad column number");
 
   // We use a temporary relation just to reuse existing functions. Cleaner.
   temp = osl_relation_pmalloc(r->precision, r->nb_rows, r->nb_columns - 1);
@@ -2184,7 +2229,8 @@ void osl_relation_insert_columns(osl_relation_t* const relation,
   int i, j;
   osl_relation_p temp;
 
-  if ((relation == NULL) || (insert == NULL)) return;
+  if ((relation == NULL) || (insert == NULL))
+    return;
 
   if ((relation->precision != insert->precision) ||
       (relation->nb_rows != insert->nb_rows) || (column < 0) ||
@@ -2234,9 +2280,11 @@ osl_relation_p osl_relation_concat_constraints(const osl_relation_t* const r1,
                                                const osl_relation_t* const r2) {
   osl_relation_p new;
 
-  if (r1 == NULL) return osl_relation_clone(r2);
+  if (r1 == NULL)
+    return osl_relation_clone(r2);
 
-  if (r2 == NULL) return osl_relation_clone(r1);
+  if (r2 == NULL)
+    return osl_relation_clone(r1);
 
   if (r1->nb_columns != r2->nb_columns)
     OSL_error("incompatible sizes for concatenation");
@@ -2264,10 +2312,11 @@ osl_relation_p osl_relation_concat_constraints(const osl_relation_t* const r1,
  * \return 1 if r1 and r2 are the same (content-wise), 0 otherwise.
  */
 bool osl_relation_part_equal(const osl_relation_t* const r1,
-                            const osl_relation_t* const r2) {
+                             const osl_relation_t* const r2) {
   int i, j;
 
-  if (r1 == r2) return 1;
+  if (r1 == r2)
+    return 1;
 
   if (((r1 == NULL) && (r2 != NULL)) || ((r1 != NULL) && (r2 == NULL)))
     return 0;
@@ -2282,7 +2331,8 @@ bool osl_relation_part_equal(const osl_relation_t* const r1,
 
   for (i = 0; i < r1->nb_rows; ++i)
     for (j = 0; j < r1->nb_columns; ++j)
-      if (osl_int_ne(r1->precision, r1->m[i][j], r2->m[i][j])) return 0;
+      if (osl_int_ne(r1->precision, r1->m[i][j], r2->m[i][j]))
+        return 0;
 
   return 1;
 }
@@ -2297,7 +2347,8 @@ bool osl_relation_part_equal(const osl_relation_t* const r1,
  */
 bool osl_relation_equal(const osl_relation_t* r1, const osl_relation_t* r2) {
   while ((r1 != NULL) && (r2 != NULL)) {
-    if (!osl_relation_part_equal(r1, r2)) return 0;
+    if (!osl_relation_part_equal(r1, r2))
+      return 0;
 
     r1 = r1->next;
     r2 = r2->next;
@@ -2573,7 +2624,8 @@ int osl_relation_get_array_id(const osl_relation_t* relation) {
   int row_id = 0;
   int precision;
 
-  if (relation == NULL) return OSL_UNDEFINED;
+  if (relation == NULL)
+    return OSL_UNDEFINED;
 
   if (!osl_relation_is_access(relation)) {
     OSL_warning("asked for an array id of non-array relation");
@@ -2657,7 +2709,8 @@ int osl_relation_get_array_id(const osl_relation_t* relation) {
  * \return 1 if the relation is an access relation, 0 otherwise.
  */
 int osl_relation_is_access(const osl_relation_t* const relation) {
-  if (relation == NULL) return 0;
+  if (relation == NULL)
+    return 0;
 
   if ((relation->type == OSL_TYPE_ACCESS) ||
       (relation->type == OSL_TYPE_READ) || (relation->type == OSL_TYPE_WRITE) ||

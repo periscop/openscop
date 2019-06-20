@@ -84,12 +84,13 @@
  * \param irregular The irregular structure whose information has to be printed.
  * \param level   Number of spaces before printing, for each line.
  */
-void osl_irregular_idump(FILE *const file,
-                         const osl_irregular_t *const irregular, int level) {
+void osl_irregular_idump(FILE* const file,
+                         const osl_irregular_t* const irregular, int level) {
   int i, j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (irregular != NULL)
     fprintf(file, "+-- osl_irregular_t\n");
@@ -98,7 +99,8 @@ void osl_irregular_idump(FILE *const file,
 
   if (irregular != NULL) {
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the irregular contents.
 
@@ -128,7 +130,8 @@ void osl_irregular_idump(FILE *const file,
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -139,8 +142,8 @@ void osl_irregular_idump(FILE *const file,
  * \param file    The file where the information has to be printed.
  * \param irregular The irregular structure whose information has to be printed.
  */
-void osl_irregular_dump(FILE *const file,
-                        const osl_irregular_t *const irregular) {
+void osl_irregular_dump(FILE* const file,
+                        const osl_irregular_t* const irregular) {
   osl_irregular_idump(file, irregular, 0);
 }
 
@@ -148,7 +151,7 @@ void osl_irregular_dump(FILE *const file,
 __attribute__((format(printf, 4, 5)))
 #endif
 static void
-printf_in_buf(char **buf, size_t *buf_size, size_t *offset, const char *fmt,
+printf_in_buf(char** buf, size_t* buf_size, size_t* offset, const char* fmt,
               ...) {
   va_list va;
   va_start(va, fmt);
@@ -162,7 +165,7 @@ printf_in_buf(char **buf, size_t *buf_size, size_t *offset, const char *fmt,
       *offset += retval;
       break;
     }
-    OSL_realloc(*buf, char *, *buf_size * 2);
+    OSL_realloc(*buf, char*, *buf_size * 2);
     *buf_size *= 2;
   } while (1);
   va_end(va);
@@ -176,21 +179,21 @@ printf_in_buf(char **buf, size_t *buf_size, size_t *offset, const char *fmt,
  * printed. \return A string containing the OpenScop dump of the irregular
  * structure.
  */
-char *osl_irregular_sprint(const osl_irregular_t *const irregular) {
+char* osl_irregular_sprint(const osl_irregular_t* const irregular) {
   size_t high_water_mark = OSL_MAX_STRING;
   int i, j;
-  char *string = NULL;
-  char *buffer = NULL;
+  char* string = NULL;
+  char* buffer = NULL;
 
   if (irregular != NULL) {
-    OSL_malloc(string, char *, high_water_mark * sizeof(char));
+    OSL_malloc(string, char*, high_water_mark * sizeof(char));
     string[0] = '\0';
 
     // Print the begin tag.
     osl_util_safe_strcat(&string, OSL_TAG_IRREGULAR_START, &high_water_mark);
     size_t buf_offset = 0;
     size_t buf_size = OSL_MAX_STRING;
-    OSL_malloc(buffer, char *, OSL_MAX_STRING * sizeof(char));
+    OSL_malloc(buffer, char*, OSL_MAX_STRING * sizeof(char));
 
     // Print the content.
     printf_in_buf(&buffer, &buf_size, &buf_offset, "\n%d\n",
@@ -236,7 +239,7 @@ char *osl_irregular_sprint(const osl_irregular_t *const irregular) {
                          &high_water_mark);
 
     // Keep only the memory space we need.
-    OSL_realloc(string, char *, (strlen(string) + 1) * sizeof(char));
+    OSL_realloc(string, char*, (strlen(string) + 1) * sizeof(char));
     free(buffer);
   }
 
@@ -255,7 +258,7 @@ char *osl_irregular_sprint(const osl_irregular_t *const irregular) {
  * \param  extensions The input string where to find a irregular structure.
  * \return A pointer to the irregular structure that has been read.
  */
-osl_irregular_t *osl_irregular_sread(char **extensions_fixme) {
+osl_irregular_t* osl_irregular_sread(char** extensions_fixme) {
   char *content, *tok;
   int i, j;
   osl_irregular_p irregular;
@@ -270,16 +273,17 @@ osl_irregular_t *osl_irregular_sread(char **extensions_fixme) {
     return NULL;
   }
 
-  if (strlen(content) > OSL_MAX_STRING) OSL_error("irregular too long");
+  if (strlen(content) > OSL_MAX_STRING)
+    OSL_error("irregular too long");
 
   irregular = osl_irregular_malloc();
 
   // nb statements
   tok = strtok(content, " \n");
   irregular->nb_statements = atoi(tok);
-  OSL_malloc(irregular->predicates, int **,
-             sizeof(int *) * irregular->nb_statements);
-  OSL_malloc(irregular->nb_predicates, int *,
+  OSL_malloc(irregular->predicates, int**,
+             sizeof(int*) * irregular->nb_statements);
+  OSL_malloc(irregular->nb_predicates, int*,
              sizeof(int) * irregular->nb_statements);
 
   // get predicats
@@ -287,7 +291,7 @@ osl_irregular_t *osl_irregular_sread(char **extensions_fixme) {
     // nb conditions
     tok = strtok(NULL, " \n");
     irregular->nb_predicates[i] = atoi(tok);
-    OSL_malloc(irregular->predicates[i], int *,
+    OSL_malloc(irregular->predicates[i], int*,
                sizeof(int) * irregular->nb_predicates[i]);
     for (j = 0; j < irregular->nb_predicates[i]; j++) {
       tok = strtok(NULL, " \n");
@@ -303,16 +307,16 @@ osl_irregular_t *osl_irregular_sread(char **extensions_fixme) {
 
   int nb_predicates = irregular->nb_control + irregular->nb_exit;
 
-  OSL_malloc(irregular->iterators, char ***, sizeof(char **) * nb_predicates);
-  OSL_malloc(irregular->nb_iterators, int *, sizeof(int) * nb_predicates);
-  OSL_malloc(irregular->body, char **, sizeof(char *) * nb_predicates);
+  OSL_malloc(irregular->iterators, char***, sizeof(char**) * nb_predicates);
+  OSL_malloc(irregular->nb_iterators, int*, sizeof(int) * nb_predicates);
+  OSL_malloc(irregular->body, char**, sizeof(char*) * nb_predicates);
 
   for (i = 0; i < nb_predicates; i++) {
     // Get number of iterators
     tok = strtok(NULL, " \n");
     irregular->nb_iterators[i] = atoi(tok);
-    OSL_malloc(irregular->iterators[i], char **,
-               sizeof(char *) * irregular->nb_iterators[i]);
+    OSL_malloc(irregular->iterators[i], char**,
+               sizeof(char*) * irregular->nb_iterators[i]);
 
     // Get iterators
     for (j = 0; j < irregular->nb_iterators[i]; j++)
@@ -336,7 +340,7 @@ osl_irregular_t *osl_irregular_sread(char **extensions_fixme) {
  * \return A pointer to an empty irregular structure with fields set to
  *         default values.
  */
-osl_irregular_t *osl_irregular_malloc(void) {
+osl_irregular_t* osl_irregular_malloc(void) {
   osl_irregular_p irregular;
 
   OSL_malloc(irregular, osl_irregular_p, sizeof(osl_irregular_t));
@@ -358,14 +362,15 @@ osl_irregular_t *osl_irregular_malloc(void) {
  * structure.
  * \param irregular The pointer to the irregular structure we want to free.
  */
-void osl_irregular_free(osl_irregular_t *const irregular) {
+void osl_irregular_free(osl_irregular_t* const irregular) {
   int i, j, nb_predicates;
 
   if (irregular != NULL) {
     for (i = 0; i < irregular->nb_statements; i++)
       free(irregular->predicates[i]);
 
-    if (irregular->predicates != NULL) free(irregular->predicates);
+    if (irregular->predicates != NULL)
+      free(irregular->predicates);
 
     nb_predicates = irregular->nb_control + irregular->nb_exit;
     for (i = 0; i < nb_predicates; i++) {
@@ -374,10 +379,14 @@ void osl_irregular_free(osl_irregular_t *const irregular) {
       free(irregular->iterators[i]);
       free(irregular->body[i]);
     }
-    if (irregular->iterators != NULL) free(irregular->iterators);
-    if (irregular->nb_iterators != NULL) free(irregular->nb_iterators);
-    if (irregular->body != NULL) free(irregular->body);
-    if (irregular->nb_predicates != NULL) free(irregular->nb_predicates);
+    if (irregular->iterators != NULL)
+      free(irregular->iterators);
+    if (irregular->nb_iterators != NULL)
+      free(irregular->nb_iterators);
+    if (irregular->body != NULL)
+      free(irregular->body);
+    if (irregular->nb_predicates != NULL)
+      free(irregular->nb_predicates);
     free(irregular);
   }
 }
@@ -393,27 +402,28 @@ void osl_irregular_free(osl_irregular_t *const irregular) {
  * \param irregular The pointer to the irregular structure we want to copy.
  * \return A pointer to the copy of the irregular structure.
  */
-osl_irregular_t *osl_irregular_clone(const osl_irregular_t *irregular) {
+osl_irregular_t* osl_irregular_clone(const osl_irregular_t* irregular) {
   int i, j;
   osl_irregular_p copy;
 
-  if (irregular == NULL) return NULL;
+  if (irregular == NULL)
+    return NULL;
 
   copy = osl_irregular_malloc();
   copy->nb_statements = irregular->nb_statements;
-  copy->nb_predicates = (int *)malloc(sizeof(int) * copy->nb_statements);
+  copy->nb_predicates = (int*)malloc(sizeof(int) * copy->nb_statements);
   if (copy->nb_predicates == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  copy->predicates = (int **)malloc(sizeof(int *) * copy->nb_statements);
+  copy->predicates = (int**)malloc(sizeof(int*) * copy->nb_statements);
   if (copy->predicates == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   for (i = 0; i < copy->nb_statements; i++) {
     copy->nb_predicates[i] = irregular->nb_predicates[i];
-    copy->predicates[i] = (int *)malloc(sizeof(int) * copy->nb_predicates[i]);
+    copy->predicates[i] = (int*)malloc(sizeof(int) * copy->nb_predicates[i]);
     if (copy->predicates[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -425,25 +435,24 @@ osl_irregular_t *osl_irregular_clone(const osl_irregular_t *irregular) {
   copy->nb_control = irregular->nb_control;
   copy->nb_exit = irregular->nb_exit;
   int nb_predicates = irregular->nb_control + irregular->nb_exit;
-  copy->nb_iterators = (int *)malloc(sizeof(int) * nb_predicates);
+  copy->nb_iterators = (int*)malloc(sizeof(int) * nb_predicates);
   if (copy->nb_iterators == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  copy->iterators = (char ***)malloc(sizeof(char **) * nb_predicates);
+  copy->iterators = (char***)malloc(sizeof(char**) * nb_predicates);
   if (copy->iterators == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
-  copy->body = (char **)malloc(sizeof(char *) * nb_predicates);
+  copy->body = (char**)malloc(sizeof(char*) * nb_predicates);
   if (copy->body == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   for (i = 0; i < nb_predicates; i++) {
     copy->nb_iterators[i] = irregular->nb_iterators[i];
-    copy->iterators[i] =
-        (char **)malloc(sizeof(char *) * copy->nb_iterators[i]);
+    copy->iterators[i] = (char**)malloc(sizeof(char*) * copy->nb_iterators[i]);
     if (copy->iterators[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -464,10 +473,11 @@ osl_irregular_t *osl_irregular_clone(const osl_irregular_t *irregular) {
  * \param c2  The second irregular structure.
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
-bool osl_irregular_equal(const osl_irregular_t *const c1,
-                        const osl_irregular_t *const c2) {
+bool osl_irregular_equal(const osl_irregular_t* const c1,
+                         const osl_irregular_t* const c2) {
   int i, j, comp = 0;
-  if (c1 == c2) return 1;
+  if (c1 == c2)
+    return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL)))
     return 0;
@@ -480,7 +490,8 @@ bool osl_irregular_equal(const osl_irregular_t *const c1,
     comp = c1->nb_predicates[i] != c2->nb_predicates[i] ? 1 : 0;
     i++;
   }
-  if (comp != 0) return 0;
+  if (comp != 0)
+    return 0;
 
   i = 0;
   while (comp == 0 && i < c1->nb_control + c1->nb_exit) {
@@ -493,13 +504,14 @@ bool osl_irregular_equal(const osl_irregular_t *const c1,
     }
     i++;
   }
-  if (comp != 0) return 0;
+  if (comp != 0)
+    return 0;
   return 1;
 }
 
-osl_irregular_t *osl_irregular_add_control(
-    const osl_irregular_t *const irregular, char **iterators, int nb_iterators,
-    const char *body) {
+osl_irregular_t* osl_irregular_add_control(
+    const osl_irregular_t* const irregular, char** iterators, int nb_iterators,
+    const char* body) {
   int i, j;
   osl_irregular_p result = osl_irregular_malloc();
 
@@ -508,9 +520,9 @@ osl_irregular_t *osl_irregular_add_control(
   result->nb_statements = irregular->nb_statements;
   int nb_predicates = result->nb_control + result->nb_exit;
 
-  result->iterators = (char ***)malloc(sizeof(char **) * nb_predicates);
-  result->nb_iterators = (int *)malloc(sizeof(int) * nb_predicates);
-  result->body = (char **)malloc(sizeof(char *) * nb_predicates);
+  result->iterators = (char***)malloc(sizeof(char**) * nb_predicates);
+  result->nb_iterators = (int*)malloc(sizeof(int) * nb_predicates);
+  result->body = (char**)malloc(sizeof(char*) * nb_predicates);
   if (result->iterators == NULL || result->nb_iterators == NULL ||
       result->body == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
@@ -521,7 +533,7 @@ osl_irregular_t *osl_irregular_add_control(
     result->nb_iterators[i] = irregular->nb_iterators[i];
     OSL_strdup(result->body[i], irregular->body[i]);
     result->iterators[i] =
-        (char **)malloc(sizeof(char *) * irregular->nb_iterators[i]);
+        (char**)malloc(sizeof(char*) * irregular->nb_iterators[i]);
     if (result->iterators[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -531,7 +543,7 @@ osl_irregular_t *osl_irregular_add_control(
   }
   // add controls
   result->iterators[irregular->nb_control] =
-      (char **)malloc(sizeof(char *) * nb_iterators);
+      (char**)malloc(sizeof(char*) * nb_iterators);
   if (result->iterators[irregular->nb_control] == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
@@ -545,7 +557,7 @@ osl_irregular_t *osl_irregular_add_control(
     result->nb_iterators[i] = irregular->nb_iterators[i - 1];
     OSL_strdup(result->body[i], irregular->body[i - 1]);
     result->iterators[i] =
-        (char **)malloc(sizeof(char *) * irregular->nb_iterators[i - 1]);
+        (char**)malloc(sizeof(char*) * irregular->nb_iterators[i - 1]);
     if (result->iterators[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -554,15 +566,15 @@ osl_irregular_t *osl_irregular_add_control(
       OSL_strdup(result->iterators[i][j], irregular->iterators[i - 1][j]);
   }
   // copy statements
-  result->nb_predicates = (int *)malloc(sizeof(int) * irregular->nb_statements);
-  result->predicates = (int **)malloc(sizeof(int *) * irregular->nb_statements);
+  result->nb_predicates = (int*)malloc(sizeof(int) * irregular->nb_statements);
+  result->predicates = (int**)malloc(sizeof(int*) * irregular->nb_statements);
   if (result->nb_predicates == NULL || result->predicates == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   for (i = 0; i < irregular->nb_statements; i++) {
     result->predicates[i] =
-        (int *)malloc(sizeof(int) * irregular->nb_predicates[i]);
+        (int*)malloc(sizeof(int) * irregular->nb_predicates[i]);
     if (result->predicates[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -574,9 +586,9 @@ osl_irregular_t *osl_irregular_add_control(
   return result;
 }
 
-osl_irregular_p osl_irregular_add_exit(const osl_irregular_t *const irregular,
-                                       char **iterators, int nb_iterators,
-                                       const char *body) {
+osl_irregular_p osl_irregular_add_exit(const osl_irregular_t* const irregular,
+                                       char** iterators, int nb_iterators,
+                                       const char* body) {
   int i, j;
   osl_irregular_p result = osl_irregular_malloc();
 
@@ -585,9 +597,9 @@ osl_irregular_p osl_irregular_add_exit(const osl_irregular_t *const irregular,
   result->nb_statements = irregular->nb_statements;
   int nb_predicates = result->nb_control + result->nb_exit;
 
-  result->iterators = (char ***)malloc(sizeof(char **) * nb_predicates);
-  result->nb_iterators = (int *)malloc(sizeof(int) * nb_predicates);
-  result->body = (char **)malloc(sizeof(char *) * nb_predicates);
+  result->iterators = (char***)malloc(sizeof(char**) * nb_predicates);
+  result->nb_iterators = (int*)malloc(sizeof(int) * nb_predicates);
+  result->body = (char**)malloc(sizeof(char*) * nb_predicates);
   if (result->iterators == NULL || result->nb_iterators == NULL ||
       result->body == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
@@ -598,7 +610,7 @@ osl_irregular_p osl_irregular_add_exit(const osl_irregular_t *const irregular,
     result->nb_iterators[i] = irregular->nb_iterators[i];
     OSL_strdup(result->body[i], irregular->body[i]);
     result->iterators[i] =
-        (char **)malloc(sizeof(char *) * irregular->nb_iterators[i]);
+        (char**)malloc(sizeof(char*) * irregular->nb_iterators[i]);
     if (result->iterators[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -608,7 +620,7 @@ osl_irregular_p osl_irregular_add_exit(const osl_irregular_t *const irregular,
   }
   // add exit
   result->iterators[nb_predicates - 1] =
-      (char **)malloc(sizeof(char *) * nb_iterators);
+      (char**)malloc(sizeof(char*) * nb_iterators);
   if (result->iterators[nb_predicates - 1] == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
@@ -619,15 +631,15 @@ osl_irregular_p osl_irregular_add_exit(const osl_irregular_t *const irregular,
   result->nb_iterators[nb_predicates - 1] = nb_iterators;
   OSL_strdup(result->body[nb_predicates - 1], body);
   // copy statements
-  result->nb_predicates = (int *)malloc(sizeof(int) * irregular->nb_statements);
-  result->predicates = (int **)malloc(sizeof(int *) * irregular->nb_statements);
+  result->nb_predicates = (int*)malloc(sizeof(int) * irregular->nb_statements);
+  result->predicates = (int**)malloc(sizeof(int*) * irregular->nb_statements);
   if (result->nb_predicates == NULL || result->predicates == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   for (i = 0; i < irregular->nb_statements; i++) {
     result->predicates[i] =
-        (int *)malloc(sizeof(int) * irregular->nb_predicates[i]);
+        (int*)malloc(sizeof(int) * irregular->nb_predicates[i]);
     if (result->predicates[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -640,7 +652,7 @@ osl_irregular_p osl_irregular_add_exit(const osl_irregular_t *const irregular,
 }
 
 osl_irregular_p osl_irregular_add_predicates(
-    const osl_irregular_t *const irregular, const int *predicates,
+    const osl_irregular_t* const irregular, const int* predicates,
     int nb_add_predicates) {
   int i, j;
   osl_irregular_p result = osl_irregular_malloc();
@@ -650,9 +662,9 @@ osl_irregular_p osl_irregular_add_predicates(
   result->nb_statements = irregular->nb_statements + 1;
   int nb_predicates = result->nb_control + result->nb_exit;
 
-  result->iterators = (char ***)malloc(sizeof(char **) * nb_predicates);
-  result->nb_iterators = (int *)malloc(sizeof(int) * nb_predicates);
-  result->body = (char **)malloc(sizeof(char *) * nb_predicates);
+  result->iterators = (char***)malloc(sizeof(char**) * nb_predicates);
+  result->nb_iterators = (int*)malloc(sizeof(int) * nb_predicates);
+  result->body = (char**)malloc(sizeof(char*) * nb_predicates);
   if (result->iterators == NULL || result->nb_iterators == NULL ||
       result->body == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
@@ -663,7 +675,7 @@ osl_irregular_p osl_irregular_add_predicates(
     result->nb_iterators[i] = irregular->nb_iterators[i];
     OSL_strdup(result->body[i], irregular->body[i]);
     result->iterators[i] =
-        (char **)malloc(sizeof(char *) * irregular->nb_iterators[i]);
+        (char**)malloc(sizeof(char*) * irregular->nb_iterators[i]);
     if (result->iterators[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -672,15 +684,15 @@ osl_irregular_p osl_irregular_add_predicates(
       OSL_strdup(result->iterators[i][j], irregular->iterators[i][j]);
   }
   // copy statements
-  result->nb_predicates = (int *)malloc(sizeof(int) * result->nb_statements);
-  result->predicates = (int **)malloc(sizeof(int *) * result->nb_statements);
+  result->nb_predicates = (int*)malloc(sizeof(int) * result->nb_statements);
+  result->predicates = (int**)malloc(sizeof(int*) * result->nb_statements);
   if (result->nb_predicates == NULL || result->predicates == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
   }
   for (i = 0; i < irregular->nb_statements; i++) {
     result->predicates[i] =
-        (int *)malloc(sizeof(int) * irregular->nb_predicates[i]);
+        (int*)malloc(sizeof(int) * irregular->nb_predicates[i]);
     if (result->predicates[i] == NULL) {
       fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
       exit(1);
@@ -691,7 +703,7 @@ osl_irregular_p osl_irregular_add_predicates(
   }
   // add statement
   result->predicates[irregular->nb_statements] =
-      (int *)malloc(sizeof(int) * nb_add_predicates);
+      (int*)malloc(sizeof(int) * nb_add_predicates);
   if (result->predicates[irregular->nb_statements] == NULL) {
     fprintf(stderr, "[OpenScop] Error: memory overflow.\n");
     exit(1);
@@ -709,7 +721,7 @@ osl_irregular_p osl_irregular_add_predicates(
  * extension and returns it).
  * \return An interface structure for the irregular extension.
  */
-osl_interface_t *osl_irregular_interface(void) {
+osl_interface_t* osl_irregular_interface(void) {
   osl_interface_p interface = osl_interface_malloc();
 
   OSL_strdup(interface->URI, OSL_URI_IRREGULAR);

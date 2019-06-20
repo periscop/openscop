@@ -88,7 +88,8 @@ void osl_scatnames_idump(FILE* const file,
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (scatnames != NULL)
     fprintf(file, "+-- osl_scatnames_t\n");
@@ -97,7 +98,8 @@ void osl_scatnames_idump(FILE* const file,
 
   if (scatnames != NULL) {
     // Go to the right level.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Display the list of scattering names.
@@ -105,7 +107,8 @@ void osl_scatnames_idump(FILE* const file,
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -214,7 +217,8 @@ void osl_scatnames_free(osl_scatnames_t* scatnames) {
 osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t* const scatnames) {
   osl_scatnames_p clone;
 
-  if (scatnames == NULL) return NULL;
+  if (scatnames == NULL)
+    return NULL;
 
   clone = osl_scatnames_malloc();
   clone->names = osl_strings_clone(scatnames->names);
@@ -231,13 +235,15 @@ osl_scatnames_t* osl_scatnames_clone(const osl_scatnames_t* const scatnames) {
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
 bool osl_scatnames_equal(const osl_scatnames_t* const s1,
-                        const osl_scatnames_t* const s2) {
-  if (s1 == s2) return 1;
+                         const osl_scatnames_t* const s2) {
+  if (s1 == s2)
+    return 1;
 
   if (((s1 == NULL) && (s2 != NULL)) || ((s1 != NULL) && (s2 == NULL)))
     return 0;
 
-  if (!osl_strings_equal(s1->names, s2->names)) return 0;
+  if (!osl_strings_equal(s1->names, s2->names))
+    return 0;
 
   return 1;
 }

@@ -63,6 +63,7 @@
 #include <string.h>
 
 #include <osl/body.h>
+#include <osl/extensions/annotation.h>
 #include <osl/extensions/arrays.h>
 #include <osl/extensions/clay.h>
 #include <osl/extensions/comment.h>
@@ -73,11 +74,10 @@
 #include <osl/extensions/loop.h>
 #include <osl/extensions/null.h>
 #include <osl/extensions/pluto_unroll.h>
+#include <osl/extensions/region.h>
 #include <osl/extensions/scatnames.h>
 #include <osl/extensions/symbols.h>
 #include <osl/extensions/textual.h>
-#include <osl/extensions/region.h>
-#include <osl/extensions/annotation.h>
 #include <osl/interface.h>
 #include <osl/relation.h>
 #include <osl/strings.h>
@@ -101,7 +101,8 @@ void osl_interface_idump(FILE* const file, const osl_interface_t* interface,
   int j, first = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (interface != NULL)
     fprintf(file, "+-- osl_interface_t: URI = %s\n", interface->URI);
@@ -111,7 +112,8 @@ void osl_interface_idump(FILE* const file, const osl_interface_t* interface,
   while (interface != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
 
       if (interface->URI != NULL)
         fprintf(file, "|   osl_interface_t: URI = %s\n", interface->URI);
@@ -124,15 +126,18 @@ void osl_interface_idump(FILE* const file, const osl_interface_t* interface,
 
     // Next line.
     if (interface != NULL) {
-      for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level + 1; j++)
+        fprintf(file, "|\t");
       fprintf(file, "\n");
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -180,7 +185,8 @@ void osl_interface_add(osl_interface_t** list, osl_interface_t* interface) {
     }
 
     if (*list != NULL) {
-      while (tmp->next != NULL) tmp = tmp->next;
+      while (tmp->next != NULL)
+        tmp = tmp->next;
       tmp->next = interface;
     } else {
       *list = interface;
@@ -225,7 +231,8 @@ void osl_interface_free(osl_interface_t* interface) {
 
   while (interface != NULL) {
     tmp = interface->next;
-    if (interface->URI != NULL) free(interface->URI);
+    if (interface->URI != NULL)
+      free(interface->URI);
     free(interface);
     interface = tmp;
     i++;
@@ -304,8 +311,9 @@ osl_interface_t* osl_interface_clone(const osl_interface_t* const interface) {
  * \return 1 if interface1 and interface2 are the same, 0 otherwise.
  */
 bool osl_interface_equal(const osl_interface_t* const interface1,
-                        const osl_interface_t* const interface2) {
-  if (interface1 == interface2) return 1;
+                         const osl_interface_t* const interface2) {
+  if (interface1 == interface2)
+    return 1;
 
   if (((interface1 == NULL) && (interface2 != NULL)) ||
       ((interface1 != NULL) && (interface2 == NULL)))
@@ -338,7 +346,8 @@ osl_interface_t* osl_interface_lookup(osl_interface_t* list, const char* URI) {
     OSL_warning("lookup for a NULL URI");
   } else {
     while (list != NULL) {
-      if ((list->URI != NULL) && (!strcmp(list->URI, URI))) return list;
+      if ((list->URI != NULL) && (!strcmp(list->URI, URI)))
+        return list;
 
       list = list->next;
     }

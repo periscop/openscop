@@ -89,10 +89,12 @@ int osl_region_text_append(osl_region_text_t* text, int line_type, char* line) {
   const size_t count = text->count + 1;
 
   char** lines = realloc(text->lines, count * sizeof *lines);
-  if (!lines) return 1;
+  if (!lines)
+    return 1;
 
   int* types = realloc(text->types, count * sizeof *types);
-  if (!types) return 1;
+  if (!types)
+    return 1;
 
   text->lines = lines;
   text->types = types;
@@ -126,7 +128,8 @@ void osl_region_text_init(osl_region_text_t* text) {
 void osl_region_text_clean(osl_region_text_t* text) {
   if (text->lines) {
     for (size_t i = 0; i < text->count; ++i) {
-      if (text->lines[i]) free(text->lines[i]);
+      if (text->lines[i])
+        free(text->lines[i]);
     }
     free(text->lines);
   }
@@ -137,7 +140,8 @@ void osl_region_text_clean(osl_region_text_t* text) {
 
 bool osl_region_text_equal(const osl_region_text_t* t1,
                            const osl_region_text_t* t2) {
-  if (t1 == t2) return true;
+  if (t1 == t2)
+    return true;
 
   if ((t1 && !t2) || (!t1 && t2) || (t1->count != t2->count)) {
     return false;
@@ -164,12 +168,12 @@ void osl_region_append_suffix(osl_region_t* region, int suffix_type,
 }
 
 void osl_region_append_prelude(osl_region_t* region, int prelude_type,
-                              char* prelude) {
+                               char* prelude) {
   osl_region_text_append(&region->prelude, prelude_type, prelude);
 }
 
 void osl_region_append_postlude(osl_region_t* region, int postlude_type,
-                              char* postlude) {
+                                char* postlude) {
   osl_region_text_append(&region->postlude, postlude_type, postlude);
 }
 
@@ -294,7 +298,8 @@ osl_region_t* osl_region_sread(char** input) {
   }
 
   const int count = osl_util_read_int(NULL, input);
-  if (!count) return NULL;
+  if (!count)
+    return NULL;
 
   osl_region_t* const output = osl_region_malloc();
   osl_region_t* current = output;
@@ -383,7 +388,8 @@ osl_region_t* osl_region_clone_one(const osl_region_t* source) {
 }
 
 osl_region_t* osl_region_clone(const osl_region_t* source) {
-  if (!source) return NULL;
+  if (!source)
+    return NULL;
 
   /* Clone the first region. */
   osl_region_t* const clone = osl_region_clone_one(source);
@@ -401,9 +407,11 @@ osl_region_t* osl_region_clone(const osl_region_t* source) {
 }
 
 bool osl_region_equal_one(const osl_region_t* r1, const osl_region_t* r2) {
-  if (r1 == r2) return 1;
+  if (r1 == r2)
+    return 1;
 
-  if ((!r1 && r2) || (r1 && !r2)) return 0;
+  if ((!r1 && r2) || (r1 && !r2))
+    return 0;
 
   /* Both r1 and r2 are non null pointers at this point. */
   bool equal = r1->location == r2->location &&

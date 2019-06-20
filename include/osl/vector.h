@@ -104,10 +104,14 @@ void osl_vector_free(osl_vector_t*);
  *                            Processing functions                            *
  ******************************************************************************/
 
-osl_vector_t* osl_vector_add_scalar(const osl_vector_t*, int) OSL_WARN_UNUSED_RESULT;
-osl_vector_t* osl_vector_mul_scalar(const osl_vector_t*, int) OSL_WARN_UNUSED_RESULT;
-osl_vector_t* osl_vector_add(const osl_vector_t*, const osl_vector_t*) OSL_WARN_UNUSED_RESULT;
-osl_vector_t* osl_vector_sub(const osl_vector_t*, const osl_vector_t*) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_add_scalar(const osl_vector_t*,
+                                    int) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_mul_scalar(const osl_vector_t*,
+                                    int) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_add(const osl_vector_t*,
+                             const osl_vector_t*) OSL_WARN_UNUSED_RESULT;
+osl_vector_t* osl_vector_sub(const osl_vector_t*,
+                             const osl_vector_t*) OSL_WARN_UNUSED_RESULT;
 void osl_vector_tag_inequality(osl_vector_t*);
 void osl_vector_tag_equality(osl_vector_t*);
 int osl_vector_equal(const osl_vector_t*, const osl_vector_t*);

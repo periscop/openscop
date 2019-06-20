@@ -59,15 +59,14 @@
 #ifndef OSL_ANNOTATION_H
 #define OSL_ANNOTATION_H
 
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include <osl/attributes.h>
 #include <osl/strings.h>
 
 #if defined(__cplusplus)
-extern "C"
-{
+extern "C" {
 #endif
 
 /* URI */
@@ -105,8 +104,8 @@ typedef struct osl_annotation osl_annotation_t;
  * Structure display functions                                                *
  ******************************************************************************/
 
-void osl_annotation_idump(FILE* file, const osl_annotation_t* annotation, int level)
-    OSL_NONNULL_ARGS(1);
+void osl_annotation_idump(FILE* file, const osl_annotation_t* annotation,
+                          int level) OSL_NONNULL_ARGS(1);
 void osl_annotation_dump(FILE* file, const osl_annotation_t* annotation)
     OSL_NONNULL_ARGS(1);
 char* osl_annotation_sprint(const osl_annotation_t* annotation);
@@ -131,14 +130,15 @@ void osl_annotation_free(osl_annotation_t* annotation);
 osl_annotation_t* osl_annotation_clone(const osl_annotation_t* annotation)
     OSL_WARN_UNUSED_RESULT;
 
-bool osl_annotation_equal(const osl_annotation_t* a1, const osl_annotation_t* a2);
+bool osl_annotation_equal(const osl_annotation_t* a1,
+                          const osl_annotation_t* a2);
 
 osl_interface_t* osl_annotation_interface(void) OSL_WARN_UNUSED_RESULT;
 
 void osl_annotation_append_prefix(osl_annotation_t* annotation, int prefix_type,
-                              char* prefix);
+                                  char* prefix);
 void osl_annotation_append_suffix(osl_annotation_t* annotation, int suffix_type,
-                              char* suffix);
+                                  char* suffix);
 
 #if defined(__cplusplus)
 }

@@ -133,22 +133,21 @@ void osl_strings_add_strings(osl_strings_t**, const osl_strings_t*,
 #include <string>
 #include <vector>
 
-namespace osl
-{
-  /**
-   * @brief Convert osl_strings to std::vector<std::string>
-   * @param[in] s An osl_strings
-   * @return the std::vector<std::string>
-   */
-  inline
-  std::vector<std::string> osl_strings_to_cpp(osl_const_strings_const_p s) {
-    if (s != nullptr && s->string != nullptr) {
-      return std::vector<std::string>(s->string,
-                                      s->string + osl_strings_size(s));
-    }
-    else { return std::vector<std::string>(); }
+namespace osl {
+/**
+ * @brief Convert osl_strings to std::vector<std::string>
+ * @param[in] s An osl_strings
+ * @return the std::vector<std::string>
+ */
+inline std::vector<std::string> osl_strings_to_cpp(
+    osl_const_strings_const_p s) {
+  if (s != nullptr && s->string != nullptr) {
+    return std::vector<std::string>(s->string, s->string + osl_strings_size(s));
+  } else {
+    return std::vector<std::string>();
   }
 }
+}  // namespace osl
 #endif
 
 #endif /* define OSL_STRINGS_H */

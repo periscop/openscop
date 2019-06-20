@@ -97,7 +97,8 @@ void osl_statement_idump(FILE* const file, const osl_statement_t* statement,
   int j, first = 1, number = 1;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (statement != NULL)
     fprintf(file, "+-- osl_statement_t (S%d)\n", number);
@@ -107,13 +108,15 @@ void osl_statement_idump(FILE* const file, const osl_statement_t* statement,
   while (statement != NULL) {
     if (!first) {
       // Go to the right level.
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|   osl_statement_t (S%d)\n", number);
     } else
       first = 0;
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print the domain of the statement.
@@ -133,13 +136,15 @@ void osl_statement_idump(FILE* const file, const osl_statement_t* statement,
 
     // Next line.
     if (statement != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -217,8 +222,10 @@ void osl_statement_pprint(FILE* const file, const osl_statement_t* statement,
 
     fprintf(file, "# Number of relations describing the statement:\n");
 
-    if (statement->domain != NULL) nb_relations++;
-    if (statement->scattering != NULL) nb_relations++;
+    if (statement->domain != NULL)
+      nb_relations++;
+    if (statement->scattering != NULL)
+      nb_relations++;
     nb_relations += osl_relation_list_count(statement->access);
 
     fprintf(file, "%lu\n\n", nb_relations);
@@ -243,7 +250,8 @@ void osl_statement_pprint(FILE* const file, const osl_statement_t* statement,
     fprintf(file, "# Number of Statement Extensions\n");
     nb_ext = osl_generic_number(statement->extension);
     fprintf(file, "%d\n", nb_ext);
-    if (nb_ext > 0) osl_generic_print(file, statement->extension);
+    if (nb_ext > 0)
+      osl_generic_print(file, statement->extension);
 
     fprintf(file, "\n");
 
@@ -380,7 +388,8 @@ void osl_statement_dispatch(osl_statement_t* stmt, osl_relation_list_t* list) {
   // Domain.
   domain_list = osl_relation_list_filter(list, OSL_TYPE_DOMAIN);
   nb_domains = osl_relation_list_count(domain_list);
-  if (nb_domains > 1) OSL_error("more than one domain for a statement");
+  if (nb_domains > 1)
+    OSL_error("more than one domain for a statement");
 
   if (domain_list != NULL) {
     stmt->domain = domain_list->elt;
@@ -523,7 +532,8 @@ void osl_statement_free(osl_statement_t* statement) {
  * \param[in]     statement The statement to add to the list.
  */
 void osl_statement_add(osl_statement_t** location, osl_statement_t* statement) {
-  while (*location != NULL) location = &((*location)->next);
+  while (*location != NULL)
+    location = &((*location)->next);
 
   *location = statement;
 }
@@ -595,7 +605,8 @@ osl_statement_t* osl_statement_clone(const osl_statement_t* const statement) {
 /// Clone first part of the union, return NULL if input is NULL.
 osl_relation_t* osl_relation_clone_one_safe(
     const osl_relation_t* const relation) {
-  if (relation == NULL) return NULL;
+  if (relation == NULL)
+    return NULL;
   return osl_relation_nclone(relation, 1);
 }
 
@@ -614,7 +625,8 @@ osl_statement_t* osl_statement_remove_unions(
     const osl_statement_t* const statement) {
   osl_relation_p domain, scattering;
   osl_statement_p statement_ptr = NULL, result;
-  if (!statement) return NULL;
+  if (!statement)
+    return NULL;
 
   // Make at least one new statement, even if there are no relations.
   domain = statement->domain;
@@ -634,10 +646,12 @@ osl_statement_t* osl_statement_remove_unions(
         statement_ptr->next = new_statement;
         statement_ptr = statement_ptr->next;
       }
-      if (scattering == NULL || scattering->next == NULL) break;
+      if (scattering == NULL || scattering->next == NULL)
+        break;
       scattering = scattering->next;
     } while (1);
-    if (domain == NULL || domain->next == NULL) break;
+    if (domain == NULL || domain->next == NULL)
+      break;
     domain = domain->next;
   } while (1);
 
@@ -654,7 +668,8 @@ osl_statement_t* osl_statement_remove_unions(
  */
 int osl_statement_equal(const osl_statement_t* const s1,
                         const osl_statement_t* const s2) {
-  if (s1 == s2) return 1;
+  if (s1 == s2)
+    return 1;
 
   if (((s1->next != NULL) && (s2->next == NULL)) ||
       ((s1->next == NULL) && (s2->next != NULL))) {
@@ -831,9 +846,11 @@ osl_body_t* osl_statement_get_body(const osl_statement_t* const statement) {
   }
 
   body = (osl_body_p)osl_generic_lookup(statement->extension, OSL_URI_BODY);
-  if (body != NULL) return body;
+  if (body != NULL)
+    return body;
   ebody =
       (osl_extbody_p)osl_generic_lookup(statement->extension, OSL_URI_EXTBODY);
-  if (ebody != NULL) return ebody->body;
+  if (ebody != NULL)
+    return ebody->body;
   return NULL;
 }

@@ -90,7 +90,8 @@ void osl_textual_idump(FILE* const file, const osl_textual_t* const textual,
   char* tmp;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (textual != NULL) {
     fprintf(file, "+-- osl_textual_t: ");
@@ -98,10 +99,12 @@ void osl_textual_idump(FILE* const file, const osl_textual_t* const textual,
     // Display the textual message (without any carriage return).
     OSL_strdup(tmp, textual->textual);
     for (j = 0; j < (int)strlen(tmp); j++)
-      if (tmp[j] == '\n') tmp[j] = ' ';
+      if (tmp[j] == '\n')
+        tmp[j] = ' ';
 
     if (strlen(tmp) > 40) {
-      for (j = 0; j < 20; j++) fprintf(file, "%c", tmp[j]);
+      for (j = 0; j < 20; j++)
+        fprintf(file, "%c", tmp[j]);
       fprintf(file, "   ...   ");
       for (j = (int)strlen(tmp) - 20; j < (int)strlen(tmp); j++)
         fprintf(file, "%c", tmp[j]);
@@ -115,7 +118,8 @@ void osl_textual_idump(FILE* const file, const osl_textual_t* const textual,
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -224,7 +228,8 @@ osl_textual_t* osl_textual_malloc(void) {
  */
 void osl_textual_free(osl_textual_t* textual) {
   if (textual != NULL) {
-    if (textual->textual != NULL) free(textual->textual);
+    if (textual->textual != NULL)
+      free(textual->textual);
     free(textual);
   }
 }
@@ -243,7 +248,8 @@ void osl_textual_free(osl_textual_t* textual) {
 osl_textual_t* osl_textual_clone(const osl_textual_t* textual) {
   osl_textual_p clone;
 
-  if (textual == NULL) return NULL;
+  if (textual == NULL)
+    return NULL;
 
   clone = osl_textual_malloc();
   OSL_strdup(clone->textual, textual->textual);

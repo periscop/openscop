@@ -100,7 +100,8 @@ char* osl_body_sprint(const osl_body_t*) OSL_WARN_UNUSED_RESULT;
 void osl_body_print(FILE*, const osl_body_t*) OSL_NONNULL_ARGS(1);
 
 // SCoPLib Compatibility
-void osl_body_print_scoplib(FILE* file, const osl_body_t* body) OSL_NONNULL_ARGS(1);
+void osl_body_print_scoplib(FILE* file, const osl_body_t* body)
+    OSL_NONNULL_ARGS(1);
 
 /******************************************************************************
  *                              Reading function                              *

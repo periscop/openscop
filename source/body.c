@@ -5,7 +5,7 @@
  **--------------------------------------------------------------------------**
  **                        First version: 25/06/2011                         **
  ******************************************************************************/
- 
+
 /******************************************************************************
  * OpenScop: Structures and formats for polyhedral tools to talk together     *
  ******************************************************************************
@@ -86,13 +86,15 @@ void osl_body_idump(FILE* const file, const osl_body_t* const body, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (body != NULL) {
     fprintf(file, "+-- osl_body_t\n");
 
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print the iterators
@@ -105,7 +107,8 @@ void osl_body_idump(FILE* const file, const osl_body_t* const body, int level) {
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -330,7 +333,8 @@ osl_body_t* osl_body_clone(const osl_body_t* body) {
  * \return 1 if b1 and b2 are the same (content-wise), 0 otherwise.
  */
 bool osl_body_equal(const osl_body_t* const b1, const osl_body_t* const b2) {
-  if (b1 == b2) return 1;
+  if (b1 == b2)
+    return 1;
 
   if (((b1 != NULL) && (b2 == NULL)) || ((b1 == NULL) && (b2 != NULL))) {
     OSL_info("bodies are not the same");

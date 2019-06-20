@@ -59,7 +59,7 @@
  ******************************************************************************/
 
 #ifndef OSL_OSL_H
-# define OSL_OSL_H
+#define OSL_OSL_H
 
 /* List of reserved OpenScop URIs:
  * - arrays
@@ -86,33 +86,32 @@
  * - vector
  */
 
-# include <osl/macros.h>
-# include <osl/int.h>
-# include <osl/util.h>
-# include <osl/strings.h>
-# include <osl/body.h>
-# include <osl/vector.h>
-# include <osl/relation.h>
-# include <osl/relation_list.h>
-# include <osl/interface.h>
+#include <osl/body.h>
+#include <osl/int.h>
+#include <osl/interface.h>
+#include <osl/macros.h>
+#include <osl/relation.h>
+#include <osl/relation_list.h>
+#include <osl/strings.h>
+#include <osl/util.h>
+#include <osl/vector.h>
 
-# include <osl/extensions/textual.h>
-# include <osl/extensions/comment.h>
-# include <osl/extensions/null.h>
-# include <osl/extensions/clay.h>
-# include <osl/extensions/scatnames.h>
-# include <osl/extensions/arrays.h>
-# include <osl/extensions/coordinates.h>
-# include <osl/extensions/irregular.h>
-# include <osl/extensions/symbols.h>
-# include <osl/extensions/dependence.h>
-# include <osl/extensions/extbody.h>
-# include <osl/extensions/loop.h>
-# include <osl/extensions/pluto_unroll.h>
+#include <osl/extensions/arrays.h>
+#include <osl/extensions/clay.h>
+#include <osl/extensions/comment.h>
+#include <osl/extensions/coordinates.h>
+#include <osl/extensions/dependence.h>
+#include <osl/extensions/extbody.h>
+#include <osl/extensions/irregular.h>
+#include <osl/extensions/loop.h>
+#include <osl/extensions/null.h>
+#include <osl/extensions/pluto_unroll.h>
+#include <osl/extensions/scatnames.h>
+#include <osl/extensions/symbols.h>
+#include <osl/extensions/textual.h>
 
-# include <osl/generic.h>
-# include <osl/statement.h>
-# include <osl/scop.h>
-
+#include <osl/generic.h>
+#include <osl/scop.h>
+#include <osl/statement.h>
 
 #endif /* define OSL_OSL_H */

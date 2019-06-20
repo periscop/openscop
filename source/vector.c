@@ -86,16 +86,19 @@ void osl_vector_idump(FILE* const file, const osl_vector_t* vector, int level) {
 
   if (vector != NULL) {
     // Go to the right level.
-    for (j = 0; j < level; j++) fprintf(file, "|\t");
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+-- osl_vector_t (");
     osl_int_dump_precision(file, vector->precision);
     fprintf(file, ")\n");
 
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "%d\n", vector->size);
 
     // Display the vector.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     fprintf(file, "[ ");
 
@@ -107,12 +110,14 @@ void osl_vector_idump(FILE* const file, const osl_vector_t* vector, int level) {
     fprintf(file, "]\n");
   } else {
     // Go to the right level.
-    for (j = 0; j < level; j++) fprintf(file, "|\t");
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+-- NULL vector\n");
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -151,7 +156,8 @@ osl_vector_t* osl_vector_pmalloc(int precision, int size) {
     vector->v = NULL;
   } else {
     OSL_malloc(vector->v, osl_int_t*, (size_t)size * sizeof(osl_int_t));
-    for (i = 0; i < size; i++) osl_int_init_set_si(precision, &vector->v[i], 0);
+    for (i = 0; i < size; i++)
+      osl_int_init_set_si(precision, &vector->v[i], 0);
   }
   return vector;
 }
@@ -310,12 +316,15 @@ int osl_vector_equal(const osl_vector_t* const v1,
                      const osl_vector_t* const v2) {
   int i;
 
-  if (v1 == v2) return 1;
+  if (v1 == v2)
+    return 1;
 
-  if ((v1->size != v2->size) || (v1->precision != v2->precision)) return 0;
+  if ((v1->size != v2->size) || (v1->precision != v2->precision))
+    return 0;
 
   for (i = 0; i < v1->size; i++)
-    if (osl_int_ne(v1->precision, v1->v[i], v2->v[i])) return 0;
+    if (osl_int_ne(v1->precision, v1->v[i], v2->v[i]))
+      return 0;
 
   return 1;
 }
@@ -348,9 +357,11 @@ osl_vector_t* osl_vector_mul_scalar(const osl_vector_t* const v, int scalar) {
 int osl_vector_is_scalar(const osl_vector_t* vector) {
   int i;
 
-  if (vector == NULL) return 0;
+  if (vector == NULL)
+    return 0;
 
   for (i = 0; i < vector->size - 1; i++)
-    if (!osl_int_zero(vector->precision, vector->v[i])) return 0;
+    if (!osl_int_zero(vector->precision, vector->v[i]))
+      return 0;
   return 1;
 }

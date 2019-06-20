@@ -94,27 +94,32 @@ void osl_dependence_idump(FILE* const file, const osl_dependence_t* dependence,
   osl_statement_p tmp;
 
   if (dependence != NULL) { /* Go to the right level. */
-    for (j = 0; j < level; j++) fprintf(file, "|\t");
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+-- osl_dependence_p\n");
   } else {
-    for (j = 0; j < level; j++) fprintf(file, "|\t");
+    for (j = 0; j < level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "+-- NULL dependence\n");
   }
 
   while (dependence != NULL) {
     if (!first) { /* Go to the right level. */
-      for (j = 0; j < level; j++) fprintf(file, "|\t");
+      for (j = 0; j < level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "|   osl_dependence_p\n");
     } else {
       first = 0;
     }
 
     /* A blank line. */
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     /* Go to the right level and print the type. */
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "Type: ");
     switch (dependence->type) {
       case OSL_UNDEFINED:
@@ -141,28 +146,34 @@ void osl_dependence_idump(FILE* const file, const osl_dependence_t* dependence,
     }
 
     /* A blank line. */
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     /* Go to the right level and print the depth. */
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "Depth: %d\n", dependence->depth);
 
     /* A blank line. */
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     /* Ref source and target */
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "Ref source: %d, Ref target: %d\n", dependence->ref_source,
             dependence->ref_target);
 
     /* A blank line. */
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     /* Print the source statement. */
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "Statement label: %d\n", dependence->label_source);
     tmp = dependence->stmt_source_ptr->next;
     dependence->stmt_source_ptr->next = NULL;
@@ -170,7 +181,8 @@ void osl_dependence_idump(FILE* const file, const osl_dependence_t* dependence,
     dependence->stmt_source_ptr->next = tmp;
 
     /* Print the target statement. */
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "Target label: %d\n", dependence->label_target);
     tmp = dependence->stmt_target_ptr->next;
     dependence->stmt_target_ptr->next = NULL;
@@ -178,7 +190,8 @@ void osl_dependence_idump(FILE* const file, const osl_dependence_t* dependence,
     dependence->stmt_target_ptr->next = tmp;
 
     /* Print the dependence polyhedron. */
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
     fprintf(file, "%d %d %d %d %d %d %d %d\n",
             dependence->source_nb_output_dims_domain,
             dependence->source_nb_output_dims_access,
@@ -194,13 +207,15 @@ void osl_dependence_idump(FILE* const file, const osl_dependence_t* dependence,
 
     /* Next line. */
     if (dependence != NULL) {
-      for (j = 0; j <= level; j++) fprintf(file, "|\t");
+      for (j = 0; j <= level; j++)
+        fprintf(file, "|\t");
       fprintf(file, "V\n");
     }
   }
 
   /* The last line. */
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -516,17 +531,20 @@ osl_dependence_t* osl_dependence_clone(const osl_dependence_t* const dep) {
  * \return 1 if d1 and d2 are the same (content-wise), 0 otherwise.
  */
 bool osl_dependence_equal(const osl_dependence_t* d1,
-                         const osl_dependence_t* d2) {
-  if (d1 == d2) return 1;
+                          const osl_dependence_t* d2) {
+  if (d1 == d2)
+    return 1;
 
   if ((d1->next != NULL && d2->next == NULL) ||
       (d1->next == NULL && d2->next != NULL))
     return 0;
 
   if (d1->next != NULL && d2->next != NULL)
-    if (!osl_dependence_equal(d1->next, d2->next)) return 0;
+    if (!osl_dependence_equal(d1->next, d2->next))
+      return 0;
 
-  if (!osl_relation_equal(d1->domain, d2->domain)) return 0;
+  if (!osl_relation_equal(d1->domain, d2->domain))
+    return 0;
 
   if (d1->label_source != d2->label_source ||
       d1->label_target != d2->label_target ||
@@ -573,7 +591,8 @@ void osl_dependence_add(osl_dependence_t** start, osl_dependence_t** now,
       *now = (*now)->next;
     }
 
-    while ((*now)->next != NULL) *now = (*now)->next;
+    while ((*now)->next != NULL)
+      *now = (*now)->next;
   }
 }
 

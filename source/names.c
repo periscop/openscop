@@ -84,7 +84,8 @@ void osl_names_idump(FILE* const file, const osl_names_t* names, int level) {
   int j;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (names != NULL)
     fprintf(file, "+-- osl_names_t\n");
@@ -93,7 +94,8 @@ void osl_names_idump(FILE* const file, const osl_names_t* names, int level) {
 
   if (names != NULL) {
     // A blank line.
-    for (j = 0; j <= level + 1; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level + 1; j++)
+      fprintf(file, "|\t");
     fprintf(file, "\n");
 
     // Print the various names.
@@ -105,7 +107,8 @@ void osl_names_idump(FILE* const file, const osl_names_t* names, int level) {
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 

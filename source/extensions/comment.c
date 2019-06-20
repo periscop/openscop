@@ -89,7 +89,8 @@ void osl_comment_idump(FILE* const file, const osl_comment_t* const comment,
   char* tmp;
 
   // Go to the right level.
-  for (j = 0; j < level; j++) fprintf(file, "|\t");
+  for (j = 0; j < level; j++)
+    fprintf(file, "|\t");
 
   if (comment != NULL)
     fprintf(file, "+-- osl_comment_t\n");
@@ -98,18 +99,21 @@ void osl_comment_idump(FILE* const file, const osl_comment_t* const comment,
 
   if (comment != NULL) {
     // Go to the right level.
-    for (j = 0; j <= level; j++) fprintf(file, "|\t");
+    for (j = 0; j <= level; j++)
+      fprintf(file, "|\t");
 
     // Display the comment message (without any carriage return).
     OSL_strdup(tmp, comment->comment);
     for (l = 0; l < strlen(tmp); l++)
-      if (tmp[l] == '\n') tmp[l] = ' ';
+      if (tmp[l] == '\n')
+        tmp[l] = ' ';
     fprintf(file, "comment: %s\n", tmp);
     free(tmp);
   }
 
   // The last line.
-  for (j = 0; j <= level; j++) fprintf(file, "|\t");
+  for (j = 0; j <= level; j++)
+    fprintf(file, "|\t");
   fprintf(file, "\n");
 }
 
@@ -173,7 +177,8 @@ osl_comment_t* osl_comment_sread(char** input) {
     return NULL;
   }
 
-  if (strlen(*input) > OSL_MAX_STRING) OSL_error("comment too long");
+  if (strlen(*input) > OSL_MAX_STRING)
+    OSL_error("comment too long");
 
   // Build the comment structure
   comment = osl_comment_malloc();
@@ -214,7 +219,8 @@ osl_comment_t* osl_comment_malloc(void) {
  */
 void osl_comment_free(osl_comment_t* comment) {
   if (comment != NULL) {
-    if (comment->comment != NULL) free(comment->comment);
+    if (comment->comment != NULL)
+      free(comment->comment);
     free(comment);
   }
 }
@@ -233,7 +239,8 @@ void osl_comment_free(osl_comment_t* comment) {
 osl_comment_t* osl_comment_clone(const osl_comment_t* const comment) {
   osl_comment_p clone;
 
-  if (comment == NULL) return NULL;
+  if (comment == NULL)
+    return NULL;
 
   clone = osl_comment_malloc();
   OSL_strdup(clone->comment, comment->comment);
@@ -250,8 +257,9 @@ osl_comment_t* osl_comment_clone(const osl_comment_t* const comment) {
  * \return 1 if c1 and c2 are the same (content-wise), 0 otherwise.
  */
 bool osl_comment_equal(const osl_comment_t* const c1,
-                      const osl_comment_t* const c2) {
-  if (c1 == c2) return 1;
+                       const osl_comment_t* const c2) {
+  if (c1 == c2)
+    return 1;
 
   if (((c1 == NULL) && (c2 != NULL)) || ((c1 != NULL) && (c2 == NULL))) {
     OSL_info("comments are not the same");
