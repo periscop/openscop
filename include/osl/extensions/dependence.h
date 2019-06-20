@@ -1,64 +1,62 @@
+/******************************************************************************
+ **                            OpenScop Library                              **
+ **--------------------------------------------------------------------------**
+ **                         extensions/dependence.h                          **
+ **--------------------------------------------------------------------------**
+ **                        First version: 02/07/2012                         **
+ ******************************************************************************/
 
-    /*+-----------------------------------------------------------------**
-     **                       OpenScop Library                          **
-     **-----------------------------------------------------------------**
-     **                      extensions/dependence.h                    **
-     **-----------------------------------------------------------------**
-     **                   First version: 02/07/2012                     **
-     **-----------------------------------------------------------------**
-
- 
- *****************************************************************************
- * OpenScop: Structures and formats for polyhedral tools to talk together    *
- *****************************************************************************
- *    ,___,,_,__,,__,,__,,__,,_,__,,_,__,,__,,___,_,__,,_,__,                *
- *    /   / /  //  //  //  // /   / /  //  //   / /  // /  /|,_,             *
- *   /   / /  //  //  //  // /   / /  //  //   / /  // /  / / /\             *
- *  |~~~|~|~~~|~~~|~~~|~~~|~|~~~|~|~~~|~~~|~~~|~|~~~|~|~~~|/_/  \            *
- *  | G |C| P | = | L | P |=| = |C| = | = | = |=| = |=| C |\  \ /\           *
- *  | R |l| o | = | e | l |=| = |a| = | = | = |=| = |=| L | \# \ /\          *
- *  | A |a| l | = | t | u |=| = |n| = | = | = |=| = |=| o | |\# \  \         *
- *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \        *
- *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \       *
- *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \      *
- *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \     *
- *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \    *
- *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \   *
- *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /   *
- *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'    *
- *                                                                           *
- * Copyright (C) 2008 University Paris-Sud 11 and INRIA                      *
- *                                                                           *
- * (3-clause BSD license)                                                    *
- * Redistribution and use in source  and binary forms, with or without       *
- * modification, are permitted provided that the following conditions        *
- * are met:                                                                  *
- *                                                                           *
- * 1. Redistributions of source code must retain the above copyright notice, *
- *    this list of conditions and the following disclaimer.                  *
- * 2. Redistributions in binary form must reproduce the above copyright      *
- *    notice, this list of conditions and the following disclaimer in the    *
- *    documentation and/or other materials provided with the distribution.   *
- * 3. The name of the author may not be used to endorse or promote products  *
- *    derived from this software without specific prior written permission.  *
- *                                                                           *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR      *
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES *
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.   *
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,          *
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT  *
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, *
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     *
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       *
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF  *
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.         *
- *                                                                           *
- * OpenScop Library, a library to manipulate OpenScop formats and data       *
- * structures. Written by:                                                   *
- * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                         *
- * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                          *
- *                                                                           *
- *****************************************************************************/
+/******************************************************************************
+ * OpenScop: Structures and formats for polyhedral tools to talk together     *
+ ******************************************************************************
+ *    ,___,,_,__,,__,,__,,__,,_,__,,_,__,,__,,___,_,__,,_,__,                 *
+ *    /   / /  //  //  //  // /   / /  //  //   / /  // /  /|,_,              *
+ *   /   / /  //  //  //  // /   / /  //  //   / /  // /  / / /\              *
+ *  |~~~|~|~~~|~~~|~~~|~~~|~|~~~|~|~~~|~~~|~~~|~|~~~|~|~~~|/_/  \             *
+ *  | G |C| P | = | L | P |=| = |C| = | = | = |=| = |=| C |\  \ /\            *
+ *  | R |l| o | = | e | l |=| = |a| = | = | = |=| = |=| L | \# \ /\           *
+ *  | A |a| l | = | t | u |=| = |n| = | = | = |=| = |=| o | |\# \  \          *
+ *  | P |n| l | = | s | t |=| = |d| = | = | = | |   |=| o | | \# \  \         *
+ *  | H | | y |   | e | o | | = |l|   |   | = | |   | | G | |  \  \  \        *
+ *  | I | |   |   | e |   | |   | |   |   |   | |   | |   | |   \  \  \       *
+ *  | T | |   |   |   |   | |   | |   |   |   | |   | |   | |    \  \  \      *
+ *  | E | |   |   |   |   | |   | |   |   |   | |   | |   | |     \  \  \     *
+ *  | * |*| * | * | * | * |*| * |*| * | * | * |*| * |*| * | /      \* \  \    *
+ *  | O |p| e | n | S | c |o| p |-| L | i | b |r| a |r| y |/        \  \ /    *
+ *  '---'-'---'---'---'---'-'---'-'---'---'---'-'---'-'---'          '--'     *
+ *                                                                            *
+ * Copyright (C) 2008 University Paris-Sud 11 and INRIA                       *
+ *                                                                            *
+ * (3-clause BSD license)                                                     *
+ * Redistribution and use in source  and binary forms, with or without        *
+ * modification, are permitted provided that the following conditions         *
+ * are met:                                                                   *
+ *                                                                            *
+ * 1. Redistributions of source code must retain the above copyright notice,  *
+ *    this list of conditions and the following disclaimer.                   *
+ * 2. Redistributions in binary form must reproduce the above copyright       *
+ *    notice, this list of conditions and the following disclaimer in the     *
+ *    documentation and/or other materials provided with the distribution.    *
+ * 3. The name of the author may not be used to endorse or promote products   *
+ *    derived from this software without specific prior written permission.   *
+ *                                                                            *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR       *
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES  *
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.    *
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,           *
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT   *
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,  *
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY      *
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT        *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF   *
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.          *
+ *                                                                            *
+ * OpenScop Library, a library to manipulate OpenScop formats and data        *
+ * structures. Written by:                                                    *
+ * Cedric Bastoul     <Cedric.Bastoul@u-psud.fr> and                          *
+ * Louis-Noel Pouchet <Louis-Noel.pouchet@inria.fr>                           *
+ *                                                                            *
+ ******************************************************************************/
 
 #ifndef OSL_DEPENDENCE_H
 #define OSL_DEPENDENCE_H
@@ -91,34 +89,37 @@ extern "C" {
 #define OSL_DEPENDENCE_P_REDUCTION 2
 #define OSL_DEPENDENCE_M_REDUCTION 3
 #define OSL_DEPENDENCE_T_REDUCTION 4
+
+/* clang-format off */
 /**
+ * \struct osl_dependence
  * osl_dependence structure:
  * this structure contains all the informations about a data dependence, it is
  * also a node of the linked list of all dependences of the dependence graph.
- 
- 
-  Dependence domain structure
-                          ________________________________________________________________ 
-                        / source (output) | target (input)  |          local dims          \ 
-                     __ |_________________|_________________|_______________________________|_____________
-                   / eq | output | output | output | output |ld dom |ld acc |ld dom |ld acc |           |  \ 
-                   | in | domain | access | domain | access |source |source |target |target |parameters | 1 |
-   ________________|____|________|________|________|________|_______|_______|_______|_______|___________|___|
-  |Domain source   | X  |   X    :        |        :        |   X   :       |       :       |     X     | X |
-  |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|
-  |Domain target   | X  |        :        |    X   :        |       :       |   X   :       |     X     | X |
-  |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|
-  |Access source   | X  |   X    :   X    |        :        |       :   X   |       :       |     X     | X |
-  |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___| 
-  |Access target   | X  |        :        |    X   :   X    |       :       |       :   X   |     X     | X |
-  |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|
-  |Access equality |    |        :  Id    |        :  -Id   |       :       |       :       |           |   |
-  |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|    | 0    : 0..depth-1 
-  |Precedence      | X  |  Id    :        |   -Id  :        |       :       |       :       |           | X | <--| 0|-1 : depth
-  \________________|____|________:________|________:________|_______:_______|_______:_______|___________|___/
- 
-                           (1)      (2)      (3)      (4)      (5)     (6)     (7)     (8)
+ *
+ * Dependence domain structure
+ *                         ________________________________________________________________
+ *                       / source (output) | target (input)  |          local dims          \
+ *                    __ |_________________|_________________|_______________________________|_____________
+ *                  / eq | output | output | output | output |ld dom |ld acc |ld dom |ld acc |           |  \
+ *                  | in | domain | access | domain | access |source |source |target |target |parameters | 1 |
+ *  ________________|____|________|________|________|________|_______|_______|_______|_______|___________|___|
+ * |Domain source   | X  |   X    :        |        :        |   X   :       |       :       |     X     | X |
+ * |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|
+ * |Domain target   | X  |        :        |    X   :        |       :       |   X   :       |     X     | X |
+ * |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|
+ * |Access source   | X  |   X    :   X    |        :        |       :   X   |       :       |     X     | X |
+ * |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___| 
+ * |Access target   | X  |        :        |    X   :   X    |       :       |       :   X   |     X     | X |
+ * |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|
+ * |Access equality |    |        :  Id    |        :  -Id   |       :       |       :       |           |   |
+ * |________________|____|________:________|________:________|_______:_______|_______:_______|___________|___|    | 0    : 0..depth-1 
+ * |Precedence      | X  |  Id    :        |   -Id  :        |       :       |       :       |           | X | <--| 0|-1 : depth
+ * \________________|____|________:________|________:________|_______:_______|_______:_______|___________|___/
+ *
+ *                          (1)      (2)      (3)      (4)      (5)     (6)     (7)     (8)
  */
+/* clang-format off */
 struct osl_dependence {
   int label_source;
   int label_target;
@@ -171,29 +172,32 @@ struct osl_dependence {
 typedef struct osl_dependence osl_dependence_t;
 typedef struct osl_dependence* osl_dependence_p;
 
-/*+***************************************************************************
- *                          Structure display function                       *
- *****************************************************************************/
+/******************************************************************************
+ *                          Structure display function                        *
+ ******************************************************************************/
+
 void osl_dependence_idump(FILE*, const osl_dependence_t*, int) OSL_NONNULL_ARGS(1);
 void osl_dependence_dump(FILE*, const osl_dependence_t*) OSL_NONNULL_ARGS(1);
 char* osl_dependence_sprint(const osl_dependence_t*) OSL_WARN_UNUSED_RESULT;
 void osl_dependence_print(FILE*, const osl_dependence_t*) OSL_NONNULL_ARGS(1);
 
-/*****************************************************************************
- *                               Reading function                            *
- *****************************************************************************/
+/******************************************************************************
+ *                               Reading function                             *
+ ******************************************************************************/
 osl_dependence_t* osl_dependence_sread(char**) OSL_WARN_UNUSED_RESULT;
 osl_dependence_t* osl_dependence_psread(char**, int) OSL_WARN_UNUSED_RESULT;
 
-/*+***************************************************************************
- *                    Memory allocation/deallocation function                *
- *****************************************************************************/
+/******************************************************************************
+ *                    Memory allocation/deallocation function                 *
+ ******************************************************************************/
+
 osl_dependence_t* osl_dependence_malloc(void) OSL_WARN_UNUSED_RESULT;
 void osl_dependence_free(osl_dependence_t*);
 
-/*+***************************************************************************
- *                            Processing functions                           *
- *****************************************************************************/
+/******************************************************************************
+ *                            Processing functions                            *
+ ******************************************************************************/
+
 osl_dependence_t* osl_dependence_clone(const osl_dependence_t*) OSL_WARN_UNUSED_RESULT;
 bool osl_dependence_equal(const osl_dependence_t*, const osl_dependence_t*);
 void osl_dependence_add(osl_dependence_t**, osl_dependence_t**,
