@@ -88,7 +88,7 @@
  * \param scop  The scop structure whose information has to be printed.
  * \param level Number of spaces before printing, for each line.
  */
-void osl_scop_idump(FILE* file, osl_scop_p scop, int level) {
+void osl_scop_idump(FILE* const file, const osl_scop_t* scop, int level) {
   int j, first = 1;
 
   // Go to the right level.
@@ -172,7 +172,7 @@ void osl_scop_idump(FILE* file, osl_scop_p scop, int level) {
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void osl_scop_dump(FILE* file, osl_scop_p scop) {
+void osl_scop_dump(FILE* const file, const osl_scop_t* const scop) {
   osl_scop_idump(file, scop, 0);
 }
 
@@ -183,7 +183,7 @@ void osl_scop_dump(FILE* file, osl_scop_p scop) {
  * \param[in] scop The scop (list) we have to generate names for.
  * \return A set of generated names for the input scop dimensions.
  */
-osl_names_p osl_scop_names(osl_scop_p scop) {
+osl_names_t* osl_scop_names(const osl_scop_t* scop) {
   int nb_parameters = OSL_UNDEFINED;
   int nb_iterators = OSL_UNDEFINED;
   int nb_scattdims = OSL_UNDEFINED;
@@ -204,7 +204,7 @@ osl_names_p osl_scop_names(osl_scop_p scop) {
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void osl_scop_print(FILE* file, osl_scop_p scop) {
+void osl_scop_print(FILE* const file, const osl_scop_t* scop) {
   int parameters_backedup = 0;
   int arrays_backedup = 0;
   osl_strings_p parameters_backup = NULL;
@@ -297,7 +297,7 @@ void osl_scop_print(FILE* file, osl_scop_p scop) {
  * \param file The file where the information has to be printed.
  * \param scop The scop structure whose information has to be printed.
  */
-void osl_scop_print_scoplib(FILE* file, osl_scop_p scop) {
+void osl_scop_print_scoplib(FILE* const file, const osl_scop_t* scop) {
   int parameters_backedup = 0;
   int arrays_backedup = 0;
   osl_strings_p parameters_backup = NULL;
@@ -407,7 +407,8 @@ void osl_scop_print_scoplib(FILE* file, osl_scop_p scop) {
  * \param[in] precision The precision of the relation elements.
  * \return A pointer to the scop structure that has been read.
  */
-osl_scop_p osl_scop_pread(FILE* file, osl_interface_p registry, int precision) {
+osl_scop_t* osl_scop_pread(FILE* const file, osl_interface_t* const registry,
+                           int precision) {
   osl_scop_p list = NULL, current = NULL, scop;
   osl_statement_p stmt = NULL;
   osl_statement_p prev = NULL;
@@ -507,7 +508,7 @@ osl_scop_p osl_scop_pread(FILE* file, osl_interface_p registry, int precision) {
  * (2) the list of known interface is set to the default one.
  * \see{osl_scop_pread}
  */
-osl_scop_p osl_scop_read(FILE* foo) {
+osl_scop_t* osl_scop_read(FILE* foo) {
   int precision = osl_util_get_precision();
   osl_interface_p registry = osl_interface_get_default_registry();
   osl_scop_p scop = osl_scop_pread(foo, registry, precision);
@@ -578,7 +579,7 @@ void osl_scop_free(osl_scop_p scop) {
  * \param[in,out] location  Address of the first element of the scop list.
  * \param[in]     scop      The scop to add to the list.
  */
-void osl_scop_add(osl_scop_p* location, osl_scop_p scop) {
+void osl_scop_add(osl_scop_t** location, osl_scop_t* const scop) {
   while (*location != NULL)
     location = &((*location)->next);
 
@@ -592,7 +593,7 @@ void osl_scop_add(osl_scop_p* location, osl_scop_p scop) {
  * \param[in] scop The first element of the scop list.
  * \return The number of scops in the scop list.
  */
-size_t osl_scop_number(osl_scop_p scop) {
+size_t osl_scop_number(const osl_scop_t* scop) {
   size_t number = 0;
 
   while (scop != NULL) {
@@ -610,7 +611,7 @@ size_t osl_scop_number(osl_scop_p scop) {
  * \param scop The pointer to the scop we want to clone.
  * \return A pointer to the full clone of the scop provided as parameter.
  */
-osl_scop_p osl_scop_clone(osl_scop_p scop) {
+osl_scop_t* osl_scop_clone(const osl_scop_t* scop) {
   osl_scop_p clone = NULL, node, previous = NULL;
   int first = 1;
 
@@ -647,7 +648,7 @@ osl_scop_p osl_scop_clone(osl_scop_p scop) {
  * \param[in] scop A SCoP with statements featuring unions of relations.
  * \returns  An identical SCoP without unions of relations.
  */
-osl_scop_p osl_scop_remove_unions(osl_scop_p scop) {
+osl_scop_t* osl_scop_remove_unions(const osl_scop_t* scop) {
   osl_statement_p statement, new_statement, scop_statement_ptr;
   osl_scop_p new_scop, scop_ptr, result = NULL;
 
@@ -698,7 +699,7 @@ osl_scop_p osl_scop_remove_unions(osl_scop_p scop) {
  * \param s2 The second scop.
  * \return 1 if s1 and s2 are the same (content-wise), 0 otherwise.
  */
-bool osl_scop_equal(osl_scop_p s1, osl_scop_p s2) {
+bool osl_scop_equal(const osl_scop_t* s1, const osl_scop_t* s2) {
   while ((s1 != NULL) && (s2 != NULL)) {
     if (s1 == s2)
       return 1;
@@ -755,7 +756,7 @@ bool osl_scop_equal(osl_scop_p s1, osl_scop_p s2) {
  * \param scop  The scop we want to check.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int osl_scop_integrity_check(osl_scop_p scop) {
+int osl_scop_integrity_check(const osl_scop_t* scop) {
   int expected_nb_parameters;
 
   while (scop != NULL) {
@@ -795,7 +796,7 @@ int osl_scop_integrity_check(osl_scop_p scop) {
  * \param scop  The scop we want to check.
  * \return 0 if the integrity check fails, 1 otherwise.
  */
-int osl_scop_check_compatible_scoplib(osl_scop_p scop) {
+int osl_scop_check_compatible_scoplib(const osl_scop_t* scop) {
   if (!osl_scop_integrity_check(scop))
     return 0;
   if (scop->next != NULL)
@@ -857,7 +858,7 @@ int osl_scop_check_compatible_scoplib(osl_scop_p scop) {
  * \param scop The scop we want to know the number of global parameters.
  * \return The number of global parameters in the scop.
  */
-int osl_scop_get_nb_parameters(osl_scop_p scop) {
+int osl_scop_get_nb_parameters(const osl_scop_t* scop) {
   if (scop->context == NULL) {
     OSL_debug("no context domain, assuming 0 parameters");
     return 0;
@@ -875,7 +876,7 @@ int osl_scop_get_nb_parameters(osl_scop_p scop) {
  * \param scop      The scop for which an extension has to be registered.
  * \param interface The extension interface to register within the scop.
  */
-void osl_scop_register_extension(osl_scop_p scop, osl_interface_p interface) {
+void osl_scop_register_extension(osl_scop_t* scop, osl_interface_t* interface) {
   osl_generic_p textual, new;
   char* extension_string;
 
@@ -909,7 +910,7 @@ void osl_scop_register_extension(osl_scop_p scop, osl_interface_p interface) {
  * \param[in,out] nb_localdims  Number of local dimensions attribute.
  * \param[in,out] array_id      Maximum array identifier attribute.
  */
-void osl_scop_get_attributes(osl_scop_p scop, int* nb_parameters,
+void osl_scop_get_attributes(const osl_scop_t* scop, int* nb_parameters,
                              int* nb_iterators, int* nb_scattdims,
                              int* nb_localdims, int* array_id) {
   int local_nb_parameters = OSL_UNDEFINED;
@@ -943,7 +944,7 @@ void osl_scop_get_attributes(osl_scop_p scop, int* nb_parameters,
  * set as being equal to zero).
  * \param[in,out] scop The scop to nomalize the scattering functions.
  */
-void osl_scop_normalize_scattering(osl_scop_p scop) {
+void osl_scop_normalize_scattering(osl_scop_t* scop) {
   int max_scattering_dims = 0;
   osl_statement_p statement;
   osl_relation_p extended;

@@ -106,44 +106,44 @@ typedef struct osl_scop* osl_scop_p;
  *                          Structure display function                        *
  ******************************************************************************/
 
-void osl_scop_idump(FILE*, osl_scop_p, int);
-void osl_scop_dump(FILE*, osl_scop_p);
-void osl_scop_print(FILE*, osl_scop_p);
+void osl_scop_idump(FILE*, const osl_scop_t*, int) OSL_NONNULL_ARGS(1);
+void osl_scop_dump(FILE*, const osl_scop_t*) OSL_NONNULL_ARGS(1);
+void osl_scop_print(FILE*, const osl_scop_t*) OSL_NONNULL_ARGS(1);
 
 // SCoPLib Compatibility
-void osl_scop_print_scoplib(FILE*, osl_scop_p);
+void osl_scop_print_scoplib(FILE*, const osl_scop_t*) OSL_NONNULL_ARGS(1);
 
 /******************************************************************************
  *                               Reading function                             *
  ******************************************************************************/
 
-osl_scop_p osl_scop_pread(FILE*, osl_interface_p, int);
-osl_scop_p osl_scop_read(FILE*);
+osl_scop_t* osl_scop_pread(FILE*, osl_interface_t*, int);
+osl_scop_t* osl_scop_read(FILE*);
 
 /******************************************************************************
  *                    Memory allocation/deallocation function                 *
  ******************************************************************************/
 
-osl_scop_p osl_scop_malloc(void);
-void osl_scop_free(osl_scop_p);
+osl_scop_t* osl_scop_malloc(void) OSL_WARN_UNUSED_RESULT;
+void osl_scop_free(osl_scop_t*);
 
 /******************************************************************************
  *                            Processing functions                            *
  ******************************************************************************/
 
-void osl_scop_add(osl_scop_p*, osl_scop_p);
-size_t osl_scop_number(osl_scop_p);
-osl_scop_p osl_scop_clone(osl_scop_p);
-osl_scop_p osl_scop_remove_unions(osl_scop_p);
-bool osl_scop_equal(osl_scop_p, osl_scop_p);
-int osl_scop_integrity_check(osl_scop_p);
-int osl_scop_check_compatible_scoplib(osl_scop_p);
-int osl_scop_get_nb_parameters(osl_scop_p);
-void osl_scop_register_extension(osl_scop_p, osl_interface_p);
-void osl_scop_get_attributes(osl_scop_p, int*, int*, int*, int*, int*);
-void osl_scop_normalize_scattering(osl_scop_p);
+void osl_scop_add(osl_scop_t**, osl_scop_t*);
+size_t osl_scop_number(const osl_scop_t*);
+osl_scop_t* osl_scop_clone(const osl_scop_t*) OSL_WARN_UNUSED_RESULT;
+osl_scop_t* osl_scop_remove_unions(const osl_scop_t*) OSL_WARN_UNUSED_RESULT;
+bool osl_scop_equal(const osl_scop_t*, const osl_scop_t*);
+int osl_scop_integrity_check(const osl_scop_t*);
+int osl_scop_check_compatible_scoplib(const osl_scop_t*);
+int osl_scop_get_nb_parameters(const osl_scop_t*);
+void osl_scop_register_extension(osl_scop_t*, osl_interface_t*);
+void osl_scop_get_attributes(const osl_scop_t*, int*, int*, int*, int*, int*);
+void osl_scop_normalize_scattering(osl_scop_t*);
 
-osl_names_p osl_scop_names(osl_scop_p scop);
+osl_names_t* osl_scop_names(const osl_scop_t* scop) OSL_WARN_UNUSED_RESULT;
 
 #if defined(__cplusplus)
 }
