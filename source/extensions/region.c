@@ -297,19 +297,19 @@ osl_region_t* osl_region_sread(char** input) {
     return NULL;
   }
 
-  const int count = osl_util_read_int(NULL, input);
-  if (!count)
+  const int region_count = osl_util_read_int(NULL, input);
+  if (!region_count)
     return NULL;
 
   osl_region_t* const output = osl_region_malloc();
   osl_region_t* current = output;
-  for (int i = 0; i < count; ++i) {
+  for (int i = 0; i < region_count; ++i) {
     current->location = osl_util_read_int(NULL, input);
 
 #define osl_region_sread_text(field)                            \
   do {                                                          \
-    size_t count = (size_t)osl_util_read_int(NULL, input);      \
-    for (size_t j = 0; j < count; ++j) {                        \
+    size_t line_count = (size_t)osl_util_read_int(NULL, input); \
+    for (size_t j = 0; j < line_count; ++j) {                   \
       const int line_type = osl_util_read_int(NULL, input);     \
       char* const line = osl_util_read_line(NULL, input);       \
       osl_region_text_append(&current->field, line_type, line); \
@@ -321,7 +321,7 @@ osl_region_t* osl_region_sread(char** input) {
     osl_region_sread_text(prelude);
     osl_region_sread_text(postlude);
 
-    if (i + 1 < count) {
+    if (i + 1 < region_count) {
       current->next = osl_region_malloc();
       current = current->next;
     }
