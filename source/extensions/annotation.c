@@ -72,16 +72,11 @@ static osl_annotation_text_t osl_annotation_text_clone(
     const osl_annotation_text_t* source);
 static bool osl_annotation_text_equal(const osl_annotation_text_t* t1,
                                       const osl_annotation_text_t* t2);
-
-void osl_annotation_text_idump(FILE* const file,
-                               const osl_annotation_text_t* text, int level) {
-  for (size_t i = 0; i < text->count; ++i) {
-    osl_annotation_idump_indent(file, level);
-    fprintf(file, "+--type %zu: %d\n", i, text->types[i]);
-    fprintf(file, "+--line %zu: %s\n", i, text->lines[i]);
-  }
-}
-
+static int osl_annotation_text_append(osl_annotation_text_t* text,
+                                      int line_type, char* line);
+static void osl_annotation_text_idump(FILE* file,
+                                      const osl_annotation_text_t* text,
+                                      int level);
 /******************************************************************************
  * osl_annotation_text_t functions                                            *
  ******************************************************************************/
@@ -106,6 +101,15 @@ int osl_annotation_text_append(osl_annotation_text_t* text, int line_type,
   text->count = count;
 
   return 0;
+}
+
+void osl_annotation_text_idump(FILE* const file,
+                               const osl_annotation_text_t* text, int level) {
+  for (size_t i = 0; i < text->count; ++i) {
+    osl_annotation_idump_indent(file, level);
+    fprintf(file, "+--type %zu: %d\n", i, text->types[i]);
+    fprintf(file, "+--line %zu: %s\n", i, text->lines[i]);
+  }
 }
 
 osl_annotation_text_t osl_annotation_text_clone(
