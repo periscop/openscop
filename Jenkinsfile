@@ -13,27 +13,27 @@ pipeline {
         name 'BUILD_SYSTEM'
         values 'configure', 'CMake'
       }
-      stages{
-        stage('Tools (Mac)'){
-          when { expression { env.PLATFORM == 'mac' } }
-          steps{
-            sh 'brew install automake libtool'
-          }
+    }
+    stages{
+      stage('Tools (Mac)'){
+        when { expression { env.PLATFORM == 'mac' } }
+        steps{
+          sh 'brew install automake libtool'
         }
-        stage('Prepare'){
-          steps {
-            sh './autogen.sh; ./configure;'
-          }
+      }
+      stage('Prepare'){
+        steps {
+          sh './autogen.sh; ./configure;'
         }
-        stage('Build'){
-          steps {
-            sh 'make -j'
-          }
+      }
+      stage('Build'){
+        steps {
+          sh 'make -j'
         }
-        stage('Test'){
-          steps {
-            sh 'make check -j'
-          }
+      }
+      stage('Test'){
+        steps {
+          sh 'make check -j'
         }
       }
     }
