@@ -28,12 +28,11 @@ pipeline {
         }
       }
       stage('Build'){
-        when { expression { env.BUILD_SYSTEM == 'Configure' } }
-        steps {
+        
+        steps { when { expression { env.BUILD_SYSTEM == 'Configure' } }
           sh 'make -j'
         }
-        when { expression { env.BUILD_SYSTEM == 'CMake' } }
-        steps {
+        steps { when { expression { env.BUILD_SYSTEM == 'CMake' } }
           sh 'mkdir build'
           sh 'cd build'
           sh 'cmake ..'
