@@ -48,7 +48,7 @@ pipeline {
               sh 'mkdir build'
               dir('build') {
                 sh 'cmake ..'
-                sh 'make -j'
+                sh 'cmake --build .'
               }
             }
           } else {
@@ -57,6 +57,7 @@ pipeline {
               bat 'mkdir build'
               dir('build'){
                 bat 'cmake ..'
+                bat 'cmake --build .'
               }
             }
           }
@@ -74,7 +75,7 @@ pipeline {
               if(env.BUILD_SYSTEM == 'CMake')
               {
                 dir('build'){
-                  sh 'make check -j'
+                  sh 'cmake --build . --target check'
                 }
               }
             } else {
