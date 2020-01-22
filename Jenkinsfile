@@ -28,20 +28,20 @@ pipeline {
           sh './configure'
         }
       }
-      stage('Build (Configure)'){
-        when { expression { env.BUILD_SYSTEM == 'Configure' } }
-        steps {
-          sh 'make -j'
-        }
-      }
-      stage('Build (CMake)'){
-        when { expression { env.BUILD_SYSTEM == 'CMake' } }
-        steps {
-          sh 'mkdir build'
-          sh 'cd build'
-          sh 'cmake ..'
-          sh 'make -j'
-        }
+      stage('Build'){
+        steps{script{
+          if(env.BUILD_SYSTEM == 'Configure')
+          {
+            sh 'make -j'
+          }
+          if(env.BUILD_SYSTEM == 'CMake')
+          {
+            sh 'mkdir build'
+            sh 'cd build'
+            sh 'cmake ..'
+            sh 'make -j'
+          }
+        }}
       }
       stage('Test'){
         steps {
