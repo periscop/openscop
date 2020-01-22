@@ -7,7 +7,7 @@ pipeline {
     axes{
       axis{
         name 'PLATFORM'
-        values 'lin', 'mac'
+        values 'lin', 'mac', 'win'
       }
       axis{
         name 'BUILD_SYSTEM'
