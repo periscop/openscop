@@ -22,16 +22,12 @@ pipeline {
           }
         }}
       }
-      stage('Prepare'){
-        steps {
-          sh './autogen.sh'
-          sh './configure'
-        }
-      }
       stage('Build'){
         steps{script{
           if(env.BUILD_SYSTEM == 'Configure')
           {
+            sh './autogen.sh'
+            sh './configure'
             sh 'make -j'
           }
           if(env.BUILD_SYSTEM == 'CMake')
