@@ -1,51 +1,38 @@
 pipeline {
   agent none
-  stages{
-    stage('OpenScop'){
-      parallel{
-        stage('Linux'){
-          agent{
-            label "lin"
-          }
-          stages{
-            stage('prepare') {
-              steps {
-                sh './autogen.sh; ./configure;'
-              }
-            }
-            stage('build') {
-              steps {
-                sh 'make;'
-              }
-            }
-            stage('test') {
-              steps {
-                sh 'make check;'
-              }
-            }
+  matrix{
+    agent {
+      label "${PLATFORM}"
+    }
+    axes{
+      axis{
+        name 'PLATFORM'
+        values 'lin', 'mac'
+      }
+      axis{
+        name 'BUILD_SYSTEM'
+        values 'configure', 'CMake'
+      }
+      stages{
+        stage('Tools (Mac)'){
+          when { expression { env.PLATFORM == 'mac' } }
+          steps{
+            sh 'brew install automake libtool'
           }
         }
-        stage('Mac OS'){
-          agent{
-            label "mac"
+        stage('Prepare'){
+          steps {
+            sh './autogen.sh; ./configure;'
           }
-          stages{
-            stage('prepare') {
-              steps {
-                sh 'brew install automake libtool'
-                sh './autogen.sh; ./configure;'
-              }
-            }
-            stage('build') {
-              steps {
-                sh 'make -j 2;'
-              }
-            }
-            stage('test') {
-              steps {
-                sh 'make check;'
-              }
-            }
+        }
+        stage('Build'){
+          steps {
+            sh 'make -j'
+          }
+        }
+        stage('Test'){
+          steps {
+            sh 'make check -j'
           }
         }
       }
