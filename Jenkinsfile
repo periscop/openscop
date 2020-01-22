@@ -15,7 +15,7 @@ pipeline {
       }
     }
     stages{
-      stage('Tools'){
+      stage('Tools (Mac)'){
       when { expression { env.PLATFORM == 'mac' } }
         steps{
           sh 'brew install automake libtool'
@@ -27,21 +27,19 @@ pipeline {
           sh './configure'
         }
       }
-      stage('Build'){
-        
-        steps { when { expression { env.BUILD_SYSTEM == 'Configure' } }
-          sh 'make -j'
-        }
-        steps { when { expression { env.BUILD_SYSTEM == 'CMake' } }
-          sh 'mkdir build'
-          sh 'cd build'
-          sh 'cmake ..'
+      stage('Build (Configure)'){
+        when { expression { env.BUILD_SYSTEM == 'Configure' } }
+        steps {
           sh 'make -j'
         }
       }
       stage('Build (CMake)'){
+        when { expression { env.BUILD_SYSTEM == 'CMake' } }
         steps {
-          sh 'mkdir build; cd build; cmake ..; make -j;'
+          sh 'mkdir build'
+          sh 'cd build'
+          sh 'cmake ..'
+          sh 'make -j'
         }
       }
       stage('Test'){
