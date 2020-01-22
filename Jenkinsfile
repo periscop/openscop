@@ -11,7 +11,7 @@ pipeline {
       }
       axis{
         name 'BUILD_SYSTEM'
-        values 'Configure', 'CMake'
+        values 'CMake', 'Configure'
       }
     }
     stages{
@@ -33,15 +33,27 @@ pipeline {
           if(env.BUILD_SYSTEM == 'CMake')
           {
             sh 'mkdir build'
-            sh 'cd build'
-            sh 'cmake ..'
-            sh 'make -j'
+            dir('build') {
+              sh 'cmake ..'
+              sh 'make -j'
+            }
           }
         }}
       }
       stage('Test'){
         steps {
-          sh 'make check -j'
+          script {
+            if(env.BUILD_SYSTEM == 'Configure')
+            {
+              sh 'make check -j'
+            }
+            if(env.BUILD_SYSTEM == 'CMake')
+            {
+              dir('build'){
+                sh 'make check -j'
+              }
+            }
+          }
         }
       }
     }
