@@ -15,8 +15,8 @@ pipeline {
       }
     }
     stages{
-      when { expression { env.PLATFORM == 'mac' } }
       stage('Tools (Mac)'){
+      agent { label 'mac' }
         steps{
           sh 'brew install automake libtool'
         }
