@@ -16,11 +16,11 @@ pipeline {
     }
     stages{
       stage('Tools'){
-        script{
+        steps{script{
           if(env.PLATFORM == 'mac'){
             sh 'brew install automake libtool'
           }
-        }
+        }}
       }
       stage('Prepare'){
         steps {
