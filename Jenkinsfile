@@ -1,6 +1,6 @@
 pipeline {
   agent none
-  stages { stage { matrix{
+  stages { stage('OpenScop') { matrix{
     agent {
       label "${PLATFORM}"
     }
