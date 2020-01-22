@@ -14,6 +14,18 @@ pipeline {
         values 'CMake', 'Configure'
       }
     }
+    excludes{
+      exclude{
+        axis{
+          name 'PLATFORM'
+          values 'win'
+        }
+        axis{
+          name 'BUILD_SYSTEM'
+          values 'Configure'
+        }
+      }
+    }
     stages{
       stage('Tools'){
         steps{script{
@@ -24,33 +36,51 @@ pipeline {
       }
       stage('Build'){
         steps{script{
-          if(env.BUILD_SYSTEM == 'Configure')
-          {
-            sh './autogen.sh'
-            sh './configure'
-            sh 'make -j'
-          }
-          if(env.BUILD_SYSTEM == 'CMake')
-          {
-            sh 'mkdir build'
-            dir('build') {
-              sh 'cmake ..'
+          if(env.PLATFORM != 'win'){
+            if(env.BUILD_SYSTEM == 'Configure')
+            {
+              sh './autogen.sh'
+              sh './configure'
               sh 'make -j'
             }
+            if(env.BUILD_SYSTEM == 'CMake')
+            {
+              sh 'mkdir build'
+              dir('build') {
+                sh 'cmake ..'
+                sh 'make -j'
+              }
+            }
+          } else {
+            if(env.BUILD_SYSTEM == 'CMake')
+            {
+              bat 'mkdir build'
+              dir('build'){
+                bat 'cmake ..'
+              }
+            }
           }
+          
         }}
       }
       stage('Test'){
         steps {
           script {
-            if(env.BUILD_SYSTEM == 'Configure')
-            {
-              sh 'make check -j'
-            }
-            if(env.BUILD_SYSTEM == 'CMake')
-            {
-              dir('build'){
+            if(env.PLATFORM != 'win'){
+              if(env.BUILD_SYSTEM == 'Configure')
+              {
                 sh 'make check -j'
+              }
+              if(env.BUILD_SYSTEM == 'CMake')
+              {
+                dir('build'){
+                  sh 'make check -j'
+                }
+              }
+            } else {
+              if(env.BUILD_SYSTEM == 'CMake')
+              {
+                
               }
             }
           }
