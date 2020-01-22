@@ -1,6 +1,6 @@
 pipeline {
   agent none
-  matrix{
+  stages { stage { matrix{
     agent {
       label "${PLATFORM}"
     }
@@ -37,5 +37,5 @@ pipeline {
         }
       }
     }
-  }
+  }}}
 }
