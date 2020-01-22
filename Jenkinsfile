@@ -15,10 +15,11 @@ pipeline {
       }
     }
     stages{
-      stage('Tools (Mac)'){
-      when { expression { env.PLATFORM == 'mac' } }
-        steps{
-          sh 'brew install automake libtool'
+      stage('Tools'){
+        script{
+          if(env.PLATFORM == 'mac'){
+            sh 'brew install automake libtool'
+          }
         }
       }
       stage('Prepare'){
