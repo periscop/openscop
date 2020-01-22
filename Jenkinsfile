@@ -15,20 +15,28 @@ pipeline {
       }
     }
     stages{
-      stage('Tools (Mac)'){
-      agent { label 'mac' }
+      stage('Tools'){
+      when { expression { env.PLATFORM == 'mac' } }
         steps{
           sh 'brew install automake libtool'
         }
       }
       stage('Prepare'){
         steps {
-          sh './autogen.sh; ./configure;'
+          sh './autogen.sh'
+          sh './configure'
         }
       }
-      stage('Build (Configure)'){
+      stage('Build'){
         when { expression { env.BUILD_SYSTEM == 'Configure' } }
         steps {
+          sh 'make -j'
+        }
+        when { expression { env.BUILD_SYSTEM == 'CMake' } }
+        steps {
+          sh 'mkdir build'
+          sh 'cd build'
+          sh 'cmake ..'
           sh 'make -j'
         }
       }
