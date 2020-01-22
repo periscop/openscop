@@ -26,13 +26,13 @@ pipeline {
           sh './autogen.sh; ./configure;'
         }
       }
-      stage('Build ('Configure')'){
+      stage('Build (Configure)'){
         when { expression { env.BUILD_SYSTEM == 'Configure' } }
         steps {
           sh 'make -j'
         }
       }
-      stage('Build ('CMake')'){
+      stage('Build (CMake)'){
         steps {
           sh 'mkdir build; cd build; cmake ..; make -j;'
         }
