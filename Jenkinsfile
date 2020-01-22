@@ -11,12 +11,12 @@ pipeline {
       }
       axis{
         name 'BUILD_SYSTEM'
-        values 'configure', 'CMake'
+        values 'Configure', 'CMake'
       }
     }
     stages{
+      when { expression { env.PLATFORM == 'mac' } }
       stage('Tools (Mac)'){
-        when { expression { env.PLATFORM == 'mac' } }
         steps{
           sh 'brew install automake libtool'
         }
@@ -26,9 +26,15 @@ pipeline {
           sh './autogen.sh; ./configure;'
         }
       }
-      stage('Build'){
+      stage('Build ('Configure')'){
+        when { expression { env.BUILD_SYSTEM == 'Configure' } }
         steps {
           sh 'make -j'
+        }
+      }
+      stage('Build ('CMake')'){
+        steps {
+          sh 'mkdir build; cd build; cmake ..; make -j;'
         }
       }
       stage('Test'){
