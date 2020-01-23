@@ -37,28 +37,17 @@ pipeline {
       stage('Build'){
         steps{script{
           if(env.PLATFORM != 'win'){
-            if(env.BUILD_SYSTEM == 'Configure')
-            {
+            if(env.BUILD_SYSTEM == 'Configure'){
               sh './autogen.sh'
               sh './configure'
               sh 'make -j'
             }
-            if(env.BUILD_SYSTEM == 'CMake')
-            {
-              sh 'mkdir build'
-              dir('build') {
-                sh 'cmake ..'
-                sh 'cmake --build .'
-              }
+            if(env.BUILD_SYSTEM == 'CMake'){
+              sh 'mkdir build && cd build && cmake .. && cmake --build'
             }
           } else {
-            if(env.BUILD_SYSTEM == 'CMake')
-            {
-              bat 'mkdir build'
-              dir('build'){
-                bat 'cmake ..'
-                bat 'cmake --build .'
-              }
+            if(env.BUILD_SYSTEM == 'CMake'){
+              bat 'mkdir build && cd build && cmake .. && cmake --build'
             }
           }
           
@@ -68,15 +57,11 @@ pipeline {
         steps {
           script {
             if(env.PLATFORM != 'win'){
-              if(env.BUILD_SYSTEM == 'Configure')
-              {
+              if(env.BUILD_SYSTEM == 'Configure'){
                 sh 'make check -j'
               }
-              if(env.BUILD_SYSTEM == 'CMake')
-              {
-                dir('build'){
-                  sh 'cmake --build . --target check'
-                }
+              if(env.BUILD_SYSTEM == 'CMake'){
+                sh 'cd build && cmake --build . --target check'
               }
             } else {
               if(env.BUILD_SYSTEM == 'CMake')
