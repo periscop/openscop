@@ -1,4 +1,7 @@
 pipeline {
+  environment{
+    CMAKE_BUILD_COMMANDS = 'mkdir build && cd build && cmake .. && cmake --build'
+  }
   agent none
   stages { stage('OpenScop') { matrix{
     agent {
@@ -37,18 +40,13 @@ pipeline {
       stage('Build'){
         steps{script{
           if(env.PLATFORM != 'win'){
-            if(env.BUILD_SYSTEM == 'Configure'){
-              sh './autogen.sh'
-              sh './configure'
-              sh 'make -j'
-            }
-            if(env.BUILD_SYSTEM == 'CMake'){
-              sh 'mkdir build && cd build && cmake .. && cmake --build'
-            }
+            if(env.BUILD_SYSTEM == 'Configure')
+              sh './autogen.sh && ./configure && make -j'
+            if(env.BUILD_SYSTEM == 'CMake')
+              sh CMAKE_BUILD_COMMANDS
           } else {
-            if(env.BUILD_SYSTEM == 'CMake'){
-              bat 'mkdir build && cd build && cmake .. && cmake --build'
-            }
+            if(env.BUILD_SYSTEM == 'CMake')
+              bat CMAKE_BUILD_COMMANDS
           }
           
         }}
@@ -57,12 +55,10 @@ pipeline {
         steps {
           script {
             if(env.PLATFORM != 'win'){
-              if(env.BUILD_SYSTEM == 'Configure'){
+              if(env.BUILD_SYSTEM == 'Configure')
                 sh 'make check -j'
-              }
-              if(env.BUILD_SYSTEM == 'CMake'){
-                sh 'cd build && cmake --build . --target check'
-              }
+              if(env.BUILD_SYSTEM == 'CMake')
+                  sh 'cd build && cmake --build . --target check'
             } else {
               if(env.BUILD_SYSTEM == 'CMake')
               {
