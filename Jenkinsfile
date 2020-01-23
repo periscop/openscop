@@ -1,6 +1,7 @@
 pipeline {
   environment{
     CMAKE_BUILD_COMMANDS = 'mkdir build && cd build && cmake .. && cmake --build'
+    CMAKE_CHECK_COMMANDS = 'cd build && cmake --build . --target check'
   }
   agent none
   stages { stage('OpenScop') { matrix{
@@ -58,12 +59,10 @@ pipeline {
               if(env.BUILD_SYSTEM == 'Configure')
                 sh 'make check -j'
               if(env.BUILD_SYSTEM == 'CMake')
-                  sh 'cd build && cmake --build . --target check'
+                sh CMAKE_CHECK_COMMANDS
             } else {
               if(env.BUILD_SYSTEM == 'CMake')
-              {
-                
-              }
+                bat CMAKE_CHECK_COMMANDS
             }
           }
         }
