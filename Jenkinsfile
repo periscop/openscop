@@ -1,23 +1,9 @@
 pipeline {
-  environment{
-    MACOS_TOOLS_COMMANDS = 'brew install automake libtool'
-    CENTOS_TOOLS_COMMANDS= 'sudo yum install gmp-devel -y'
-    FEDORA_TOOLS_COMMANDS= 'sudo dnf install gmp-devel -y'
-    DEBIAN_TOOLS_COMMANDS= 'sudo apt install autoconf libtool libgmp-dev make -y'
-
-    CMAKE_BUILD_COMMANDS = 'mkdir build && cd build && cmake .. && cmake --build'
-    CMAKE_CHECK_COMMANDS = 'cd build && cmake --build . --target check'
-
-    AUTOM_BUILD_COMMANDS = './autogen.sh && ./configure && make -j'
-    AUTOM_CHECK_COMMANDS = 'make check -j'
-  }
   agent none
   stages{
     stage('OpenScop'){
       matrix{
-        agent {
-          label "${OS}"
-        }
+        agent{ label "${OS}" }
         axes{
           axis{
             name 'OS'
@@ -33,13 +19,13 @@ pipeline {
             steps{
               script{
                 if(env.OS == 'macOS')
-                  sh MACOS_TOOLS_COMMANDS
+                  sh 'brew install automake libtool'
                 if(env.OS == 'CentOS')
-                  sh CENTOS_TOOLS_COMMANDS
+                  sh 'sudo yum install gmp-devel -y'
                 if(env.OS == 'fedora')
-                  sh FEDORA_TOOLS_COMMANDS
+                  sh 'sudo dnf install gmp-devel -y'
                 if(env.OS == 'Debian')
-                  sh DEBIAN_TOOLS_COMMANDS
+                  sh 'sudo apt install autoconf libtool libgmp-dev make -y'
               }
             }
           }
@@ -47,9 +33,9 @@ pipeline {
             steps{
               script{
                 if(env.BuildSystem == 'GNU Autotools')
-                  sh AUTOM_BUILD_COMMANDS
+                  sh './autogen.sh && ./configure && make -j'
                 if(env.BuildSystem == 'CMake')
-                  sh CMAKE_BUILD_COMMANDS
+                  sh 'mkdir build && cd build && cmake .. && cmake --build'
               }
             }
           }
@@ -57,9 +43,9 @@ pipeline {
             steps{
               script {
                 if(env.BuildSystem == 'GNU Autotools')
-                  sh AUTOM_CHECK_COMMANDS
+                  sh 'make check -j'
                 if(env.BuildSystem == 'CMake')
-                  sh CMAKE_CHECK_COMMANDS
+                  sh 'cd build && cmake --build . --target check'
               }
             }
           }
