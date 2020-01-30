@@ -20,7 +20,7 @@ pipeline {
         axes{
           axis{
             name 'OS'
-            values 'Ubuntu', 'macOS', 'CentOS', 'fedora'
+            values 'Ubuntu', 'macOS', 'CentOS', 'fedora', 'Debian'
           }
           axis{
             name 'BuildSystem'
