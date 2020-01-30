@@ -2,6 +2,7 @@ pipeline {
   environment{
     MACOS_TOOLS_COMMANDS = 'brew install automake libtool'
     CENTOS_TOOLS_COMMANDS= 'sudo yum install gmp-devel -y'
+    FEDORA_TOOLS_COMMANDS= 'sudo dnf install gmp-devel -y'
 
     CMAKE_BUILD_COMMANDS = 'mkdir build && cd build && cmake .. && cmake --build'
     CMAKE_CHECK_COMMANDS = 'cd build && cmake --build . --target check'
@@ -34,6 +35,8 @@ pipeline {
                   sh MACOS_TOOLS_COMMANDS
                 if(env.OS == 'CentOS')
                   sh CENTOS_TOOLS_COMMANDS
+                if(env.OS == 'fedora')
+                  sh FEDORA_TOOLS_COMMANDS
               }
             }
           }
