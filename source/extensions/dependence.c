@@ -296,11 +296,26 @@ char* osl_dependence_sprint(const osl_dependence_t* const dependence) {
                "# To target statement id\n%d\n"
                "# Depth \n%d\n"
                "# From source access ref\n%d\n"
-               "# To target access ref\n%d\n"
-               "# Dependence domain\n",
+               "# To target access ref\n%d\n",
                nb_deps, type, tmp->label_source, tmp->label_target, tmp->depth,
                tmp->ref_source, tmp->ref_target);
+      osl_util_safe_strcat(&buffer, buff, &buffer_size);
 
+      /* Output dimension information. */
+      snprintf(buff, OSL_MAX_STRING,
+               "# Dimension information\n"
+               "# 1 src-out-dom, 2 src-out-acc, 3 tgt-out-dom, 4 tgt-out-acc\n"
+               "# 5 src-loc-dom, 6 src-loc-acc, 7 tgt-loc-dom, 8 tgt-loc-acc\n"
+               "%d %d %d %d %d %d %d %d\n"
+               "# Dependence domain\n",
+               tmp->source_nb_output_dims_domain,
+               tmp->source_nb_output_dims_access,
+               tmp->target_nb_output_dims_domain,
+               tmp->target_nb_output_dims_access,
+               tmp->source_nb_local_dims_domain,
+               tmp->source_nb_local_dims_access,
+               tmp->target_nb_local_dims_domain,
+               tmp->target_nb_local_dims_access);
       osl_util_safe_strcat(&buffer, buff, &buffer_size);
 
       /* Output dependence domain. */
@@ -350,6 +365,34 @@ static osl_dependence_p osl_dependence_read_one_dep(char** input,
 
   /* # To target access ref */
   dep->ref_target = osl_util_read_int(NULL, input);
+
+  /* Read dimension information */
+  osl_util_sskip_blank_and_comments(input);
+  /* - make a copy of the first row */
+  char str[OSL_MAX_STRING];
+  size_t row_size = 0;
+  char* tmp = *input;
+  while ((*tmp != '\0') && (*tmp != '\n')) {
+    tmp++;
+    row_size += 1;
+  }
+  strncpy(str, *input, sizeof(char) * row_size);
+  str[(tmp - *input)] = '\0';
+  /* - Read the information */
+  int read = sscanf(str, " %d %d %d %d %d %d %d %d",
+                    &dep->source_nb_output_dims_domain,
+                    &dep->source_nb_output_dims_access,
+                    &dep->target_nb_output_dims_domain,
+                    &dep->target_nb_output_dims_access,
+                    &dep->source_nb_local_dims_domain,
+                    &dep->source_nb_local_dims_access,
+                    &dep->target_nb_local_dims_domain,
+                    &dep->target_nb_local_dims_access);
+  *input = tmp;
+  /* - Check we got what we want */
+  if (read != 8) {
+    OSL_error("not 8 integers to provide dimension information");
+  }
 
   /* Read the osl_relation */
   dep->domain = osl_relation_psread(input, precision);

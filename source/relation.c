@@ -1270,12 +1270,13 @@ int osl_relation_read_type(FILE* file, char** str) {
 
   if (file != NULL)
     strings = osl_strings_read(file);
-  else
+  
+  if (str != NULL)
     strings = osl_strings_sread(str);
 
-  if (osl_strings_size(strings) > 1) {
+  if (osl_strings_size(strings) > 1)
     OSL_warning("uninterpreted information (after the relation type)");
-  }
+
   if (osl_strings_size(strings) == 0)
     OSL_error("no relation type");
 
