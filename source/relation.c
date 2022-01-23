@@ -1262,8 +1262,8 @@ void osl_relation_print(FILE* const file, const osl_relation_t* relation) {
  * \return The relation type.
  */
 int osl_relation_read_type(FILE* file, char** str) {
-  int type;
-  osl_strings_p strings;
+  int type = OSL_UNDEFINED;
+  osl_strings_p strings = NULL;
 
   if ((file != NULL && str != NULL) || (file == NULL && str == NULL))
     OSL_error("one and only one of the two parameters can be non-NULL");
