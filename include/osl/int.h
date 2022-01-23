@@ -114,6 +114,13 @@ void osl_int_sprint_txt(char*, int, const osl_int_t);
 int osl_int_sscanf(const char*, int, osl_int_t*);
 void osl_int_sread(char**, int, osl_int_t*);
 
+void osl_int_set_long(int, osl_int_t*, long int);
+void osl_int_set_long_long(int, osl_int_t*, long long int);
+long int osl_int_get_long(int, const osl_int_t);
+long long int osl_int_get_long_long(int, const osl_int_t);
+void osl_int_init_set_long(int, osl_int_t*, long int);
+void osl_int_init_set_long_long(int, osl_int_t*, long long int);
+
 /******************************************************************************
  *                            Arithmetic Operations                           *
  ******************************************************************************/

@@ -223,6 +223,80 @@ void osl_int_set_si(const int precision, osl_int_t* const variable,
 }
 
 /**
+ * \brief variable = i
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to assign
+ * \param[in] i         Value in a long int
+ */
+void osl_int_set_long(const int precision, osl_int_t* const variable,
+                      const long int i) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+      variable->sp = i;
+      break;
+
+    case OSL_PRECISION_DP:
+      variable->dp = (long long int)i;
+      break;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+#ifndef NDEBUG
+      if (i > (long int)(LONG_MAX))
+        OSL_overflow("osl_int_init_set_long_long overflow");
+      if (i < (long int)(LONG_MIN))
+        OSL_overflow("osl_int_init_set_long_long overflow");
+#endif
+      mpz_set_si(*variable->mp, i);
+      break;
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
+ * \brief variable = i
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to assign
+ * \param[in] i         Value in a long long int
+ */
+void osl_int_set_long_long(const int precision, osl_int_t* const variable,
+                           const long long int i) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+#ifndef NDEBUG
+      if (i > (long int)(LONG_MAX))
+        OSL_overflow("osl_int_init_set_long_long overflow");
+      if (i < (long int)(LONG_MIN))
+        OSL_overflow("osl_int_init_set_long_long overflow");
+#endif
+      variable->sp = (long int)i;
+      break;
+
+    case OSL_PRECISION_DP:
+      variable->dp = i;
+      break;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+#ifndef NDEBUG
+      if (i > (long int)(LONG_MAX))
+        OSL_overflow("osl_int_get_si overflow");
+      if (i < (long int)(LONG_MIN))
+        OSL_overflow("osl_int_get_si overflow");
+#endif
+      mpz_set_si(*variable->mp, (long int)i);
+      break;
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
  * \brief Get the value in a int
  * \param[in] precision Precision of the osl int
  * \param[in] value     Value in a osl int
@@ -255,6 +329,86 @@ int osl_int_get_si(const int precision, const osl_int_t value) {
         OSL_overflow("osl_int_get_si overflow");
 #endif
       return mpz_get_si(*value.mp);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
+ * \brief Get the value in a long int
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return the value in a long int
+ */
+long int osl_int_get_long(const int precision, const osl_int_t value) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+#ifndef NDEBUG
+      if (value.sp > (long int)(LONG_MAX))
+        OSL_overflow("osl_int_get_long overflow");
+      if (value.sp < (long int)(LONG_MIN))
+        OSL_overflow("osl_int_get_long overflow");
+#endif
+      return (long int)value.sp;
+
+    case OSL_PRECISION_DP:
+#ifndef NDEBUG
+      if (value.dp > (long long int)(LONG_MAX))
+        OSL_overflow("osl_int_get_long overflow");
+      if (value.dp < (long long int)(LONG_MIN))
+        OSL_overflow("osl_int_get_long overflow");
+#endif
+      return (long int)value.dp;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+#ifndef NDEBUG
+      if (mpz_fits_slong_p(*value.mp) == 0)
+        OSL_overflow("osl_int_get_long overflow");
+#endif
+      return mpz_get_si(*value.mp);
+#endif
+
+    default:
+      OSL_error("unknown precision");
+  }
+}
+
+/**
+ * \brief Get the value in a long long int
+ * \param[in] precision Precision of the osl int
+ * \param[in] value     Value in a osl int
+ * \return the value in a long long int
+ */
+long long int osl_int_get_long_long(const int precision, const osl_int_t value) {
+  switch (precision) {
+    case OSL_PRECISION_SP:
+#ifndef NDEBUG
+      if (value.sp > (long long int)(LLONG_MAX))
+        OSL_overflow("osl_int_get_long_log overflow");
+      if (value.sp < (long long int)(LLONG_MIN))
+        OSL_overflow("osl_int_get_long_log overflow");
+#endif
+      return (long int)value.sp;
+
+    case OSL_PRECISION_DP:
+#ifndef NDEBUG
+      if (value.dp > (long long int)(LLONG_MAX))
+        OSL_overflow("osl_int_get_long_long overflow");
+      if (value.dp < (long long int)(LLONG_MIN))
+        OSL_overflow("osl_int_get_long_long overflow");
+#endif
+      return (long int)value.dp;
+
+#ifdef OSL_GMP_IS_HERE
+    case OSL_PRECISION_MP:
+#ifndef NDEBUG
+      if (mpz_fits_slong_p(*value.mp) == 0)
+        OSL_overflow("osl_int_get_long_long overflow");
+#endif
+      return (long long int)mpz_get_si(*value.mp);
 #endif
 
     default:
@@ -325,6 +479,38 @@ void osl_int_init_set_si(const int precision, osl_int_t* const variable,
     default:
       OSL_error("unknown precision");
   }
+}
+
+/**
+ * \brief variable = i // including initialization for GMP
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to initialize
+ * \param[in] i         Value in a long int
+ */
+void osl_int_init_set_long(const int precision, osl_int_t* const variable,
+                           const long int i) {
+#ifdef OSL_GMP_IS_HERE
+  if (precision == OSL_PRECISION_MP) {
+    OSL_malloc(variable->mp, void*, sizeof(mpz_t));
+  }
+#endif
+  osl_int_set_long(precision, variable, i);
+}
+
+/**
+ * \brief variable = i // including initialization for GMP
+ * \param[in] precision Precision of the osl int
+ * \param[in] variable  A osl int to initialize
+ * \param[in] i         Value in a long int
+ */
+void osl_int_init_set_long_long(const int precision, osl_int_t* const variable,
+                                const long long int i) {
+#ifdef OSL_GMP_IS_HERE
+  if (precision == OSL_PRECISION_MP) {
+    OSL_malloc(variable->mp, void*, sizeof(mpz_t));
+  }
+#endif
+  osl_int_set_long_long(precision, variable, i);
 }
 
 /**
