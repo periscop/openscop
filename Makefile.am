@@ -115,6 +115,19 @@ pkgextensionsinclude_HEADERS = \
 
 EXTRA_DIST = osl-config.cmake
 
+#############################################################################
+
+pkgconfigdir = $(pkgconfig_libdir)
+pkgconfig_DATA = $(pkgconfig_libfile)
+
+#############################################################################
+
+DISTCLEANFILES = \
+	osl.pc \
+	osl.pc.in \
+	osl-uninstalled.sh \
+	osl-uninstalled.pc
+
 install-data-local:
 	@test -z "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)" || $(mkdir_p) "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)"
 	$(INSTALL_DATA) "$(top_srcdir)/osl-config.cmake" "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)/"
