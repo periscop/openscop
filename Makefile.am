@@ -102,6 +102,7 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/null.h \
 	include/osl/extensions/clay.h \
 	include/osl/extensions/dependence.h \
+	include/osl/extensions/scatinfos.h \
 	include/osl/extensions/scatnames.h \
 	include/osl/extensions/arrays.h \
 	include/osl/extensions/coordinates.h \
@@ -149,6 +150,7 @@ libosl_la_SOURCES = \
 	source/extensions/null.c \
 	source/extensions/clay.c \
 	source/extensions/dependence.c \
+	source/extensions/scatinfos.c \
 	source/extensions/scatnames.c \
 	source/extensions/arrays.c \
 	source/extensions/coordinates.c \

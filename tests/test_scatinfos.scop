@@ -1,0 +1,32 @@
+<OpenScop>
+
+# =============================================== Global
+# Language
+C
+
+# Context
+CONTEXT
+0 2 0 0 0 0
+
+# Parameter names are not provided
+0
+
+# No statement
+0
+
+# =============================================== Options
+<scatinfos>
+# Number of scattering dimensions
+7
+
+# Parallel info
+1 1 0 1 0 0 0
+
+# Permutable info
+0 0 1 2 3 3 3
+
+# Type info
+1 1 0 1 1 1 1
+</scatinfos>
+</OpenScop>
+

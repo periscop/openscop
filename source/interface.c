@@ -75,6 +75,7 @@
 #include <osl/extensions/null.h>
 #include <osl/extensions/pluto_unroll.h>
 #include <osl/extensions/region.h>
+#include <osl/extensions/scatinfos.h>
 #include <osl/extensions/scatnames.h>
 #include <osl/extensions/symbols.h>
 #include <osl/extensions/textual.h>
@@ -374,6 +375,7 @@ osl_interface_t* osl_interface_get_default_registry(void) {
   osl_interface_add(&registry, osl_textual_interface());
   osl_interface_add(&registry, osl_comment_interface());
   osl_interface_add(&registry, osl_null_interface());
+  osl_interface_add(&registry, osl_scatinfos_interface());
   osl_interface_add(&registry, osl_scatnames_interface());
   osl_interface_add(&registry, osl_arrays_interface());
   osl_interface_add(&registry, osl_coordinates_interface());
