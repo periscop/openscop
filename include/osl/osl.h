@@ -106,6 +106,7 @@
 #include <osl/extensions/loop.h>
 #include <osl/extensions/null.h>
 #include <osl/extensions/pluto_unroll.h>
+#include <osl/extensions/scatinfos.h>
 #include <osl/extensions/scatnames.h>
 #include <osl/extensions/symbols.h>
 #include <osl/extensions/textual.h>
