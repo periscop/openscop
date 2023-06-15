@@ -91,6 +91,7 @@ dnl  **************************************************************************/
 
 dnl Checks for programs.
 AC_PROG_CC
+AM_PROG_AR
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_CHECK_PROG(CD, cd)
