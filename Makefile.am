@@ -181,11 +181,6 @@ MAINTAINERCLEANFILES 	=			\
 
 #############################################################################
 
-ctags:
-	ctags -R --c++-kinds=+p --fields=+iaS --extra=+q -f$(HOME)/.ctags .
-
-#############################################################################
-
 MAINTAINERCLEANFILES	+=			\
 	doc/htmldoc.tar.gz				\
 	doc/openscop.pdf				\
