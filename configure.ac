@@ -111,7 +111,6 @@ AC_C_CONST
 AC_TYPE_SIZE_T
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS([errno.h stddef.h stdlib.h string.h strings.h unistd.h])
 
 dnl Checks for library functions.
