@@ -1,4 +1,4 @@
-OpenScop Library 0.9.6
+OpenScop Library 0.9.7
 ======================
 
 Installation
