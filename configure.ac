@@ -68,7 +68,7 @@ m4_define([version_major], [0])
 m4_define([version_minor], [9])
 m4_define([version_revision], [7])
 
-AC_PREREQ(2.53)
+AC_PREREQ([2.70])
 dnl Fill here the @bug email adress.
 AC_INIT([osl], [version_major.version_minor.version_revision],
         [cedric.bastoul@u-psud.fr,pouchet@cse.ohio-state.edu])
@@ -77,11 +77,11 @@ AC_CONFIG_SRCDIR([include/osl/macros.h])
 dnl Put as most as possible configuration files to an auxialiry
 dnl directory.
 AC_CONFIG_AUX_DIR([autoconf])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIRS([m4])
 
 dnl Initialize automake.
-AM_INIT_AUTOMAKE([-Wall foreign])
-m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
+AM_INIT_AUTOMAKE([1.12 -Wall foreign subdir-objects])
+AM_SILENT_RULES([yes])
 
 
 dnl /**************************************************************************
@@ -94,20 +94,18 @@ AC_PROG_CC
 AM_PROG_AR
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_CHECK_PROG(CD, cd)
 AC_PROG_INSTALL
 LT_INIT
 
 AC_CHECK_PROGS(DOXYGEN, doxygen, doxygen, [])
 AC_CHECK_PROGS(TEXI2PDF, texi2pdf, texi2pdf, [])
 AM_CONDITIONAL(GENERATE_DOC, test -n "$TEXI2PDF" -a -n "$DOXYGEN")
-  
+
 AX_CC_MAXOPT
 AC_SUBST(CFLAGS_WARN)
 AX_CFLAGS_WARN_ALL(CFLAGS_WARN)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
 AC_TYPE_SIZE_T
 
 dnl Checks for header files.

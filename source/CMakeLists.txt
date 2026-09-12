@@ -21,7 +21,7 @@ target_include_directories(osl PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 set_property(TARGET osl PROPERTY C_STANDARD 11)
-set_property(TARGET osl PROPERTY C_STANDARD 11)
+set_property(TARGET osl PROPERTY C_STANDARD_REQUIRED TRUE)
 
 install (TARGETS osl EXPORT osl-config
   INCLUDES DESTINATION include
@@ -33,7 +33,8 @@ install (EXPORT osl-config DESTINATION lib/osl/)
 
 if (GMP_FOUND)
   target_link_libraries(osl
-    PRIVATE gmp)
+    PUBLIC "${GMP_LIBRARIES}")
+  target_include_directories(osl PUBLIC "${GMP_INCLUDE_DIR}")
   target_compile_definitions(osl
     PUBLIC OSL_GMP_IS_HERE)
 endif (GMP_FOUND)

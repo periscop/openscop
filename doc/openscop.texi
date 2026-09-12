@@ -3350,6 +3350,11 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @node Requirements
 @subsection Requirements
 
+Building from the Git sources requires Autoconf 2.70 or later,
+Automake 1.12 or later, and GNU Libtool. Run @code{./autogen.sh}
+to generate the configure script and Makefile templates.
+The alternative CMake build requires CMake 3.12 or later.
+
 The OpenScop Library is a stand-alone library. For a basic use,
 it does not need any additional tool or library. Anyway, to be able to
 work in conjunction with other tools that manipulate multiple precision

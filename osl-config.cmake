@@ -7,7 +7,7 @@
 
 if (OSL_INCLUDE_DIR AND OSL_LIBRARY)
 	# Already in cache, be silent
-	set(OSL_FIND_QUIETLY TRUE)
+	set(osl_FIND_QUIETLY TRUE)
 endif()
 
 find_path(OSL_INCLUDE_DIR NAMES osl/osl.h)
@@ -21,6 +21,8 @@ endif()
 
 
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(OSL DEFAULT_MSG OSL_INCLUDE_DIR OSL_LIBRARY)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(osl DEFAULT_MSG OSL_INCLUDE_DIR OSL_LIBRARY)
+
+set(OSL_FOUND "${osl_FOUND}")
 
 mark_as_advanced(OSL_INCLUDE_DIR OSL_LIBRARY)

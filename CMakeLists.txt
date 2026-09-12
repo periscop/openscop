@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 #///////////////////////////////////////////////////////////////////#
 #                              PROJECT                              #
@@ -13,9 +13,9 @@ set(PACKAGE_VERSION
 project(osl
   LANGUAGES C)
 
-# Default to Debug build
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+# Default to Release for single-configuration generators
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
   message(STATUS "No building type advertised, default to Release")
 endif()
 
@@ -26,14 +26,8 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 find_package(GMP)
-if(GMP_FOUND)
-  add_library(gmp INTERFACE IMPORTED)
-  set_property(TARGET gmp
-    PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${GMP_INCLUDE_DIRS})
-  set_property(TARGET gmp
-    PROPERTY INTERFACE_LINK_LIBRARIES ${GMP_LIBRARIES})
-else()
-  message(STATUS "GMP not found, using old style integers")
+if(NOT GMP_FOUND)
+  message(STATUS "GMP not found, using fixed precision integers")
 endif()
 
 #///////////////////////////////////////////////////////////////////#
@@ -46,12 +40,10 @@ option(BUILD_SHARED_LIBS
 
 include(cmake/compiler-flags.cmake)
 
-set(CMAKE_C_FLAGS_RELEASE "-O3 -mtune=generic")
 set(CMAKE_C_FLAGS_DEBUG
   "${COMPILER_AVALIABLE_WARNINGS} ${COMPILER_ADDRESS_SANITIZER_FLAG} ${COMPILER_UNDEFINED_SANITIZER_FLAG} -Og -g")
 set(CMAKE_C_FLAGS_OPTIMIZED
   "${COMPILER_LTO_FLAG} ${COMPILER_MARCH_NATIVE} -O3")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g")
 
 # Use full RPATH on build tree
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
@@ -100,7 +92,7 @@ install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/include/"
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
+  @ONLY)
 add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -P
   ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
@@ -115,30 +107,28 @@ message(STATUS "")
 message(STATUS "Configuration done.")
 
 string(TOUPPER ${CMAKE_BUILD_TYPE} CURRENT_BUILD_TYPE)
-if (CURRENT_BUILD_TYPE MATCHES RELEASE)
+if (CURRENT_BUILD_TYPE STREQUAL "RELEASE")
   message(STATUS "Build type is Release")
   message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
   message(STATUS "C flags    =  ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELEASE}")
-elseif(CURRENT_BUILD_TYPE MATCHES OPTIMIZED)
+elseif(CURRENT_BUILD_TYPE STREQUAL "OPTIMIZED")
   message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
   message(STATUS "C flags    = ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_OPTIMIZED}")
-elseif(CURRENT_BUILD_TYPE MATCHES RELWITHDEBINFO)
+elseif(CURRENT_BUILD_TYPE STREQUAL "RELWITHDEBINFO")
   message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
   message(STATUS "C flags    = ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-else(CURRENT_BUILD_TYPE MATCHES DEBUG)
+elseif(CURRENT_BUILD_TYPE STREQUAL "DEBUG")
   message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
   message(STATUS "C flags    = ${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_DEBUG}")
-else(CURRENT_BUILD_TYPE MATCHES DEBUG)
+else()
   message(STATUS "C compiler = ${CMAKE_C_COMPILER}")
   message(STATUS "C flags    = ${CMAKE_C_FLAGS}")
-endif(CURRENT_BUILD_TYPE MATCHES RELEASE)
+endif()
 
 message(STATUS "")
 message(STATUS "You can execute:")
 message(STATUS "    make          # To compile osl library")
-if (PYTHONINTERP_FOUND)
-  message(STATUS "    make test     # To execute tests")
-endif()
+message(STATUS "    make test     # To execute tests")
 message(STATUS "    make install  # To install library, include and CMake module")
 message(STATUS "                  # If you need root access:")
 message(STATUS "                  #     sudo make install")

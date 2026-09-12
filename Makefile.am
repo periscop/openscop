@@ -7,7 +7,7 @@
 #    **                   First version: 30/04/2008                      **
 #    **------------------------------------------------------------------**
 #
-#   
+#
 # ***************************************************************************
 # * OpenScop: Structures and formats for polyhedral tools to talk together  *
 # ***************************************************************************
@@ -130,7 +130,7 @@ DISTCLEANFILES = \
 	osl-uninstalled.pc
 
 install-data-local:
-	@test -z "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)" || $(mkdir_p) "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)"
+	@test -z "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)" || $(MKDIR_P) "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)"
 	$(INSTALL_DATA) "$(top_srcdir)/osl-config.cmake" "$(DESTDIR)$(libdir)/$(PACKAGE_NAME)/"
 
 uninstall-local:
