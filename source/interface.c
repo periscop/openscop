@@ -228,7 +228,6 @@ osl_interface_t* osl_interface_malloc(void) {
  */
 void osl_interface_free(osl_interface_t* interface) {
   osl_interface_p tmp;
-  int i = 0;
 
   while (interface != NULL) {
     tmp = interface->next;
@@ -236,7 +235,6 @@ void osl_interface_free(osl_interface_t* interface) {
       free(interface->URI);
     free(interface);
     interface = tmp;
-    i++;
   }
 }
 
