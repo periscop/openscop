@@ -3422,6 +3422,21 @@ package for a different kind of computer) type @code{make distclean}.
 
 @node Optional Features
 @subsection Optional Features
+AddressSanitizer can be enabled with @code{./configure --enable-asan}.
+After configuring normally, @code{make asan} cleans the current build,
+reconfigures it with the original options plus @code{--enable-asan},
+then rebuilds and runs @code{make check}. The build remains instrumented,
+so subsequent @code{make check} and @code{make install} use ASan too.
+To return to a normal build, run @code{make clean}, configure again with
+@code{--disable-asan} and your usual options, then run @code{make}.
+
+The CMake equivalent is @code{-DENABLE_ASAN=ON}; its @code{asan} target
+also enables instrumentation, rebuilds and runs CTest. Set
+@code{-DENABLE_ASAN=OFF} to turn this option off again.
+Sanitizer support is checked during configuration. Runtime options can
+be supplied through @code{ASAN_OPTIONS}; leak detection availability
+is platform dependent.
+
 The @code{configure} shell script attempts to guess correct values for
 various system-dependent variables and user options used during compilation.
 It uses those values to create the @code{Makefile}. Various user options

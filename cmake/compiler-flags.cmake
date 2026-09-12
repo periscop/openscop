@@ -56,20 +56,6 @@ check_all_warning_flags("${ALL_WARNING_FLAGS}")
 string(REPLACE ";" " "
   COMPILER_AVALIABLE_WARNINGS "${COMPILER_AVALIABLE_WARNINGS}")
 
-set(CMAKE_REQUIRED_FLAGS "-fsanitize=address")
-check_c_compiler_flag("-fsanitize=address" compiler_has_address_sanitizer)
-unset(CMAKE_REQUIRED_FLAGS)
-if(compiler_has_address_sanitizer)
-  set(COMPILER_ADDRESS_SANITIZER_FLAG "-fsanitize=address")
-  # Nicer stack trace
-  check_c_compiler_flag("-fno-omit-frame-pointer"
-    compiler_has_no_omit_frame_pointer)
-  if(compiler_has_no_omit_frame_pointer)
-    set(COMPILER_ADDRESS_SANITIZER_FLAG
-      "${COMPILER_ADDRESS_SANITIZER_FLAG} -fno-omit-frame-pointer")
-  endif()
-endif()
-
 set(CMAKE_REQUIRED_FLAGS "-fsanitize=undefined")
 check_c_compiler_flag("-fsanitize=undefined" compiler_has_undefined_sanitizer)
 unset(CMAKE_REQUIRED_FLAGS)

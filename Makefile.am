@@ -276,3 +276,12 @@ tests_osl_test_SOURCES = \
 tests_osl_int_SOURCES                    = tests/osl_int.c
 tests_osl_pluto_unroll_SOURCES           = tests/osl_pluto_unroll.c
 tests_osl_relation_set_precision_SOURCES = tests/osl_relation_set_precision.c
+
+# Keep the selected configuration and dependency paths; rebuild every object.
+.PHONY: asan
+asan:
+	$(MAKE) clean
+	$(SHELL) "$(top_srcdir)/asan.sh" "$(abs_top_srcdir)/configure"
+	$(MAKE) check
+
+EXTRA_DIST += asan.sh asan.cmake
