@@ -23,6 +23,7 @@ set(test_scops
   test_just_statement_extension.scop
   test_matmult.scop
   test_no_statement.scop
+  test_scatinfos.scop
   test_scop_list.scop
   test_symbols2.scop
   test_symbols.scop
