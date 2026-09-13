@@ -3474,24 +3474,33 @@ directory
 @c %  **************************** DOCUMENTATION ******************************
 @node Documentation
 @section Documentation
-The OpenScop Library distribution provides several sources of documentation.
-First, the source code itself is as documented as much as possible.
-The code comments use the Doxygen technical documentation system.
-The user may install
-Doxygen@footnote{@code{http://www.stack.nl/~dimitri/doxygen}} to automatically
-generate a technical documentation by typing @code{make doc} or
-@code{doxygen ./autoconf/Doxyfile} at the OpenScop Library
-top-level directory after running the configure script
-(@pxref{Installation Instructions}). Doxygen will generate
-documentation sources (in HTML, LaTeX and man) in the @code{doc/source}
-directory of the OpenScop Library distribution.
+The OpenScop Library distribution provides source code documentation and
+this user manual. After running the configure script
+(@pxref{Installation Instructions}), use the following targets from the
+build directory:
 
-The Texinfo source of the present document is also provided in the @code{doc}
-directory. The user can build it in either PDF format
-(by typing @code{texi2pdf openscop.texi}) or HTML format
-(by typing @code{makeinfo --html openscop.texi}, using @code{--no-split}
-option to generate a single HTML file) or info format
-(by typing @code{makeinfo openscop.texi}).
+@example
+make doc/htmldoc.tar.gz
+make doc/openscop.pdf
+@end example
+
+The first target runs Doxygen to generate technical documentation in
+@code{doc/htmldoc} (HTML, LaTeX sources, and man pages), then packages it in
+@code{doc/htmldoc.tar.gz}. The second target runs @code{texi2pdf} to build
+this manual as @code{doc/openscop.pdf}.
+
+The current build system enables both targets only when both @code{doxygen}
+and @code{texi2pdf} are detected during configuration. Install both tools
+and rerun the configure script if necessary. There is no @code{make doc}
+target.
+
+To generate the technical documentation directly, without creating the
+archive, run @code{doxygen doc/Doxyfile} from the build directory.
+
+The Texinfo source of this manual is provided in @code{doc/openscop.texi}.
+From the source tree's @code{doc} directory, it can also be converted to
+HTML with @code{makeinfo --html openscop.texi} (add @code{--no-split} for
+a single HTML file), or to Info with @code{makeinfo openscop.texi}.
 
 @c %  **************************** DEVELOPPING ********************************
 @node Development
