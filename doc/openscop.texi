@@ -20,8 +20,8 @@
 
 @set EDITION 1.0
 @set SPEC_VERSION 1.1
-@set LIB_VERSION 0.9.0
-@set UPDATED June 3rd 2014
+@set LIB_VERSION 0.9.8
+@set UPDATED September 14th 2026
 @setchapternewpage odd
 
 @c % This is to ask for A4 instead of Letter size document.
