@@ -62,6 +62,7 @@
 #define OSL_OSL_H
 
 /* List of reserved OpenScop URIs:
+ * - private
  * - arrays
  * - body
  * - clay
@@ -97,6 +98,7 @@
 #include <osl/vector.h>
 
 #include <osl/extensions/arrays.h>
+#include <osl/extensions/private.h>
 #include <osl/extensions/clay.h>
 #include <osl/extensions/comment.h>
 #include <osl/extensions/coordinates.h>

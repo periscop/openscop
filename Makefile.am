@@ -105,6 +105,7 @@ pkgextensionsinclude_HEADERS = \
 	include/osl/extensions/scatinfos.h \
 	include/osl/extensions/scatnames.h \
 	include/osl/extensions/arrays.h \
+	include/osl/extensions/private.h \
 	include/osl/extensions/coordinates.h \
 	include/osl/extensions/irregular.h  \
 	include/osl/extensions/symbols.h \
@@ -153,6 +154,7 @@ libosl_la_SOURCES = \
 	source/extensions/scatinfos.c \
 	source/extensions/scatnames.c \
 	source/extensions/arrays.c \
+	source/extensions/private.c \
 	source/extensions/coordinates.c \
 	source/extensions/irregular.c \
 	source/extensions/symbols.c \
@@ -253,7 +255,7 @@ endif
 #############################################################################
 
 noinst_PROGRAMS = \
-	tests/osl_test tests/osl_int tests/osl_pluto_unroll \
+	tests/osl_test tests/osl_int tests/osl_pluto_unroll tests/osl_private \
 	tests/osl_relation_set_precision
 TESTS = $(noinst_PROGRAMS)
 
@@ -273,6 +275,10 @@ tests_osl_test_SOURCES = \
 	tests/test_clay.scop \
 	tests/test_no_statement.scop \
 	tests/test_scop_list.scop
+tests_osl_private_SOURCES = tests/osl_private.c
+
+EXTRA_DIST += tests/test_private.scop
+
 tests_osl_int_SOURCES                    = tests/osl_int.c
 tests_osl_pluto_unroll_SOURCES           = tests/osl_pluto_unroll.c
 tests_osl_relation_set_precision_SOURCES = tests/osl_relation_set_precision.c

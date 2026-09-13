@@ -1,0 +1,264 @@
+<OpenScop>
+
+# =============================================== Global
+# Language
+C
+
+# Context
+CONTEXT
+0 3 0 0 0 1
+
+# Parameters are provided
+1
+<strings>
+n
+</strings>
+
+# Number of statements
+3
+
+# =============================================== Statement 1
+# Number of relations describing the statement:
+3
+
+# ----------------------------------------------  1.1 Domain
+DOMAIN
+5 5 2 0 0 1
+# e/i|  i    j |  n |  1
+   1    1    0    0    0    ## i >= 0
+   1   -1    0    1   -1    ## -i+n-1 >= 0
+   1    0    0    1   -1    ## n-1 >= 0
+   1    0    1    0    0    ## j >= 0
+   1    0   -1    1   -1    ## -j+n-1 >= 0
+
+# ----------------------------------------------  1.2 Scattering
+SCATTERING
+5 10 5 2 0 1
+# e/i| c1   c2   c3   c4   c5 |  i    j |  n |  1
+   0   -1    0    0    0    0    0    0    0    0    ## c1 == 0
+   0    0   -1    0    0    0    1    0    0    0    ## c2 == i
+   0    0    0   -1    0    0    0    0    0    0    ## c3 == 0
+   0    0    0    0   -1    0    0    1    0    0    ## c4 == j
+   0    0    0    0    0   -1    0    0    0    0    ## c5 == 0
+
+# ----------------------------------------------  1.3 Access
+WRITE
+3 8 3 2 0 1
+# e/i| Arr  [1]  [2]|  i    j |  n |  1
+   0   -1    0    0    0    0    0    4    ## Arr == acc
+   0    0   -1    0    1    0    0    0    ## [1] == i
+   0    0    0   -1    0    1    0    0    ## [2] == j
+
+# ----------------------------------------------  1.4 Statement Extensions
+# Number of Statement Extensions
+2
+<body>
+# Number of original iterators
+2
+# List of original iterators
+i j
+# Statement body expression
+float acc = 0;
+</body>
+
+<extbody>
+# Number of accesses
+1
+# Access coordinates (start/length)
+6 3
+# Number of original iterators
+2
+# List of original iterators
+i j
+# Statement body expression
+float acc = 0;
+</extbody>
+
+# =============================================== Statement 2
+# Number of relations describing the statement:
+6
+
+# ----------------------------------------------  2.1 Domain
+DOMAIN
+7 6 3 0 0 1
+# e/i|  i    j    k |  n |  1
+   1    1    0    0    0    0    ## i >= 0
+   1   -1    0    0    1   -1    ## -i+n-1 >= 0
+   1    0    0    0    1   -1    ## n-1 >= 0
+   1    0    1    0    0    0    ## j >= 0
+   1    0   -1    0    1   -1    ## -j+n-1 >= 0
+   1    0    0    1    0    0    ## k >= 0
+   1    0    0   -1    1   -1    ## -k+n-1 >= 0
+
+# ----------------------------------------------  2.2 Scattering
+SCATTERING
+7 13 7 3 0 1
+# e/i| c1   c2   c3   c4   c5   c6   c7 |  i    j    k |  n |  1
+   0   -1    0    0    0    0    0    0    0    0    0    0    0    ## c1 == 0
+   0    0   -1    0    0    0    0    0    1    0    0    0    0    ## c2 == i
+   0    0    0   -1    0    0    0    0    0    0    0    0    0    ## c3 == 0
+   0    0    0    0   -1    0    0    0    0    1    0    0    0    ## c4 == j
+   0    0    0    0    0   -1    0    0    0    0    0    0    1    ## c5 == 1
+   0    0    0    0    0    0   -1    0    0    0    1    0    0    ## c6 == k
+   0    0    0    0    0    0    0   -1    0    0    0    0    0    ## c7 == 0
+
+# ----------------------------------------------  2.3 Access
+READ
+3 9 3 3 0 1
+# e/i| Arr  [1]  [2]|  i    j    k |  n |  1
+   0   -1    0    0    0    0    0    0    4    ## Arr == acc
+   0    0   -1    0    1    0    0    0    0    ## [1] == i
+   0    0    0   -1    0    1    0    0    0    ## [2] == j
+
+WRITE
+3 9 3 3 0 1
+# e/i| Arr  [1]  [2]|  i    j    k |  n |  1
+   0   -1    0    0    0    0    0    0    4    ## Arr == acc
+   0    0   -1    0    1    0    0    0    0    ## [1] == i
+   0    0    0   -1    0    1    0    0    0    ## [2] == j
+
+READ
+3 9 3 3 0 1
+# e/i| Arr  [1]  [2]|  i    j    k |  n |  1
+   0   -1    0    0    0    0    0    0    6    ## Arr == a
+   0    0   -1    0    1    0    0    0    0    ## [1] == i
+   0    0    0   -1    0    0    1    0    0    ## [2] == k
+
+READ
+3 9 3 3 0 1
+# e/i| Arr  [1]  [2]|  i    j    k |  n |  1
+   0   -1    0    0    0    0    0    0    7    ## Arr == b
+   0    0   -1    0    0    0    1    0    0    ## [1] == k
+   0    0    0   -1    0    1    0    0    0    ## [2] == j
+
+# ----------------------------------------------  2.4 Statement Extensions
+# Number of Statement Extensions
+2
+<body>
+# Number of original iterators
+3
+# List of original iterators
+i j k
+# Statement body expression
+acc += a[i][k] * b[k][j];
+</body>
+
+<extbody>
+# Number of accesses
+4
+# Access coordinates (start/length)
+0 3
+-1 -1
+7 7
+17 7
+# Number of original iterators
+3
+# List of original iterators
+i j k
+# Statement body expression
+acc += a[i][k] * b[k][j];
+</extbody>
+
+# =============================================== Statement 3
+# Number of relations describing the statement:
+4
+
+# ----------------------------------------------  3.1 Domain
+DOMAIN
+5 5 2 0 0 1
+# e/i|  i    j |  n |  1
+   1    1    0    0    0    ## i >= 0
+   1   -1    0    1   -1    ## -i+n-1 >= 0
+   1    0    0    1   -1    ## n-1 >= 0
+   1    0    1    0    0    ## j >= 0
+   1    0   -1    1   -1    ## -j+n-1 >= 0
+
+# ----------------------------------------------  3.2 Scattering
+SCATTERING
+5 10 5 2 0 1
+# e/i| c1   c2   c3   c4   c5 |  i    j |  n |  1
+   0   -1    0    0    0    0    0    0    0    0    ## c1 == 0
+   0    0   -1    0    0    0    1    0    0    0    ## c2 == i
+   0    0    0   -1    0    0    0    0    0    0    ## c3 == 0
+   0    0    0    0   -1    0    0    1    0    0    ## c4 == j
+   0    0    0    0    0   -1    0    0    0    2    ## c5 == 2
+
+# ----------------------------------------------  3.3 Access
+WRITE
+3 8 3 2 0 1
+# e/i| Arr  [1]  [2]|  i    j |  n |  1
+   0   -1    0    0    0    0    0    8    ## Arr == c
+   0    0   -1    0    1    0    0    0    ## [1] == i
+   0    0    0   -1    0    1    0    0    ## [2] == j
+
+READ
+3 8 3 2 0 1
+# e/i| Arr  [1]  [2]|  i    j |  n |  1
+   0   -1    0    0    0    0    0    4    ## Arr == acc
+   0    0   -1    0    1    0    0    0    ## [1] == i
+   0    0    0   -1    0    1    0    0    ## [2] == j
+
+# ----------------------------------------------  3.4 Statement Extensions
+# Number of Statement Extensions
+2
+<body>
+# Number of original iterators
+2
+# List of original iterators
+i j
+# Statement body expression
+c[i][j] = acc;
+</body>
+
+<extbody>
+# Number of accesses
+2
+# Access coordinates (start/length)
+0 7
+10 3
+# Number of original iterators
+2
+# List of original iterators
+i j
+# Statement body expression
+c[i][j] = acc;
+</extbody>
+
+# =============================================== Extensions
+<scatnames>
+b0 i b1 j b2 k b3
+</scatnames>
+
+<arrays>
+# Number of arrays
+8
+# Mapping array-identifiers/array-names
+1 i
+2 n
+3 j
+4 acc
+5 k
+6 a
+7 b
+8 c
+</arrays>
+
+<private>
+# Number of loop private variables
+1
+# Loop private variables information
+4 1 2
+</private>
+
+<coordinates>
+# File name
+tests/private/matmul.c
+# Starting line and column
+2 0
+# Ending line and column
+11 0
+# Indentation
+0
+</coordinates>
+
+</OpenScop>

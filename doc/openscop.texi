@@ -2449,6 +2449,7 @@ particular, the sender fully accepts the license and copyright notice.
 * Extbody Extension::
 * Loop Extension::
 * Pluto unroll Extension::
+* Private Extension::
 * Irregular Extension::
 @end menu
 
@@ -2995,6 +2996,90 @@ typedef struct osl_pluto_unroll * osl_pluto_unroll_p;
 
 @c ---------------------------------------------------------------------------
 
+
+@node Private Extension
+@subsection Private Extension
+
+@noindent @strong{Description}
+@itemize @bullet
+@item URI: @code{private}.
+@item Author: Cedric Bastoul <cedric.bastoul@@unistra.fr>.
+@item Purpose: the @code{private} extension identifies loop-private scalar
+variables within the SCoP and whose access relations have been
+automatically array-expanded during raising. It provides the
+array identifier, declaration statement number, and number of leading
+expansion dimensions for each variable.
+@end itemize
+
+@noindent @strong{File Format}
+
+@noindent The @code{private} extension file format respects the following
+grammar:
+@example
+Private_generic     ::= "<private>" Private "</private>"
+Private             ::= Nb_variables Variable_list
+Variable_list       ::= Variable Variable_list | (void)
+Variable            ::= Array_id Stmt_id Nb_dims
+Nb_variables        ::= _Integer
+Array_id            ::= _Integer
+Stmt_id             ::= _Integer
+Nb_dims             ::= _Integer
+@end example
+
+@noindent The nonnegative number of loop-private variables is provided on
+the first line, then each following line contains a triple of positive
+integers. The number of triples must equal @code{Nb_variables}.
+@code{Array_id} is the identifier used in the access relations and the
+@code{arrays} extension (@pxref{Arrays Extension}). Array identifiers must
+be unique within the @code{private} extension. @code{Stmt_id} is the
+one-based position of the declaration in the SCoP statement list.
+@code{Nb_dims} is the number of leading expansion dimensions, excluding
+the array-identifier output dimension.
+
+For instance, the following example is a correct textual @code{private}
+extension:
+
+@example
+@group
+<private>
+# Number of loop private variables
+1
+# Loop private variables information
+4 1 2 # acc, declared in statement 1, has 2 leading expansion dimensions
+</private>
+@end group
+@end example
+
+@noindent Here every access to array 4 (in this example, corresponding to
+the array @code{acc}) contains two leading subscript dimensions for the
+loops enclosing its declaration.
+
+@noindent @strong{Data Structure}
+
+@noindent The @code{private} extension data structure is the following:
+
+@example
+@group
+struct osl_private @{
+  int nb_variables; /* Number of loop-private variables */
+  int* array_id;    /* Array of nb_variables array identifiers */
+  int* stmt_id;     /* Array of one-based declaration statement numbers */
+  int* nb_dims;     /* Array of leading expansion dimension counts */
+@};
+typedef struct osl_private  osl_private_t;
+typedef struct osl_private* osl_private_p;
+@end group
+@end example
+
+@noindent The ith variable has array identifier @code{array_id[i]},
+declaration statement number @code{stmt_id[i]}, and expansion dimension
+count @code{nb_dims[i]}. Each array contains @code{nb_variables} entries.
+
+Readers and writers must preserve the relationship to access identifiers
+and statement positions. Transformations that change those identifiers,
+positions, or expansion dimensions must update the metadata accordingly.
+
+@c ---------------------------------------------------------------------------
 
 @node Irregular Extension
 @subsection Irregular Extension

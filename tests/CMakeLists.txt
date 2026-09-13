@@ -1,4 +1,5 @@
 set(test_executables
+  osl_private.c
   osl_int.c
   osl_pluto_unroll.c
   osl_relation_set_precision.c
@@ -7,6 +8,7 @@ set(test_executables
 set(test_scops_executable osl_test.c)
 
 set(test_scops
+  test_private.scop
   polynom.scop
   test_clay.scop
   test_coordinates.scop

@@ -26,3 +26,8 @@ include/osl/scop.h
 doc/
 build*/
 tests/
+
+!tests/
+tests/*
+!tests/osl_private.c
+!tests/test_private.scop

@@ -65,6 +65,7 @@
 #include <osl/body.h>
 #include <osl/extensions/annotation.h>
 #include <osl/extensions/arrays.h>
+#include <osl/extensions/private.h>
 #include <osl/extensions/clay.h>
 #include <osl/extensions/comment.h>
 #include <osl/extensions/coordinates.h>
@@ -376,6 +377,7 @@ osl_interface_t* osl_interface_get_default_registry(void) {
   osl_interface_add(&registry, osl_scatinfos_interface());
   osl_interface_add(&registry, osl_scatnames_interface());
   osl_interface_add(&registry, osl_arrays_interface());
+  osl_interface_add(&registry, osl_private_interface());
   osl_interface_add(&registry, osl_coordinates_interface());
   osl_interface_add(&registry, osl_clay_interface());
   osl_interface_add(&registry, osl_dependence_interface());
